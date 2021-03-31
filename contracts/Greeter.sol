@@ -1,9 +1,7 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.7.0;
+pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
-
-import "@openzeppelin/contracts/token/IERC20.sol";
 
 contract Greeter {
   string greeting;
