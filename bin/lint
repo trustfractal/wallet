@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+source "./bin/functions"
+
+pp_info "lint" "running tslint..."
+yarn lint
+
+echo ""
+pp_success "lint" "Done! No errors!"
