@@ -1,4 +1,4 @@
-name: Test Suite
+name: Test Contracts
 
 on:
   push:
@@ -14,6 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     container: node:14.16.0
 
+    defaults:
+      run:
+        working-directory: contracts
+
     steps:
       - uses: actions/checkout@v2
 
@@ -26,5 +30,5 @@ jobs:
             v1-${{ runner.os }}
 
       - run: yarn install
-      - run: yarn workspace contracts lint:sol
-      - run: yarn workspace contracts test
+      - run: yarn run lint:sol
+      - run: yarn run test
