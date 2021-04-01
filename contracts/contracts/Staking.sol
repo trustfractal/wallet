@@ -7,16 +7,34 @@ import "./StakingInfra.sol";
 
 contract Staking is StakingInfra {
   ERC20 public erc20;
+  uint256 public startDate;
+  uint256 public endDate;
   uint256 public totalMaxAmount;
   uint256 public individualMinimumAmount;
   uint256 public APR;
   uint256 public lockedTokens = 0;
 
+  mapping(address => Subscription) public subscriptions;
+
+  struct Subscription {
+    address subscriberAddress;
+    uint256 startDate;
+    uint256 stakedAmount;
+    uint256 APR; // based on a curve and his subscription timestamp
+    uint256 maxReward;
+    uint256 withdrawnAmount;
+    uint256 withdrawDate;
+  }
+
   constructor(address _tokenAddress,
+              uint256 _startDate,
+              uint256 _endDate,
               uint256 _totalMaxAmount,
               uint256 _individualMinimumAmount,
               uint256 _APR
              ) {
+    require(block.timestamp <= _startDate, "Staking: start date must be in the future");
+    require(_startDate < _endDate, "Staking: end date must be after start date");
     require(_totalMaxAmount > 0, "Staking: invalid max amount");
     require(_individualMinimumAmount> 0, "Staking: invalid individual min amount");
     require(_APR > 0, "Staking: invalid APR");
@@ -25,6 +43,8 @@ contract Staking is StakingInfra {
     erc20 = ERC20(_tokenAddress);
     require(_totalMaxAmount <= erc20.totalSupply(), "Staking: max amount is greater than total available supply");
 
+    startDate = _startDate;
+    endDate = _endDate;
     totalMaxAmount = _totalMaxAmount;
     individualMinimumAmount = _individualMinimumAmount;
     APR = _APR;
@@ -36,7 +56,22 @@ contract Staking is StakingInfra {
   }
 
   function stake(uint256 _amount) external whenNotPaused {
-    // TODO
+    uint256 time = block.timestamp;
+
+    require(_amount > 0);
+    require(time >= startDate, "Staking: staking period not started");
+    require(time < endDate, "Staking: staking period finished");
+    require(subscriptions[msg.sender].startDate == 0, "Staking: this account has already staked");
+
+    subscriptions[msg.sender] = Subscription(
+      msg.sender,
+      time,
+      _amount,
+      0,
+      0,
+      0,
+      0
+    );
   }
 
   function withdraw(uint256 _amount) external whenNotPaused {
@@ -44,7 +79,6 @@ contract Staking is StakingInfra {
   }
 
   function getStake(address _subscriber) external view returns (bool) {
-    // TODO
-    return true;
+    return subscriptions[msg.sender].startDate != 0;
   }
 }
