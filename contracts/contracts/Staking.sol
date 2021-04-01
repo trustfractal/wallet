@@ -10,6 +10,7 @@ contract Staking is StakingInfra {
   uint256 public totalMaxAmount;
   uint256 public individualMinimumAmount;
   uint256 public APR;
+  uint256 public lockedTokens = 0;
 
   constructor(address _tokenAddress,
               uint256 _totalMaxAmount,
@@ -27,5 +28,23 @@ contract Staking is StakingInfra {
     totalMaxAmount = _totalMaxAmount;
     individualMinimumAmount = _individualMinimumAmount;
     APR = _APR;
+  }
+
+  function getAPRAmount() public view returns (uint256) {
+    // TODO
+    return 0;
+  }
+
+  function stake(uint256 _amount) external whenNotPaused {
+    // TODO
+  }
+
+  function withdraw(uint256 _amount) external whenNotPaused {
+    // TODO
+  }
+
+  function getStake(address _subscriber) external view returns (bool) {
+    // TODO
+    return true;
   }
 }

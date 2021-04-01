@@ -16,11 +16,16 @@ describe("Staking", async () => {
     await fcl.deployed();
   });
 
-  describe("constructor", async () => {
+  describe("constructor", () => {
     it("creates a contract when given valid arguments", async () => {
-      const action = Staking.deploy(fcl.address, 2, 1, 1);
+      const staking = await Staking.deploy(fcl.address, 3, 2, 1);
+      await staking.deployed();
 
-      await expect(action).to.be.fulfilled;
+      expect(await staking.erc20()).to.eq(fcl.address);
+      expect(await staking.totalMaxAmount()).to.eq(3);
+      expect(await staking.individualMinimumAmount()).to.eq(2);
+      expect(await staking.APR()).to.eq(1);
+      expect(await staking.lockedTokens()).to.eq(0);
     });
 
     it("fails if maxAmount is 0", async () => {
@@ -54,5 +59,17 @@ describe("Staking", async () => {
         "Staking: max amount is greater than total available supply"
       );
     });
+  });
+
+  describe("functions", () => {
+    let staking: any;
+
+    beforeEach(async () => {
+      const supply = await fcl.totalSupply();
+      staking = await Staking.deploy(fcl.address, supply, 100, 1);
+      await staking.deployed();
+    });
+
+    describe("", () => {});
   });
 });
