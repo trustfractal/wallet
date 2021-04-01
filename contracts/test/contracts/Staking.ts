@@ -4,7 +4,7 @@ chai.use(ChaiAsPromised);
 const expect = chai.expect;
 
 import dayjs from "dayjs";
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 
 describe("Staking", async () => {
   const [owner, alice] = await ethers.getSigners();
@@ -92,15 +92,47 @@ describe("Staking", async () => {
     });
   });
 
-  describe("functions", () => {
+  describe("functions", async () => {
     let staking: any;
 
+    /**
+     * Assume by default a timespan of 30 days
+     * min subscription of 100 units
+     * and 50% of the supply available as rewards
+     */
+    const start = dayjs().add(1, "day").unix();
+    const end = dayjs().add(31, "day").unix();
+    const minSubscription = 100;
+    let pool;
+    const APR = 1;
+
+    const ensureTimestamp = (timestamp: number): Promise<unknown> => {
+      return network.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+    };
+
     beforeEach(async () => {
-      const supply = await fcl.totalSupply();
-      staking = await Staking.deploy(fcl.address, supply, 100, 1);
+      pool = (await fcl.totalSupply()).div(2);
+
+      staking = await Staking.deploy(
+        fcl.address,
+        start,
+        end,
+        pool,
+        minSubscription,
+        APR
+      );
       await staking.deployed();
+
+      await ensureTimestamp(start);
     });
 
-    describe("", () => {});
+    describe("calculateReward", () => {
+      it("works", async () => {
+        const reward = await staking.calculateReward(start, end, 100);
+
+        // TODO fake value, just a placeholder for now
+        expect(reward).to.be(8);
+      });
+    });
   });
 });
