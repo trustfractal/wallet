@@ -1,0 +1,30 @@
+name: Test Suite
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '*'
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: node:14.16.0
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: v1-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            v1-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+            v1-${{ runner.os }}
+
+      - run: yarn install
+      - run: yarn workspace contracts lint:sol
+      - run: yarn workspace contracts test
