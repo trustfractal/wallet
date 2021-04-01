@@ -1,5 +1,7 @@
 {
   "name": "hardhat-project",
+  "private": true,
+  "version": "0.0.1",
   "scripts": {
     "lint:sol": "solhint contracts/**.sol",
     "test": "TS_NODE_TRANSPILE_ONLY=1 hardhat test"
