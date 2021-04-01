@@ -18,6 +18,9 @@ jobs:
       run:
         working-directory: contracts
 
+    env:
+      FORCE_COLOR: true
+
     steps:
       - uses: actions/checkout@v2
 
