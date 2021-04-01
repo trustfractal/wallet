@@ -10,7 +10,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  test:
+  test-contracts:
     runs-on: ubuntu-latest
     container: node:14.16.0
 
