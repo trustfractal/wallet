@@ -43,7 +43,11 @@ contract Staking is StakingInfra {
     require(_totalMaxAmount > 0, "Staking: invalid max amount");
     require(_individualMinimumAmount> 0, "Staking: invalid individual min amount");
     require(_APR > 0, "Staking: invalid APR");
-    require(_totalMaxAmount > _individualMinimumAmount, "Staking: max amount needs to be greater than individual minimum");
+    require(
+      _totalMaxAmount > _individualMinimumAmount,
+      "Staking: max amount needs to be greater than individual minimum"
+
+    );
 
     erc20 = ERC20(_tokenAddress);
     require(_totalMaxAmount <= erc20.totalSupply(), "Staking: max amount is greater than total available supply");
