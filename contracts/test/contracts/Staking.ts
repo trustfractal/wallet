@@ -109,7 +109,7 @@ describe("Staking", () => {
     });
   });
 
-  describe("functions", async () => {
+  describe("functions", () => {
     let staking: any;
 
     /**
