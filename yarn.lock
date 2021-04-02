@@ -2236,6 +2236,11 @@
   dependencies:
     ethers "^5.0.2"
 
+"@typechain/hardhat@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@typechain/hardhat/-/hardhat-1.0.1.tgz#6e53956c15b2aff073413cfcdb3f5339b0a85f2e"
+  integrity sha512-gRETPlvLdN95PIP3PVktEtQSnSMJMWxaxNKI34KFPYEuW4QLLm6UrUCHWmulhB1eUQ1EhYRAda7kEhcJOQ/M1g==
+
 "@types/anymatch@*":
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@types/anymatch/-/anymatch-1.3.1.tgz#336badc1beecb9dacc38bea2cf32adf627a8421a"
@@ -5594,11 +5599,6 @@ data-urls@^2.0.0:
     abab "^2.0.3"
     whatwg-mimetype "^2.3.0"
     whatwg-url "^8.0.0"
-
-datejs@^1.0.0-rc3:
-  version "1.0.0-rc3"
-  resolved "https://registry.yarnpkg.com/datejs/-/datejs-1.0.0-rc3.tgz#bffa1efedefeb41fdd8a242af55afa01fb58de57"
-  integrity sha1-v/oe/t7+tB/diiQq9Vr6AftY3lc=
 
 dayjs@^1.10.4:
   version "1.10.4"

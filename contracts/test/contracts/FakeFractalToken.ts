@@ -1,13 +1,18 @@
 import { expect } from "chai";
+import { ethers, waffle } from "hardhat";
 
-import { ethers } from "hardhat";
+const { deployContract: deploy } = waffle;
+
+import { FakeFractalToken as FCL } from "../../typechain/FakeFractalToken";
+import FCLArtifact from "../../artifacts/contracts/FakeFractalToken.sol/FakeFractalToken.json";
 
 describe("FakeFractalToken", () => {
   it("Can be deployed", async () => {
     const accounts = await ethers.getSigners();
-    const FCL = await ethers.getContractFactory("FakeFractalToken");
-    const fcl = await FCL.deploy(accounts[0].address);
-    await fcl.deployed();
+
+    const fcl = (await deploy(accounts[0], FCLArtifact, [
+      accounts[0].address,
+    ])) as FCL;
 
     await fcl.transfer(accounts[1].address, 1);
 

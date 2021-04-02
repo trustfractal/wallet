@@ -1,18 +1,28 @@
 import chai from "chai";
-import ChaiAsPromised from "chai-as-promised";
-chai.use(ChaiAsPromised);
-const expect = chai.expect;
+import { ethers, waffle } from "hardhat";
+import { solidity } from "ethereum-waffle";
 
-import { ethers } from "hardhat";
+chai.use(solidity);
+const { expect } = chai;
+const { deployContract: deploy } = waffle;
 
-describe("StakingInfra", async () => {
-  const [_owner, alice] = await ethers.getSigners();
-  const StakingInfra = await ethers.getContractFactory("StakingInfra");
-  let infra: any;
+let signers: any;
+let owner: nay;
+let alice: any;
+let infra: any;
+
+import { StakingInfra } from "../../typechain/StakingInfra";
+import StakingInfraArtifact from "../../artifacts/contracts/StakingInfra.sol/StakingInfra.json";
+
+describe("StakingInfra", () => {
+  before(async () => {
+    signers = await ethers.getSigners();
+    owner = signers[0];
+    alice = signers[1];
+  });
 
   beforeEach(async () => {
-    infra = await StakingInfra.deploy();
-    await infra.deployed();
+    infra = (await deploy(owner, StakingInfraArtifact, [])) as StakingInfra;
   });
 
   it("can be paused & unpaused by the owner", async () => {
@@ -26,13 +36,13 @@ describe("StakingInfra", async () => {
   it("cannot be paused by a non-owner", async () => {
     const action = infra.connect(alice).pause();
 
-    await expect(action).to.be.rejectedWith("Ownable: caller is not the owner");
+    await expect(action).to.be.revertedWith("Ownable: caller is not the owner");
   });
 
   it("cannot be unpaused while already unpaused", async () => {
     const action = infra.unpause();
 
-    await expect(action).to.be.rejectedWith("Pausable: not paused");
+    await expect(action).to.be.revertedWith("Pausable: not paused");
   });
 
   it("cannot be paused while already paused", async () => {
@@ -40,6 +50,6 @@ describe("StakingInfra", async () => {
 
     const action = infra.pause();
 
-    await expect(action).to.be.rejectedWith("Pausable: paused");
+    await expect(action).to.be.revertedWith("Pausable: paused");
   });
 });

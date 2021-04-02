@@ -1,29 +1,38 @@
 import chai from "chai";
-import ChaiAsPromised from "chai-as-promised";
-chai.use(ChaiAsPromised);
-const expect = chai.expect;
-
+import { ethers, network, waffle } from "hardhat";
+import { solidity } from "ethereum-waffle";
 import dayjs from "dayjs";
-import { ethers, network } from "hardhat";
 
-describe("Staking", async () => {
-  const [owner, alice] = await ethers.getSigners();
-  const Staking = await ethers.getContractFactory("Staking");
-  const FCL = await ethers.getContractFactory("FakeFractalToken");
-  let fcl: any;
+import { FakeFractalToken as FCL } from "../../typechain/FakeFractalToken";
+import FCLArtifact from "../../artifacts/contracts/FakeFractalToken.sol/FakeFractalToken.json";
+import { Staking } from "../../typechain/Staking";
+import StakingArtifact from "../../artifacts/contracts/Staking.sol/Staking.json";
 
-  const start = dayjs().add(1, "day").unix();
-  const end = dayjs().add(2, "day").unix();
+chai.use(solidity);
+const { expect } = chai;
+const { deployContract: deploy } = waffle;
+
+let signers: any;
+let owner: any;
+let fcl: any;
+const start = dayjs().add(1, "day").unix();
+const end = dayjs().add(2, "day").unix();
+
+describe("Staking", () => {
+  before(async () => {
+    signers = await ethers.getSigners();
+    owner = signers[0];
+  });
 
   beforeEach(async () => {
-    fcl = await FCL.deploy(owner.address);
-    await fcl.deployed();
+    fcl = (await deploy(owner, FCLArtifact, [owner.address])) as FCL;
   });
 
   describe("constructor", () => {
     it("creates a contract when given valid arguments", async () => {
-      const staking = await Staking.deploy(fcl.address, start, end, 3, 2, 1);
-      await staking.deployed();
+      const args = [fcl.address, start, end, 3, 2, 1];
+
+      const staking = (await deploy(owner, StakingArtifact, args)) as Staking;
 
       expect(await staking.erc20()).to.eq(fcl.address);
       expect(await staking.totalMaxAmount()).to.eq(3);
@@ -34,59 +43,67 @@ describe("Staking", async () => {
 
     it("fails if startDate is in the past", async () => {
       const yesterday = dayjs().subtract(1, "day").unix();
+      const args = [fcl.address, yesterday, end, 3, 2, 1];
 
-      const action = Staking.deploy(fcl.address, yesterday, end, 0, 1, 1);
+      const action = deploy(owner, StakingArtifact, args);
 
-      await expect(action).to.be.rejectedWith(
+      await expect(action).to.be.revertedWith(
         "Staking: start date must be in the future"
       );
     });
 
     it("fails if endDate is before startDate", async () => {
       const one_hour_before = dayjs(start).subtract(1, "hour").unix();
+      const args = [fcl.address, start, one_hour_before, 0, 1, 1];
 
-      const action = Staking.deploy(
-        fcl.address,
-        start,
-        one_hour_before,
-        0,
-        1,
-        1
-      );
+      const action = deploy(owner, StakingArtifact, args);
 
-      await expect(action).to.be.rejectedWith(
+      await expect(action).to.be.revertedWith(
         "Staking: end date must be after start date"
       );
     });
 
     it("fails if maxAmount is 0", async () => {
-      const action = Staking.deploy(fcl.address, start, end, 0, 1, 1);
-      await expect(action).to.be.rejectedWith("Staking: invalid max amount");
+      const args = [fcl.address, start, end, 0, 1, 1];
+
+      const action = deploy(owner, StakingArtifact, args);
+
+      await expect(action).to.be.revertedWith("Staking: invalid max amount");
     });
 
     it("fails if minIndividualAmount is 0", async () => {
-      const action = Staking.deploy(fcl.address, start, end, 2, 0, 1);
-      await expect(action).to.be.rejectedWith(
+      const args = [fcl.address, start, end, 2, 0, 1];
+
+      const action = deploy(owner, StakingArtifact, args);
+
+      await expect(action).to.be.revertedWith(
         "Staking: invalid individual min amount"
       );
     });
 
     it("fails if APR is 0", async () => {
-      const action = Staking.deploy(fcl.address, start, end, 2, 1, 0);
-      await expect(action).to.be.rejectedWith("Staking: invalid APR");
+      const args = [fcl.address, start, end, 2, 1, 0];
+
+      const action = deploy(owner, StakingArtifact, args);
+
+      await expect(action).to.be.revertedWith("Staking: invalid APR");
     });
 
     it("fails if min amount is larger than total amount", async () => {
-      const action = Staking.deploy(fcl.address, start, end, 1, 2, 0);
-      await expect(action).to.be.rejectedWith("Staking: invalid APR");
+      const args = [fcl.address, start, end, 1, 2, 0];
+
+      const action = deploy(owner, StakingArtifact, args);
+
+      await expect(action).to.be.revertedWith("Staking: invalid APR");
     });
 
     it("fails if max amount is larger than the token's own supply", async () => {
       const supply = await fcl.totalSupply();
+      const args = [fcl.address, start, end, supply + 1, 1, 1];
 
-      const action = Staking.deploy(fcl.address, start, end, supply + 1, 1, 1);
+      const action = deploy(owner, StakingArtifact, args);
 
-      await expect(action).to.be.rejectedWith(
+      await expect(action).to.be.revertedWith(
         "Staking: max amount is greater than total available supply"
       );
     });
@@ -113,15 +130,14 @@ describe("Staking", async () => {
     beforeEach(async () => {
       pool = (await fcl.totalSupply()).div(2);
 
-      staking = await Staking.deploy(
+      staking = (await deploy(owner, StakingArtifact, [
         fcl.address,
         start,
         end,
         pool,
         minSubscription,
-        APR
-      );
-      await staking.deployed();
+        APR,
+      ])) as Staking;
 
       await ensureTimestamp(start);
     });
@@ -131,7 +147,7 @@ describe("Staking", async () => {
         const reward = await staking.calculateReward(start, end, 100);
 
         // TODO fake value, just a placeholder for now
-        expect(reward).to.be(8);
+        expect(reward).to.equal(8);
       });
     });
   });
