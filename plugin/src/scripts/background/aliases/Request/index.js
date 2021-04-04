@@ -20,7 +20,7 @@ export const addRequest = ({ payload: { id, requester, content, type } }) => {
     dispatch(requestsActions.setRequests(requests));
 
     // open popup on a new window
-    await WindowsService.openPopup(`popup.html?route=requests/${request.id}`);
+    await WindowsService.createPopup(`popup.html?route=requests/${request.id}`);
   };
 };
 
