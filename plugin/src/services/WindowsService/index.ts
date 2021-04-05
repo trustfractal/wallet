@@ -20,7 +20,7 @@ class WindowsService {
   }
 
   createWindow(
-    config: chrome.windows.CreateData,
+    config: chrome.windows.CreateData = {},
   ): Promise<chrome.windows.Window | undefined> {
     return new Promise((resolve, reject) => {
       chrome.windows.create(config, (window) => {
@@ -34,9 +34,11 @@ class WindowsService {
     });
   }
 
-  getCurrentWindow(): Promise<chrome.windows.Window> {
+  getCurrentWindow(
+    config: chrome.windows.GetInfo = {},
+  ): Promise<chrome.windows.Window> {
     return new Promise((resolve, reject) => {
-      chrome.windows.getCurrent((window) => {
+      chrome.windows.getCurrent(config, (window) => {
         if (chrome.runtime.lastError !== undefined) {
           console.error(chrome.runtime.lastError);
           reject(ERROR_GET_CURRENT_WINDOW(chrome.runtime.lastError));
@@ -47,9 +49,11 @@ class WindowsService {
     });
   }
 
-  getAllWindows(): Promise<Array<chrome.windows.Window>> {
+  getAllWindows(
+    config: chrome.windows.GetInfo = {},
+  ): Promise<Array<chrome.windows.Window>> {
     return new Promise((resolve, reject) => {
-      chrome.windows.getAll((windows) => {
+      chrome.windows.getAll(config, (windows) => {
         if (chrome.runtime.lastError !== undefined) {
           console.error(chrome.runtime.lastError);
           reject(ERROR_GET_ALL_WINDOWS(chrome.runtime.lastError));
@@ -103,9 +107,9 @@ class WindowsService {
   }
 
   async getAllPopups(): Promise<Array<chrome.windows.Window>> {
-    const windows = await this.getAllWindows();
-
-    return windows.filter(({ type }) => type === "popup");
+    return this.getAllWindows({
+      windowTypes: ["popup"],
+    });
   }
 
   async closeAllPopups(): Promise<Array<chrome.windows.Window>> {
