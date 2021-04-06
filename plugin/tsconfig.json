@@ -5,7 +5,7 @@
     "paths": {
       "@assets/*": ["src/assets/*"],
       "@models/*": ["src/models/*"],
-      "@backgroundScript/*": ["src/scripts/backgroundScript/*"],
+      "@background/*": ["src/scripts/background/*"],
       "@contentScript/*": ["src/scripts/contentScript/*"],
       "@options/*": ["src/options/*"],
       "@popup/*": ["src/popup/*"],
