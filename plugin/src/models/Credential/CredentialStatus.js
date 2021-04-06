@@ -1,7 +1,5 @@
-const status = {
-  UNKNOWN: "unknown",
-  VERIFIED: "verified",
-  UNVERIFIED: "unverified",
-};
+import mirrorCreator from "mirror-creator";
+
+const status = mirrorCreator(["UNKNOWN", "VERIFIED", "UNVEFIFIED"]);
 
 export default status;

@@ -1,8 +1,5 @@
-const status = {
-  ACCEPTED: "accepted",
-  DECLINED: "declined",
-  PENDING: "pending",
-  TIMED_OUT: "timed_out",
-};
+import mirrorCreator from "mirror-creator";
+
+const status = mirrorCreator(["ACCEPTED", "DECLINED", "PENDING", "TIMED_OUT"]);
 
 export default status;

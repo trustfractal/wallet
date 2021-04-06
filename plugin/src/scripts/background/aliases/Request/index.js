@@ -1,4 +1,5 @@
 import requestsActions, { requestsTypes } from "@redux/requests";
+import credentialsActions from "@redux/credentials";
 import { getRequests } from "@redux/selectors";
 
 import Request from "@models/Request";
@@ -24,17 +25,13 @@ export const addRequest = ({ payload: { id, requester, content, type } }) => {
   };
 };
 
-export const acceptShareCredentialRequest = ({
-  payload: { id, credential, properties },
-}) => {
+export const acceptConfirmCredentialRequest = ({ payload: id }) => {
   return async (dispatch, getState) => {
     const requests = getRequests(getState());
 
     // get request
     const acceptedRequest = requests.getById(id);
     acceptedRequest.status = RequestStatus.ACCEPTED;
-    acceptedRequest.content.credential = credential;
-    acceptedRequest.content.properties = properties;
 
     // update request status
     requests.updateItem(id, acceptedRequest);
@@ -42,6 +39,7 @@ export const acceptShareCredentialRequest = ({
     // update redux store
     dispatch(requestsActions.setRequests(requests));
     dispatch(requestsActions.requestAccepted(acceptedRequest));
+    dispatch(credentialsActions.addCredential(acceptedRequest.content));
 
     // close new window popup if open
     const currentWindow = await WindowsService.getCurrentWindow();
@@ -109,7 +107,7 @@ export const declineRequest = ({ payload: id }) => {
 
 const Aliases = {
   [requestsTypes.ADD_REQUEST]: addRequest,
-  [requestsTypes.ACCEPT_SHARE_CREDENTIAL_REQUEST]: acceptShareCredentialRequest,
+  [requestsTypes.ACCEPT_CONFIRM_CREDENTIAL_REQUEST]: acceptConfirmCredentialRequest,
   [requestsTypes.IGNORE_REQUEST]: ignoreRequest,
   [requestsTypes.REMOVE_REQUEST]: removeRequest,
   [requestsTypes.DECLINE_REQUEST]: declineRequest,
