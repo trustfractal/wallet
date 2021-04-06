@@ -2,15 +2,13 @@ import { v4 as uuidv4 } from "uuid";
 
 import redux from "@redux";
 import appActions from "@redux/app";
-import requestsActions, { requestsTypes } from "@redux/requests";
+import requestsActions from "@redux/requests";
 import { getCredentials } from "@redux/selectors";
-import { watcher } from "@redux/middleware/watcher";
+import { requestsWatcher } from "@redux/middleware/watcher";
 
 import RequestStatus from "@models/Request/RequestStatus";
 import RequestTypes from "@models/Request/RequestTypes";
 import ContentScriptConnection from "@models/Connection/ContentScriptConnection";
-
-const REQUESTS_TIME_OUT = 30 * 1000;
 
 async function init() {
   const contentScript = new ContentScriptConnection();
@@ -45,49 +43,26 @@ async function init() {
 
         store.dispatch(requestsActions.addRequest(request));
 
-        // TODO: Refactor this duplicated code
-        // assign timeout to the request
-        let acceptedListener, declinedListener;
-        const requestTimeout = setTimeout(() => {
+        // create callbacks
+        const onAccept = (acceptedRequest) => {
+          const credential = credentials.getById(
+            acceptedRequest.content.credential,
+          );
+
+          resolve(credential);
+        };
+        const onDecline = () => reject(RequestStatus.DECLINED);
+        const onTimeout = () => {
           store.dispatch(requestsActions.removeRequest(request.id));
 
-          // unsubscribe redux watchers and reject
-          acceptedListener.unsubscribe();
-          declinedListener.unsubscribe();
-
           reject(RequestStatus.TIMED_OUT);
-        }, REQUESTS_TIME_OUT);
+        };
 
-        acceptedListener = watcher.subscribe(
-          requestsTypes.REQUEST_ACCEPTED,
-          async (acceptedRequest) => {
-            if (acceptedRequest.id === request.id) {
-              // unsubscribe redux watchers and clear timeout
-              acceptedListener.unsubscribe();
-              acceptedListener.unsubscribe();
-              clearTimeout(requestTimeout);
-
-              const credential = credentials.getById(
-                acceptedRequest.content.credential,
-              );
-
-              resolve(credential);
-            }
-          },
-        );
-
-        declinedListener = watcher.subscribe(
-          requestsTypes.REQUEST_DECLINED,
-          (declinedRequest) => {
-            if (declinedRequest.id === request.id) {
-              // unsubscribe redux watchers and clear timeout
-              acceptedListener.unsubscribe();
-              declinedListener.unsubscribe();
-              clearTimeout(requestTimeout);
-
-              reject(RequestStatus.DECLINED);
-            }
-          },
+        requestsWatcher.listenForRequest(
+          request.id,
+          onAccept,
+          onDecline,
+          onTimeout,
         );
       }),
   );

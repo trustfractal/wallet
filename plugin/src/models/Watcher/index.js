@@ -40,4 +40,15 @@ export default class Watcher {
       unsubscribe: () => this.unsubscribe(action, subscriber.id),
     };
   }
+
+  listenForActions(actions) {
+    const listeners = actions.map(({ action, callback }) =>
+      this.subscribe(action, callback),
+    );
+
+    return {
+      listeners,
+      unlisten: () => listeners.map((listener) => listener.unsubscribe()),
+    };
+  }
 }
