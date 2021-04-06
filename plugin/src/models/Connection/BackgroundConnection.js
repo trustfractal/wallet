@@ -1,7 +1,7 @@
 /* global chrome */
 
 import Response from "@models/Message/Response";
-import Invokation from "@models//Message/Invokation";
+import Invokation from "@models/Message/Invokation";
 import { background } from "@models/Connection/params";
 
 export default class BackgroundConnection {
