@@ -42,13 +42,9 @@ export default class Watcher {
   }
 
   listenForActions(actions) {
-    const listeners = [];
-
-    for (let index = 0; index < actions.length; index++) {
-      const { action, callback } = actions[index];
-
-      listeners.push(this.subscribe(action, callback));
-    }
+    const listeners = actions.map(({ action, callback }) =>
+      this.subscribe(action, callback),
+    );
 
     return {
       listeners,
