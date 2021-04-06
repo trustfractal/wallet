@@ -13,8 +13,7 @@ function Landing() {
 
   const { from } = location.state || { from: { pathname: "/" } };
   const setup = async () => {
-    dispatch(appActions.setSignIn(true))
-    .then(() => history.replace(from));
+    dispatch(appActions.setSignIn(true)).then(() => history.replace(from));
   };
 
   return (

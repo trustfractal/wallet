@@ -1,18 +1,18 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@src/*": ["src/*"],
       "@assets/*": ["src/assets/*"],
       "@models/*": ["src/models/*"],
       "@background/*": ["src/scripts/background/*"],
       "@contentScript/*": ["src/scripts/contentScript/*"],
-      "@sdk/*": ["src/scripts/sdk/*"],
       "@options/*": ["src/options/*"],
       "@popup/*": ["src/popup/*"],
       "@redux/*": ["src/redux/*"],
       "@services/*": ["src/services/*"]
     }
   },
-  "exclude": ["node_modules", "build", "dev"]
+  "include": ["src"],
+  "exclude": ["build", "dev"]
 }

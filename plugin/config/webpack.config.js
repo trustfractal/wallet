@@ -287,7 +287,6 @@ module.exports = function (webpackEnv) {
           "scheduler/tracing": "scheduler/tracing-profiling",
         }),
         // Project aliases
-        "@src": path.resolve(__dirname, "../src/"),
         "@assets": path.resolve(__dirname, "../src/assets/"),
         "@models": path.resolve(__dirname, "../src/models/"),
         "@background": path.resolve(__dirname, "../src/scripts/background/"),
@@ -295,7 +294,6 @@ module.exports = function (webpackEnv) {
           __dirname,
           "../src/scripts/contentScript/",
         ),
-        "@sdk": path.resolve(__dirname, "../src/scripts/sdk/"),
         "@options": path.resolve(__dirname, "../src/options/"),
         "@popup": path.resolve(__dirname, "../src/popup/"),
         "@redux": path.resolve(__dirname, "../src/redux/"),

@@ -4,7 +4,7 @@ import thunk from "redux-thunk";
 
 import watcher from "@redux/middleware/watcher";
 
-import StorageService from "@services/storage";
+import StorageService from "@services/StorageService";
 
 import aliases from "@background/aliases";
 

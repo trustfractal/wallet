@@ -5,7 +5,7 @@ import { getRequests } from "@redux/selectors";
 import Request from "@models/Request";
 import RequestStatus from "@models/Request/RequestStatus";
 
-import WindowsService from "@services/windows";
+import WindowsService from "@services/WindowsService";
 
 export const addRequest = ({ payload: { id, requester, content, type } }) => {
   return async (dispatch, getState) => {
