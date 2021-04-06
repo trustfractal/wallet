@@ -1,5 +1,5 @@
 {
-  "name": "fractal-plugin",
+  "name": "@fractalwallet/plugin",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -38,7 +38,7 @@
     "semver": "7.3.2",
     "style-loader": "1.3.0",
     "ts-pnp": "1.2.0",
-    "typescript": "^4.2.2",
+    "typescript": "^4.2.3",
     "url-loader": "4.1.1",
     "uuid": "^8.3.2",
     "web-vitals": "^1.0.1",
@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.12.3",
+    "@fractalwallet/types": "0.1.0",
     "@svgr/webpack": "5.5.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",

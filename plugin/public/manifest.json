@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
   "version": "0.0.1",
-  "short_name": "Fractal-Plugin",
-  "name": "Fractal Plugin",
+  "short_name": "fractal-wallet",
+  "name": "Fractal Wallet - Plugin",
   "description": "Fractal Data Wallet Plugin Extension.",
   "action": {
-    "default_title": "fractal-plugin",
+    "default_title": "fractal-wallet",
     "default_popup": "popup.html"
   },
   "background": {

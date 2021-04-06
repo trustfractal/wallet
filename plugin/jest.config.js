@@ -31,7 +31,6 @@ module.exports = {
     "^\\@popup(.*)$": "<rootDir>/src/popup/$1",
     "^\\@redux(.*)$": "<rootDir>/src/redux/$1",
     "^\\@services(.*)$": "<rootDir>/src/services/$1",
-    "^\\@tstypes(.*)$": "<rootDir>/src/types/$1",
   },
   moduleFileExtensions: [
     "web.js",

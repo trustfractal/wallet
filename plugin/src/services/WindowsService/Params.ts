@@ -1,4 +1,4 @@
-import { IWindowParameters } from "@tstypes/services/WindowsService";
+import { IWindowParameters } from "@fractalwallet/types";
 
 export const POPUP: chrome.windows.CreateData = {
   focused: true,
