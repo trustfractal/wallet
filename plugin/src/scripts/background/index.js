@@ -1,8 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 
-import redux from "@redux";
-import appActions from "@redux/app";
-import requestsActions from "@redux/requests";
+import AppStore from "@redux/stores/application";
+import UserStore from "@redux/stores/user";
+
+import appActions from "@redux/stores/application/reducers/app";
+import requestsActions from "@redux/stores/user/reducers/requests";
+
 import { requestsWatcher } from "@redux/middleware/watcher";
 
 import RequestStatus from "@models/Request/RequestStatus";
@@ -12,9 +15,8 @@ import types from "@models/Connection/types";
 
 async function init() {
   const contentScript = new ContentScriptConnection();
-  const store = await redux.init();
-
-  store.dispatch(appActions.startup());
+  await AppStore.init();
+  AppStore.store.dispatch(appActions.startup());
 
   contentScript.on(
     types.CONFIRM_CREDENTIAL,
@@ -33,7 +35,7 @@ async function init() {
           type: RequestTypes.CONFIRM_CREDENTIAL,
         };
 
-        store.dispatch(requestsActions.addRequest(request));
+        UserStore.store.dispatch(requestsActions.addRequest(request));
 
         // create callbacks
         const onAccept = async (acceptedRequest) => {
@@ -49,7 +51,7 @@ async function init() {
         const onDecline = () => reject(RequestStatus.DECLINED);
 
         const onTimeout = () => {
-          store.dispatch(requestsActions.removeRequest(request.id));
+          UserStore.store.dispatch(requestsActions.removeRequest(request.id));
 
           reject(RequestStatus.TIMED_OUT);
         };
