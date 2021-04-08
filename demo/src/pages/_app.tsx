@@ -1,5 +1,9 @@
 import { createGlobalStyle } from "styled-components";
 
+import { EthereumProvider } from "../hooks/useEthereum";
+import { FractalProvider } from "../hooks/useFractal";
+import { ErrorProvider } from "../hooks/useGlobalError";
+
 const GlobalStyle = createGlobalStyle`
   :root {
     --c-black: #222;
@@ -43,8 +47,14 @@ const GlobalStyle = createGlobalStyle`
 
 const App = ({ Component, pageProps }) => (
   <>
-    <GlobalStyle />
-    <Component {...pageProps} />
+    <ErrorProvider>
+      <EthereumProvider>
+        <FractalProvider>
+          <GlobalStyle />
+          <Component {...pageProps} />
+        </FractalProvider>
+      </EthereumProvider>
+    </ErrorProvider>
   </>
 );
 
