@@ -5,6 +5,7 @@ import thunk from "redux-thunk";
 import watcher from "@redux/middleware/watcher";
 
 import StorageService from "@services/StorageService";
+import CryptoUtils from "@utils/CryptoUtils";
 
 import aliases from "@background/aliases";
 
@@ -25,10 +26,12 @@ import {
 } from "@redux/credentials";
 
 class Store {
-  constructor() {
-    this.name = "redux-state";
+  static instance = undefined;
 
-    this.instance = undefined;
+  static STATE_ALIAS = "redux-state";
+  static SALT_ALIAS = "redux-state-salt";
+
+  constructor() {
     this.storeInternal = undefined;
   }
 
@@ -37,15 +40,21 @@ class Store {
   }
 
   static getInstance() {
-    if (this.instance === undefined) {
-      this.instance = new Store();
+    if (Store.instance === undefined) {
+      Store.instance = new Store();
     }
 
-    return this.instance;
+    return Store.instance;
   }
 
-  async init() {
-    const persistedState = await this.deserializeAndRestore();
+  async init(password = "supersecretpassword") {
+    const storedState = await Store.getStoredState();
+    if (!storedState) {
+      await Store.createSalt();
+      await Store.createState(password);
+    }
+
+    const persistedState = await Store.decryptAndDeserialize(password);
 
     this.storeInternal = createStore(
       Store.getCombinedReducers(),
@@ -53,9 +62,13 @@ class Store {
       Store.getMiddleware(),
     );
 
-    this.storeInternal.subscribe(() =>
-      this.serializeAndStore(this.storeInternal.getState()),
-    );
+    const hashedPassword = await Store.getHashedPassword(password);
+    this.storeInternal.subscribe(() => {
+      Store.serializeEncryptAndStore(
+        this.storeInternal.getState(),
+        hashedPassword,
+      );
+    });
 
     wrapStore(this.storeInternal);
 
@@ -74,16 +87,64 @@ class Store {
     return applyMiddleware(watcher, alias(aliases), thunk);
   }
 
-  async deserializeAndRestore() {
-    const persistedState = await StorageService.getItem(this.name, "{}");
-
-    return await Store.deserialize(persistedState);
+  static async createSalt() {
+    const salt = CryptoUtils.getRandomBytes();
+    await Store.setStoredSalt(salt);
   }
 
-  async serializeAndStore(state) {
-    const serializedState = await Store.serialize(state);
+  static async createState(password) {
+    const hashedPassword = await Store.getHashedPassword(password);
+    const state = await Store.deserialize("{}");
+    await Store.serializeEncryptAndStore(state, hashedPassword);
+  }
 
-    await StorageService.setItem(this.name, serializedState);
+  static getStoredSalt() {
+    return StorageService.getItem(Store.SALT_ALIAS);
+  }
+
+  static setStoredSalt(alias) {
+    return StorageService.setItem(Store.SALT_ALIAS, alias);
+  }
+
+  static getStoredState() {
+    return StorageService.getItem(Store.STATE_ALIAS);
+  }
+
+  static setStoredState(state) {
+    return StorageService.setItem(Store.STATE_ALIAS, state);
+  }
+
+  static async getHashedPassword(password) {
+    const salt = await Store.getStoredSalt();
+    if (!salt) throw new Error("No password salt found");
+
+    return CryptoUtils.passwordHashing(password, salt);
+  }
+
+  static async decrypt(password) {
+    const localState = await Store.getStoredState();
+
+    const hashedPassword = await Store.getHashedPassword(password);
+    if (!localState) throw new Error("LocalState not found");
+
+    return CryptoUtils.decryption(localState, hashedPassword);
+  }
+
+  static async decryptAndDeserialize(password) {
+    const decryptedState = await Store.decrypt(password);
+    if (!decryptedState) throw new Error("Store could not be decrypted");
+    const persistedState = await Store.deserialize(decryptedState);
+
+    return persistedState;
+  }
+
+  static async serializeEncryptAndStore(state, hashedPassword) {
+    const serializedState = await Store.serialize(state);
+    const encryptedState = CryptoUtils.encryption(
+      serializedState,
+      hashedPassword,
+    );
+    await Store.setStoredState(JSON.stringify(encryptedState));
   }
 
   static async deserialize(state) {
@@ -104,6 +165,15 @@ class Store {
       credentials: await credentialsStore(state.credentials),
       requests: await requestsStore(state.requests),
     });
+  }
+
+  static async clearStorage() {
+    await Store.setStoredSalt();
+    await Store.setStoredState();
+  }
+
+  static reset() {
+    return Store.clearStorage();
   }
 }
 

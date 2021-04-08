@@ -298,6 +298,7 @@ module.exports = function (webpackEnv) {
         "@popup": path.resolve(__dirname, "../src/popup/"),
         "@redux": path.resolve(__dirname, "../src/redux/"),
         "@services": path.resolve(__dirname, "../src/services/"),
+        "@utils": path.resolve(__dirname, "../src/utils/"),
         ...(modules.webpackAliases || {}),
       },
       plugins: [
