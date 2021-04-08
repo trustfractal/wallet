@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { Store } from "webext-redux";
 import { Provider as ReduxProvider } from "react-redux";
@@ -6,19 +6,31 @@ import { Provider as ReduxProvider } from "react-redux";
 import App from "@popup/app";
 import Loading from "@popup/views/loading";
 
-const store = new Store();
+function getStore() {
+  return new Promise((resolve) => {
+    const interval = setInterval(async () => {
+      let store = new Store();
+      await store.ready();
+      clearInterval(interval);
+      resolve(store);
+    }, 100);
+  });
+}
 
 function Popup() {
+  const [store, setStore] = useState();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    async function setupStore() {
-      await store.ready();
-      setIsReady(true);
-    }
+    if (!isReady) {
+      async function setupStore() {
+        setStore(await getStore());
+        setIsReady(true);
+      }
 
-    setupStore();
-  });
+      setupStore();
+    }
+  }, [isReady]);
 
   if (!isReady) {
     return <Loading />;
