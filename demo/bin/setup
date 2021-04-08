@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+set -e
+source "./bin/functions"
+
+pp_info "setup" "Installing dependencies..."
+yarn install
+
+pp_success "setup" "You're good to go! Run bin/server to get the development server running."
