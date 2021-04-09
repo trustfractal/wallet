@@ -7,7 +7,6 @@
       "@models/*": ["src/models/*"],
       "@background/*": ["src/scripts/background/*"],
       "@contentScript/*": ["src/scripts/contentScript/*"],
-      "@options/*": ["src/options/*"],
       "@popup/*": ["src/popup/*"],
       "@redux/*": ["src/redux/*"],
       "@services/*": ["src/services/*"],

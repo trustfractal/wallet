@@ -154,12 +154,6 @@ module.exports = function (webpackEnv) {
             "?http://localhost:4000",
         paths.appIndexJs,
       ].filter(Boolean),
-      options: [
-        isEnvDevelopment &&
-          require.resolve("webpack-dev-server/client") +
-            "?http://localhost:4000",
-        paths.appOptionsJs,
-      ].filter(Boolean),
       background: [
         isEnvDevelopment &&
           require.resolve("webpack-dev-server/client") +
@@ -294,7 +288,6 @@ module.exports = function (webpackEnv) {
           __dirname,
           "../src/scripts/contentScript/",
         ),
-        "@options": path.resolve(__dirname, "../src/options/"),
         "@popup": path.resolve(__dirname, "../src/popup/"),
         "@redux": path.resolve(__dirname, "../src/redux/"),
         "@services": path.resolve(__dirname, "../src/services/"),
@@ -535,33 +528,6 @@ module.exports = function (webpackEnv) {
             template: paths.appPopupHtml,
             chunks: ["app"],
             filename: "popup.html",
-          },
-          isEnvProduction
-            ? {
-                minify: {
-                  removeComments: true,
-                  collapseWhitespace: true,
-                  removeRedundantAttributes: true,
-                  useShortDoctype: true,
-                  removeEmptyAttributes: true,
-                  removeStyleLinkTypeAttributes: true,
-                  keepClosingSlash: true,
-                  minifyJS: true,
-                  minifyCSS: true,
-                  minifyURLs: true,
-                },
-              }
-            : undefined,
-        ),
-      ),
-      new HtmlWebpackPlugin(
-        Object.assign(
-          {},
-          {
-            inject: true,
-            template: paths.appOptionsHtml,
-            chunks: ["options"],
-            filename: "options.html",
           },
           isEnvProduction
             ? {
