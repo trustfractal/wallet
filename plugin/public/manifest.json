@@ -31,7 +31,6 @@
     "48": "img/icon-48.png",
     "128": "img/icon-128.png"
   },
-  "options_page": "options.html",
   "permissions": [
     "activeTab",
     "contextMenus",
