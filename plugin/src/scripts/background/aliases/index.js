@@ -1,10 +1,12 @@
-import CredentialsAliases from "./Credentials";
-import StartupAliases from "./Startup";
-import RequestsAliases from "./Request";
+import AppAliases from "./AppAliases";
+import AuthAliases from "./AuthAliases";
+import CredentialsAliases from "./CredentialsAliases";
+import RequestsAliases from "./RequestAliases";
 
 const aliases = {
+  ...AppAliases,
+  ...AuthAliases,
   ...CredentialsAliases,
-  ...StartupAliases,
   ...RequestsAliases,
 };
 

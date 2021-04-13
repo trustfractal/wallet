@@ -1,6 +1,6 @@
 import Watcher from ".";
 
-import { requestsTypes } from "@redux/requests";
+import { requestsTypes } from "@redux/stores/user/reducers/requests";
 
 const REQUESTS_TIME_OUT = 30 * 1000;
 
