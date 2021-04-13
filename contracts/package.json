@@ -23,9 +23,11 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
+    "@nomiclabs/hardhat-web3": "^2.0.0",
     "@openzeppelin/contracts": "^4.0.0",
     "@types/chai-as-promised": "^7.1.3",
     "@types/datejs": "^0.0.31",
-    "chai-as-promised": "^7.1.1"
+    "chai-as-promised": "^7.1.1",
+    "web3": "^1.3.5"
   }
 }
