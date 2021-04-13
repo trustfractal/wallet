@@ -4,7 +4,7 @@ pragma solidity ^0.8.3;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract FakeFractalToken is ERC20 {
+contract FractalToken is ERC20 {
   constructor(address targetOwner) ERC20("Fractal Protocol Token", "FCL") {
     _mint(targetOwner, 465000000000000000000000000);
   }

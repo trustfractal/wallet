@@ -3,8 +3,8 @@ import { ethers, waffle } from "hardhat";
 
 const { deployContract: deploy } = waffle;
 
-import { FakeFractalToken as FCL } from "../../typechain/FakeFractalToken";
-import FCLArtifact from "../../artifacts/contracts/FakeFractalToken.sol/FakeFractalToken.json";
+import { FractalToken as FCL } from "../../../typechain/FractalToken";
+import FCLArtifact from "../../../artifacts/contracts/Test/FractalToken.sol/FractalToken.json";
 
 describe("FakeFractalToken", () => {
   it("Can be deployed", async () => {

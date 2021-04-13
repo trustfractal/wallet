@@ -7,12 +7,12 @@ const { expect } = chai;
 const { deployContract: deploy } = waffle;
 
 let signers: any;
-let owner: nay;
+let owner: any;
 let alice: any;
 let infra: any;
 
-import { StakingInfra } from "../../typechain/StakingInfra";
-import StakingInfraArtifact from "../../artifacts/contracts/StakingInfra.sol/StakingInfra.json";
+import { StakingInfra } from "../../../typechain/StakingInfra";
+import StakingInfraArtifact from "../../../artifacts/contracts/Staking/Infra.sol/StakingInfra.json";
 
 describe("StakingInfra", () => {
   before(async () => {

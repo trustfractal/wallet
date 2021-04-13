@@ -5,28 +5,27 @@ pragma solidity ^0.8.3;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "hardhat/console.sol";
 
-import "./StakingInfra.sol";
+import "./Staking/Infra.sol";
+import "./Staking/LinearRewardCalculator.sol";
 
-contract Staking is StakingInfra {
+contract Staking is StakingInfra, LinearRewardCalculator {
   ERC20 public erc20;
   uint256 public startDate;
   uint256 public endDate;
   uint256 public totalMaxAmount;
   uint256 public individualMinimumAmount;
-  uint256 public APR;
   uint256 public lockedTokens = 0;
 
   mapping(address => Subscription) public subscriptions;
 
-  uint256 constant private year = 365 days;
+  // TODO events
 
   struct Subscription {
     address subscriberAddress;
     uint256 startDate;
     uint256 stakedAmount;
-    uint256 APR; // based on a curve and his subscription timestamp
     uint256 maxReward;
-    uint256 withdrawnAmount;
+    uint256 withdrawAmount;
     uint256 withdrawDate;
   }
 
@@ -37,16 +36,14 @@ contract Staking is StakingInfra {
     uint256 _totalMaxAmount,
     uint256 _individualMinimumAmount,
     uint256 _APR
-  ) {
+  ) LinearRewardCalculator(_APR) {
     require(block.timestamp <= _startDate, "Staking: start date must be in the future");
     require(_startDate < _endDate, "Staking: end date must be after start date");
     require(_totalMaxAmount > 0, "Staking: invalid max amount");
-    require(_individualMinimumAmount> 0, "Staking: invalid individual min amount");
-    require(_APR > 0, "Staking: invalid APR");
+    require(_individualMinimumAmount > 0, "Staking: invalid individual min amount");
     require(
       _totalMaxAmount > _individualMinimumAmount,
       "Staking: max amount needs to be greater than individual minimum"
-
     );
 
     erc20 = ERC20(_tokenAddress);
@@ -56,53 +53,64 @@ contract Staking is StakingInfra {
     endDate = _endDate;
     totalMaxAmount = _totalMaxAmount;
     individualMinimumAmount = _individualMinimumAmount;
-    APR = _APR;
-  }
-
-  function getAPRAmount() public view returns (uint256) {
-    // TODO
-    return 0;
   }
 
   function stake(uint256 _amount) external whenNotPaused {
     uint256 time = block.timestamp;
+    address subscriber = msg.sender;
 
-    require(_amount > 0);
+    require(_amount > 0, "Staking: staked amount needs to be greather than 0");
     require(time >= startDate, "Staking: staking period not started");
     require(time < endDate, "Staking: staking period finished");
-    require(subscriptions[msg.sender].startDate == 0, "Staking: this account has already staked");
+    require(subscriptions[subscriber].startDate == 0, "Staking: this account has already staked");
+
+    // transfer tokens from subscriber to the contract
+    require(erc20.transferFrom(subscriber, address(this), _amount), "Staking: Could not transfer tokens from subscriber");
 
     uint256 maxReward = calculateReward(time, endDate, _amount);
+    lockedTokens += _amount + maxReward;
 
-    subscriptions[msg.sender] = Subscription(
-      msg.sender,
+    subscriptions[subscriber] = Subscription(
+      subscriber,
       time,
       _amount,
-      APR,
       maxReward,
       0,
       0
     );
-
-    // TODO
   }
 
-  function withdraw(uint256 _amount) external whenNotPaused {
-    // TODO
+  function withdraw() external whenNotPaused {
+    address subscriber = msg.sender;
+    uint256 time = block.timestamp;
+
+    require(subscriptions[subscriber].startDate > 0, "Staking: no subscription found for this address");
+    require(subscriptions[subscriber].withdrawDate == 0, "Staking: subscription already withdrawn");
+
+    Subscription memory sub = subscriptions[subscriber];
+
+
+    uint256 reward = calculateReward(sub.startDate, time, sub.stakedAmount);
+    uint256 total = sub.stakedAmount + reward;
+
+
+    // transfer tokens back to subscriber
+    require(erc20.transfer(subscriber, total), "Staking: Transfer has failed");
+
+    // update subscription state
+    sub.withdrawAmount = sub.stakedAmount + reward;
+    sub.withdrawDate = time;
+    subscriptions[subscriber] = sub;
+
+    // update locked amount
+    lockedTokens = lockedTokens - sub.stakedAmount + sub.maxReward;
   }
 
-  function getStake(address _subscriber) external view returns (bool) {
-    // TODO
-    return subscriptions[msg.sender].startDate != 0;
-  }
-
-  function calculateReward(
-    uint256 _startDate,
-    uint256 _endDate,
-    uint256 _amount
-  ) public view returns(uint256) {
-    uint256 duration = _endDate - _startDate;
-
-    return (duration * APR * _amount) / year;
+  function getStake(address _subscriber) external view returns (uint256) {
+    if (subscriptions[_subscriber].stakedAmount > 0 && subscriptions[_subscriber].withdrawDate == 0) {
+      return subscriptions[_subscriber].stakedAmount;
+    } else {
+      return 0;
+    }
   }
 }

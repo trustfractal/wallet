@@ -2,8 +2,8 @@ import chai from "chai";
 import { ethers, waffle } from "hardhat";
 import { solidity } from "ethereum-waffle";
 
-import { Verifier } from "../../typechain/Verifier";
-import VerifierArtifact from "../../artifacts/contracts/Verifier.sol/Verifier.json";
+import { Verifier } from "../../../typechain/Verifier";
+import VerifierArtifact from "../../../artifacts/contracts/ClaimsRegistry/Verifier.sol/Verifier.json";
 
 chai.use(solidity);
 const { keccak256, toUtf8Bytes, arrayify, splitSignature } = ethers.utils;

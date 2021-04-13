@@ -4,7 +4,7 @@ pragma solidity ^0.8.3;
 
 import "hardhat/console.sol";
 
-import "./Verifier.sol";
+import "./ClaimsRegistry/Verifier.sol";
 
 contract ClaimsRegistry is Verifier {
   mapping(bytes32 => ClaimSignature) public registry;
@@ -15,6 +15,8 @@ contract ClaimsRegistry is Verifier {
     bytes32 s;
     // TODO do we want validFrom/validTo?
   }
+
+  // TODO events
 
   function setClaimWithSignature(
     address issuer,
@@ -30,7 +32,6 @@ contract ClaimsRegistry is Verifier {
 
     bytes32 encryptedBytes = keccak256(abi.encodePacked(issuer, subject, key));
 
-    require(registry[encryptedBytes].r == 0x0, "ClaimsRegistry: Claim already exists");
     require(verifyWithPrefix(hash, v, r, s) == issuer, "ClaimsRegistry: Claim signature does not match issuer");
 
     ClaimSignature memory claim = ClaimSignature(v, r, s);
