@@ -1,8 +1,11 @@
-import type { IClaimSchema, IClaimType } from "../types";
+import type { IClaimPseudoSchema, IClaimType } from "@src/types";
 
-import Crypto from "../Crypto";
+import Crypto from "@src/Crypto";
 
-export class ClaimType implements IClaimType {
+// TODO: what to do about schema versioning?
+const DEFAULT_SCHEMA_VERSION = "http://kilt-protocol.org/draft-01/ctype#";
+
+export default class ClaimType implements IClaimType {
   public hash: IClaimType["hash"];
   public owner: IClaimType["owner"];
   public schema: IClaimType["schema"];
@@ -13,7 +16,10 @@ export class ClaimType implements IClaimType {
     this.schema = schema;
   }
 
-  public static fromSchema(schema: IClaimSchema, owner?: IClaimType["owner"]) {
+  public static fromSchema(
+    schema: IClaimPseudoSchema,
+    owner?: IClaimType["owner"]
+  ) {
     const hash = Crypto.hash(schema);
 
     return new ClaimType({
@@ -22,7 +28,20 @@ export class ClaimType implements IClaimType {
       schema: {
         ...schema,
         $id: `fractal:ctype:${hash}`,
+        type: "object",
       },
     });
+  }
+
+  public static buildSchema(
+    title: string,
+    properties: Record<string, object>,
+    schema?: string
+  ): IClaimPseudoSchema {
+    return {
+      $schema: schema || DEFAULT_SCHEMA_VERSION,
+      title,
+      properties,
+    };
   }
 }
