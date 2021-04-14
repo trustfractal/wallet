@@ -1,30 +1,33 @@
-import { isArray, isPlainObject } from "../utils";
+import { isArray, isPlainObject } from "./index";
+
+const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 
 export const deepSort = (term: any): any => {
   if (isArray(term)) return deepSortArray(term);
-  if (isPlainObject(term)) return sortObject(term);
+  if (isPlainObject(term)) return deepSortObject(term);
   return term;
 };
 
-export const sortObject = (obj: Record<string, any>): Record<string, any> =>
+export const deepSortObject = (obj: Record<string, any>): Record<string, any> =>
   Object.keys(obj)
     .sort((a, b) => {
       const lowA = a.toLowerCase();
       const lowB = b.toLowerCase();
 
-      return lowA < lowB ? -1 : lowA > lowB ? 1 : 0;
+      return compare(lowA, lowB);
     })
     .reduce(
-      (memo: Record<string, any>, elem: string) =>
-        (memo[elem] = obj[elem] && memo),
+      (memo: Record<string, any>, elem: string) => ({
+        ...memo,
+        [elem]: deepSort(obj[elem]),
+      }),
       {}
     );
 
-// TODO: should I recursively call deepSort here?
 export const deepSortArray = (arr: Array<any>): Array<any> =>
   arr.map(deepSort).sort((a, b) => {
     const strA = JSON.stringify(a);
     const strB = JSON.stringify(b);
 
-    return strA < strB ? -1 : strA > strB ? 1 : 0;
+    return compare(strA, strB);
   });
