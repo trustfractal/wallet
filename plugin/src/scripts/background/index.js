@@ -64,7 +64,6 @@ async function init() {
             onTimeout,
           );
         } catch (error) {
-          console.log(error);
           console.error(error);
           reject(error);
         }

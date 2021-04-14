@@ -32,6 +32,7 @@ export default class ProxyConnection {
       return new Promise((resolve, reject) => {
         const invokation = new Invokation(method, args);
 
+        // TODO: Remove debug console.log
         console.log("proxy: inpage -> background", invokation);
 
         // forward message to background
@@ -54,6 +55,7 @@ export default class ProxyConnection {
       return new Promise((resolve, reject) => {
         const invokation = new Invokation(method, args);
 
+        // TODO: Remove debug console.log
         console.log("proxy: background -> inpage", invokation);
 
         // forward message to inpage

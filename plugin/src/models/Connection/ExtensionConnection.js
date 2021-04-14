@@ -17,6 +17,7 @@ export default class ExtensionConnection {
   }
 
   _handleMessage({ type, message }) {
+    // TODO: Remove debug console.log
     console.log("content-script -> inpage", { type, message });
 
     if (type === Response.NAME) {

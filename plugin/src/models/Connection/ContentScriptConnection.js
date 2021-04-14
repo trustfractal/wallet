@@ -33,6 +33,7 @@ export default class ContentScriptConnection {
   }
 
   _handleMessage(port, { type, message }) {
+    // TODO: Remove debug console.log
     console.log("content-script -> background", { type, message });
 
     if (type === Response.NAME) {

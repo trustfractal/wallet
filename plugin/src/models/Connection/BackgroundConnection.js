@@ -17,6 +17,7 @@ export default class BackgroundConnection {
   }
 
   _handleMessage({ type, message }) {
+    // TODO: Remove debug console.log
     console.log("background -> content-script", { type, message });
 
     if (type === Response.NAME) {

@@ -17,6 +17,7 @@ export default class InpageConnection {
   }
 
   _handleMessage({ type, message }) {
+    // TODO: Remove debug console.log
     console.log("inpage -> content-script", { type, message });
 
     if (type === Response.NAME) {
