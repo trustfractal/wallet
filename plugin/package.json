@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@kiltprotocol/utils": "^0.20.0",
+    "@polkadot/util": "^6.1.1",
+    "@polkadot/util-crypto": "^6.1.1",
     "bfj": "^7.0.2",
     "camelcase": "^6.1.0",
     "css-loader": "4.3.0",
