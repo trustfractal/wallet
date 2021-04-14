@@ -8,7 +8,7 @@ export default class ProxyConnection {
 
   // forwards messages to the inpage script
   forwardInpage(invokation) {
-    this.postInpageMessage(Invokation.name, invokation.serialize());
+    this.postInpageMessage(Invokation.NAME, invokation.serialize());
   }
 
   // post a message to the inpage script via stream
@@ -18,7 +18,7 @@ export default class ProxyConnection {
 
   // forwards messages to the background script
   forwardBackground(invokation) {
-    this.postBackgroundMessage(Invokation.name, invokation.serialize());
+    this.postBackgroundMessage(Invokation.NAME, invokation.serialize());
   }
 
   // post a message to the background script via chrome ports

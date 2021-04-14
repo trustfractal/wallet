@@ -19,9 +19,9 @@ export default class InpageConnection {
   _handleMessage({ type, message }) {
     console.log("inpage -> content-script", { type, message });
 
-    if (type === Response.name) {
+    if (type === Response.NAME) {
       this._handleResponse(message);
-    } else if (type === Invokation.name) {
+    } else if (type === Invokation.NAME) {
       this._handleInvokation(message);
     } else {
       throw new Error(`Unexpected message ${message} of type ${type}`);
@@ -53,11 +53,11 @@ export default class InpageConnection {
     callback(...args)
       .then((value) => {
         const response = new Response(method, value, id);
-        this.postMessage(Response.name, response.serialize());
+        this.postMessage(Response.NAME, response.serialize());
       })
       .catch((error) => {
         const response = new Response(method, error, id, false);
-        this.postMessage(Response.name, response.serialize());
+        this.postMessage(Response.NAME, response.serialize());
       });
   }
 
@@ -79,7 +79,7 @@ export default class InpageConnection {
 
       this.responseCallbacks[id] = { resolve, reject };
 
-      this.postMessage(Invokation.name, message.serialize());
+      this.postMessage(Invokation.NAME, message.serialize());
     });
   }
 
