@@ -1,3 +1,5 @@
+export * from "./sort";
+
 export const isArray = (term: any): boolean => Array.isArray(term);
 
 export const isPlainObject = (term: any): boolean =>
