@@ -46,10 +46,27 @@ contract CurveRewardCalculator {
   }
 
   function calculateReward(uint256 _start, uint256 _end) public view returns (uint256) {
-    return curvePeriodReward(_start, _end) + linearPeriodReward(_start, _end);
+    require(_start >= startDate);
+    require(_end > _start);
+    require(_end <= endDate);
+
+    (uint256 curveStart, curveEnd) = truncateToCurvePeriod(_start, _end);
+    (uint256 linearStart, linearEnd) = truncateToLinearPeriod(_start, _end);
+
+    return curvePeriodReward(curveStart, curveEnd) + linearPeriodReward(linearStart, linearEnd);
   }
 
-  function curvePeriodReward(uint256 _start, uint256 _end) public view returns (uint256) {
+  function truncateToCurvePeriod(uint256 _start, uint256 _end) view returns (uint256, uint256) {
+    uint256 newStart = _start < startDate ? startDate : _start;
+    uint256 newEnd = _end > linearStartDate ? linearStartDate : _end;
+  }
+
+  function truncateToLinearPeriod(uint256 _start, uint256 _end) view returns (uint256, uint256) {
+    uint256 newStart = _start < linearStartDate ? linearStartDate : _start;
+    uint256 newEnd = _end > endDate ? endDate : _end;
+  }
+
+  function curvePeriodReward(uint256 _start, uint256 _end) view returns (uint256) {
     // stake has started after curve period ended
     if (_start >= linearStartDate) {
       return 0;
@@ -74,7 +91,7 @@ contract CurveRewardCalculator {
     return minCurveAPR + (maxCurveAPR - minCurveAPR) * ratio;
   }
 
-  function linearPeriodReward(uint256 _start, uint256 _end) public view returns (uint256) {
+  function linearPeriodReward(uint256 _start, uint256 _end) view returns (uint256) {
     // stake has ended before linear period started
     if (_end <= linearStartDate) {
       return 0;
@@ -82,7 +99,7 @@ contract CurveRewardCalculator {
 
     // grab only range inside linear period
     uint256 start = _start < linearStartDate ? linearStartDate : _start;
-    uint256 end = _end;
+    uint256 end = _end > endDate ? endDate : _end;
 
     uint256 maxDuration = endDate - linearStartDate;
     uint256 actualDuration = end - start;
