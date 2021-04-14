@@ -1,6 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
 
+import ResponseTypes from "@models/Message/types";
+
 export default class Invokation {
+  static NAME = ResponseTypes.INVOKATION;
+
   constructor(method, args = [], id = null) {
     this.id = id || uuidv4();
     this.method = method;

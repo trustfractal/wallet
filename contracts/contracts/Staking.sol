@@ -65,7 +65,8 @@ contract Staking is StakingInfra, LinearRewardCalculator {
     require(subscriptions[subscriber].startDate == 0, "Staking: this account has already staked");
 
     // transfer tokens from subscriber to the contract
-    require(erc20.transferFrom(subscriber, address(this), _amount), "Staking: Could not transfer tokens from subscriber");
+    require(erc20.transferFrom(subscriber, address(this), _amount),
+      "Staking: Could not transfer tokens from subscriber");
 
     uint256 maxReward = calculateReward(time, endDate, _amount);
     lockedTokens += _amount + maxReward;

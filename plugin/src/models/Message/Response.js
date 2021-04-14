@@ -1,6 +1,12 @@
+import { v4 as uuidv4 } from "uuid";
+
+import ResponseTypes from "@models/Message/types";
+
 export default class Response {
-  constructor(method, value, id, success = true) {
-    this.id = id || Date.now();
+  static NAME = ResponseTypes.RESPONSE;
+
+  constructor(method, value, id = null, success = true) {
+    this.id = id || uuidv4();
     this.method = method;
     this.value = value;
     this.success = success;

@@ -22,46 +22,51 @@ async function init() {
     types.CONFIRM_CREDENTIAL,
     ({ port, payload: [content, target] }) =>
       new Promise((resolve, reject) => {
-        const request = {
-          id: uuidv4(),
-          requester: target.address,
-          content: {
-            attester: content.attestation.owner,
-            claimer: content.request.claim.owner,
-            properties: content.request.claim.contents,
-            ctype: content.request.claim.cTypeHash,
-            claim: content,
-          },
-          type: RequestTypes.CONFIRM_CREDENTIAL,
-        };
+        try {
+          const request = {
+            id: uuidv4(),
+            requester: target.address,
+            content: {
+              attester: content.attestation.owner,
+              claimer: content.request.claim.owner,
+              properties: content.request.claim.contents,
+              ctype: content.request.claim.cTypeHash,
+              claim: content,
+            },
+            type: RequestTypes.CONFIRM_CREDENTIAL,
+          };
 
-        UserStore.store.dispatch(requestsActions.addRequest(request));
+          UserStore.store.dispatch(requestsActions.addRequest(request));
 
-        // create callbacks
-        const onAccept = async (acceptedRequest) => {
-          // commit credential to the blockchain
-          const transactionHash = await contentScript.invoke(
-            port,
-            types.COMMIT_CREDENTIAL,
-            acceptedRequest.content,
+          // create callbacks
+          const onAccept = async (acceptedRequest) => {
+            // commit credential to the blockchain
+            const transactionHash = await contentScript.invoke(
+              port,
+              types.COMMIT_CREDENTIAL,
+              acceptedRequest.content,
+            );
+
+            resolve(transactionHash);
+          };
+          const onDecline = () => reject(RequestStatus.DECLINED);
+
+          const onTimeout = () => {
+            UserStore.store.dispatch(requestsActions.removeRequest(request.id));
+
+            reject(RequestStatus.TIMED_OUT);
+          };
+
+          requestsWatcher.listenForRequest(
+            request.id,
+            onAccept,
+            onDecline,
+            onTimeout,
           );
-
-          resolve(transactionHash);
-        };
-        const onDecline = () => reject(RequestStatus.DECLINED);
-
-        const onTimeout = () => {
-          UserStore.store.dispatch(requestsActions.removeRequest(request.id));
-
-          reject(RequestStatus.TIMED_OUT);
-        };
-
-        requestsWatcher.listenForRequest(
-          request.id,
-          onAccept,
-          onDecline,
-          onTimeout,
-        );
+        } catch (error) {
+          console.error(error);
+          reject(error);
+        }
       }),
   );
 }

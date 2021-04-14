@@ -5,24 +5,72 @@ import Response from "@models/Message/Response";
 
 export default class ExtensionConnection {
   constructor(params) {
-    this.stream = new LocalMessageDuplexStream(params);
-    this.callbacks = {};
+    this.extension = new LocalMessageDuplexStream(params);
+    this.responseCallbacks = {};
+    this.invokationCallbacks = {};
 
     this._setupEvents();
   }
 
   _setupEvents() {
-    this.stream.on("data", this._handleData.bind(this));
+    this.extension.on("data", this._handleMessage.bind(this));
   }
 
-  _handleData(data) {
-    const { value, id, success } = Response.parse(data);
-    const callback = this.callbacks[id];
+  _handleMessage({ type, message }) {
+    // TODO: Remove debug console.log
+    console.log("content-script -> inpage", { type, message });
 
-    if (!callback) return;
+    if (type === Response.NAME) {
+      this._handleResponse(message);
+    } else if (type === Invokation.NAME) {
+      this._handleInvokation(message);
+    } else {
+      throw new Error(`Unexpected message ${message} of type ${type}`);
+    }
+  }
+
+  postMessage(type, message) {
+    this.extension.write({ type, message });
+  }
+
+  _handleResponse(msg) {
+    const { value, id, success } = Response.parse(msg);
+    const callback = this.responseCallbacks[id];
+
+    if (!callback) throw new Error(`Unexpected response message ${msg}`);
 
     const { resolve, reject } = callback;
     success ? resolve(value) : reject(value);
+
+    delete this.responseCallbacks[id];
+  }
+
+  _handleInvokation(msg) {
+    const { method, args, id } = Invokation.parse(msg);
+    const callback = this.invokationCallbacks[method];
+
+    if (!callback) throw new Error(`Unexpected invokation method ${method}`);
+
+    callback(...args)
+      .then((value) => {
+        const response = new Response(method, value, id);
+        this.postMessage(Response.NAME, response.serialize());
+      })
+      .catch((error) => {
+        const response = new Response(method, error, id, false);
+        this.postMessage(Response.NAME, response.serialize());
+      });
+  }
+
+  on(method, callback) {
+    let promiseCallback = callback;
+
+    if (!callback.then) {
+      promiseCallback = async (...args) => callback(...args);
+    }
+
+    this.invokationCallbacks[method] = promiseCallback;
+    return this;
   }
 
   invoke(method, ...args) {
@@ -30,9 +78,15 @@ export default class ExtensionConnection {
       const message = new Invokation(method, args);
       const { id } = message;
 
-      this.callbacks[id] = { message, resolve, reject };
+      this.responseCallbacks[id] = { message, resolve, reject };
 
-      this.stream.write(message.serialize());
+      this.postMessage(Invokation.NAME, message.serialize());
+    });
+  }
+
+  listen(id) {
+    return new Promise((resolve, reject) => {
+      this.responseCallbacks[id] = { resolve, reject };
     });
   }
 }

@@ -4,63 +4,89 @@ import Invokation from "@models/Message/Invokation";
 import Response from "@models/Message/Response";
 
 export default class InpageConnection {
-  constructor(params, background) {
-    this.stream = new LocalMessageDuplexStream(params);
-    this.proxiedMethods = new Set();
-    this.callbacks = {};
-    this.background = background;
+  constructor(inpageParams) {
+    this.inpage = new LocalMessageDuplexStream(inpageParams);
+    this.responseCallbacks = {};
+    this.invokationCallbacks = {};
 
     this._setupEvents();
   }
 
   _setupEvents() {
-    this.background.listen(this._handleMessage.bind(this));
-    this.stream.on("data", this._handleData.bind(this));
+    this.inpage.on("data", this._handleMessage.bind(this));
   }
 
-  // calls a saved callback and sends a response
-  _call(invokation) {
-    const { method, args, id } = invokation;
-    const callback = this.callbacks[method];
+  _handleMessage({ type, message }) {
+    // TODO: Remove debug console.log
+    console.log("inpage -> content-script", { type, message });
 
-    if (!callback) throw new Error(`Undefined method ${method}`);
-
-    const value = callback(...args);
-
-    const response = new Response(method, value, id);
-    this.stream.write(response.serialize());
+    if (type === Response.NAME) {
+      this._handleResponse(message);
+    } else if (type === Invokation.NAME) {
+      this._handleInvokation(message);
+    } else {
+      throw new Error(`Unexpected message ${message} of type ${type}`);
+    }
   }
 
-  // forwards messages to the background script
-  _forward(invokation) {
-    const { id } = invokation;
-
-    this.background.listen(id, this._handleMessage.bind(this));
-    this.background.invoke(invokation);
+  postMessage(type, message) {
+    this.inpage.write({ type, message });
   }
 
-  // handles data from the inpage script
-  _handleData(data) {
-    const invokation = Invokation.parse(data);
-    const { method } = invokation;
+  _handleResponse(msg) {
+    const { value, id, success } = Response.parse(msg);
+    const callback = this.responseCallbacks[id];
 
-    this.proxiedMethods.has(method)
-      ? this._forward(invokation)
-      : this._call(invokation);
+    if (!callback) throw new Error(`Unexpected response message ${msg}`);
+
+    const { resolve, reject } = callback;
+    success ? resolve(value) : reject(value);
+
+    delete this.responseCallbacks[id];
   }
 
-  // handles messages from the background script
-  _handleMessage(msg) {
-    this.stream.write(msg.serialize());
-  }
+  _handleInvokation(msg) {
+    const { method, args, id } = Invokation.parse(msg);
+    const callback = this.invokationCallbacks[method];
 
-  proxy(method) {
-    this.proxiedMethods.add(method);
-    return this;
+    if (!callback) throw new Error(`Unexpected invokation method ${method}`);
+
+    callback(...args)
+      .then((value) => {
+        const response = new Response(method, value, id);
+        this.postMessage(Response.NAME, response.serialize());
+      })
+      .catch((error) => {
+        const response = new Response(method, error, id, false);
+        this.postMessage(Response.NAME, response.serialize());
+      });
   }
 
   on(method, callback) {
-    this.callbacks[method] = callback;
+    let promiseCallback = callback;
+
+    if (!callback.then) {
+      promiseCallback = async (...args) => callback(...args);
+    }
+
+    this.invokationCallbacks[method] = promiseCallback;
     return this;
+  }
+
+  invoke(method, ...args) {
+    return new Promise((resolve, reject) => {
+      const message = new Invokation(method, args);
+      const { id } = message;
+
+      this.responseCallbacks[id] = { resolve, reject };
+
+      this.postMessage(Invokation.NAME, message.serialize());
+    });
+  }
+
+  listen(id) {
+    return new Promise((resolve, reject) => {
+      this.responseCallbacks[id] = { resolve, reject };
+    });
   }
 }

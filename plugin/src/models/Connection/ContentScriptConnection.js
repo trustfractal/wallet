@@ -33,16 +33,19 @@ export default class ContentScriptConnection {
   }
 
   _handleMessage(port, { type, message }) {
-    if (type === Response.name) {
+    // TODO: Remove debug console.log
+    console.log("content-script -> background", { type, message });
+
+    if (type === Response.NAME) {
       this._handleResponse(message);
-    } else if (type === Invokation.name) {
+    } else if (type === Invokation.NAME) {
       this._handleInvokation(port, message);
     } else {
       throw new Error(`Unexpected message ${message} of type ${type}`);
     }
   }
 
-  _postMessage(id, type, message) {
+  postMessage(id, type, message) {
     if (this.ports[id]) {
       this.ports[id].postMessage({ type, message });
     }
@@ -61,7 +64,7 @@ export default class ContentScriptConnection {
   }
 
   _handleInvokation(port, msg) {
-    const { method, args, id } = msg;
+    const { method, args, id } = Invokation.parse(msg);
     const callback = this.invokationCallbacks[method];
 
     if (!callback) throw new Error(`Unexpected invokation method ${method}`);
@@ -69,11 +72,11 @@ export default class ContentScriptConnection {
     callback({ port, payload: args })
       .then((value) => {
         const response = new Response(method, value, id);
-        this._postMessage(port, Response.name, response.serialize());
+        this.postMessage(port, Response.NAME, response.serialize());
       })
       .catch((error) => {
         const response = new Response(method, error, id, false);
-        this._postMessage(port, Response.name, response.serialize());
+        this.postMessage(port, Response.NAME, response.serialize());
       });
   }
 
@@ -95,7 +98,13 @@ export default class ContentScriptConnection {
 
       this.responseCallbacks[id] = { message, resolve, reject };
 
-      this._postMessage(port, Invokation.name, message.serialize());
+      this.postMessage(port, Invokation.NAME, message.serialize());
+    });
+  }
+
+  listen(id) {
+    return new Promise((resolve, reject) => {
+      this.responseCallbacks[id] = { resolve, reject };
     });
   }
 }
