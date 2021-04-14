@@ -33,6 +33,8 @@ export default class ContentScriptConnection {
   }
 
   _handleMessage(port, { type, message }) {
+    console.log("content-script -> background", { type, message });
+
     if (type === Response.name) {
       this._handleResponse(message);
     } else if (type === Invokation.name) {
@@ -61,7 +63,7 @@ export default class ContentScriptConnection {
   }
 
   _handleInvokation(port, msg) {
-    const { method, args, id } = msg;
+    const { method, args, id } = Invokation.parse(msg);
     const callback = this.invokationCallbacks[method];
 
     if (!callback) throw new Error(`Unexpected invokation method ${method}`);
