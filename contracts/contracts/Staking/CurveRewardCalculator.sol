@@ -10,7 +10,7 @@ pragma solidity ^0.8.3;
 
 import "hardhat/console.sol";
 
-contract DownwardCurveRewardCalculator {
+contract CurveRewardCalculator {
   uint256 public startDate;       // beginning of curve period
   uint256 public linearStartDate; // end of curve period / beginning of linear period
   uint256 public endDate;         // end of linear period (and entire staking)
@@ -19,6 +19,7 @@ contract DownwardCurveRewardCalculator {
   uint256 public minCurveAPR;    // end of the curve (and beginning of linear period) corresponds to this APR
   uint256 public finalLinearAPR; // lienar period descends towards this APR
 
+  uint256 constant private year = 365 days;
   int256 private constant mul = 100000000;
 
   constructor(
@@ -29,15 +30,15 @@ contract DownwardCurveRewardCalculator {
     uint256 _minCurveAPR,
     uint256 _finalLinearAPR
   ) {
-    require(block.timestamp <= _startDate, "DownwardCurveRewardCalculator: start date must be in the future");
-    require(_startDate < _linearStartDate, "DownwardCurveRewardCalculator: linear start date must be after curve start date");
-    require(_linearStartDate <= _endDate, "DownwardCurveRewardCalculator: end date must be after or at linear start date");
+    require(block.timestamp <= _startDate, "CurveRewardCalculator: start date must be in the future");
+    require(_startDate < _linearStartDate, "CurveRewardCalculator: linear start date must be after curve start date");
+    require(_linearStartDate <= _endDate, "CurveRewardCalculator: end date must be after or at linear start date");
 
-    require(_maxCurveAPR > _minCurveAPR, "DownwardCurveRewardCalculator: maxCurveAPR needs to be greater than minCurveAPR");
-    require(_minCurveAPR > _finalLinearAPR, "DownwardCurveRewardCalculator: minCurveAPR needs to be greater than finalLinearAPR");
+    require(_maxCurveAPR > _minCurveAPR, "CurveRewardCalculator: maxCurveAPR needs to be greater than minCurveAPR");
+    require(_minCurveAPR > _finalLinearAPR, "CurveRewardCalculator: minCurveAPR needs to be greater than finalLinearAPR");
 
     startDate = _startDate;
-    linearStartDate;
+    linearStartDate = _linearStartDate;
     endDate = _endDate;
     maxCurveAPR = _maxCurveAPR;
     minCurveAPR = _minCurveAPR;
@@ -54,9 +55,23 @@ contract DownwardCurveRewardCalculator {
       return 0;
     }
 
+    // TODO
+    return 0;
     // grab only range inside curve period
     uint256 start = _start;
     uint256 end = _end > linearStartDate ? linearStartDate : _end;
+
+    uint256 maxDuration = linearStartDate - startDate;
+    uint256 startPercent = (start - startDate) * 100 / maxDuration;
+    uint256 endPercent = (end - startDate) * 100 / maxDuration;
+
+    int256 maxArea = integralAtPoint(100) - integralAtPoint(0);
+    int256 actualArea = integralAtPoint(endPercent) - integralAtPoint(startPercent);
+
+    uint256 ratio = uint256(actualArea * 100 / maxArea);
+    console.log("ratio: %d", ratio);
+
+    return minCurveAPR + (maxCurveAPR - minCurveAPR) * ratio;
   }
 
   function linearPeriodReward(uint256 _start, uint256 _end) public view returns (uint256) {
@@ -69,21 +84,10 @@ contract DownwardCurveRewardCalculator {
     uint256 start = _start < linearStartDate ? linearStartDate : _start;
     uint256 end = _end;
 
+    uint256 maxDuration = endDate - linearStartDate;
+    uint256 actualDuration = end - start;
+
     return 0;
-  }
-
-  function calculateRewardPercentage(
-    uint256 _percentStart,
-    uint256 _percentEnd
-  ) public view returns(uint256) {
-    // total max area of the integral (from 0% to 100%)
-    int256 total = integralAtPoint(100) - integralAtPoint(0);
-
-    // area corresponding to the period the user's enter and exit timestamps;
-    int256 user = integralAtPoint(_percentEnd) - integralAtPoint(_percentStart);
-
-    // ratio between the two is how much reward% he can get
-    return uint256(user * 100 / total);
   }
 
   function integralAtPoint(uint256 _x) public view returns (int256) {
@@ -93,5 +97,13 @@ contract DownwardCurveRewardCalculator {
     int256 p3 = (x ** 1) * 100 * mul;
 
     return (p1 - p2 + p3) / mul;
+  }
+
+  function calculateFromAverageAPR(
+    uint256 _duration,
+    uint256 _amount,
+    uint256 _averageAPR
+  ) public view returns(uint256) {
+    return (_duration * _averageAPR * _amount) / (year * 100);
   }
 }
