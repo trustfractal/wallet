@@ -1,5 +1,5 @@
-import Loading from "@popup/containers/Loading";
-import Login from "@popup/containers/Login";
+import LoadingScreen from "@popup/containers/LoadingScreen";
+import Login from "@popup/containers/LoginScreen";
 
 import Routes from "@popup/routes";
 
@@ -18,7 +18,7 @@ function App() {
   const loggedIn = useAppSelector(isLoggedIn);
 
   if (!launched) {
-    return <Loading />;
+    return <LoadingScreen />;
   }
 
   if (registered) {

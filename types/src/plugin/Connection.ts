@@ -65,8 +65,12 @@ export interface IBackgroundConnection extends IConnection {
   port: chrome.runtime.Port;
 }
 
+export interface IPort extends chrome.runtime.Port {
+  id: string;
+}
+
 export interface IContentScriptConnection extends IConnection {
-  ports: Record<string, chrome.runtime.Port>;
+  ports: Record<string, IPort>;
 }
 
 export interface IExtensionConnection extends IConnection {
@@ -76,3 +80,9 @@ export interface IExtensionConnection extends IConnection {
 export interface IInpageConnection extends IConnection {
   inpage: LocalMessageDuplexStream;
 }
+
+export interface IConnectionCallbacks {
+  [key: string]: (...args: any[]) => any;
+}
+
+export type IConnectionPorts = Record<string, IPort>;

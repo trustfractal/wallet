@@ -5,7 +5,7 @@ export const isLaunched = createSelector(
   (app) => app.launched,
 );
 
-export const getAccount = createSelector(
+export const isWalletAvailable = createSelector(
   (state) => state.app,
-  (app) => app.account,
+  (app) => app.wallet,
 );

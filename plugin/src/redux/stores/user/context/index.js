@@ -6,7 +6,7 @@ import {
   createSelectorHook,
 } from "react-redux";
 
-import Loading from "@popup/containers/Loading";
+import LoadingScreen from "@popup/containers/LoadingScreen";
 
 import { UserStore } from "@redux/stores/user";
 
@@ -28,7 +28,7 @@ export const UserContextProvider = ({ children }) => {
   }, [isReady]);
 
   if (!isReady) {
-    return <Loading />;
+    return <LoadingScreen />;
   }
 
   return (

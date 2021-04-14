@@ -5,18 +5,16 @@ import {
   Redirect,
 } from "react-router-dom";
 
-import Welcome from "@popup/containers/Welcome";
-import PasswordSetup from "@popup/containers/PasswordSetup";
-import WalletSetup from "@popup/containers/WalletSetup";
-import NoWalletDetected from "@popup/containers/NoWalletDetected";
+import WelcomeScreen from "@popup/containers/WelcomeScreen";
+import WalletSetupScreen from "@popup/containers/WalletSetupScreen";
+import PasswordSetupScreen from "@popup/containers/PasswordSetupScreen";
 
 const Routes = () => (
   <Router>
     <Switch>
-      <Route path="/wallet-setup" component={WalletSetup} />
-      <Route path="/no-wallet-detected" component={NoWalletDetected} />
-      <Route path="/password-setup" component={PasswordSetup} />
-      <Route path="/" component={Welcome} />
+      <Route path="/password-setup" component={PasswordSetupScreen} />
+      <Route path="/wallet-setup" component={WalletSetupScreen} />
+      <Route path="/" component={WelcomeScreen} />
       <Redirect to="/" />
     </Switch>
   </Router>

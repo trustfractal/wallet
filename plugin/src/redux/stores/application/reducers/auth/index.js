@@ -27,10 +27,12 @@ export const creators = createActions(
 
 export const initialState = {
   signIn: {
+    success: false,
     loading: false,
     error: "",
   },
   signUp: {
+    success: false,
     loading: false,
     error: "",
   },
@@ -50,6 +52,7 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         signIn: {
+          success: false,
           loading: false,
           error: "",
         },
@@ -58,6 +61,7 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         signIn: {
+          success: true,
           loading: true,
           error: "",
         },
@@ -66,6 +70,7 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         signIn: {
+          success: false,
           loading: false,
           error,
         },
@@ -74,6 +79,7 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         signIn: {
+          success: true,
           loading: false,
           error: "",
         },
@@ -83,6 +89,7 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         signUp: {
+          success: false,
           loading: false,
           error: "",
         },
@@ -91,6 +98,7 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         signUp: {
+          success: false,
           loading: true,
           error: "",
         },
@@ -99,6 +107,7 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         signUp: {
+          success: false,
           loading: false,
           error,
         },
@@ -107,6 +116,7 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         signUp: {
+          success: true,
           loading: false,
           error: "",
         },

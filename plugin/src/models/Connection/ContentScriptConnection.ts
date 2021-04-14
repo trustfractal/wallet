@@ -34,6 +34,7 @@ export default class ContentScriptConnection
 
       const id = `${port.name}-${uuidv4()}`;
 
+      port.id = id;
       this.ports[id] = port;
       this.ports[id].onMessage.addListener(({ type, message }) => {
         // inject port in the message

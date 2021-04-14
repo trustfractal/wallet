@@ -5,7 +5,7 @@ import BackgroundConnection from "@models/Connection/BackgroundConnection";
 import ProxyConnection from "@models/Connection/ProxyConnection";
 
 import { inpage, background } from "@models/Connection/params";
-import types from "@models/Connection/types";
+import ConnectionTypes from "@models/Connection/types";
 
 import { injectScript } from "./injector";
 import ConnectionNames from "@models/Connection/names";
@@ -22,12 +22,15 @@ const proxyConnection = new ProxyConnection(
   ConnectionNames.BACKGROUND,
 );
 
-inpageConnection.on(types.VERIFY_CONNECTION, () => {
+inpageConnection.on(ConnectionTypes.VERIFY_EXTENSION_CONNECTION, () => {
   const { version } = chrome.runtime.getManifest();
   return version;
 });
 
 proxyConnection
-  .proxy(types.CONFIRM_CREDENTIAL)
-  .proxy(types.REQUEST_CREDENTIAL)
-  .reversedProxy(types.COMMIT_CREDENTIAL);
+  .proxy(ConnectionTypes.CONFIRM_CREDENTIAL)
+  .proxy(ConnectionTypes.REPORT_WALLET_AVAILABLE)
+  .proxy(ConnectionTypes.REPORT_WALLET_UNAVAILABLE)
+  .proxy(ConnectionTypes.REQUEST_CREDENTIAL)
+  .reversedProxy(ConnectionTypes.COMMIT_CREDENTIAL)
+  .reversedProxy(ConnectionTypes.GET_ACCOUNT_ADDRESS);

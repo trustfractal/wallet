@@ -4,10 +4,10 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
 
-// Mock the Chrome API
+// mock the Chrome API
 Object.assign(global, require("jest-chrome"));
 
-// Remove console.{log,error,warn,info,debug} when testing
+// remove console.{log,error,warn,info,debug} when testing
 global.console = {
   ...console,
   log: jest.fn(),

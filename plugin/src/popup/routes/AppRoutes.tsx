@@ -5,7 +5,7 @@ import {
   Redirect,
 } from "react-router-dom";
 
-import Home from "@popup/containers/Home";
+import HomeScreen from "@popup/containers/HomeScreen";
 
 import RequestsIndex from "@popup/containers/RequestsIndex";
 import RequestsShow from "@popup/containers/RequestsShow";
@@ -20,7 +20,7 @@ const Routes = () => (
       <Route path="/credentials" component={CredentialsIndex} />
       <Route path="/requests/:id" component={RequestsShow} />
       <Route path="/requests" component={RequestsIndex} />
-      <Route path="/" component={Home} />
+      <Route path="/" component={HomeScreen} />
       <Redirect to="/" />
     </Switch>
   </Router>

@@ -27,6 +27,7 @@ module.exports = {
     "^\\@models(.*)$": "<rootDir>/src/models/$1",
     "^\\@background(.*)$": "<rootDir>/src/scripts/background/$1",
     "^\\@contentScript(.*)$": "<rootDir>/src/scripts/contentScript/$1",
+    "^\\@sdk(.*)$": "<rootDir>/src/scripts/sdk/$1",
     "^\\@popup(.*)$": "<rootDir>/src/popup/$1",
     "^\\@redux(.*)$": "<rootDir>/src/redux/$1",
     "^\\@services(.*)$": "<rootDir>/src/services/$1",

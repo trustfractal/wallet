@@ -7,7 +7,7 @@ import watcher from "@redux/middleware/watcher";
 import StorageService from "@services/StorageService";
 import CryptoUtils from "@utils/CryptoUtils";
 
-import aliases from "@background/aliases";
+import aliases from "@redux/stores/user/aliases";
 
 import {
   reducer as credentialsReducer,
@@ -19,6 +19,11 @@ import {
   restore as requestsRestore,
   store as requestsStore,
 } from "@redux/stores/user/reducers/requests";
+import {
+  reducer as walletReducer,
+  restore as walletRestore,
+  store as walletStore,
+} from "@redux/stores/user/reducers/wallet";
 
 export class UserStore {
   static instance = undefined;
@@ -31,7 +36,7 @@ export class UserStore {
     this.storeInternal = undefined;
   }
 
-  get store() {
+  getStore() {
     if (!this.storeInternal) {
       throw new Error(
         "UserStore: store not initialized, please call init before trying to access the store",
@@ -94,6 +99,7 @@ export class UserStore {
     return combineReducers({
       credentials: credentialsReducer,
       requests: requestsReducer,
+      wallet: walletReducer,
     });
   }
 
@@ -169,6 +175,7 @@ export class UserStore {
         deserializedState.credentialsReducer,
       ),
       requests: await requestsRestore(deserializedState.requests),
+      wallet: await walletRestore(deserializedState.wallet),
     };
   }
 
@@ -176,6 +183,7 @@ export class UserStore {
     return JSON.stringify({
       credentials: await credentialsStore(state.credentials),
       requests: await requestsStore(state.requests),
+      wallet: await walletStore(state.wallet),
     });
   }
 
