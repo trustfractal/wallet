@@ -10,7 +10,7 @@
   "scripts": {
     "build": "microbundle",
     "dev": "microbundle watch",
-    "test": "ts-node node_modules/jasmine/bin/jasmine"
+    "test": "ts-node -r tsconfig-paths/register node_modules/jasmine/bin/jasmine"
   },
   "devDependencies": {
     "@kiltprotocol/sdk-js": "^0.20.0",
@@ -19,6 +19,7 @@
     "microbundle": "^0.13.0",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
+    "tsconfig-paths": "^3.9.0",
     "typescript": "^4.2.4"
   },
   "dependencies": {

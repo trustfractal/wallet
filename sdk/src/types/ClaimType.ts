@@ -1,5 +1,6 @@
-export interface IClaimSchema {
-  $id: string;
+import { Address, Hash } from "./base";
+
+export interface IClaimPseudoSchema {
   $schema: string;
   properties: {
     [key: string]: {
@@ -11,8 +12,13 @@ export interface IClaimSchema {
   title: string;
 }
 
+export interface IClaimSchema extends IClaimPseudoSchema {
+  $id: string;
+  type: "object";
+}
+
 export interface IClaimType {
-  hash: string;
-  owner: string | null;
+  hash: Hash;
+  owner: Address | null;
   schema: IClaimSchema;
 }
