@@ -11,22 +11,22 @@ const { BigNumber: BN } = ethers;
 const { expect } = chai;
 const { deployContract: deploy } = waffle;
 
-let signers: any;
-let owner: any;
-
 describe("LinearRewardCalculator", () => {
+  let owner: any;
+  let calc: any;
+
   before(async () => {
-    signers = await ethers.getSigners();
+    const signers = await ethers.getSigners();
     owner = signers[0];
   });
 
   describe("constructor", () => {
     it("creates a contract when given valid arguments", async () => {
-      const staking = (await deploy(owner, LinearRewardCalculatorArtifact, [
+      const calc = (await deploy(owner, LinearRewardCalculatorArtifact, [
         10,
       ])) as LinearRewardCalculator;
 
-      expect(await staking.APR()).to.eq(10);
+      expect(await calc.APR()).to.eq(10);
     });
 
     it("fails if APR is 0", async () => {
@@ -39,8 +39,6 @@ describe("LinearRewardCalculator", () => {
   });
 
   describe("calculateReward", () => {
-    let staking: any;
-
     /**
      * Assume by default a timespan of 30 days
      * min subscription of 100 units
@@ -84,7 +82,7 @@ describe("LinearRewardCalculator", () => {
       ensureTimestamp(start);
 
       // await ensureTimestamp(start);
-      staking = (await deploy(owner, LinearRewardCalculatorArtifact, [
+      calc = (await deploy(owner, LinearRewardCalculatorArtifact, [
         APR,
       ])) as LinearRewardCalculator;
     });
@@ -92,7 +90,7 @@ describe("LinearRewardCalculator", () => {
     const amount = BN.from(10).pow(18);
 
     const rewardForPeriod = (start: number, end: number): Promise<number> => {
-      return staking.calculateReward(start, end, amount);
+      return calc.calculateReward(start, end, amount);
     };
 
     it("for the entire period", async () => {
