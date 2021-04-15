@@ -45,56 +45,65 @@ contract CurveRewardCalculator {
     finalLinearAPR = _finalLinearAPR;
   }
 
-  function calculateReward(uint32 _start, uint32 _end) public view returns (uint256) {
+  function calculateReward(
+    uint32 _start,
+    uint32 _end
+  ) public view returns (uint256) {
     require(_start >= startDate);
     require(_end > _start);
     require(_end <= endDate);
 
-    (uint32 curveStart, uint32 curveEnd) = toCurvePercents(_start, _end);
-    (uint32 linearStart, uint32 linearEnd) = toLinearPercents(_start, _end);
+    (uint32 curveStart, uint32 curveEnd) = truncateToPeriod(_start, _end, startDate, linearStartDate);
+    (uint32 linearStart, uint32 linearEnd) = truncateToPeriod(_start, _end, linearStartDate, endDate);
 
-    return curvePeriodReward(curveStart, curveEnd) + linearPeriodReward(linearStart, linearEnd);
+    (uint32 curveStartPercent, uint32 curveEndPercent) = toPeriodPercents(curveStart, curveEnd, startDate, linearStartDate);
+    (uint32 linearStartPercent, uint32 linearEndPercent) = toPeriodPercents(linearStart, linearEnd, linearStartDate, endDate);
+
+    uint256 curveAPR = curvePeriodAPR(curveStartPercent, curveEndPercent);
+    uint256 linearAPR = curvePeriodAPR(curveStartPercent, curveEndPercent);
+
+    return 0;
+    // return calculateFromAverageAPR()
+
+    // return curvePeriodReward(curveStart, curveEnd) + linearPeriodReward(linearStart, linearEnd);
   }
 
-  function toCurvePercents(uint32 _start, uint32 _end) internal view returns (uint32, uint32) {
-    return toPeriodPercents(_start, _end, startDate, linearStartDate);
-  }
-
-  function toLinearPercents(uint32 _start, uint32 _end) internal view returns (uint32, uint32) {
-    return toPeriodPercents(_start, _end, linearStartDate, endDate);
-  }
-
-  function toPeriodPercents(uint32 _start, uint32 _end, uint32 _periodStart, uint32 _periodEnd) internal view returns (uint32, uint32) {
-    (uint32 start, uint32 end) = truncateToPeriod(_start, _end, _periodStart, _periodEnd);
+  function toPeriodPercents(
+    uint32 _start,
+    uint32 _end,
+    uint32 _periodStart,
+    uint32 _periodEnd
+  ) internal view returns (uint32, uint32) {
     uint32 totalDuration = _periodEnd - _periodStart;
 
-    uint32 startPercent = (start - _periodStart) * 100 / totalDuration;
-    uint32 endPercent = (end - _periodStart) * 100 / totalDuration;
+    uint32 startPercent = (_start - _periodStart) * 100 / totalDuration;
+    uint32 endPercent = (_end - _periodStart) * 100 / totalDuration;
 
     return (startPercent, endPercent);
   }
 
-  function truncateToPeriod(uint32 _start, uint32 _end, uint32 _periodStart, uint32 _periodEnd) internal view returns (uint32, uint32) {
+  function truncateToPeriod(
+    uint32 _start,
+    uint32 _end,
+    uint32 _periodStart,
+    uint32 _periodEnd
+  ) internal view returns (uint32, uint32) {
     uint32 start = _start < _periodStart ? _periodStart : _start;
     uint32 end = _end > _periodEnd ? _periodEnd : _end;
 
     return (start, end);
   }
 
-  function curvePeriodReward(uint32 _start, uint32 _end) internal view returns (uint256) {
-    // TODO
-    return 0;
-
+  function curvePeriodAPR(uint32 _start, uint32 _end) internal view returns (uint256) {
     int256 maxArea = integralAtPoint(100) - integralAtPoint(0);
     int256 actualArea = integralAtPoint(_end) - integralAtPoint(_start);
 
     uint256 ratio = uint256(actualArea * 100 / maxArea);
-    console.log("ratio: %d", ratio);
 
     return minCurveAPR + (maxCurveAPR - minCurveAPR) * ratio;
   }
 
-  function linearPeriodReward(uint32 _start, uint32 _end) internal view returns (uint256) {
+  function linearPeriodAPR(uint32 _start, uint32 _end) internal view returns (uint256) {
     uint32 maxDuration = endDate - linearStartDate;
     uint32 actualDuration = _end - _start;
 

@@ -22,11 +22,11 @@ contract TestCurveRewardCalculator is CurveRewardCalculator {
   ) CurveRewardCalculator(_startDate, _linearStartDate, _endDate, _maxCurveAPR, _minCurveAPR, _finalLinearAPR) { }
 
   function testToCurvePercents(uint32 _start, uint32 _end) public view returns (uint32, uint32) {
-    return toCurvePercents(_start, _end);
+    return toPeriodPercents(_start, _end, startDate, linearStartDate);
   }
 
   function testToLinearPercents(uint32 _start, uint32 _end) public view returns (uint32, uint32) {
-    return toLinearPercents(_start, _end);
+    return toPeriodPercents(_start, _end, linearStartDate, endDate);
   }
 
   function testTruncateToCurvePeriod(uint32 _start, uint32 _end) public view returns (uint32, uint32) {
@@ -35,5 +35,9 @@ contract TestCurveRewardCalculator is CurveRewardCalculator {
 
   function testTruncateToLinearPeriod(uint32 _start, uint32 _end) public view returns (uint32, uint32) {
     return truncateToPeriod(_start, _end, linearStartDate, endDate);
+  }
+
+  function testCurvePeriodAPR(uint32 _start, uint32 _end) public view returns (uint256) {
+    return curvePeriodAPR(_start, _end);
   }
 }
