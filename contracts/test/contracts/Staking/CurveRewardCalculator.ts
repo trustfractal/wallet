@@ -345,5 +345,76 @@ describe("CurveRewardCalculator", () => {
         args
       )) as CurveRewardCalculator;
     });
+
+    describe("calculate reward", () => {
+      it("works for 100 units throught the entire curve period", async () => {
+        const reward = await calc.calculateReward(start, twoWeeksLater, 100);
+
+        expect(reward).to.eq(49);
+      });
+
+      it("is proportional to how many tokens I stake", async () => {
+        const reward100 = await calc.calculateReward(start, twoWeeksLater, 100);
+        const reward1000 = await calc.calculateReward(
+          start,
+          twoWeeksLater,
+          1000
+        );
+
+        expect(reward1000).to.be.closeTo(reward100.mul(10), 10);
+      });
+
+      it("is zero if range is outside period", async () => {
+        const reward = await calc.calculateReward(start - 1, start, 100);
+
+        expect(reward).to.eq(0);
+      });
+
+      it("increases over time", async () => {
+        let last = 0;
+
+        for (let i = 0.1; i <= 1; i += 0.1) {
+          const reward = await calc.calculateReward(
+            start,
+            start + (twoWeeksLater - start) * i,
+            1000
+          );
+
+          expect(reward).to.be.gt(last);
+          last = reward;
+        }
+      });
+
+      it("is lower for every period", async () => {
+        let last = 10e10;
+
+        for (let i = 0.1; i <= 0.8; i += 0.1) {
+          const reward = await calc.calculateReward(
+            start + (twoWeeksLater - start) * (i - 0.1),
+            start + (twoWeeksLater - start) * i,
+            1000
+          );
+
+          expect(reward).to.be.lt(last);
+          last = reward;
+        }
+      });
+
+      it.only("is", async () => {
+        let last = 0;
+
+        for (let i = 0.1; i <= 1; i += 0.1) {
+          const reward = await calc.calculateReward(
+            start,
+            start + (twoWeeksLater - start) * i,
+            1000
+          );
+
+          console.log(reward.toString());
+          expect(reward).to.be.gt(last);
+          last = reward;
+        }
+      });
+    });
   });
 });

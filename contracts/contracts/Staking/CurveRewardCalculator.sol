@@ -47,12 +47,9 @@ contract CurveRewardCalculator {
 
   function calculateReward(
     uint32 _start,
-    uint32 _end
+    uint32 _end,
+    uint256 _amount
   ) public view returns (uint256) {
-    require(_start >= startDate);
-    require(_end > _start);
-    require(_end <= endDate);
-
     (uint32 curveStart, uint32 curveEnd) = truncateToPeriod(_start, _end, startDate, linearStartDate);
     (uint32 linearStart, uint32 linearEnd) = truncateToPeriod(_start, _end, linearStartDate, endDate);
 
@@ -60,12 +57,10 @@ contract CurveRewardCalculator {
     (uint32 linearStartPercent, uint32 linearEndPercent) = toPeriodPercents(linearStart, linearEnd, linearStartDate, endDate);
 
     uint256 curveAPR = curvePeriodAPR(curveStartPercent, curveEndPercent);
-    uint256 linearAPR = curvePeriodAPR(curveStartPercent, curveEndPercent);
+    uint256 linearAPR = linearPeriodAPR(linearStartPercent, linearEndPercent);
 
-    return 0;
-    // return calculateFromAverageAPR()
-
-    // return curvePeriodReward(curveStart, curveEnd) + linearPeriodReward(linearStart, linearEnd);
+    return calculateFromAverageAPR(curveStart, curveEnd, _amount, curveAPR) +
+      calculateFromAverageAPR(linearStart, linearEnd, _amount, linearAPR);
   }
 
   function toPeriodPercents(
@@ -75,6 +70,10 @@ contract CurveRewardCalculator {
     uint32 _periodEnd
   ) internal view returns (uint32, uint32) {
     uint32 totalDuration = _periodEnd - _periodStart;
+
+    if (totalDuration == 0) {
+      return (0, 100);
+    }
 
     uint32 startPercent = (_start - _periodStart) * 100 / totalDuration;
     uint32 endPercent = (_end - _periodStart) * 100 / totalDuration;
@@ -87,7 +86,11 @@ contract CurveRewardCalculator {
     uint32 _end,
     uint32 _periodStart,
     uint32 _periodEnd
-  ) internal view returns (uint32, uint32) {
+  ) internal pure returns (uint32, uint32) {
+    if (_end <= _periodStart || _start >= _periodEnd) {
+      return (_periodStart, _periodStart);
+    }
+
     uint32 start = _start < _periodStart ? _periodStart : _start;
     uint32 end = _end > _periodEnd ? _periodEnd : _end;
 
@@ -100,17 +103,17 @@ contract CurveRewardCalculator {
 
     uint256 ratio = uint256(actualArea * 100 / maxArea);
 
-    return minCurveAPR + (maxCurveAPR - minCurveAPR) * ratio;
+    return minCurveAPR + (maxCurveAPR - minCurveAPR) * ratio / 100;
   }
 
   function linearPeriodAPR(uint32 _start, uint32 _end) internal view returns (uint256) {
-    uint32 maxDuration = endDate - linearStartDate;
-    uint32 actualDuration = _end - _start;
+    // uint32 maxDuration = endDate - linearStartDate;
+    // uint32 actualDuration = _end - _start;
 
     return 0;
   }
 
-  function integralAtPoint(uint32 _x) internal view returns (int256) {
+  function integralAtPoint(uint32 _x) internal pure returns (int256) {
     int32 x = int32(_x);
     int256 p1 = (x ** 3) * mul / 300;
     int256 p2 = (x ** 2) * mul;
@@ -120,10 +123,13 @@ contract CurveRewardCalculator {
   }
 
   function calculateFromAverageAPR(
-    uint32 _duration,
+    uint32 _start,
+    uint32 _end,
     uint256 _amount,
     uint256 _averageAPR
-  ) public view returns(uint256) {
-    return (_duration * _averageAPR * _amount) / (year * 100);
+  ) public pure returns(uint256) {
+    uint32 duration = _end - _start;
+
+    return (duration * _averageAPR * _amount) / (year * 100);
   }
 }
