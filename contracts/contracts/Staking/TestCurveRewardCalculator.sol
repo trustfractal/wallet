@@ -13,31 +13,31 @@ import "./CurveRewardCalculator.sol";
 
 contract TestCurveRewardCalculator is CurveRewardCalculator {
   constructor(
-    uint32 _startDate,
-    uint32 _linearStartDate,
-    uint32 _endDate,
-    uint32 _maxCurveAPR,
-    uint32 _minCurveAPR,
-    uint32 _finalLinearAPR
+    uint _startDate,
+    uint _linearStartDate,
+    uint _endDate,
+    uint _maxCurveAPR,
+    uint _minCurveAPR,
+    uint _finalLinearAPR
   ) CurveRewardCalculator(_startDate, _linearStartDate, _endDate, _maxCurveAPR, _minCurveAPR, _finalLinearAPR) { }
 
-  function testToCurvePercents(uint32 _start, uint32 _end) public view returns (uint32, uint32) {
+  function testToCurvePercents(uint _start, uint _end) public view returns (uint, uint) {
     return toPeriodPercents(_start, _end, curve.start, curve.end);
   }
 
-  function testToLinearPercents(uint32 _start, uint32 _end) public view returns (uint32, uint32) {
+  function testToLinearPercents(uint _start, uint _end) public view returns (uint, uint) {
     return toPeriodPercents(_start, _end, linear.start, linear.end);
   }
 
-  function testTruncateToCurvePeriod(uint32 _start, uint32 _end) public view returns (uint32, uint32) {
+  function testTruncateToCurvePeriod(uint _start, uint _end) public view returns (uint, uint) {
     return truncateToPeriod(_start, _end, curve.start, curve.end);
   }
 
-  function testTruncateToLinearPeriod(uint32 _start, uint32 _end) public view returns (uint32, uint32) {
+  function testTruncateToLinearPeriod(uint _start, uint _end) public view returns (uint, uint) {
     return truncateToPeriod(_start, _end, linear.start, linear.end);
   }
 
-  function testCurvePeriodAPR(uint32 _start, uint32 _end) public view returns (uint256) {
+  function testCurvePeriodAPR(uint _start, uint _end) public view returns (uint) {
     return curvePeriodAPR(_start, _end);
   }
 }
