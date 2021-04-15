@@ -20,15 +20,10 @@ describe("CurveRewardCalculator", () => {
   let tester: any;
 
   let start = dayjs().unix();
-  let oneDayLater = dayjs.unix(start).add(1, "day").unix();
-  let twoWeeksLater = dayjs.unix(start).add(15, "day").unix();
-  let sixMonthsLater = dayjs
+  let oneYearLater = dayjs.unix(start).add(365, "day").unix();
+  let twoYearsLater = dayjs
     .unix(start)
-    .add(30 * 6, "day")
-    .unix();
-  let oneYearLater = dayjs
-    .unix(start)
-    .add(30 * 12, "day")
+    .add(365 * 2, "day")
     .unix();
 
   const ensureTimestamp = (timestamp: number): Promise<unknown> => {
@@ -46,15 +41,10 @@ describe("CurveRewardCalculator", () => {
 
     start = timestamp + 1;
 
-    oneDayLater = dayjs.unix(start).add(1, "day").unix();
-    twoWeeksLater = dayjs.unix(start).add(30, "day").unix();
-    sixMonthsLater = dayjs
+    oneYearLater = dayjs.unix(start).add(365, "day").unix();
+    twoYearsLater = dayjs
       .unix(start)
-      .add(30 * 6, "day")
-      .unix();
-    oneYearLater = dayjs
-      .unix(start)
-      .add(30 * 12, "day")
+      .add(365 * 2, "day")
       .unix();
 
     ensureTimestamp(start);
@@ -64,16 +54,16 @@ describe("CurveRewardCalculator", () => {
     it("creates a contract when given valid arguments", async () => {
       const calc = (await deploy(owner, CurveRewardCalculatorArtifact, [
         start,
-        twoWeeksLater,
-        sixMonthsLater,
+        oneYearLater,
+        twoYearsLater,
         600,
         15,
         10,
       ])) as CurveRewardCalculator;
 
       expect(await calc.startDate()).to.eq(start);
-      expect(await calc.linearStartDate()).to.eq(twoWeeksLater);
-      expect(await calc.endDate()).to.eq(sixMonthsLater);
+      expect(await calc.linearStartDate()).to.eq(oneYearLater);
+      expect(await calc.endDate()).to.eq(twoYearsLater);
       expect(await calc.maxCurveAPR()).to.eq(600);
       expect(await calc.minCurveAPR()).to.eq(15);
       expect(await calc.finalLinearAPR()).to.eq(10);
@@ -81,7 +71,7 @@ describe("CurveRewardCalculator", () => {
 
     it("fails if startDate is in the past", async () => {
       const yesterday = dayjs().subtract(1, "day").unix();
-      const args = [yesterday, twoWeeksLater, sixMonthsLater, 600, 15, 10];
+      const args = [yesterday, oneYearLater, twoYearsLater, 600, 15, 10];
 
       const action = deploy(owner, CurveRewardCalculatorArtifact, args);
 
@@ -91,7 +81,7 @@ describe("CurveRewardCalculator", () => {
     });
 
     it("fails if linearStartDate is before startDate", async () => {
-      const args = [twoWeeksLater, start, sixMonthsLater, 600, 15, 10];
+      const args = [oneYearLater, start, twoYearsLater, 600, 15, 10];
 
       const action = deploy(owner, CurveRewardCalculatorArtifact, args);
 
@@ -101,7 +91,7 @@ describe("CurveRewardCalculator", () => {
     });
 
     it("fails if endDate is before linearStartDate", async () => {
-      const args = [start, sixMonthsLater, twoWeeksLater, 600, 15, 10];
+      const args = [start, twoYearsLater, oneYearLater, 600, 15, 10];
 
       const action = deploy(owner, CurveRewardCalculatorArtifact, args);
 
@@ -111,7 +101,7 @@ describe("CurveRewardCalculator", () => {
     });
 
     it("fails if maxCurveAPR is smaller than minCurveAPR", async () => {
-      const args = [start, twoWeeksLater, sixMonthsLater, 15, 600, 10];
+      const args = [start, oneYearLater, twoYearsLater, 15, 600, 10];
 
       const action = deploy(owner, CurveRewardCalculatorArtifact, args);
 
@@ -121,7 +111,7 @@ describe("CurveRewardCalculator", () => {
     });
 
     it("fails if minCurveAPR is smaller than finalLinearAPR", async () => {
-      const args = [start, twoWeeksLater, sixMonthsLater, 600, 10, 15];
+      const args = [start, oneYearLater, twoYearsLater, 600, 10, 15];
 
       const action = deploy(owner, CurveRewardCalculatorArtifact, args);
 
@@ -133,7 +123,7 @@ describe("CurveRewardCalculator", () => {
 
   describe("private functions", () => {
     beforeEach(async () => {
-      const args = [start, twoWeeksLater, sixMonthsLater, 600, 15, 10];
+      const args = [start, oneYearLater, twoYearsLater, 600, 15, 10];
 
       tester = (await deploy(
         owner,
@@ -156,17 +146,17 @@ describe("CurveRewardCalculator", () => {
       it("truncates given endDate", async () => {
         const [r1, r2] = await tester.testTruncateToCurvePeriod(
           start + 1,
-          twoWeeksLater + 1
+          oneYearLater + 1
         );
 
         expect(r1).to.eq(start + 1);
-        expect(r2).to.eq(twoWeeksLater);
+        expect(r2).to.eq(oneYearLater);
       });
 
       it("gives a 0-length period if outside of bounds", async () => {
         const [r1, r2] = await tester.testTruncateToCurvePeriod(
-          twoWeeksLater,
-          sixMonthsLater
+          oneYearLater,
+          twoYearsLater
         );
 
         expect(r1).to.eq(r2);
@@ -175,7 +165,7 @@ describe("CurveRewardCalculator", () => {
 
     describe("toCurvePercents", () => {
       it("calculates 0% to 100%", async () => {
-        const [r1, r2] = await tester.testToCurvePercents(start, twoWeeksLater);
+        const [r1, r2] = await tester.testToCurvePercents(start, oneYearLater);
 
         expect(r1).to.eq(0);
         expect(r2).to.eq(100);
@@ -184,7 +174,7 @@ describe("CurveRewardCalculator", () => {
       it("calculates 0% to 50%", async () => {
         const [r1, r2] = await tester.testToCurvePercents(
           start,
-          (start + twoWeeksLater) / 2
+          (start + oneYearLater) / 2
         );
 
         expect(r1).to.eq(0);
@@ -193,8 +183,8 @@ describe("CurveRewardCalculator", () => {
 
       it("calculates 50% to 100%", async () => {
         const [r1, r2] = await tester.testToCurvePercents(
-          (start + twoWeeksLater) / 2,
-          twoWeeksLater
+          (start + oneYearLater) / 2,
+          oneYearLater
         );
 
         expect(r1).to.eq(50);
@@ -203,8 +193,8 @@ describe("CurveRewardCalculator", () => {
 
       it("calculates 10% to 90%", async () => {
         const [r1, r2] = await tester.testToCurvePercents(
-          start + (twoWeeksLater - start) * 0.1,
-          start + (twoWeeksLater - start) * 0.9
+          start + (oneYearLater - start) * 0.1,
+          start + (oneYearLater - start) * 0.9
         );
 
         expect(r1).to.eq(10);
@@ -215,28 +205,28 @@ describe("CurveRewardCalculator", () => {
     describe("truncateToLinearPeriod", () => {
       it("truncates given startDate", async () => {
         const [r1, r2] = await tester.testTruncateToLinearPeriod(
-          twoWeeksLater - 1,
-          twoWeeksLater + 1
+          oneYearLater - 1,
+          oneYearLater + 1
         );
 
-        expect(r1).to.eq(twoWeeksLater);
-        expect(r2).to.eq(twoWeeksLater + 1);
+        expect(r1).to.eq(oneYearLater);
+        expect(r2).to.eq(oneYearLater + 1);
       });
 
       it("truncates given endDate", async () => {
         const [r1, r2] = await tester.testTruncateToLinearPeriod(
-          twoWeeksLater + 1,
-          sixMonthsLater + 1
+          oneYearLater + 1,
+          twoYearsLater + 1
         );
 
-        expect(r1).to.eq(twoWeeksLater + 1);
-        expect(r2).to.eq(sixMonthsLater);
+        expect(r1).to.eq(oneYearLater + 1);
+        expect(r2).to.eq(twoYearsLater);
       });
 
       it("gives a 0-length period if outside of bounds", async () => {
         const [r1, r2] = await tester.testTruncateToLinearPeriod(
           start,
-          twoWeeksLater
+          oneYearLater
         );
 
         expect(r1).to.eq(r2);
@@ -246,8 +236,8 @@ describe("CurveRewardCalculator", () => {
     describe("toLinearPercents", () => {
       it("calculates 0% to 100%", async () => {
         const [r1, r2] = await tester.testToLinearPercents(
-          twoWeeksLater,
-          sixMonthsLater
+          oneYearLater,
+          twoYearsLater
         );
 
         expect(r1).to.eq(0);
@@ -256,8 +246,8 @@ describe("CurveRewardCalculator", () => {
 
       it("calculates 0% to 50%", async () => {
         const [r1, r2] = await tester.testToLinearPercents(
-          twoWeeksLater,
-          (twoWeeksLater + sixMonthsLater) / 2
+          oneYearLater,
+          (oneYearLater + twoYearsLater) / 2
         );
 
         expect(r1).to.eq(0);
@@ -266,8 +256,8 @@ describe("CurveRewardCalculator", () => {
 
       it("calculates 50% to 100%", async () => {
         const [r1, r2] = await tester.testToLinearPercents(
-          (twoWeeksLater + sixMonthsLater) / 2,
-          sixMonthsLater
+          (oneYearLater + twoYearsLater) / 2,
+          twoYearsLater
         );
 
         expect(r1).to.eq(50);
@@ -276,8 +266,8 @@ describe("CurveRewardCalculator", () => {
 
       it("calculates 10% to 90%", async () => {
         const [r1, r2] = await tester.testToLinearPercents(
-          twoWeeksLater + (sixMonthsLater - twoWeeksLater) * 0.1,
-          twoWeeksLater + (sixMonthsLater - twoWeeksLater) * 0.9
+          oneYearLater + (twoYearsLater - oneYearLater) * 0.1,
+          oneYearLater + (twoYearsLater - oneYearLater) * 0.9
         );
 
         expect(r1).to.eq(10);
@@ -337,7 +327,7 @@ describe("CurveRewardCalculator", () => {
 
   describe("public functions", () => {
     beforeEach(async () => {
-      const args = [start, twoWeeksLater, sixMonthsLater, 600, 15, 10];
+      const args = [start, oneYearLater, twoYearsLater, 600, 15, 10];
 
       calc = (await deploy(
         owner,
@@ -347,73 +337,120 @@ describe("CurveRewardCalculator", () => {
     });
 
     describe("calculate reward", () => {
-      it("works for 100 units throught the entire curve period", async () => {
-        const reward = await calc.calculateReward(start, twoWeeksLater, 100);
+      describe("for curve period", () => {
+        it("works for 100 units throught the entire curve period", async () => {
+          const reward = await calc.calculateReward(start, oneYearLater, 100);
 
-        expect(reward).to.eq(49);
-      });
+          expect(reward).to.eq(100 * (600 / 100));
+        });
 
-      it("is proportional to how many tokens I stake", async () => {
-        const reward100 = await calc.calculateReward(start, twoWeeksLater, 100);
-        const reward1000 = await calc.calculateReward(
-          start,
-          twoWeeksLater,
-          1000
-        );
-
-        expect(reward1000).to.be.closeTo(reward100.mul(10), 10);
-      });
-
-      it("is zero if range is outside period", async () => {
-        const reward = await calc.calculateReward(start - 1, start, 100);
-
-        expect(reward).to.eq(0);
-      });
-
-      it("increases over time", async () => {
-        let last = 0;
-
-        for (let i = 0.1; i <= 1; i += 0.1) {
-          const reward = await calc.calculateReward(
+        it("is proportional to how many tokens I stake", async () => {
+          const reward100 = await calc.calculateReward(
             start,
-            start + (twoWeeksLater - start) * i,
-            1000
+            oneYearLater,
+            100
           );
-
-          expect(reward).to.be.gt(last);
-          last = reward;
-        }
-      });
-
-      it("is lower for every period", async () => {
-        let last = 10e10;
-
-        for (let i = 0.1; i <= 0.8; i += 0.1) {
-          const reward = await calc.calculateReward(
-            start + (twoWeeksLater - start) * (i - 0.1),
-            start + (twoWeeksLater - start) * i,
-            1000
-          );
-
-          expect(reward).to.be.lt(last);
-          last = reward;
-        }
-      });
-
-      it.only("is", async () => {
-        let last = 0;
-
-        for (let i = 0.1; i <= 1; i += 0.1) {
-          const reward = await calc.calculateReward(
+          const reward1000 = await calc.calculateReward(
             start,
-            start + (twoWeeksLater - start) * i,
+            oneYearLater,
             1000
           );
 
-          console.log(reward.toString());
-          expect(reward).to.be.gt(last);
-          last = reward;
-        }
+          expect(reward1000).to.be.closeTo(reward100.mul(10), 10);
+        });
+
+        it("is zero if range is outside period", async () => {
+          const reward = await calc.calculateReward(start - 1, start, 100);
+
+          expect(reward).to.eq(0);
+        });
+
+        it("cumulative value increases over time", async () => {
+          let last = 0;
+
+          for (let i = 0.1; i <= 1; i += 0.1) {
+            const reward = await calc.calculateReward(
+              start,
+              start + (oneYearLater - start) * i,
+              1000
+            );
+
+            expect(reward).to.be.gt(last);
+            last = reward;
+          }
+        });
+
+        it("individual value is lower for every period", async () => {
+          let last = 10e10;
+
+          for (let i = 0.1; i <= 0.8; i += 0.1) {
+            const reward = await calc.calculateReward(
+              start + (oneYearLater - start) * (i - 0.1),
+              start + (oneYearLater - start) * i,
+              1000
+            );
+
+            expect(reward).to.be.lt(last);
+            last = reward;
+          }
+        });
+      });
+      describe("for linear period", () => {
+        it("work for 100 units through the entire linear period", async () => {
+          const reward = await calc.calculateReward(
+            oneYearLater,
+            twoYearsLater,
+            1000
+          );
+
+          expect(reward).to.eq(125);
+        });
+
+        it("is larger at the beginning than at the end", async () => {
+          const r1 = await calc.calculateReward(
+            oneYearLater,
+            oneYearLater + (twoYearsLater - oneYearLater) * 0.1,
+            1000
+          );
+
+          const r2 = await calc.calculateReward(
+            oneYearLater + (twoYearsLater - oneYearLater) * 0.9,
+            twoYearsLater,
+            1000
+          );
+
+          expect(r1).to.be.gt(r2);
+        });
+
+        it("cumulative value increases over time", async () => {
+          let last = 0;
+
+          for (let i = 0.1; i <= 1; i += 0.1) {
+            const reward = await calc.calculateReward(
+              oneYearLater,
+              oneYearLater + (twoYearsLater - oneYearLater) * i,
+              1000
+            );
+
+            expect(reward).to.be.gt(last);
+            last = reward;
+          }
+        });
+
+        it("individual value is lower for every period", async () => {
+          let last = 10e10;
+
+          for (let i = 0.1; i <= 0.8; i += 0.1) {
+            const reward = await calc.calculateReward(
+              oneYearLater + (twoYearsLater - oneYearLater) * (i - 0.1),
+              oneYearLater + (twoYearsLater - oneYearLater) * i,
+              100000
+            );
+
+            expect(reward).to.be.lt(last);
+            last = reward;
+          }
+        });
       });
     });
   });

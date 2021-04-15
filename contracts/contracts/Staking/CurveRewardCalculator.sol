@@ -103,14 +103,13 @@ contract CurveRewardCalculator {
 
     uint256 ratio = uint256(actualArea * 100 / maxArea);
 
-    return minCurveAPR + (maxCurveAPR - minCurveAPR) * ratio / 100;
+    return minCurveAPR * 100 + (maxCurveAPR - minCurveAPR) * ratio;
   }
 
-  function linearPeriodAPR(uint32 _start, uint32 _end) internal view returns (uint256) {
-    // uint32 maxDuration = endDate - linearStartDate;
-    // uint32 actualDuration = _end - _start;
+  function linearPeriodAPR(uint32 _startPercent, uint32 _endPercent) internal view returns (uint256) {
+    uint32 mid = 100 - (_startPercent + _endPercent) / 2;
 
-    return 0;
+    return finalLinearAPR * 100 + (minCurveAPR - finalLinearAPR) * mid;
   }
 
   function integralAtPoint(uint32 _x) internal pure returns (int256) {
@@ -130,6 +129,6 @@ contract CurveRewardCalculator {
   ) public pure returns(uint256) {
     uint32 duration = _end - _start;
 
-    return (duration * _averageAPR * _amount) / (year * 100);
+    return (duration * _averageAPR * _amount) / (year * 100 * 100);
   }
 }
