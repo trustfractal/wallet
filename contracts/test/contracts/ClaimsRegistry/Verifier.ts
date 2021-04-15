@@ -19,49 +19,69 @@ describe("Verifier", () => {
     verifier = (await deployContract(owner, VerifierArtifact, [])) as Verifier;
   });
 
-  describe("setClaims", () => {
-    let calc: any;
+  describe("recover", () => {
+    it("returns the original signer of a message with an Ethereum prefix", async () => {
+      const issuer = (await ethers.getSigners())[0];
+      const prefix = Buffer.from("\x19Ethereum Signed Message:\n");
 
-    describe("verify", () => {
-      it("returns the original signer of a message with an Ethereum prefix", async () => {
-        const issuer = (await ethers.getSigners())[0];
-        const prefix = Buffer.from("\x19Ethereum Signed Message:\n");
+      const value = arrayify(keccak256(toUtf8Bytes("hello")));
 
-        const value = arrayify(keccak256(toUtf8Bytes("hello")));
+      const sig = await issuer.signMessage(value);
 
-        const sig = splitSignature(await issuer.signMessage(value));
+      const prefixedValue = keccak256(
+        Buffer.concat([prefix, toUtf8Bytes(String(value.length)), value])
+      );
 
-        const prefixedValue = keccak256(
-          Buffer.concat([prefix, toUtf8Bytes(String(value.length)), value])
-        );
+      const result = await verifier.recover(prefixedValue, sig);
 
-        const result = await verifier.verify(
-          prefixedValue,
-          sig.v,
-          sig.r,
-          sig.s
-        );
-
-        expect(result).to.equal(issuer.address);
-      });
+      expect(result).to.equal(issuer.address);
     });
+  });
 
-    describe("verifyWithPrefix", () => {
-      it("automatically includes the Ethereum prefix to validate the signature", async () => {
-        const issuer = (await ethers.getSigners())[0];
-        const value = arrayify(keccak256(toUtf8Bytes("hello")));
+  describe("recoverWithPrefix", () => {
+    it("automatically includes the Ethereum prefix to validate the signature", async () => {
+      const issuer = (await ethers.getSigners())[0];
+      const value = arrayify(keccak256(toUtf8Bytes("hello")));
+      const sig = await issuer.signMessage(value);
 
-        const sig = splitSignature(await issuer.signMessage(value));
+      const result = await verifier.recoverWithPrefix(value, sig);
 
-        const result = await verifier.verifyWithPrefix(
-          value,
-          sig.v,
-          sig.r,
-          sig.s
-        );
+      expect(result).to.eq(issuer.address);
+    });
+  });
 
-        expect(result).to.eq(issuer.address);
-      });
+  describe("verify", () => {
+    it("returns the address of the signer", async () => {
+      const issuer = (await ethers.getSigners())[0];
+      const prefix = Buffer.from("\x19Ethereum Signed Message:\n");
+
+      const value = arrayify(keccak256(toUtf8Bytes("hello")));
+
+      const sig = await issuer.signMessage(value);
+
+      const prefixedValue = keccak256(
+        Buffer.concat([prefix, toUtf8Bytes(String(value.length)), value])
+      );
+
+      const result = await verifier.verify(prefixedValue, sig, issuer.address);
+
+      expect(result).to.equal(true);
+    });
+  });
+
+  describe("verifyWithPrefix", () => {
+    it("automatically includes the Ethereum prefix to validate the signature", async () => {
+      const issuer = (await ethers.getSigners())[0];
+      const value = arrayify(keccak256(toUtf8Bytes("hello")));
+      const sig = await issuer.signMessage(value);
+
+      const result = await verifier.verifyWithPrefix(
+        value,
+        sig,
+        issuer.address
+      );
+
+      expect(result).to.equal(true);
     });
   });
 });

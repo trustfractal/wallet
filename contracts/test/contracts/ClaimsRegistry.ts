@@ -25,75 +25,98 @@ describe("ClaimsRegistry", () => {
   });
 
   describe("setClaims", () => {
-    let calc: any;
+    const value = arrayify(keccak256(toUtf8Bytes("bar")));
+    let issuer: any;
+    let subject: any;
+    let johnDoe: any;
+    let sig: any;
+
+    beforeEach(async () => {
+      const signers = await ethers.getSigners();
+      issuer = signers[0];
+      subject = signers[1];
+      johnDoe = signers[2];
+      sig = await issuer.signMessage(value);
+    });
 
     describe("setClaimWithSignature", () => {
       it("issuer can subject a claim about a subject", async () => {
-        const signers = await ethers.getSigners();
-        const issuer = signers[0];
-        const subject = signers[1];
-
-        const key = arrayify(keccak256(toUtf8Bytes("foo")));
-        const value = arrayify(keccak256(toUtf8Bytes("bar")));
-
-        const sig = ethers.utils.splitSignature(
-          await issuer.signMessage(value)
-        );
-
         await registry
           .connect(issuer)
-          .setClaimWithSignature(
-            issuer.address,
-            subject.address,
-            key,
-            value,
-            sig.v,
-            sig.r,
-            sig.s
-          );
+          .setClaimWithSignature(issuer.address, subject.address, value, sig);
       });
 
       it("subject can issue a claimed pre-signed by the issuer", async () => {
-        const signers = await ethers.getSigners();
-        const issuer = signers[0];
-        const subject = signers[1];
-
-        const key = arrayify(keccak256(toUtf8Bytes("foo")));
-        const value = arrayify(keccak256(toUtf8Bytes("bar")));
-
-        const sig = ethers.utils.splitSignature(
-          await issuer.signMessage(value)
-        );
-
         await registry
           .connect(subject)
-          .setClaimWithSignature(
-            issuer.address,
-            subject.address,
-            key,
-            value,
-            sig.v,
-            sig.r,
-            sig.s
-          );
+          .setClaimWithSignature(issuer.address, subject.address, value, sig);
       });
     });
 
     describe("setSelfClaimWithSignature", () => {
       it("registers a self claim when given a valid signature", async () => {
-        const signers = await ethers.getSigners();
-        const myself = signers[0];
+        await registry.connect(issuer).setSelfClaimWithSignature(value, sig);
+      });
+    });
 
-        const key = arrayify(keccak256(toUtf8Bytes("foo")));
-        const value = arrayify(keccak256(toUtf8Bytes("bar")));
-
-        const sig = ethers.utils.splitSignature(
-          await myself.signMessage(value)
+    describe("getClaim", () => {
+      it("returns the subject of a given issuer's claim", async () => {
+        await registry.setClaimWithSignature(
+          issuer.address,
+          subject.address,
+          value,
+          sig
         );
 
-        await registry
-          .connect(myself)
-          .setSelfClaimWithSignature(key, value, sig.v, sig.r, sig.s);
+        const result = await registry.getClaim(issuer.address, sig);
+
+        expect(result).to.eq(subject.address);
+      });
+    });
+
+    describe("verifyClaim", () => {
+      it("is true if issuer & claim match the subject", async () => {
+        await registry.setClaimWithSignature(
+          issuer.address,
+          subject.address,
+          value,
+          sig
+        );
+
+        const result = await registry.verifyClaim(
+          subject.address,
+          issuer.address,
+          sig
+        );
+
+        expect(result).to.eq(true);
+      });
+
+      it("is false if claim does not exist", async () => {
+        const result = await registry.verifyClaim(
+          subject.address,
+          issuer.address,
+          sig
+        );
+
+        expect(result).to.eq(false);
+      });
+
+      it("is false if subject is not the expected address", async () => {
+        await registry.setClaimWithSignature(
+          issuer.address,
+          subject.address,
+          value,
+          sig
+        );
+
+        const result = await registry.verifyClaim(
+          johnDoe.address,
+          issuer.address,
+          sig
+        );
+
+        expect(result).to.eq(false);
       });
     });
   });

@@ -7,13 +7,10 @@ import "hardhat/console.sol";
 import "./ClaimsRegistry/Verifier.sol";
 
 contract ClaimsRegistry is Verifier {
-  mapping(bytes32 => ClaimSignature) public registry;
+  mapping(bytes32 => Claim) public registry;
 
-  struct ClaimSignature {
-    uint8 v;
-    bytes32 r;
-    bytes32 s;
-    // TODO do we want validFrom/validTo?
+  struct Claim {
+    address subject;
   }
 
   // TODO events
@@ -21,55 +18,53 @@ contract ClaimsRegistry is Verifier {
   function setClaimWithSignature(
     address issuer,
     address subject,
-    bytes32 key,
     bytes32 hash,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
+    bytes calldata sig
   ) public {
-    // TODO do we need this?
-    require(msg.sender == issuer || msg.sender == subject);
+    require(verifyWithPrefix(hash, sig, issuer), "ClaimsRegistry: Claim signature does not match issuer");
 
-    bytes32 encryptedBytes = keccak256(abi.encodePacked(issuer, subject, key));
+    bytes32 encryptedBytes = keccak256(abi.encodePacked(issuer, sig));
 
-    require(verifyWithPrefix(hash, v, r, s) == issuer, "ClaimsRegistry: Claim signature does not match issuer");
-
-    ClaimSignature memory claim = ClaimSignature(v, r, s);
+    Claim memory claim = Claim(subject);
 
     registry[encryptedBytes] = claim;
   }
 
   function setSelfClaimWithSignature(
-    bytes32 key,
     bytes32 hash,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
+    bytes calldata sig
   ) public {
-    setClaimWithSignature(msg.sender, msg.sender, key, hash, v, r, s);
+    setClaimWithSignature(msg.sender, msg.sender, hash, sig);
   }
 
   function getClaim(
     address issuer,
+    bytes calldata sig
+  ) public view returns (address) {
+    bytes32 encryptedBytes = keccak256(abi.encodePacked(issuer, sig));
+
+    Claim memory claim = registry[encryptedBytes];
+
+    return (claim.subject);
+  }
+
+  function verifyClaim(
     address subject,
-    bytes32 key
-  ) public view returns (uint8, bytes32, bytes32) {
-    bytes32 encryptedBytes = keccak256(abi.encodePacked(issuer, subject, key));
-
-    ClaimSignature memory r = registry[encryptedBytes];
-
-    return (r.v, r.r, r.s);
+    address issuer,
+    bytes calldata sig
+  ) public view returns (bool) {
+    return getClaim(issuer, sig) == subject;
   }
 
   // TODO who can revoke claims and when?
   function removeClaim(
     address issuer,
     address subject,
-    bytes32 key
+    bytes calldata sig
   ) public {
     require(msg.sender == subject || msg.sender == issuer);
 
-    bytes32 encryptedBytes = keccak256(abi.encodePacked(issuer, msg.sender, key));
+    bytes32 encryptedBytes = keccak256(abi.encodePacked(issuer, sig));
     delete registry[encryptedBytes];
   }
 }
