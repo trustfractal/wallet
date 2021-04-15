@@ -1,6 +1,15 @@
 import { isArray, isPlainObject } from "./index";
 
-const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
+const compare = (a: string, b: string) => {
+  switch (true) {
+    case a < b:
+      return -1;
+    case a > b:
+      return 1;
+    default:
+      return 0;
+  }
+};
 
 export const deepSort = (term: any): any => {
   if (isArray(term)) return deepSortArray(term);
