@@ -41,15 +41,22 @@ describe("ClaimsRegistry", () => {
 
     describe("setClaimWithSignature", () => {
       it("issuer can subject a claim about a subject", async () => {
-        await registry
-          .connect(issuer)
-          .setClaimWithSignature(issuer.address, subject.address, value, sig);
+        const action = registry.setClaimWithSignature(
+          issuer.address,
+          subject.address,
+          value,
+          sig
+        );
+
+        expect(action).not.to.be.reverted;
       });
 
-      it("subject can issue a claimed pre-signed by the issuer", async () => {
-        await registry
-          .connect(subject)
+      it("any anonymous user can issue pre-signed claims", async () => {
+        const action = registry
+          .connect(johnDoe)
           .setClaimWithSignature(issuer.address, subject.address, value, sig);
+
+        expect(action).not.to.be.reverted;
       });
     });
 
