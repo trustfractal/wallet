@@ -62,11 +62,17 @@ describe("CurveRewardCalculator", () => {
       ])) as CurveRewardCalculator;
 
       expect(await calc.startDate()).to.eq(start);
-      expect(await calc.linearStartDate()).to.eq(oneYearLater);
       expect(await calc.endDate()).to.eq(twoYearsLater);
-      expect(await calc.maxCurveAPR()).to.eq(600);
-      expect(await calc.minCurveAPR()).to.eq(15);
-      expect(await calc.finalLinearAPR()).to.eq(10);
+
+      expect((await calc.curve()).start).to.eq(start);
+      expect((await calc.curve()).end).to.eq(oneYearLater);
+      expect((await calc.curve()).initialAPR).to.eq(600);
+      expect((await calc.curve()).finalAPR).to.eq(15);
+
+      expect((await calc.linear()).start).to.eq(oneYearLater);
+      expect((await calc.linear()).end).to.eq(twoYearsLater);
+      expect((await calc.linear()).initialAPR).to.eq(15);
+      expect((await calc.linear()).finalAPR).to.eq(10);
     });
 
     it("fails if startDate is in the past", async () => {
