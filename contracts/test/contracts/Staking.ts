@@ -138,8 +138,10 @@ describe("Staking", () => {
       .unix(start)
       .add(30 * 12, "day")
       .unix();
+    let now = start + 1000;
     const minSubscription = 100;
     let pool: any;
+    let amount: any;
     const APR = 10;
 
     const ensureTimestamp = (timestamp: number): Promise<unknown> => {
@@ -182,6 +184,10 @@ describe("Staking", () => {
 
       // pre-approve staking of 1000 tokens
       await fcl.approve(staking.address, parseEther("1000"));
+
+      amount = parseEther("1000");
+      now = start + 1000;
+      ensureTimestamp(now);
     });
 
     describe("stake", () => {
@@ -190,8 +196,6 @@ describe("Staking", () => {
       });
 
       it("transfers the desired amount tokens from your account to the contract", async () => {
-        const amount = parseEther("1000");
-
         const ownerBalanceBefore = await fcl.balanceOf(owner.address);
         const stakingBalanceBefore = await fcl.balanceOf(staking.address);
         await staking.stake(parseEther("1000"));
@@ -208,10 +212,23 @@ describe("Staking", () => {
         expect(await fcl.allowance(owner.address, staking.address)).to.eq(0);
       });
 
+      it("emits a subscription event", async () => {
+        const action = staking.stake(parseEther("1000"));
+
+        await expect(action)
+          .to.emit(staking, "Subscribed")
+          .withArgs(
+            owner.address,
+            now,
+            parseEther("1000"),
+            "98626966007102993404"
+          );
+      });
+
       it("fails if amount is 0", async () => {
         const action = staking.stake(parseEther("0"));
 
-        expect(action).to.be.revertedWith(
+        await expect(action).to.be.revertedWith(
           "Staking: staked amount needs to be greather than 0"
         );
       });
@@ -229,7 +246,7 @@ describe("Staking", () => {
 
         const action = staking.stake(parseEther("1"));
 
-        expect(action).to.be.revertedWith(
+        await expect(action).to.be.revertedWith(
           "Staking: staking period not started"
         );
       });
@@ -240,7 +257,7 @@ describe("Staking", () => {
 
         const action = staking.stake(parseEther("1000"));
 
-        expect(action).to.be.revertedWith(
+        await expect(action).to.be.revertedWith(
           "Staking: this account has already staked"
         );
       });
@@ -268,6 +285,20 @@ describe("Staking", () => {
         const result = await staking.getStake(owner.address);
 
         expect(result).to.eq(0);
+      });
+    });
+
+    describe("withdraw", () => {
+      it.only("emits a withdrawal event", async () => {
+        await staking.stake(parseEther("1000"));
+
+        ensureTimestamp(oneMonthLater);
+
+        const action = staking.withdraw();
+
+        await expect(action)
+          .to.emit(staking, "Withdrawn")
+          .withArgs(owner.address, oneMonthLater, "1008216007102993404363");
       });
     });
   });

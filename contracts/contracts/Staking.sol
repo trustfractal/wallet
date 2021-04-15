@@ -10,32 +10,44 @@ import "./Staking/LinearRewardCalculator.sol";
 
 contract Staking is StakingInfra, LinearRewardCalculator {
   ERC20 public erc20;
-  uint256 public startDate;
-  uint256 public endDate;
-  uint256 public totalMaxAmount;
-  uint256 public individualMinimumAmount;
-  uint256 public lockedTokens = 0;
+  uint public startDate;
+  uint public endDate;
+  uint public totalMaxAmount;
+  uint public individualMinimumAmount;
+  uint public lockedTokens = 0;
 
   mapping(address => Subscription) public subscriptions;
 
   // TODO events
+  event Subscribed(
+    address subscriber,
+    uint date,
+    uint stakedAmount,
+    uint maxReward
+  );
+
+  event Withdrawn(
+    address subscriber,
+    uint date,
+    uint withdrawAmount
+  );
 
   struct Subscription {
     address subscriberAddress;
-    uint256 startDate;
-    uint256 stakedAmount;
-    uint256 maxReward;
-    uint256 withdrawAmount;
-    uint256 withdrawDate;
+    uint startDate;
+    uint stakedAmount;
+    uint maxReward;
+    uint withdrawAmount;
+    uint withdrawDate;
   }
 
   constructor(
     address _tokenAddress,
-    uint256 _startDate,
-    uint256 _endDate,
-    uint256 _totalMaxAmount,
-    uint256 _individualMinimumAmount,
-    uint256 _APR
+    uint _startDate,
+    uint _endDate,
+    uint _totalMaxAmount,
+    uint _individualMinimumAmount,
+    uint _APR
   ) LinearRewardCalculator(_APR) {
     require(block.timestamp <= _startDate, "Staking: start date must be in the future");
     require(_startDate < _endDate, "Staking: end date must be after start date");
@@ -55,8 +67,8 @@ contract Staking is StakingInfra, LinearRewardCalculator {
     individualMinimumAmount = _individualMinimumAmount;
   }
 
-  function stake(uint256 _amount) external whenNotPaused {
-    uint256 time = block.timestamp;
+  function stake(uint _amount) external whenNotPaused {
+    uint time = block.timestamp;
     address subscriber = msg.sender;
 
     require(_amount > 0, "Staking: staked amount needs to be greather than 0");
@@ -68,7 +80,7 @@ contract Staking is StakingInfra, LinearRewardCalculator {
     require(erc20.transferFrom(subscriber, address(this), _amount),
       "Staking: Could not transfer tokens from subscriber");
 
-    uint256 maxReward = calculateReward(time, endDate, _amount);
+    uint maxReward = calculateReward(time, endDate, _amount);
     lockedTokens += _amount + maxReward;
 
     subscriptions[subscriber] = Subscription(
@@ -79,11 +91,13 @@ contract Staking is StakingInfra, LinearRewardCalculator {
       0,
       0
     );
+
+    emit Subscribed(subscriber, time, _amount, maxReward);
   }
 
   function withdraw() external whenNotPaused {
     address subscriber = msg.sender;
-    uint256 time = block.timestamp;
+    uint time = block.timestamp;
 
     require(subscriptions[subscriber].startDate > 0, "Staking: no subscription found for this address");
     require(subscriptions[subscriber].withdrawDate == 0, "Staking: subscription already withdrawn");
@@ -91,8 +105,8 @@ contract Staking is StakingInfra, LinearRewardCalculator {
     Subscription memory sub = subscriptions[subscriber];
 
 
-    uint256 reward = calculateReward(sub.startDate, time, sub.stakedAmount);
-    uint256 total = sub.stakedAmount + reward;
+    uint reward = calculateReward(sub.startDate, time, sub.stakedAmount);
+    uint total = sub.stakedAmount + reward;
 
 
     // transfer tokens back to subscriber
@@ -105,9 +119,11 @@ contract Staking is StakingInfra, LinearRewardCalculator {
 
     // update locked amount
     lockedTokens = lockedTokens - sub.stakedAmount + sub.maxReward;
+
+    emit Withdrawn(subscriber, time, total);
   }
 
-  function getStake(address _subscriber) external view returns (uint256) {
+  function getStake(address _subscriber) external view returns (uint) {
     if (subscriptions[_subscriber].stakedAmount > 0 && subscriptions[_subscriber].withdrawDate == 0) {
       return subscriptions[_subscriber].stakedAmount;
     } else {

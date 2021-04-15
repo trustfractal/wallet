@@ -48,7 +48,7 @@ describe("ClaimsRegistry", () => {
           sig
         );
 
-        expect(action).not.to.be.reverted;
+        await expect(action).not.to.be.reverted;
       });
 
       it("any anonymous user can issue pre-signed claims", async () => {
@@ -56,7 +56,7 @@ describe("ClaimsRegistry", () => {
           .connect(johnDoe)
           .setClaimWithSignature(issuer.address, subject.address, value, sig);
 
-        expect(action).not.to.be.reverted;
+        await expect(action).not.to.be.reverted;
       });
     });
 
