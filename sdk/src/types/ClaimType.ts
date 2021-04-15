@@ -10,11 +10,11 @@ export interface IClaimPseudoSchema {
     };
   };
   title: string;
+  type: "object";
 }
 
 export interface IClaimSchema extends IClaimPseudoSchema {
   $id: string;
-  type: "object";
 }
 
 export interface IClaimType {

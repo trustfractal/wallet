@@ -18,4 +18,10 @@ export default class FractalError extends Error {
         Properties: ${JSON.stringify(properties)}
         Schema: ${JSON.stringify(schema)}`);
   }
+
+  public static invalidHashing(term: any) {
+    return new FractalError(
+      `Invalid term to be hashed: ${JSON.stringify(term)}`
+    );
+  }
 }

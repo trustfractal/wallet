@@ -28,7 +28,6 @@ export default class ClaimType implements IClaimType {
       schema: {
         ...schema,
         $id: `fractal:ctype:${hash}`,
-        type: "object",
       },
     });
   }
@@ -42,6 +41,7 @@ export default class ClaimType implements IClaimType {
       $schema: schema || DEFAULT_SCHEMA_VERSION,
       title,
       properties,
+      type: "object",
     };
   }
 }

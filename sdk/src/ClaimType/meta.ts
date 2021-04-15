@@ -28,7 +28,7 @@ export const ClaimTypeMetaschema = {
           properties: {
             type: {
               type: "string",
-              enum: ["string", "integer", "number", "boolean"],
+              enum: ["string", "integer", "number", "boolean", "object"],
             },
             $ref: {
               type: "string",
@@ -38,6 +38,18 @@ export const ClaimTypeMetaschema = {
               type: "string",
               enum: ["date", "time", "uri"],
             },
+            properties: {
+              type: "object",
+            },
+          },
+          if: {
+            properties: { type: { const: "object" } },
+          },
+          then: {
+            required: ["properties"],
+          },
+          else: {
+            not: { required: ["properties"] },
           },
           additionalProperties: false,
           oneOf: [
