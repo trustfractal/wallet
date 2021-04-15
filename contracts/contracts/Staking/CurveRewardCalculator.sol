@@ -11,87 +11,138 @@ pragma solidity ^0.8.3;
 import "hardhat/console.sol";
 
 contract CurveRewardCalculator {
-  uint256 public startDate;       // beginning of curve period
-  uint256 public linearStartDate; // end of curve period / beginning of linear period
-  uint256 public endDate;         // end of linear period (and entire staking)
+  struct Period {
+    uint32 start;
+    uint32 end;
+    uint32 initialAPR;
+    uint32 finalAPR;
+  }
 
-  uint256 public maxCurveAPR;    // beginning of the curve corresponds to this APR
-  uint256 public minCurveAPR;    // end of the curve (and beginning of linear period) corresponds to this APR
-  uint256 public finalLinearAPR; // lienar period descends towards this APR
+  Period public curve;
+  Period public linear;
 
   uint256 constant private year = 365 days;
   int256 private constant mul = 100000000;
 
   constructor(
-    uint256 _startDate,
-    uint256 _linearStartDate,
-    uint256 _endDate,
-    uint256 _maxCurveAPR,
-    uint256 _minCurveAPR,
-    uint256 _finalLinearAPR
+    uint32 _startDate,
+    uint32 _linearStartDate,
+    uint32 _endDate,
+    uint32 _maxCurveAPR,
+    uint32 _minCurveAPR,
+    uint32 _finalLinearAPR
   ) {
     require(block.timestamp <= _startDate, "CurveRewardCalculator: start date must be in the future");
-    require(_startDate < _linearStartDate, "CurveRewardCalculator: linear start date must be after curve start date");
-    require(_linearStartDate <= _endDate, "CurveRewardCalculator: end date must be after or at linear start date");
+    require( _startDate < _linearStartDate, "CurveRewardCalculator: linear start date must be after curve start date");
+    require( _linearStartDate <= _endDate, "CurveRewardCalculator: end date must be after or at linear start date");
+    require( _maxCurveAPR > _minCurveAPR, "CurveRewardCalculator: maxCurveAPR needs to be greater than minCurveAPR");
+    require(
+      _minCurveAPR > _finalLinearAPR,
+      "CurveRewardCalculator: minCurveAPR needs to be greater than finalLinearAPR"
+    );
 
-    require(_maxCurveAPR > _minCurveAPR, "CurveRewardCalculator: maxCurveAPR needs to be greater than minCurveAPR");
-    require(_minCurveAPR > _finalLinearAPR, "CurveRewardCalculator: minCurveAPR needs to be greater than finalLinearAPR");
-
-    startDate = _startDate;
-    linearStartDate = _linearStartDate;
-    endDate = _endDate;
-    maxCurveAPR = _maxCurveAPR;
-    minCurveAPR = _minCurveAPR;
-    finalLinearAPR = _finalLinearAPR;
+    curve = Period(_startDate, _linearStartDate, _maxCurveAPR, _minCurveAPR);
+    linear = Period(_linearStartDate, _endDate, _minCurveAPR, _finalLinearAPR);
   }
 
-  function calculateReward(uint256 _start, uint256 _end) public view returns (uint256) {
-    return curvePeriodReward(_start, _end) + linearPeriodReward(_start, _end);
+  function startDate() public view returns (uint32) {
+    return curve.start;
   }
 
-  function curvePeriodReward(uint256 _start, uint256 _end) public view returns (uint256) {
-    // stake has started after curve period ended
-    if (_start >= linearStartDate) {
-      return 0;
+  function endDate() public view returns (uint32) {
+    return linear.end;
+  }
+
+  function calculateReward(
+    uint32 _start,
+    uint32 _end,
+    uint256 _amount
+  ) public view returns (uint256) {
+    uint256 curveReward = calculatePeriodReward(
+      _start,
+      _end,
+      _amount,
+      curve,
+      curvePeriodAPR
+    );
+
+    uint256 linearReward = calculatePeriodReward(
+      _start,
+      _end,
+      _amount,
+      linear,
+      linearPeriodAPR
+    );
+
+    return curveReward + linearReward;
+  }
+
+  function calculatePeriodReward(
+    uint32 _start,
+    uint32 _end,
+    uint256 _amount,
+    Period memory period,
+    function(uint32,uint32) view returns(uint256) calculateAPR
+  ) internal view returns (uint256) {
+    (uint32 start, uint32 end) = truncateToPeriod(_start, _end, period.start, period.end);
+    (uint32 startPercent, uint32 endPercent) = toPeriodPercents(start, end, period.start, period.end);
+
+    uint256 APR = calculateAPR(startPercent, endPercent);
+
+    return calculateFromAPR(start, end, _amount, APR);
+  }
+
+  function toPeriodPercents(
+    uint32 _start,
+    uint32 _end,
+    uint32 _periodStart,
+    uint32 _periodEnd
+  ) internal pure returns (uint32, uint32) {
+    uint32 totalDuration = _periodEnd - _periodStart;
+
+    if (totalDuration == 0) {
+      return (0, 100);
     }
 
-    // TODO
-    return 0;
-    // grab only range inside curve period
-    uint256 start = _start;
-    uint256 end = _end > linearStartDate ? linearStartDate : _end;
+    uint32 startPercent = (_start - _periodStart) * 100 / totalDuration;
+    uint32 endPercent = (_end - _periodStart) * 100 / totalDuration;
 
-    uint256 maxDuration = linearStartDate - startDate;
-    uint256 startPercent = (start - startDate) * 100 / maxDuration;
-    uint256 endPercent = (end - startDate) * 100 / maxDuration;
+    return (startPercent, endPercent);
+  }
 
+  function truncateToPeriod(
+    uint32 _start,
+    uint32 _end,
+    uint32 _periodStart,
+    uint32 _periodEnd
+  ) internal pure returns (uint32, uint32) {
+    if (_end <= _periodStart || _start >= _periodEnd) {
+      return (_periodStart, _periodStart);
+    }
+
+    uint32 start = _start < _periodStart ? _periodStart : _start;
+    uint32 end = _end > _periodEnd ? _periodEnd : _end;
+
+    return (start, end);
+  }
+
+  function curvePeriodAPR(uint32 _start, uint32 _end) internal view returns (uint256) {
     int256 maxArea = integralAtPoint(100) - integralAtPoint(0);
-    int256 actualArea = integralAtPoint(endPercent) - integralAtPoint(startPercent);
+    int256 actualArea = integralAtPoint(_end) - integralAtPoint(_start);
 
     uint256 ratio = uint256(actualArea * 100 / maxArea);
-    console.log("ratio: %d", ratio);
 
-    return minCurveAPR + (maxCurveAPR - minCurveAPR) * ratio;
+    return curve.finalAPR * 100 + (curve.initialAPR- curve.finalAPR) * ratio;
   }
 
-  function linearPeriodReward(uint256 _start, uint256 _end) public view returns (uint256) {
-    // stake has ended before linear period started
-    if (_end <= linearStartDate) {
-      return 0;
-    }
+  function linearPeriodAPR(uint32 _startPercent, uint32 _endPercent) internal view returns (uint256) {
+    uint32 mid = 100 - (_startPercent + _endPercent) / 2;
 
-    // grab only range inside linear period
-    uint256 start = _start < linearStartDate ? linearStartDate : _start;
-    uint256 end = _end;
-
-    uint256 maxDuration = endDate - linearStartDate;
-    uint256 actualDuration = end - start;
-
-    return 0;
+    return linear.finalAPR * 100 + (linear.initialAPR - linear.finalAPR) * mid;
   }
 
-  function integralAtPoint(uint256 _x) public view returns (int256) {
-    int256 x = int256(_x);
+  function integralAtPoint(uint32 _x) internal pure returns (int256) {
+    int32 x = int32(_x);
     int256 p1 = (x ** 3) * mul / 300;
     int256 p2 = (x ** 2) * mul;
     int256 p3 = (x ** 1) * 100 * mul;
@@ -99,11 +150,14 @@ contract CurveRewardCalculator {
     return (p1 - p2 + p3) / mul;
   }
 
-  function calculateFromAverageAPR(
-    uint256 _duration,
+  function calculateFromAPR(
+    uint32 _start,
+    uint32 _end,
     uint256 _amount,
     uint256 _averageAPR
-  ) public view returns(uint256) {
-    return (_duration * _averageAPR * _amount) / (year * 100);
+  ) public pure returns(uint256) {
+    uint32 duration = _end - _start;
+
+    return (duration * _averageAPR * _amount) / (year * 100 * 100);
   }
 }
