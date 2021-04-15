@@ -10,3 +10,10 @@ export interface IClaim {
   owner: Address | null;
   properties: IClaimProperties;
 }
+
+export interface IClaimHashNode {
+  hash: Hash;
+  nonce?: string;
+}
+
+export type IClaimHashTree = Record<string, IClaimHashNode>;
