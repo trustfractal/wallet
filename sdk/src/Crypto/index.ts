@@ -1,6 +1,11 @@
 import Web3 from "web3";
 
-import { isArray, isPlainObject, deepSortObject, deepSortArray } from "../utils";
+import {
+  isArray,
+  isPlainObject,
+  deepSortObject,
+  deepSortArray,
+} from "../utils";
 
 import FractalError from "../FractalError";
 

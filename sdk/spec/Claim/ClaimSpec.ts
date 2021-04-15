@@ -3,7 +3,7 @@ import "jasmine";
 import Claim from "@src/Claim";
 import ClaimType from "@src/ClaimType";
 
-describe("build", () => {
+describe("constructor", () => {
   it("errors for invalid ClaimTypes", () => {
     const pseudoSchema = ClaimType.buildSchema("Foo", {
       name: { type: "string" },
@@ -19,7 +19,7 @@ describe("build", () => {
     schema["$schema"] = 1;
 
     // @ts-ignore
-    const wrapper = () => Claim.build(claimType, properties, owner);
+    const wrapper = () => new Claim(claimType, properties, owner);
 
     expect(wrapper).toThrowError(Error, /Invalid ClaimType schema/);
   });
@@ -34,7 +34,7 @@ describe("build", () => {
     const owner = "0x0";
     const properties = { name: "Foo", age: "20" };
 
-    const wrapper = () => Claim.build(claimType, properties, owner);
+    const wrapper = () => new Claim(claimType, properties, owner);
 
     expect(wrapper).toThrowError(Error, /Properties do not match/);
   });
@@ -49,7 +49,7 @@ describe("build", () => {
     const owner = "0x0";
     const properties = { name: "Foo", age: 20 };
 
-    const result = Claim.build(claimType, properties, owner);
+    const result = new Claim(claimType, properties, owner);
     expect(result).toBeInstanceOf(Claim);
     expect(result.claimTypeHash).toEqual(claimType.hash);
   });

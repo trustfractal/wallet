@@ -1,5 +1,9 @@
 import "jasmine";
-import { deepSortObject, deepSortArray } from "../../src/utils";
+import {
+  deepSortObject,
+  deepSortArray,
+  normaliseObject,
+} from "../../src/utils";
 import { jsonabc } from "@kiltprotocol/utils";
 
 describe("deepSortObject", () => {
@@ -101,5 +105,30 @@ describe("deepSortArray", () => {
     const str1 = JSON.stringify(ourVersion);
     const str2 = JSON.stringify(kiltVersion);
     expect(str1).toEqual(str2);
+  });
+});
+
+describe("normaliseObject", () => {
+  it("normalise an object to a flat array of objects", () => {
+    const obj = {
+      first_name: "Foo",
+      last_name: "Bar",
+      age: 20,
+      address: {
+        street: "Tinsel Street",
+        city: "Metropolis",
+      },
+    };
+
+    const output = [
+      '{"first_name":"Foo"}',
+      '{"last_name":"Bar"}',
+      '{"age":20}',
+      '{"address":{"street":"Tinsel Street","city":"Metropolis"}}',
+    ];
+
+    const response = normaliseObject(obj);
+
+    expect(response).toEqual(output);
   });
 });

@@ -7,3 +7,9 @@ export const isPlainObject = (term: any): boolean =>
   term !== null &&
   term.constructor === Object &&
   Object.prototype.toString.call(term) === "[object Object]";
+
+export const normaliseObject = (obj: any) => {
+  return Object.entries(obj).map(([key, value]) =>
+    JSON.stringify({ [key]: value })
+  );
+};
