@@ -38,9 +38,9 @@ const validateRootHash = ({
   claimHashTree,
   claim: { owner },
 }: IAttestationRequest) => {
-  const sortedHashTree = Object.values(deepSortObject(claimHashTree)).map(
-    ({ hash }: { hash: string }) => hash
-  );
+  const sortedHashTree = Object.values(deepSortObject(claimHashTree))
+    .map(({ hash }: { hash: string }) => hash)
+    .sort();
   const hashes = [...sortedHashTree, claimTypeHash, owner].join("");
 
   const expectedRootHash = soliditySha3(hashes) || "";

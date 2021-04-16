@@ -1,3 +1,5 @@
+import { IAttestationRequest, ICredential } from "@src/types";
+
 export default class FractalError extends Error {
   constructor(message: string) {
     super(message);
@@ -22,6 +24,22 @@ export default class FractalError extends Error {
   public static invalidHashing(term: any) {
     return new FractalError(
       `Invalid term to be hashed: ${JSON.stringify(term)}`
+    );
+  }
+
+  public static credentialFromUnsignedRequest(request: IAttestationRequest) {
+    return new FractalError(
+      `Cannot generate a credential from an unsigned request: ${JSON.stringify(
+        request
+      )}`
+    );
+  }
+
+  public static credentialFromInvalidRequest(request: IAttestationRequest) {
+    return new FractalError(
+      `Cannot generate a credential from an invalid request: ${JSON.stringify(
+        request
+      )}`
     );
   }
 }
