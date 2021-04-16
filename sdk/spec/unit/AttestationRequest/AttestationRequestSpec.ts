@@ -6,31 +6,6 @@ import Crypto from "@src/Crypto";
 import ClaimType from "@src/ClaimType";
 import Claim from "@src/Claim";
 import AttestationRequest from "@src/AttestationRequest";
-import { IAttestationRequest } from "@src/types";
-
-const validateHashTree = (
-  properties: object,
-  attestationRequest: IAttestationRequest
-) => {
-  Object.entries(properties).forEach(([key, value]: [string, any]) => {
-    const hashableKey = `${attestationRequest.claim.claimTypeHash}#${key}`;
-    const hashable = JSON.stringify({ [hashableKey]: value });
-    const { nonce, hash } = attestationRequest.claimHashTree[key];
-
-    const { hash: expectedHash } = Crypto.hashWithNonce(hashable, nonce);
-
-    expect(hash).toEqual(expectedHash);
-  });
-};
-
-const validateClaimTypeHash = (
-  { claimTypeHash: { nonce, hash } }: IAttestationRequest,
-  claimTypeHash: string
-) => {
-  const { hash: expectedHash } = Crypto.hashWithNonce(claimTypeHash, nonce);
-
-  expect(hash).toEqual(expectedHash);
-};
 
 const pseudoSchema = ClaimType.buildSchema("Foo", {
   name: { type: "string" },
@@ -60,8 +35,21 @@ describe("fromClaim", () => {
 
     const attestationRequest = AttestationRequest.fromClaim(claim);
 
-    validateHashTree(properties, attestationRequest);
-    validateClaimTypeHash(attestationRequest, claim.claimTypeHash);
+    const { claimTypeHash, claimHashTree } = attestationRequest;
+
+    const validClaimTypeHash = Crypto.verifyHashWithNonce(
+      claimTypeHash,
+      claim.claimTypeHash
+    );
+
+    const validHashTree = Crypto.verifyClaimHashTree(
+      claimHashTree,
+      claim.properties,
+      claim.claimTypeHash
+    );
+
+    expect(validClaimTypeHash).toBeTrue();
+    expect(validHashTree).toBeTrue();
   });
 });
 
@@ -176,7 +164,7 @@ describe("validateClaimTypeHash", () => {
     address: { street: "Tinsel Street", city: "Metropolis" },
   };
 
-  it("is true for valid claim hash trees", () => {
+  it("is true for valid claim type hashes", () => {
     const claim = new Claim(claimType, properties, wallet.address);
     const request = AttestationRequest.fromClaim(claim);
 
@@ -253,7 +241,7 @@ describe("validateRootHash", () => {
     expect(request.validateRootHash()).not.toBeTrue();
   });
 
-  it("is false for tampered claim type hash trees", async () => {
+  it("is false for tampered claim hash trees", async () => {
     const claim = new Claim(claimType, properties, wallet.address);
     const request = AttestationRequest.fromClaim(claim);
 
