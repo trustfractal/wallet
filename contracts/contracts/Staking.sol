@@ -6,12 +6,10 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "hardhat/console.sol";
 
 import "./Staking/Infra.sol";
-import "./Staking/LinearRewardCalculator.sol";
+import "./Staking/CurveRewardCalculator.sol";
 
-contract Staking is StakingInfra, LinearRewardCalculator {
+contract Staking is StakingInfra, CurveRewardCalculator {
   ERC20 public erc20;
-  uint public startDate;
-  uint public endDate;
   uint public totalMaxAmount;
   uint public individualMinimumAmount;
   uint public lockedTokens = 0;
@@ -44,13 +42,15 @@ contract Staking is StakingInfra, LinearRewardCalculator {
   constructor(
     address _tokenAddress,
     uint _startDate,
+    uint _linearStartDate,
     uint _endDate,
     uint _totalMaxAmount,
     uint _individualMinimumAmount,
-    uint _APR
-  ) LinearRewardCalculator(_APR) {
+    uint _maxCurveAPR,
+    uint _minCurveAPR,
+    uint _finalLinearAPR
+  ) CurveRewardCalculator(_startDate, _linearStartDate, _endDate, _maxCurveAPR, _minCurveAPR, _finalLinearAPR) {
     require(block.timestamp <= _startDate, "Staking: start date must be in the future");
-    require(_startDate < _endDate, "Staking: end date must be after start date");
     require(_totalMaxAmount > 0, "Staking: invalid max amount");
     require(_individualMinimumAmount > 0, "Staking: invalid individual min amount");
     require(
@@ -61,8 +61,6 @@ contract Staking is StakingInfra, LinearRewardCalculator {
     erc20 = ERC20(_tokenAddress);
     require(_totalMaxAmount <= erc20.totalSupply(), "Staking: max amount is greater than total available supply");
 
-    startDate = _startDate;
-    endDate = _endDate;
     totalMaxAmount = _totalMaxAmount;
     individualMinimumAmount = _individualMinimumAmount;
   }
@@ -72,15 +70,15 @@ contract Staking is StakingInfra, LinearRewardCalculator {
     address subscriber = msg.sender;
 
     require(_amount > 0, "Staking: staked amount needs to be greather than 0");
-    require(time >= startDate, "Staking: staking period not started");
-    require(time < endDate, "Staking: staking period finished");
+    require(time >= startDate(), "Staking: staking period not started");
+    require(time < endDate(), "Staking: staking period finished");
     require(subscriptions[subscriber].startDate == 0, "Staking: this account has already staked");
 
     // transfer tokens from subscriber to the contract
     require(erc20.transferFrom(subscriber, address(this), _amount),
       "Staking: Could not transfer tokens from subscriber");
 
-    uint maxReward = calculateReward(time, endDate, _amount);
+    uint maxReward = calculateReward(time, endDate(), _amount);
     lockedTokens += _amount + maxReward;
 
     subscriptions[subscriber] = Subscription(

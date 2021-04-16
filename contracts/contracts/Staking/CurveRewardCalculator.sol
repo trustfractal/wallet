@@ -138,7 +138,7 @@ contract CurveRewardCalculator {
   function linearPeriodAPR(uint _startPercent, uint _endPercent) internal view returns (uint) {
     uint mid = 100 - (_startPercent + _endPercent) / 2;
 
-    return linear.finalAPR + (linear.initialAPR - linear.finalAPR) * mid;
+    return linear.finalAPR * 100 + (linear.initialAPR - linear.finalAPR) * mid;
   }
 
   function integralAtPoint(uint _x) internal view returns (int) {

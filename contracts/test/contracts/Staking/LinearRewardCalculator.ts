@@ -45,16 +45,11 @@ describe("LinearRewardCalculator", () => {
      * and 50% of the supply available as rewards
      */
     let start = dayjs().unix();
-    let oneDayLater = dayjs.unix(start).add(1, "day").unix();
-    let oneMonthLater = dayjs.unix(start).add(30, "day").unix();
-    let sixMonthsLater = dayjs
-      .unix(start)
-      .add(30 * 6, "day")
-      .unix();
-    let oneYearLater = dayjs
-      .unix(start)
-      .add(30 * 12, "day")
-      .unix();
+    let oneDay = 3600 * 24;
+    let oneDayLater = start + oneDay;
+    let oneMonthLater = start + oneDay * 30;
+    let sixMonthsLater = start + (oneDay * 365) / 2;
+    let oneYearLater = start + oneDay * 365;
     const APR = 10;
 
     const ensureTimestamp = (timestamp: number): Promise<unknown> => {
@@ -68,16 +63,9 @@ describe("LinearRewardCalculator", () => {
 
       start = timestamp + 1;
 
-      oneDayLater = dayjs.unix(start).add(1, "day").unix();
-      oneMonthLater = dayjs.unix(start).add(30, "day").unix();
-      sixMonthsLater = dayjs
-        .unix(start)
-        .add(30 * 6, "day")
-        .unix();
-      oneYearLater = dayjs
-        .unix(start)
-        .add(30 * 12, "day")
-        .unix();
+      oneMonthLater = start + oneDay * 30;
+      sixMonthsLater = start + (oneDay * 365) / 2;
+      oneYearLater = start + oneDay * 365;
 
       ensureTimestamp(start);
 
@@ -95,31 +83,19 @@ describe("LinearRewardCalculator", () => {
 
     it("for the entire period", async () => {
       expect(await rewardForPeriod(start, oneYearLater)).to.equal(
-        amount
-          .mul(APR)
-          .mul(30 * 12)
-          .div(365)
-          .div(100)
+        amount.mul(APR).div(100)
       );
     });
 
     it("only first 6 months", async () => {
       expect(await rewardForPeriod(start, sixMonthsLater)).to.equal(
-        amount
-          .mul(APR)
-          .mul(30 * 6)
-          .div(365)
-          .div(100)
+        amount.mul(APR).div(2).div(100)
       );
     });
 
     it("last 6 months", async () => {
       expect(await rewardForPeriod(sixMonthsLater, oneYearLater)).to.equal(
-        amount
-          .mul(APR)
-          .mul(30 * 6)
-          .div(365)
-          .div(100)
+        amount.mul(APR).div(2).div(100)
       );
     });
 
