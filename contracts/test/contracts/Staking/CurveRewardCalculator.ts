@@ -332,8 +332,6 @@ describe("CurveRewardCalculator", () => {
         }
       });
     });
-
-    describe("curvePeriodReward", () => {});
   });
 
   describe("public functions", () => {
