@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import Crypto from "@src/Crypto";
 import ClaimType from "@src/ClaimType";
 import Claim from "@src/Claim";
-import AttestationRequest from "@src/Attestation/Request";
+import AttestationRequest from "@src/AttestationRequest";
 import { IAttestationRequest } from "@src/types";
 
 const validateHashTree = (
