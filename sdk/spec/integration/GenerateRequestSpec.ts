@@ -5,8 +5,6 @@ import AttestationRequest from "@src/AttestationRequest";
 import Claim from "@src/Claim";
 import ClaimType from "@src/ClaimType";
 
-import utils from "./utils";
-
 describe("generate a request", () => {
   it("results in a valid AttestationRequest", async () => {
     // Create the necessary ethereum accounts
@@ -31,19 +29,12 @@ describe("generate a request", () => {
     const claimerSignature = await wallet.signMessage(request.rootHash);
     request.claimerSignature = claimerSignature;
 
-    // Run the expectations: all fields are defined
+    // Run the expectations: all fields are defined && valid
     expect(request.claimerSignature).toBeDefined();
     expect(request.claim).toBeDefined();
     expect(request.claimHashTree).toBeDefined();
     expect(request.claimTypeHash).toBeDefined();
     expect(request.rootHash).toBeDefined();
-
-    // Run the validations: ensure all fields are valid
-    utils.validateHashTree(properties, request);
-    utils.validateClaimTypeHash(request, claim.claimTypeHash);
-    utils.validateRootHash(request);
-    utils.validateClaimerSignature(request, wallet.address);
-
     expect(request.validate()).toBeTrue();
   });
 });

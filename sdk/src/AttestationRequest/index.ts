@@ -1,7 +1,4 @@
-import { utils as ethersUtils } from "ethers";
-
 import Crypto from "@src/Crypto";
-import { deepSortObject } from "@src/utils";
 
 import {
   Hash,
@@ -67,73 +64,43 @@ export default class Request implements IAttestationRequest {
   }
 
   public validateClaimerSignature(): boolean {
-    if (!this.claimerSignature || !this.rootHash) return false;
+    if (!this.claimerSignature || !this.claim.owner) return false;
 
-    const expectedSigner = ethersUtils.verifyMessage(
+    return Crypto.verifySignature(
+      this.claimerSignature,
       this.rootHash,
-      this.claimerSignature
+      this.claim.owner
     );
-
-    return expectedSigner === this.claim.owner;
   }
 
   public validateClaimHashTree(): boolean {
-    if (
-      !this.claim ||
-      !this.claim.properties ||
-      !this.claim.claimTypeHash ||
-      !this.claimHashTree
-    )
-      return false;
-
     const { properties, claimTypeHash } = this.claim;
 
-    const hashTree = Object.entries(properties).reduce(
-      (memo: HashTree, [key, value]: [string, any]) => {
-        const hashableKey = `${claimTypeHash}#${key}`;
-        const hashable = JSON.stringify({ [hashableKey]: value });
-
-        const { nonce } = this.claimHashTree[key];
-
-        memo[key] = Crypto.hashWithNonce(hashable, nonce);
-
-        return memo;
-      },
-      {}
+    return Crypto.verifyClaimHashTree(
+      this.claimHashTree,
+      properties,
+      claimTypeHash
     );
-
-    const expectedHashTree = deepSortObject(hashTree);
-    const claimHashTree = deepSortObject(this.claimHashTree);
-
-    return JSON.stringify(expectedHashTree) === JSON.stringify(claimHashTree);
   }
 
   public validateClaimTypeHash(): boolean {
-    if (!this.claimTypeHash) return false;
-
-    const { nonce } = this.claimTypeHash;
-    const { hash: expectedHash } = Crypto.hashWithNonce(
-      this.claim.claimTypeHash,
-      nonce
+    return Crypto.verifyHashWithNonce(
+      this.claimTypeHash,
+      this.claim.claimTypeHash
     );
-
-    const { hash } = this.claimTypeHash;
-
-    return hash === expectedHash;
   }
 
   public validateRootHash(): boolean {
     const { owner } = this.claim;
     const { hash: claimTypeHash } = this.claimTypeHash;
 
-    if (!owner || !claimTypeHash || !this.claimHashTree) return false;
+    if (!owner) return false;
 
-    const expectedHash = Crypto.calculateRootHash(
+    return Crypto.verifyRootHash(
       this.claimHashTree,
       claimTypeHash,
-      owner
+      owner,
+      this.rootHash
     );
-
-    return this.rootHash === expectedHash;
   }
 }
