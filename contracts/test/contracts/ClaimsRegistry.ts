@@ -29,6 +29,7 @@ describe("ClaimsRegistry", () => {
     let issuer: any;
     let subject: any;
     let johnDoe: any;
+    let dataToSign: any;
     let sig: any;
 
     beforeEach(async () => {
@@ -36,7 +37,8 @@ describe("ClaimsRegistry", () => {
       issuer = signers[0];
       subject = signers[1];
       johnDoe = signers[2];
-      sig = await issuer.signMessage(value);
+      dataToSign = arrayify(await registry.computeKey(subject.address, value));
+      sig = await issuer.signMessage(dataToSign);
     });
 
     describe("setClaimWithSignature", () => {
@@ -62,6 +64,9 @@ describe("ClaimsRegistry", () => {
 
     describe("setSelfClaimWithSignature", () => {
       it("registers a self claim when given a valid signature", async () => {
+        dataToSign = arrayify(await registry.computeKey(issuer.address, value));
+        sig = await issuer.signMessage(dataToSign);
+
         await registry.connect(issuer).setSelfClaimWithSignature(value, sig);
       });
     });

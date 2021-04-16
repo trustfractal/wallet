@@ -18,10 +18,12 @@ contract ClaimsRegistry is Verifier {
   function setClaimWithSignature(
     address issuer,
     address subject,
-    bytes32 hash,
+    bytes32 claimHash,
     bytes calldata sig
   ) public {
-    require(verifyWithPrefix(hash, sig, issuer), "ClaimsRegistry: Claim signature does not match issuer");
+    bytes32 signable = computeSignableHash(subject, claimHash);
+
+    require(verifyWithPrefix(signable, sig, issuer), "ClaimsRegistry: Claim signature does not match issuer");
 
     bytes32 encryptedBytes = keccak256(abi.encodePacked(issuer, sig));
 
@@ -31,10 +33,10 @@ contract ClaimsRegistry is Verifier {
   }
 
   function setSelfClaimWithSignature(
-    bytes32 hash,
+    bytes32 claimHash,
     bytes calldata sig
   ) public {
-    setClaimWithSignature(msg.sender, msg.sender, hash, sig);
+    setClaimWithSignature(msg.sender, msg.sender, claimHash, sig);
   }
 
   function getClaim(
@@ -66,5 +68,9 @@ contract ClaimsRegistry is Verifier {
 
     bytes32 encryptedBytes = keccak256(abi.encodePacked(issuer, sig));
     delete registry[encryptedBytes];
+  }
+
+  function computeSignableKey(address subject, bytes32 hash) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(subject, hash));
   }
 }
