@@ -9,7 +9,7 @@ import {
 } from "../utils";
 
 import FractalError from "../FractalError";
-import { Hash, IClaim, IClaimHashNode, IClaimHashTree } from "@src/types";
+import { IClaim, IClaimHashNode, IClaimHashTree } from "@src/types";
 
 const web3 = new Web3();
 
@@ -71,12 +71,15 @@ const buildHashTree = ({ properties, claimTypeHash }: IClaim): IClaimHashTree =>
     {}
   );
 
-const calculateRootHash = (hashTree: IClaimHashTree): Hash => {
-  const sortedTree = deepSortObject(hashTree);
+const calculateRootHash = (
+  claimHashTree: IClaimHashTree,
+  claimTypeHash: string,
+  owner: string
+): string => {
+  const sortedTree = deepSortObject(claimHashTree);
+  const sortedHashes = Object.values(sortedTree).map(({ hash }) => hash);
 
-  const hashable = Object.values(sortedTree)
-    .map(({ hash }) => hash)
-    .join("");
+  const hashable = [...sortedHashes, claimTypeHash, owner].join("");
 
   return hash(hashable);
 };

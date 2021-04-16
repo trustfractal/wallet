@@ -1,10 +1,6 @@
 import "jasmine";
-import {
-  deepSortObject,
-  deepSortArray,
-  normaliseObject,
-} from "../../src/utils";
 import { jsonabc } from "@kiltprotocol/utils";
+import { deepSortObject, deepSortArray, normaliseObject } from "@src/utils";
 
 describe("deepSortObject", () => {
   it("sorts equivalent objects", () => {

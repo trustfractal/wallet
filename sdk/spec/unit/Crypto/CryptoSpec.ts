@@ -76,9 +76,12 @@ describe("calculateRootHash", () => {
       },
     };
 
-    const expectedHash = soliditySha3("0x00x1") || "";
+    const claimTypeHash = "0x2";
+    const owner = "0x3";
 
-    const hash = Crypto.calculateRootHash(hashTree);
+    const expectedHash = soliditySha3("0x00x10x20x3") || "";
+
+    const hash = Crypto.calculateRootHash(hashTree, claimTypeHash, owner);
 
     expect(hash).toEqual(expectedHash);
     expect(hash).not.toEqual("");
@@ -107,8 +110,11 @@ describe("calculateRootHash", () => {
       },
     };
 
-    const hash1 = Crypto.calculateRootHash(hashTree1);
-    const hash2 = Crypto.calculateRootHash(hashTree2);
+    const claimTypeHash = "0x2";
+    const owner = "0x3";
+
+    const hash1 = Crypto.calculateRootHash(hashTree1, claimTypeHash, owner);
+    const hash2 = Crypto.calculateRootHash(hashTree2, claimTypeHash, owner);
 
     expect(hash1).toEqual(hash2);
   });
