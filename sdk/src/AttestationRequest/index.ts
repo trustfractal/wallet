@@ -7,8 +7,8 @@ import {
   Hash,
   IAttestationRequest,
   IClaim,
-  IClaimHashNode,
-  IClaimHashTree,
+  HashWithNonce,
+  HashTree,
   Signature,
 } from "@src/types";
 
@@ -33,8 +33,8 @@ export default class Request implements IAttestationRequest {
 
   public claim: IClaim;
   public claimerSignature?: Signature;
-  public claimHashTree: IClaimHashTree;
-  public claimTypeHash: IClaimHashNode;
+  public claimHashTree: HashTree;
+  public claimTypeHash: HashWithNonce;
   public rootHash: Hash;
 
   public constructor({
@@ -89,7 +89,7 @@ export default class Request implements IAttestationRequest {
     const { properties, claimTypeHash } = this.claim;
 
     const hashTree = Object.entries(properties).reduce(
-      (memo: IClaimHashTree, [key, value]: [string, any]) => {
+      (memo: HashTree, [key, value]: [string, any]) => {
         const hashableKey = `${claimTypeHash}#${key}`;
         const hashable = JSON.stringify({ [hashableKey]: value });
 

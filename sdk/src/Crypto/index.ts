@@ -9,7 +9,7 @@ import {
 } from "../utils";
 
 import FractalError from "../FractalError";
-import { IClaim, IClaimHashNode, IClaimHashTree } from "@src/types";
+import { IClaim, HashWithNonce, HashTree } from "@src/types";
 
 const web3 = new Web3();
 
@@ -56,13 +56,13 @@ const hashWithNonce = (
   }
 };
 
-const buildHashTree = ({ properties, claimTypeHash }: IClaim): IClaimHashTree =>
+const buildHashTree = ({ properties, claimTypeHash }: IClaim): HashTree =>
   Object.entries(properties).reduce(
-    (memo: IClaimHashTree, [key, value]: [string, any]) => {
+    (memo: HashTree, [key, value]: [string, any]) => {
       const hashableKey = `${claimTypeHash}#${key}`;
       const hashableValue = JSON.stringify({ [hashableKey]: value });
 
-      const hashedProperty: IClaimHashNode = hashWithNonce(hashableValue);
+      const hashedProperty: HashWithNonce = hashWithNonce(hashableValue);
 
       memo[key] = hashedProperty;
 
@@ -72,12 +72,12 @@ const buildHashTree = ({ properties, claimTypeHash }: IClaim): IClaimHashTree =>
   );
 
 const calculateRootHash = (
-  claimHashTree: IClaimHashTree,
+  claimHashTree: HashTree,
   claimTypeHash: string,
   owner: string
 ): string => {
   const sortedTree = deepSortObject(claimHashTree);
-  const sortedHashes = Object.values(sortedTree).map(({ hash }) => hash);
+  const sortedHashes = Object.values(sortedTree).map(({ hash }) => hash).sort();
 
   const hashable = [...sortedHashes, claimTypeHash, owner].join("");
 

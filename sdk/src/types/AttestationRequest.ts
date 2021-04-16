@@ -1,10 +1,10 @@
-import { Hash, Signature } from "./base";
-import { IClaim, IClaimHashNode, IClaimHashTree } from "./Claim";
+import { Hash, Signature, HashWithNonce, HashTree } from "./base";
+import { IClaim } from "./Claim";
 
 export interface IAttestationRequest {
   claim: IClaim;
   claimerSignature?: Signature;
-  claimHashTree: IClaimHashTree;
-  claimTypeHash: IClaimHashNode;
+  claimHashTree: HashTree;
+  claimTypeHash: HashWithNonce;
   rootHash: Hash;
 }
