@@ -1,7 +1,7 @@
 import "jasmine";
 import { Wallet } from "ethers";
 
-import AttestationRequest from "@src/Attestation/Request";
+import AttestationRequest from "@src/AttestationRequest";
 import Claim from "@src/Claim";
 import ClaimType from "@src/ClaimType";
 
