@@ -8,6 +8,7 @@ import {
   ERROR_CLOSE_WINDOW,
   ERROR_GET_WINDOW,
   ERROR_GET_TAB,
+  ERROR_UPDATE_TAB,
   ERROR_QUERY_TABS,
 } from "@services/WindowsService/Errors";
 
@@ -608,6 +609,88 @@ describe("Unit Windows Service", () => {
       await expect(WindowsService.getTab(windowId)).rejects.toThrow(
         ERROR_GET_TAB(lastError, windowId),
       );
+    });
+  });
+
+  describe("updateTab()", () => {
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it("Given a tab's window id and config properties object, updateTab updates the given tab", async () => {
+      // Prepare
+      const windowId = 12;
+      const configProperties = { pinned: true };
+      const returnedTab: chrome.tabs.Tab = {
+        index: 1,
+        pinned: false,
+        highlighted: false,
+        windowId,
+        active: true,
+        incognito: false,
+        selected: false,
+        discarded: false,
+        autoDiscardable: true,
+        groupId: 123,
+      };
+      chrome.tabs.update.mockImplementation(
+        (
+          _tabId: number,
+          _config: chrome.tabs.UpdateProperties,
+          callback?: (tab?: chrome.tabs.Tab) => void,
+        ) => {
+          callback?.(returnedTab);
+        },
+      );
+
+      // Execture
+      const result = await WindowsService.updateTab(windowId, configProperties);
+
+      // Assert
+      const expectedResult = returnedTab;
+      expect(result).toBe(expectedResult);
+      expect(chrome.tabs.update).toHaveBeenCalled();
+    });
+
+    it("When a chrome error ocurrs, updateTab rejects with the error", async () => {
+      // Prepare
+      const windowId = 12;
+      const configProperties = { pinned: true };
+      const returnedTab: chrome.tabs.Tab = {
+        index: 1,
+        pinned: false,
+        highlighted: false,
+        windowId,
+        active: true,
+        incognito: false,
+        selected: false,
+        discarded: false,
+        autoDiscardable: true,
+        groupId: 123,
+      };
+      const lastErrorMessage = "Chrome could update the tab";
+      const lastErrorGetter = jest.fn(() => lastErrorMessage);
+      const lastError = {
+        get message() {
+          return lastErrorGetter();
+        },
+      };
+      chrome.tabs.update.mockImplementation(
+        (
+          _tabId: number,
+          _config: chrome.tabs.UpdateProperties,
+          callback?: (tab?: chrome.tabs.Tab) => void,
+        ) => {
+          chrome.runtime.lastError = lastError;
+          callback?.(returnedTab);
+          delete chrome.runtime.lastError;
+        },
+      );
+
+      // Execute and Assert
+      await expect(
+        WindowsService.updateTab(windowId, configProperties),
+      ).rejects.toThrow(ERROR_UPDATE_TAB(lastError, windowId));
     });
   });
 

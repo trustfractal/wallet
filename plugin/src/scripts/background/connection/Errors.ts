@@ -1,5 +1,5 @@
 export enum ErrorCode {
-  ERROR_CONNECTION_NOT_INITIALIZED = 5000,
+  ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED = 5000,
 }
 
 export class ConnectionError extends Error {
@@ -11,9 +11,9 @@ export class ConnectionError extends Error {
   }
 }
 
-export const ERROR_CONNECTION_NOT_INITIALIZED = (): ConnectionError => {
+export const ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED = (): ConnectionError => {
   return new ConnectionError(
-    ErrorCode.ERROR_CONNECTION_NOT_INITIALIZED,
-    `Connection: Connection is not initialized, please call init before trying to access it`,
+    ErrorCode.ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED,
+    `Content-Script Connection: Connection is not initialized, please call init before trying to access it`,
   );
 };

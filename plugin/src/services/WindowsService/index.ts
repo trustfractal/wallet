@@ -6,6 +6,7 @@ import {
   ERROR_GET_ALL_WINDOWS,
   ERROR_CLOSE_WINDOW,
   ERROR_GET_TAB,
+  ERROR_UPDATE_TAB,
   ERROR_QUERY_TABS,
 } from "./Errors";
 
@@ -145,13 +146,29 @@ class WindowsService {
 
   getTab(tabId: number): Promise<chrome.tabs.Tab> {
     return new Promise((resolve, reject) => {
-      chrome.tabs.get(tabId, (window) => {
+      chrome.tabs.get(tabId, (tab) => {
         if (chrome.runtime.lastError !== undefined) {
           console.error(chrome.runtime.lastError);
           reject(ERROR_GET_TAB(chrome.runtime.lastError, tabId));
         }
 
-        resolve(window);
+        resolve(tab);
+      });
+    });
+  }
+
+  updateTab(
+    tabId: number,
+    config: chrome.tabs.UpdateProperties,
+  ): Promise<chrome.tabs.Tab | undefined> {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.update(tabId, config, (updatedtab) => {
+        if (chrome.runtime.lastError !== undefined) {
+          console.error(chrome.runtime.lastError);
+          reject(ERROR_UPDATE_TAB(chrome.runtime.lastError, tabId));
+        }
+
+        resolve(updatedtab);
       });
     });
   }
@@ -167,6 +184,10 @@ class WindowsService {
         resolve(tabs);
       });
     });
+  }
+
+  redirectTab(id: number, url: string) {
+    return this.updateTab(id, { url });
   }
 
   async getActiveTab(): Promise<chrome.tabs.Tab | undefined> {

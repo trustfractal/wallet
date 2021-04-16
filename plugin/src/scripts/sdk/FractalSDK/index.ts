@@ -1,40 +1,32 @@
-import ExtensionConnection from "@models/Connection/ExtensionConnection";
-import { extension } from "@models/Connection/params";
 import ConnectionTypes from "@models/Connection/types";
 import EthereumProviderService from "@services/EthereumProviderService";
 import { ERROR_FRACTAL_NOT_INITIALIZED } from "src/scripts/sdk/FractalSDK/Errors";
 
 import { IFractalSDK } from "@fractalwallet/types";
 
-import callbacks from "@sdk/FractalSDK/callbacks";
+import ExtensionConnection from "@sdk/FractalSDK/connection";
 
 export default class FractalSDK implements IFractalSDK {
-  private connection?: ExtensionConnection;
+  private initialized: boolean = false;
 
   public async init(): Promise<void> {
     // init application connection
-    this.connection = new ExtensionConnection(extension);
+    ExtensionConnection.init();
 
     // init ethereum provider service
     try {
       await EthereumProviderService.init();
-      this.connection.invoke(ConnectionTypes.REPORT_WALLET_AVAILABLE);
+      ExtensionConnection.invoke(ConnectionTypes.REPORT_WALLET_AVAILABLE);
     } catch (error) {
       console.error(error);
-      this.connection.invoke(ConnectionTypes.REPORT_WALLET_UNAVAILABLE);
+      ExtensionConnection.invoke(ConnectionTypes.REPORT_WALLET_UNAVAILABLE);
     }
 
-    // register connection callbacks
-    for (let index = 0; index < Object.keys(callbacks).length; index++) {
-      const connectionType = Object.keys(callbacks)[index];
-      const callback = callbacks[connectionType];
-
-      this.connection.on(connectionType, callback);
-    }
+    this.initialized = true;
   }
 
   private ensureFractalIsInitialized() {
-    if (this.connection === undefined) {
+    if (!this.initialized) {
       throw ERROR_FRACTAL_NOT_INITIALIZED();
     }
   }
@@ -42,12 +34,17 @@ export default class FractalSDK implements IFractalSDK {
   public confirmCredential(...args: any[]): Promise<any> {
     this.ensureFractalIsInitialized();
 
-    return this.connection!.invoke(ConnectionTypes.CONFIRM_CREDENTIAL, ...args);
+    return ExtensionConnection.invoke(
+      ConnectionTypes.CONFIRM_CREDENTIAL,
+      ...args,
+    );
   }
 
   public verifyConnection(): Promise<any> {
     this.ensureFractalIsInitialized();
 
-    return this.connection!.invoke(ConnectionTypes.VERIFY_EXTENSION_CONNECTION);
+    return ExtensionConnection.invoke(
+      ConnectionTypes.VERIFY_EXTENSION_CONNECTION,
+    );
   }
 }

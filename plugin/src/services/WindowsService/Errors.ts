@@ -85,6 +85,17 @@ export const ERROR_GET_TAB = (
   );
 };
 
+export const ERROR_UPDATE_TAB = (
+  errorChrome: chrome.runtime.LastError,
+  tabId: number,
+): StorageServiceError => {
+  return new StorageServiceError(
+    ErrorCode.ERROR_GET_TAB,
+    errorChrome,
+    `WindowsService: could not update the tab with the ID ${tabId}`,
+  );
+};
+
 export const ERROR_QUERY_TABS = (
   errorChrome: chrome.runtime.LastError,
 ): StorageServiceError => {
