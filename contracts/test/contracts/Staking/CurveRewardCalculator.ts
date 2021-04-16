@@ -11,6 +11,7 @@ import TestCurveRewardCalculatorArtifact from "../../../artifacts/contracts/Stak
 chai.use(solidity);
 
 const { BigNumber: BN } = ethers;
+const { parseEther, formatUnits } = ethers.utils;
 const { expect } = chai;
 const { deployContract: deploy } = waffle;
 
@@ -19,7 +20,8 @@ describe("CurveRewardCalculator", () => {
   let calc: any;
   let tester: any;
 
-  let start = dayjs().unix();
+  let deployDate = dayjs().unix();
+  let start = dayjs.unix(deployDate).add(1, "day").unix();
   let oneYearLater = dayjs.unix(start).add(365, "day").unix();
   let twoYearsLater = dayjs
     .unix(start)
@@ -39,15 +41,16 @@ describe("CurveRewardCalculator", () => {
     const lastBlock = await ethers.provider.getBlockNumber();
     const timestamp = (await ethers.provider.getBlock(lastBlock)).timestamp;
 
-    start = timestamp + 1;
+    deployDate = timestamp + 1;
 
+    start = dayjs.unix(deployDate).add(1, "day").unix();
     oneYearLater = dayjs.unix(start).add(365, "day").unix();
     twoYearsLater = dayjs
       .unix(start)
       .add(365 * 2, "day")
       .unix();
 
-    ensureTimestamp(start);
+    ensureTimestamp(deployDate);
   });
 
   describe("constructor", () => {
@@ -462,4 +465,35 @@ describe("CurveRewardCalculator", () => {
       });
     });
   });
+
+  // describe("calculations", () => {
+  //   let twoWeeksLater = dayjs.unix(start).add(15, "days").unix();
+  //   let threeMonthsLater = dayjs
+  //     .unix(start)
+  //     .add(30 * 3, "months")
+  //     .unix();
+  //   let amount = parseEther("1000");
+
+  //   before(async () => {
+  //     const args = [start, twoWeeksLater, threeMonthsLater, 600, 5, 4];
+
+  //     calc = (await deploy(
+  //       owner,
+  //       CurveRewardCalculatorArtifact,
+  //       args
+  //     )) as CurveRewardCalculator;
+  //   });
+
+  //   it.only("enter at 0%, cumulative earnings", async () => {
+  //     for (let i = 1; i <= 15; i += 1) {
+  //       let type = i <= 15 ? "curve" : "linear";
+  //       const enter = start;
+  //       const exit = dayjs.unix(start).add(i, "days").unix();
+
+  //       const reward = await calc.calculateReward(enter, exit, amount);
+
+  //       // console.log(`0,${i}, ${type}, ${formatUnits(reward)}`);
+  //     }
+  //   });
+  // });
 });
