@@ -1,4 +1,4 @@
-import { Signature } from "./base";
+import { Hash, Signature } from "./base";
 import { IClaim, IClaimHashNode, IClaimHashTree } from "./Claim";
 
 export interface IAttestationRequest {
@@ -6,5 +6,5 @@ export interface IAttestationRequest {
   claimerSignature?: Signature;
   claimHashTree: IClaimHashTree;
   claimTypeHash: IClaimHashNode;
-  rootHash: IClaimHashNode;
+  rootHash: Hash;
 }

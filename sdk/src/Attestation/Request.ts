@@ -1,4 +1,5 @@
 import {
+  Hash,
   IAttestationRequest,
   IClaim,
   IClaimHashNode,
@@ -13,7 +14,7 @@ export default class Request implements IAttestationRequest {
   public claimerSignature?: Signature;
   public claimHashTree: IClaimHashTree;
   public claimTypeHash: IClaimHashNode;
-  public rootHash: IClaimHashNode;
+  public rootHash: Hash;
 
   public constructor({
     claim,
@@ -32,8 +33,7 @@ export default class Request implements IAttestationRequest {
   public static fromClaim(claim: IClaim) {
     const claimHashTree = Crypto.buildHashTree(claim);
     const claimTypeHash = Crypto.hashWithNonce(claim.claimTypeHash);
-    // TODO: correctly calculate the rootHash
-    const rootHash = { hash: "0x0", nonce: "0" };
+    const rootHash = Crypto.calculateRootHash(claimHashTree);
 
     return new Request({
       claim,

@@ -59,7 +59,5 @@ describe("fromClaim", () => {
 
     validateHashTree(properties, attestationRequest);
     validateClaimTypeHash(attestationRequest, claim.claimTypeHash);
-    // TODO
-    // validateRootHash(attestationRequest);
   });
 });
