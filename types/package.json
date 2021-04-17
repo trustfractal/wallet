@@ -13,6 +13,7 @@
     "build:ts": "tsc --declaration -p tsconfig.json"
   },
   "devDependencies": {
+    "@types/post-message-stream": "^3.0.0",
     "typescript": "^4.2.3"
   }
 }

@@ -1,39 +1,45 @@
-/* global chrome */
-
 import Response from "@models/Message/Response";
 import Invokation from "@models/Message/Invokation";
 
-export default class BackgroundConnection {
-  constructor(backgroundParams) {
-    this.port = chrome.runtime.connect(backgroundParams);
+import {
+  IConnection,
+  IResponse,
+  IInvokation,
+  AsyncCallback,
+  Message,
+} from "@fractalwallet/types";
+import ConnectionNames from "@models/Connection/names";
+
+export default abstract class Connection implements IConnection {
+  public from: IConnection["from"];
+  public to: IConnection["to"];
+  public responseCallbacks: IConnection["responseCallbacks"];
+  public invokationCallbacks: IConnection["invokationCallbacks"];
+
+  constructor(from: ConnectionNames, to: ConnectionNames) {
+    this.from = from;
+    this.to = to;
+
     this.responseCallbacks = {};
     this.invokationCallbacks = {};
-
-    this._setupEvents();
   }
 
-  _setupEvents() {
-    this.port.onMessage.addListener(this._handleMessage.bind(this));
-  }
+  public abstract postMessage(message: IResponse | IInvokation): void;
 
-  _handleMessage({ type, message }) {
+  protected handleMessage({ type, message }: Message): void {
     // TODO: Remove debug console.log
-    console.log("background -> content-script", { type, message });
+    console.log(`${this.from} -> ${this.to}`, { type, message });
 
     if (type === Response.NAME) {
-      this._handleResponse(message);
+      this.handleResponse(message);
     } else if (type === Invokation.NAME) {
-      this._handleInvokation(message);
+      this.handleInvokation(message);
     } else {
       throw new Error(`Unexpected message ${message} of type ${type}`);
     }
   }
 
-  postMessage(type, message) {
-    this.port.postMessage({ type, message });
-  }
-
-  _handleResponse(msg) {
+  private handleResponse(msg: string): void {
     const { value, id, success } = Response.parse(msg);
     const callback = this.responseCallbacks[id];
 
@@ -45,7 +51,7 @@ export default class BackgroundConnection {
     delete this.responseCallbacks[id];
   }
 
-  _handleInvokation(msg) {
+  private handleInvokation(msg: string): void {
     const { method, args, id } = Invokation.parse(msg);
     const callback = this.invokationCallbacks[method];
 
@@ -54,37 +60,37 @@ export default class BackgroundConnection {
     callback(...args)
       .then((value) => {
         const response = new Response(method, value, id);
-        this.postMessage(Response.NAME, response.serialize());
+        this.postMessage(response);
       })
       .catch((error) => {
         const response = new Response(method, error, id, false);
-        this.postMessage(Response.NAME, response.serialize());
+        this.postMessage(response);
       });
   }
 
-  on(method, callback) {
-    let promiseCallback = callback;
+  public on(method: string, callback: any): Connection {
+    let promiseCallback: AsyncCallback = callback;
 
     if (!callback.then) {
-      promiseCallback = async (...args) => callback(...args);
+      promiseCallback = async (...args: any[]) => callback(...args);
     }
 
     this.invokationCallbacks[method] = promiseCallback;
     return this;
   }
 
-  invoke(method, ...args) {
+  public invoke(method: string, ...args: any[]): Promise<any> {
     return new Promise((resolve, reject) => {
-      const message = new Invokation(method, args);
-      const { id } = message;
+      const invokation = new Invokation(method, args);
+      const { id } = invokation;
 
       this.responseCallbacks[id] = { resolve, reject };
 
-      this.postMessage(Invokation.NAME, message.serialize());
+      this.postMessage(invokation);
     });
   }
 
-  listen(id) {
+  public listen(id: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.responseCallbacks[id] = { resolve, reject };
     });
