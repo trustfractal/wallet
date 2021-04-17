@@ -50,9 +50,9 @@ export default class ProxyConnection implements IProxyConnection {
 
   // proxy messages froms source to destination
   public proxy(method: ConnectionTypes): ProxyConnection {
-    this.sourceConnection.on(method, (...args: any[]) => {
+    this.sourceConnection.on(method, (args: any[], invoker: string) => {
       return new Promise((resolve, reject) => {
-        const invokation = new Invokation(method, args);
+        const invokation = new Invokation(method, args, invoker);
 
         // TODO: Remove debug console.log
         console.log(
@@ -76,9 +76,9 @@ export default class ProxyConnection implements IProxyConnection {
 
   // proxy messages froms destination to source
   public reversedProxy(method: ConnectionTypes): ProxyConnection {
-    this.destinationConnection.on(method, (...args: any[]) => {
+    this.destinationConnection.on(method, (args: any[], invoker: string) => {
       return new Promise((resolve, reject) => {
-        const invokation = new Invokation(method, args);
+        const invokation = new Invokation(method, args, invoker);
 
         // TODO: Remove debug console.log
         console.log(

@@ -20,7 +20,7 @@ async function init() {
 
   contentScript.on(
     types.CONFIRM_CREDENTIAL,
-    ({ port, payload: [content, target] }) =>
+    ([content, target], port) =>
       new Promise((resolve, reject) => {
         try {
           const request = {
@@ -42,9 +42,9 @@ async function init() {
           const onAccept = async (acceptedRequest) => {
             // commit credential to the blockchain
             const transactionHash = await contentScript.invoke(
-              port,
               types.COMMIT_CREDENTIAL,
-              acceptedRequest.content,
+              [acceptedRequest.content],
+              port,
             );
 
             resolve(transactionHash);

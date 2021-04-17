@@ -15,8 +15,8 @@ export default class Invokation implements IInvokation {
   constructor(
     method: IInvokation["method"],
     args: IInvokation["args"] = [],
-    id?: IInvokation["id"],
     port?: IInvokation["port"],
+    id?: IInvokation["id"],
   ) {
     this.id = id || uuidv4();
     this.method = method;
@@ -40,6 +40,6 @@ export default class Invokation implements IInvokation {
   public static parse(str: string): IInvokation {
     const { id, method, args, port } = JSON.parse(str);
 
-    return new Invokation(method, args, id, port);
+    return new Invokation(method, args, port, id);
   }
 }

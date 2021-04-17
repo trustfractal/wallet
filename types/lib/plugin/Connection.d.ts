@@ -6,7 +6,7 @@ export interface IResponse {
     method: string;
     value: any;
     success: boolean;
-    port?: chrome.runtime.Port;
+    port?: string;
     getMessageType: () => string;
     serialize: () => string;
 }
@@ -14,7 +14,7 @@ export interface IInvokation {
     id: string;
     method: string;
     args: any[];
-    port?: chrome.runtime.Port;
+    port?: string;
     getMessageType: () => string;
     serialize: () => string;
 }

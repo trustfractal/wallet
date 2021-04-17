@@ -1,6 +1,6 @@
 /* global chrome */
 
-import BaseConnection from "@models/Base/Connection";
+import BaseConnection from "@models/Base/BaseConnection";
 import ConnectionNames from "@models/Connection/names";
 
 import {

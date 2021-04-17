@@ -5,11 +5,11 @@ import types from "@models/Connection/types";
 const extensionConnection = new ExtensionConnection(extension);
 
 const confirmCredential = (...args) =>
-  extensionConnection.invoke(types.CONFIRM_CREDENTIAL, ...args);
+  extensionConnection.invoke(types.CONFIRM_CREDENTIAL, args);
 const verifyConnection = (...args) =>
-  extensionConnection.invoke(types.VERIFY_CONNECTION, ...args);
+  extensionConnection.invoke(types.VERIFY_CONNECTION, args);
 
-extensionConnection.on(types.COMMIT_CREDENTIAL, async (credential) => {
+extensionConnection.on(types.COMMIT_CREDENTIAL, async ([credential]) => {
   console.log("Commiting the credential", credential);
 
   // Dummy wait for simulating credential transaction commit

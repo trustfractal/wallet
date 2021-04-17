@@ -10,7 +10,7 @@ import {
 } from "@fractalwallet/types";
 import ConnectionNames from "@models/Connection/names";
 
-export default abstract class Connection implements IConnection {
+export default abstract class BaseConnection implements IConnection {
   public from: IConnection["from"];
   public to: IConnection["to"];
   public responseCallbacks: IConnection["responseCallbacks"];
@@ -52,12 +52,12 @@ export default abstract class Connection implements IConnection {
   }
 
   private handleInvokation(msg: string): void {
-    const { method, args, id } = Invokation.parse(msg);
+    const { method, args, id, port } = Invokation.parse(msg);
     const callback = this.invokationCallbacks[method];
 
     if (!callback) throw new Error(`Unexpected invokation method ${method}`);
 
-    callback(...args)
+    callback(args, port)
       .then((value) => {
         const response = new Response(method, value, id);
         this.postMessage(response);
@@ -68,7 +68,7 @@ export default abstract class Connection implements IConnection {
       });
   }
 
-  public on(method: string, callback: any): Connection {
+  public on(method: string, callback: any): BaseConnection {
     let promiseCallback: AsyncCallback = callback;
 
     if (!callback.then) {
@@ -79,9 +79,13 @@ export default abstract class Connection implements IConnection {
     return this;
   }
 
-  public invoke(method: string, ...args: any[]): Promise<any> {
+  public invoke(
+    method: string,
+    payload: any[],
+    invoker?: string,
+  ): Promise<any> {
     return new Promise((resolve, reject) => {
-      const invokation = new Invokation(method, args);
+      const invokation = new Invokation(method, payload, invoker);
       const { id } = invokation;
 
       this.responseCallbacks[id] = { resolve, reject };
