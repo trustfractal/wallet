@@ -8,7 +8,6 @@ import {
 } from "@fractalwallet/types";
 
 import ConnectionNames from "@models/Connection/names";
-import ConnectionTypes from "@models/Connection/types";
 
 export default class ProxyConnection implements IProxyConnection {
   public sourceConnection: IProxyConnection["sourceConnection"];
@@ -49,7 +48,7 @@ export default class ProxyConnection implements IProxyConnection {
   }
 
   // proxy messages froms source to destination
-  public proxy(method: ConnectionTypes): ProxyConnection {
+  public proxy(method: string): ProxyConnection {
     this.sourceConnection.on(method, (args: any[], invoker: string) => {
       return new Promise((resolve, reject) => {
         const invokation = new Invokation(method, args, invoker);
@@ -75,7 +74,7 @@ export default class ProxyConnection implements IProxyConnection {
   }
 
   // proxy messages froms destination to source
-  public reversedProxy(method: ConnectionTypes): ProxyConnection {
+  public reversedProxy(method: string): ProxyConnection {
     this.destinationConnection.on(method, (args: any[], invoker: string) => {
       return new Promise((resolve, reject) => {
         const invokation = new Invokation(method, args, invoker);

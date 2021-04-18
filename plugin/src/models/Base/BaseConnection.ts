@@ -8,6 +8,7 @@ import {
   AsyncCallback,
   Message,
 } from "@fractalwallet/types";
+
 import ConnectionNames from "@models/Connection/names";
 
 export default abstract class BaseConnection implements IConnection {
