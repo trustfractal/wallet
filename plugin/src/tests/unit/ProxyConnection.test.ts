@@ -2,7 +2,6 @@ import { IResponse, IInvokation } from "@fractalwallet/types";
 import BaseConnection from "@models/Base/BaseConnection";
 import ConnectionNames from "@models/Connection/names";
 import ProxyConnection from "@models/Connection/ProxyConnection";
-import Invokation from "@models/Message/Invokation";
 
 class MockedConnection extends BaseConnection {
   constructor() {

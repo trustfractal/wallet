@@ -19,7 +19,7 @@ class MockedConnection extends BaseConnection {
 }
 
 describe("Integration Base Connection", () => {
-  it("Receive a 'Response' success message, resolves the registered callback and deletes it", async () => {
+  it("Receives a 'Response' success message, resolves the registered callback and deletes it", async () => {
     // Prepare
     const method = "test_method";
     const invokationPayload = ["argument1", 2, false];
@@ -60,7 +60,7 @@ describe("Integration Base Connection", () => {
     expect(responseCallbackKeys).toHaveLength(0);
   });
 
-  it("Receive a 'Response' failed message, rejects the registered callback and deletes it", () => {
+  it("Receives a 'Response' failed message, rejects the registered callback and deletes it", () => {
     // Prepare
     const method = "test_method";
     const invokationPayload = ["argument1", 2, false];
@@ -102,7 +102,7 @@ describe("Integration Base Connection", () => {
     );
     expect(responseCallbackKeys).toHaveLength(0);
   });
-  it("Receive a 'Invokation' message, calls the registered the callback with success and posts a message to the source with the result", async () => {
+  it("Receives a 'Invokation' message, calls the registered the callback with success and posts a message to the source with the result", async () => {
     // Prepare
     const method = "test_method";
     const callbackResult = "result from the callback call";
@@ -136,7 +136,7 @@ describe("Integration Base Connection", () => {
     expect(response.success).toStrictEqual(true);
     expect(response.port).toBe(invoker);
   });
-  it("Receive a 'Invokation' message, calls the registered the callback with error and posts a message to the source with the result", async () => {
+  it("Receives a 'Invokation' message, calls the registered the callback with error and posts a message to the source with the result", async () => {
     // Prepare
     const method = "test_method";
     const callbackResult = new Error("result from the callback call");
