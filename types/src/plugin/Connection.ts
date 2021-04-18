@@ -7,7 +7,6 @@ export interface IResponse {
   method: string;
   value: any;
   success: boolean;
-  port?: string;
   getMessageType: () => string;
   serialize: () => string;
 }

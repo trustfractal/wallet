@@ -23,7 +23,7 @@ export default class Response implements IResponse {
     this.id = id || uuidv4();
     this.method = method;
     this.value = value;
-    this.success = success || true;
+    this.success = success !== undefined ? success : true;
     this.port = port;
   }
 

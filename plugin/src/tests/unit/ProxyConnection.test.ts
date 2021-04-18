@@ -14,7 +14,7 @@ class MockedConnection extends BaseConnection {
   }
 }
 
-describe("Proxy Connection", () => {
+describe("Unit Proxy Connection", () => {
   describe("proxy", () => {
     it("On 'proxy' on a proxy connection, a callback is registered to the method invokation on the source invokation", () => {
       // Prepare

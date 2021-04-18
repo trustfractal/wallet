@@ -8,7 +8,7 @@ import {
   ERROR_CLOSE_WINDOW,
 } from "@services/WindowsService/Errors";
 
-describe("Windows Service", () => {
+describe("Unit Windows Service", () => {
   describe("createWindow()", () => {
     afterEach(() => {
       jest.resetAllMocks();

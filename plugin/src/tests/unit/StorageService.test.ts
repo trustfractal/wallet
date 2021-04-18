@@ -9,7 +9,7 @@ import {
   ERROR_CLEAR,
 } from "@services/StorageService/Errors";
 
-describe("Storage Service", () => {
+describe("Unit Storage Service", () => {
   describe("hasItem()", () => {
     afterEach(() => {
       jest.resetAllMocks();

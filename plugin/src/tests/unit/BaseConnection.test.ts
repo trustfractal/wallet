@@ -13,7 +13,7 @@ class MockedConnection extends BaseConnection {
   }
 }
 
-describe("Base Connection", () => {
+describe("Unit Base Connection", () => {
   describe("on", () => {
     it("On 'on' on a base connection subclass, a callback is registered to the method invokation", () => {
       // Prepare
@@ -45,11 +45,12 @@ describe("Base Connection", () => {
         mockedConnection.responseCallbacks,
       );
       expect(responseCallbackKeys).toHaveLength(1);
+      expect(mockedConnection.postMessage).toHaveBeenCalled();
       const invokation: Invokation =
         // @ts-ignore
         mockedConnection.postMessage.mock.calls[0][0];
       expect(invokation.method).toBe(method);
-      expect(invokation.args).toBe(payload);
+      expect(invokation.args).toStrictEqual(payload);
       expect(invokation.port).toBe(invoker);
     });
   });

@@ -60,11 +60,11 @@ export default abstract class BaseConnection implements IConnection {
 
     callback(args, port)
       .then((value) => {
-        const response = new Response(method, value, id);
+        const response = new Response(method, value, id, true, port);
         this.postMessage(response);
       })
       .catch((error) => {
-        const response = new Response(method, error, id, false);
+        const response = new Response(method, error, id, false, port);
         this.postMessage(response);
       });
   }
