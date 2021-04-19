@@ -7,9 +7,11 @@ import "hardhat/console.sol";
 
 import "./Staking/Infra.sol";
 import "./Staking/CurveRewardCalculator.sol";
+import "./ClaimsRegistry.sol";
 
 contract Staking is StakingInfra, CurveRewardCalculator {
   ERC20 public erc20;
+  IClaimsRegistryVerifier public registry;
   uint public totalMaxAmount;
   uint public individualMinimumAmount;
   uint public lockedTokens = 0;
@@ -41,6 +43,7 @@ contract Staking is StakingInfra, CurveRewardCalculator {
 
   constructor(
     address _tokenAddress,
+    address _claimsRegistryAddress,
     uint _startDate,
     uint _linearStartDate,
     uint _endDate,
@@ -50,6 +53,8 @@ contract Staking is StakingInfra, CurveRewardCalculator {
     uint _minCurveAPR,
     uint _finalLinearAPR
   ) CurveRewardCalculator(_startDate, _linearStartDate, _endDate, _maxCurveAPR, _minCurveAPR, _finalLinearAPR) {
+    require(_tokenAddress != address(0), "Staking: token address cannot be 0x0");
+    require(_claimsRegistryAddress != address(0), "Staking: claims registry address cannot be 0x0");
     require(block.timestamp <= _startDate, "Staking: start date must be in the future");
     require(_totalMaxAmount > 0, "Staking: invalid max amount");
     require(_individualMinimumAmount > 0, "Staking: invalid individual min amount");
@@ -59,6 +64,7 @@ contract Staking is StakingInfra, CurveRewardCalculator {
     );
 
     erc20 = ERC20(_tokenAddress);
+    registry = IClaimsRegistryVerifier(_claimsRegistryAddress);
     require(_totalMaxAmount <= erc20.totalSupply(), "Staking: max amount is greater than total available supply");
 
     totalMaxAmount = _totalMaxAmount;

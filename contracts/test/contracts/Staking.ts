@@ -7,6 +7,8 @@ import { FractalToken as FCL } from "../../typechain/FractalToken";
 import FCLArtifact from "../../artifacts/contracts/Test/FractalToken.sol/FractalToken.json";
 import { Staking } from "../../typechain/Staking";
 import StakingArtifact from "../../artifacts/contracts/Staking.sol/Staking.json";
+import { FakeClaimsRegistry } from "../../typechain/FakeClaimsRegistry";
+import FakeClaimsRegistryArtifact from "../../artifacts/contracts/Staking/FakeClaimsRegistry.sol/FakeClaimsRegistry.json";
 
 chai.use(solidity);
 const { BigNumber: BN } = ethers;
@@ -19,6 +21,7 @@ let owner: any;
 let alice: any;
 let bob: any;
 let fcl: any;
+let registry: any;
 const start = dayjs().add(1, "day").unix();
 const mid = dayjs().add(2, "day").unix();
 const end = dayjs().add(3, "day").unix();
@@ -32,12 +35,29 @@ describe("Staking", () => {
   });
 
   beforeEach(async () => {
+    registry = (await deploy(
+      owner,
+      FakeClaimsRegistryArtifact,
+      []
+    )) as FakeClaimsRegistry;
+
     fcl = (await deploy(owner, FCLArtifact, [owner.address])) as FCL;
   });
 
   describe("constructor", () => {
     it("creates a contract when given valid arguments", async () => {
-      const args = [fcl.address, start, mid, end, 3, 2, 600, 15, 10];
+      const args = [
+        fcl.address,
+        registry.address,
+        start,
+        mid,
+        end,
+        3,
+        2,
+        600,
+        15,
+        10,
+      ];
 
       const staking = (await deploy(owner, StakingArtifact, args)) as Staking;
 
@@ -51,10 +71,33 @@ describe("Staking", () => {
       expect(await staking.lockedTokens()).to.eq(0);
     });
 
+    it("fails if token address is 0x0", async () => {
+      const zero = "0x0000000000000000000000000000000000000000";
+      const args = [zero, registry.address, start, mid, end, 3, 2, 600, 15, 10];
+
+      const action = deploy(owner, StakingArtifact, args);
+
+      await expect(action).to.be.revertedWith(
+        "Staking: token address cannot be 0x0"
+      );
+    });
+
+    it("fails if registry address is 0x0", async () => {
+      const zero = "0x0000000000000000000000000000000000000000";
+      const args = [fcl.address, zero, start, mid, end, 3, 2, 600, 15, 10];
+
+      const action = deploy(owner, StakingArtifact, args);
+
+      await expect(action).to.be.revertedWith(
+        "Staking: claims registry address cannot be 0x0"
+      );
+    });
+
     it("fails if endDate is before startDate", async () => {
       const one_hour_before = dayjs(start).subtract(1, "hour").unix();
       const args = [
         fcl.address,
+        registry.address,
         start,
         mid,
         one_hour_before,
@@ -73,7 +116,18 @@ describe("Staking", () => {
     });
 
     it("fails if maxAmount is 0", async () => {
-      const args = [fcl.address, start, mid, end, 0, 2, 600, 15, 10];
+      const args = [
+        fcl.address,
+        registry.address,
+        start,
+        mid,
+        end,
+        0,
+        2,
+        600,
+        15,
+        10,
+      ];
 
       const action = deploy(owner, StakingArtifact, args);
 
@@ -81,7 +135,18 @@ describe("Staking", () => {
     });
 
     it("fails if minIndividualAmount is 0", async () => {
-      const args = [fcl.address, start, mid, end, 3, 0, 600, 15, 10];
+      const args = [
+        fcl.address,
+        registry.address,
+        start,
+        mid,
+        end,
+        3,
+        0,
+        600,
+        15,
+        10,
+      ];
 
       const action = deploy(owner, StakingArtifact, args);
 
@@ -91,7 +156,18 @@ describe("Staking", () => {
     });
 
     it("fails if maxCurveAPR is 0", async () => {
-      const args = [fcl.address, start, mid, end, 3, 2, 0, 15, 10];
+      const args = [
+        fcl.address,
+        registry.address,
+        start,
+        mid,
+        end,
+        3,
+        2,
+        0,
+        15,
+        10,
+      ];
 
       const action = deploy(owner, StakingArtifact, args);
 
@@ -101,7 +177,18 @@ describe("Staking", () => {
     });
 
     it("fails if min amount is larger than total amount", async () => {
-      const args = [fcl.address, start, mid, end, 1, 2, 600, 15, 10];
+      const args = [
+        fcl.address,
+        registry.address,
+        start,
+        mid,
+        end,
+        1,
+        2,
+        600,
+        15,
+        10,
+      ];
 
       const action = deploy(owner, StakingArtifact, args);
 
@@ -112,7 +199,18 @@ describe("Staking", () => {
 
     it("fails if max amount is larger than the token's own supply", async () => {
       const supply = await fcl.totalSupply();
-      const args = [fcl.address, start, mid, end, supply + 1, 2, 600, 15, 10];
+      const args = [
+        fcl.address,
+        registry.address,
+        start,
+        mid,
+        end,
+        supply + 1,
+        2,
+        600,
+        15,
+        10,
+      ];
 
       const action = deploy(owner, StakingArtifact, args);
 
@@ -173,7 +271,18 @@ describe("Staking", () => {
 
       pool = (await fcl.totalSupply()).div(2);
 
-      const args = [fcl.address, start, mid, end, 3, 2, 600, 15, 10];
+      const args = [
+        fcl.address,
+        registry.address,
+        start,
+        mid,
+        end,
+        3,
+        2,
+        600,
+        15,
+        10,
+      ];
 
       staking = (await deploy(owner, StakingArtifact, args)) as Staking;
 
@@ -228,6 +337,7 @@ describe("Staking", () => {
         // staking starting only a month from now
         staking = (await deploy(owner, StakingArtifact, [
           fcl.address,
+          registry.address,
           oneMonthLater,
           oneMonthLater + 1,
           oneYearLater,

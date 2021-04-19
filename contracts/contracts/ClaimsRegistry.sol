@@ -6,7 +6,11 @@ import "hardhat/console.sol";
 
 import "./ClaimsRegistry/Verifier.sol";
 
-contract ClaimsRegistry is Verifier {
+interface IClaimsRegistryVerifier {
+  function verifyClaim(address subject, address issuer, bytes calldata sig) external view returns (bool);
+}
+
+contract ClaimsRegistry is IClaimsRegistryVerifier, Verifier {
   mapping(bytes32 => Claim) public registry;
 
   struct Claim {
@@ -50,7 +54,7 @@ contract ClaimsRegistry is Verifier {
     address subject,
     address issuer,
     bytes calldata sig
-  ) public view returns (bool) {
+  ) override external view returns (bool) {
     return getClaim(issuer, sig) == subject;
   }
 
