@@ -12,6 +12,7 @@ import "./ClaimsRegistry.sol";
 contract Staking is StakingInfra, CurveRewardCalculator {
   ERC20 public erc20;
   IClaimsRegistryVerifier public registry;
+  address public claimIssuer;
   uint public totalMaxAmount;
   uint public individualMinimumAmount;
   uint public lockedTokens = 0;
@@ -44,6 +45,7 @@ contract Staking is StakingInfra, CurveRewardCalculator {
   constructor(
     address _tokenAddress,
     address _claimsRegistryAddress,
+    address _claimIssuer,
     uint _startDate,
     uint _linearStartDate,
     uint _endDate,
@@ -55,6 +57,7 @@ contract Staking is StakingInfra, CurveRewardCalculator {
   ) CurveRewardCalculator(_startDate, _linearStartDate, _endDate, _maxCurveAPR, _minCurveAPR, _finalLinearAPR) {
     require(_tokenAddress != address(0), "Staking: token address cannot be 0x0");
     require(_claimsRegistryAddress != address(0), "Staking: claims registry address cannot be 0x0");
+    require(_claimIssuer != address(0), "Staking: claim issuer cannot be 0x0");
     require(block.timestamp <= _startDate, "Staking: start date must be in the future");
     require(_totalMaxAmount > 0, "Staking: invalid max amount");
     require(_individualMinimumAmount > 0, "Staking: invalid individual min amount");
@@ -65,16 +68,18 @@ contract Staking is StakingInfra, CurveRewardCalculator {
 
     erc20 = ERC20(_tokenAddress);
     registry = IClaimsRegistryVerifier(_claimsRegistryAddress);
+    claimIssuer = _claimIssuer;
     require(_totalMaxAmount <= erc20.totalSupply(), "Staking: max amount is greater than total available supply");
 
     totalMaxAmount = _totalMaxAmount;
     individualMinimumAmount = _individualMinimumAmount;
   }
 
-  function stake(uint _amount) external whenNotPaused {
+  function stake(uint _amount, bytes calldata claim_sig) external whenNotPaused {
     uint time = block.timestamp;
     address subscriber = msg.sender;
 
+    require(registry.verifyClaim(msg.sender, claimIssuer, claim_sig), "Staking: could not verify claim");
     require(_amount > 0, "Staking: staked amount needs to be greather than 0");
     require(time >= startDate(), "Staking: staking period not started");
     require(time < endDate(), "Staking: staking period finished");

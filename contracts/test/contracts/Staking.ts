@@ -21,6 +21,7 @@ let owner: any;
 let alice: any;
 let bob: any;
 let fcl: any;
+let issuer: any;
 let registry: any;
 const start = dayjs().add(1, "day").unix();
 const mid = dayjs().add(2, "day").unix();
@@ -32,6 +33,7 @@ describe("Staking", () => {
     owner = signers[0];
     alice = signers[1];
     bob = signers[2];
+    issuer = signers[3];
   });
 
   beforeEach(async () => {
@@ -49,6 +51,7 @@ describe("Staking", () => {
       const args = [
         fcl.address,
         registry.address,
+        issuer.address,
         start,
         mid,
         end,
@@ -73,7 +76,19 @@ describe("Staking", () => {
 
     it("fails if token address is 0x0", async () => {
       const zero = "0x0000000000000000000000000000000000000000";
-      const args = [zero, registry.address, start, mid, end, 3, 2, 600, 15, 10];
+      const args = [
+        zero,
+        registry.address,
+        issuer.address,
+        start,
+        mid,
+        end,
+        3,
+        2,
+        600,
+        15,
+        10,
+      ];
 
       const action = deploy(owner, StakingArtifact, args);
 
@@ -84,7 +99,19 @@ describe("Staking", () => {
 
     it("fails if registry address is 0x0", async () => {
       const zero = "0x0000000000000000000000000000000000000000";
-      const args = [fcl.address, zero, start, mid, end, 3, 2, 600, 15, 10];
+      const args = [
+        fcl.address,
+        zero,
+        issuer.address,
+        start,
+        mid,
+        end,
+        3,
+        2,
+        600,
+        15,
+        10,
+      ];
 
       const action = deploy(owner, StakingArtifact, args);
 
@@ -93,11 +120,35 @@ describe("Staking", () => {
       );
     });
 
+    it("fails if issuer address is 0x0", async () => {
+      const zero = "0x0000000000000000000000000000000000000000";
+      const args = [
+        fcl.address,
+        registry.address,
+        zero,
+        start,
+        mid,
+        end,
+        3,
+        2,
+        600,
+        15,
+        10,
+      ];
+
+      const action = deploy(owner, StakingArtifact, args);
+
+      await expect(action).to.be.revertedWith(
+        "Staking: claim issuer cannot be 0x0"
+      );
+    });
+
     it("fails if endDate is before startDate", async () => {
       const one_hour_before = dayjs(start).subtract(1, "hour").unix();
       const args = [
         fcl.address,
         registry.address,
+        issuer.address,
         start,
         mid,
         one_hour_before,
@@ -119,6 +170,7 @@ describe("Staking", () => {
       const args = [
         fcl.address,
         registry.address,
+        issuer.address,
         start,
         mid,
         end,
@@ -138,6 +190,7 @@ describe("Staking", () => {
       const args = [
         fcl.address,
         registry.address,
+        issuer.address,
         start,
         mid,
         end,
@@ -159,6 +212,7 @@ describe("Staking", () => {
       const args = [
         fcl.address,
         registry.address,
+        issuer.address,
         start,
         mid,
         end,
@@ -180,6 +234,7 @@ describe("Staking", () => {
       const args = [
         fcl.address,
         registry.address,
+        issuer.address,
         start,
         mid,
         end,
@@ -202,6 +257,7 @@ describe("Staking", () => {
       const args = [
         fcl.address,
         registry.address,
+        issuer.address,
         start,
         mid,
         end,
@@ -274,6 +330,7 @@ describe("Staking", () => {
       const args = [
         fcl.address,
         registry.address,
+        issuer.address,
         start,
         mid,
         end,
@@ -299,13 +356,21 @@ describe("Staking", () => {
 
     describe("stake", () => {
       it("works with valid arguments", async () => {
-        await staking.stake(parseEther("1000"));
+        await staking.stake(parseEther("1000"), "0x00");
+      });
+
+      it("fails if claim cannot be verified", async () => {
+        await registry.setResult(false);
+
+        const action = staking.stake(parseEther("1000"), "0x00");
+
+        expect(action).to.be.revertedWith("Staking: could not verify claim");
       });
 
       it("transfers the desired amount tokens from your account to the contract", async () => {
         const ownerBalanceBefore = await fcl.balanceOf(owner.address);
         const stakingBalanceBefore = await fcl.balanceOf(staking.address);
-        await staking.stake(parseEther("1000"));
+        await staking.stake(parseEther("1000"), "0x00");
         const ownerBalanceAfter = await fcl.balanceOf(owner.address);
         const stakingBalanceAfter = await fcl.balanceOf(staking.address);
 
@@ -320,13 +385,13 @@ describe("Staking", () => {
       });
 
       it("emits a subscription event", async () => {
-        const action = staking.stake(parseEther("1000"));
+        const action = staking.stake(parseEther("1000"), "0x00");
 
         await expect(action).to.emit(staking, "Subscribed");
       });
 
       it("fails if amount is 0", async () => {
-        const action = staking.stake(parseEther("0"));
+        const action = staking.stake(parseEther("0"), "0x00");
 
         await expect(action).to.be.revertedWith(
           "Staking: staked amount needs to be greather than 0"
@@ -338,6 +403,7 @@ describe("Staking", () => {
         staking = (await deploy(owner, StakingArtifact, [
           fcl.address,
           registry.address,
+          issuer.address,
           oneMonthLater,
           oneMonthLater + 1,
           oneYearLater,
@@ -348,7 +414,7 @@ describe("Staking", () => {
           10,
         ])) as Staking;
 
-        const action = staking.stake(parseEther("1"));
+        const action = staking.stake(parseEther("1"), "0x00");
 
         await expect(action).to.be.revertedWith(
           "Staking: staking period not started"
@@ -356,10 +422,10 @@ describe("Staking", () => {
       });
 
       it("fails if address has already staked before", async () => {
-        await staking.stake(parseEther("1000"));
+        await staking.stake(parseEther("1000"), "0x00");
         await staking.withdraw();
 
-        const action = staking.stake(parseEther("1000"));
+        const action = staking.stake(parseEther("1000"), "0x00");
 
         await expect(action).to.be.revertedWith(
           "Staking: this account has already staked"
@@ -369,7 +435,7 @@ describe("Staking", () => {
 
     describe("getStake", () => {
       it("retrieves the currently staked amount", async () => {
-        await staking.stake(parseEther("1000"));
+        await staking.stake(parseEther("1000"), "0x00");
 
         const result = await staking.getStake(owner.address);
 
@@ -383,7 +449,7 @@ describe("Staking", () => {
       });
 
       it("is zero for withdrawn stakes", async () => {
-        await staking.stake(parseEther("1000"));
+        await staking.stake(parseEther("1000"), "0x00");
         await staking.withdraw();
 
         const result = await staking.getStake(owner.address);
@@ -394,7 +460,7 @@ describe("Staking", () => {
 
     describe("withdraw", () => {
       it("emits a withdrawal event", async () => {
-        await staking.stake(parseEther("1000"));
+        await staking.stake(parseEther("1000"), "0x00");
 
         ensureTimestamp(oneMonthLater);
 

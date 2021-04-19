@@ -10,7 +10,7 @@ contract FakeClaimsRegistry is IClaimsRegistryVerifier {
   bool result;
 
   constructor() {
-    result = false;
+    result = true;
   }
 
   function setResult(bool _r) public {
