@@ -10,6 +10,8 @@ pragma solidity ^0.8.3;
 
 import "hardhat/console.sol";
 
+/// @title Calculates rewards based on an initial downward curve period, and a second linear period
+/// @author Miguel Palhas <miguel@subvisual.co>
 contract CurveRewardCalculator {
   struct Period {
     uint start;

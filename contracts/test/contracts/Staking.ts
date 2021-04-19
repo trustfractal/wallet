@@ -57,9 +57,8 @@ describe("Staking", () => {
         end,
         3,
         2,
-        600,
+        100,
         15,
-        10,
       ];
 
       const staking = (await deploy(owner, StakingArtifact, args)) as Staking;
@@ -67,10 +66,8 @@ describe("Staking", () => {
       expect(await staking.erc20()).to.eq(fcl.address);
       expect(await staking.totalMaxAmount()).to.eq(3);
       expect(await staking.individualMinimumAmount()).to.eq(2);
-      expect((await staking.curve()).initialAPR).to.eq(600);
-      expect((await staking.curve()).finalAPR).to.eq(15);
-      expect((await staking.linear()).initialAPR).to.eq(15);
-      expect((await staking.linear()).finalAPR).to.eq(10);
+      expect(await staking.curveCap()).to.eq(100);
+      expect(await staking.constantAPR()).to.eq(15);
       expect(await staking.lockedTokens()).to.eq(0);
     });
 
@@ -85,9 +82,8 @@ describe("Staking", () => {
         end,
         3,
         2,
-        600,
+        100,
         15,
-        10,
       ];
 
       const action = deploy(owner, StakingArtifact, args);
@@ -108,9 +104,8 @@ describe("Staking", () => {
         end,
         3,
         2,
-        600,
+        100,
         15,
-        10,
       ];
 
       const action = deploy(owner, StakingArtifact, args);
@@ -131,9 +126,8 @@ describe("Staking", () => {
         end,
         3,
         2,
-        600,
+        100,
         15,
-        10,
       ];
 
       const action = deploy(owner, StakingArtifact, args);
@@ -154,15 +148,14 @@ describe("Staking", () => {
         one_hour_before,
         3,
         2,
-        600,
+        100,
         15,
-        10,
       ];
 
       const action = deploy(owner, StakingArtifact, args);
 
       await expect(action).to.be.revertedWith(
-        "CurveRewardCalculator: end date must be after or at linear start date"
+        "CappedRewardCalculator: end date must be after or at constant start date"
       );
     });
 
@@ -176,9 +169,8 @@ describe("Staking", () => {
         end,
         0,
         2,
-        600,
+        100,
         15,
-        10,
       ];
 
       const action = deploy(owner, StakingArtifact, args);
@@ -196,9 +188,8 @@ describe("Staking", () => {
         end,
         3,
         0,
-        600,
+        100,
         15,
-        10,
       ];
 
       const action = deploy(owner, StakingArtifact, args);
@@ -208,7 +199,7 @@ describe("Staking", () => {
       );
     });
 
-    it("fails if maxCurveAPR is 0", async () => {
+    it("fails if curveCap is 0", async () => {
       const args = [
         fcl.address,
         registry.address,
@@ -220,17 +211,16 @@ describe("Staking", () => {
         2,
         0,
         15,
-        10,
       ];
 
       const action = deploy(owner, StakingArtifact, args);
 
       await expect(action).to.be.revertedWith(
-        "CurveRewardCalculator: maxCurveAPR needs to be greater than minCurveAPR"
+        "CappedRewardCalculator: curve cap cannot be 0"
       );
     });
 
-    it("fails if min amount is larger than total amount", async () => {
+    it("fails if constant APR is 0", async () => {
       const args = [
         fcl.address,
         registry.address,
@@ -240,15 +230,14 @@ describe("Staking", () => {
         end,
         1,
         2,
-        600,
-        15,
-        10,
+        100,
+        0,
       ];
 
       const action = deploy(owner, StakingArtifact, args);
 
       await expect(action).to.be.revertedWith(
-        "Staking: max amount needs to be greater than individual minimum"
+        "CappedRewardCalculator: constant APR cannot be 0"
       );
     });
 
@@ -263,9 +252,8 @@ describe("Staking", () => {
         end,
         supply + 1,
         2,
-        600,
+        100,
         15,
-        10,
       ];
 
       const action = deploy(owner, StakingArtifact, args);
@@ -336,9 +324,8 @@ describe("Staking", () => {
         end,
         3,
         2,
-        600,
+        100,
         15,
-        10,
       ];
 
       staking = (await deploy(owner, StakingArtifact, args)) as Staking;
@@ -409,9 +396,8 @@ describe("Staking", () => {
           oneYearLater,
           pool,
           minSubscription,
-          600,
+          100,
           15,
-          10,
         ])) as Staking;
 
         const action = staking.stake(parseEther("1"), "0x00");
@@ -433,17 +419,17 @@ describe("Staking", () => {
       });
     });
 
-    describe("getStake", () => {
+    describe("getStakedAmount", () => {
       it("retrieves the currently staked amount", async () => {
         await staking.stake(parseEther("1000"), "0x00");
 
-        const result = await staking.getStake(owner.address);
+        const result = await staking.getStakedAmount(owner.address);
 
         expect(result).to.eq(parseEther("1000"));
       });
 
       it("is zero for non-existing stakes", async () => {
-        const result = await staking.getStake(bob.address);
+        const result = await staking.getStakedAmount(bob.address);
 
         expect(result).to.eq(0);
       });
@@ -452,7 +438,7 @@ describe("Staking", () => {
         await staking.stake(parseEther("1000"), "0x00");
         await staking.withdraw();
 
-        const result = await staking.getStake(owner.address);
+        const result = await staking.getStakedAmount(owner.address);
 
         expect(result).to.eq(0);
       });

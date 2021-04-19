@@ -6,19 +6,35 @@ import "hardhat/console.sol";
 
 import "./ClaimsRegistry/Verifier.sol";
 
+/// @title The claim verification interface expected by the Staking contract
+/// @author Miguel Palhas <miguel@subvisual.co>
 interface IClaimsRegistryVerifier {
+  /// @notice Verifies that the given `sig` corresponds to a claim about `subject`, signed by `issuer`
+  /// @param subject The subject the claim refers to
+  /// @param issuer The account that is expected to have signed the claim
+  /// @param sig The signature
+  /// @return Whether a claim about `subject` and signed by `issuer` does exist and matches `sig`
   function verifyClaim(address subject, address issuer, bytes calldata sig) external view returns (bool);
 }
 
+/// @title A claim registry. Does not actually store data, but only signatures of claims and their subjects
+/// @author Miguel Palhas <miguel@subvisual.co>
 contract ClaimsRegistry is IClaimsRegistryVerifier, Verifier {
+  /// @notice The mapping of keys to claims
   mapping(bytes32 => Claim) public registry;
 
+  /// @notice Struct containing all public data about a claim (currently only the subject)
   struct Claim {
-    address subject;
+    address subject; // Subject the claim refers to
   }
 
   // TODO events
 
+  /// @notice Stores a claim about `subject`, signed by `issuer`. Instead of actual data, receives only `claimHash` and `sig`, and checks whether the signature matches the expected key, and is signed by `issuer`
+  /// @param subject Account the claim refers to
+  /// @param issuer Account that signed the claim
+  /// @param claimHash the claimHash that was signed along with the subject
+  /// @param sig The given signature that must match (`subject`, `claimhash`)
   function setClaimWithSignature(
     address issuer,
     address subject,
@@ -34,13 +50,10 @@ contract ClaimsRegistry is IClaimsRegistryVerifier, Verifier {
     registry[key] = Claim(subject);
   }
 
-  function setSelfClaimWithSignature(
-    bytes32 claimHash,
-    bytes calldata sig
-  ) public {
-    setClaimWithSignature(msg.sender, msg.sender, claimHash, sig);
-  }
-
+  /// @notice Checks if a claim signature is valid and stored, and returns the corresponding subject
+  /// @param issuer Account that signed the claim
+  /// @param sig The given signature that must match (`subject`, `claimhash`)
+  /// @return The subject of the claim, or address(0) if none was found
   function getClaim(
     address issuer,
     bytes calldata sig
@@ -50,6 +63,11 @@ contract ClaimsRegistry is IClaimsRegistryVerifier, Verifier {
     return registry[key].subject;
   }
 
+  /// @notice Checks if a claim signature is valid, and corresponds to the given subject
+  /// @param subject Account the claim refers to
+  /// @param issuer Account that signed the claim
+  /// @param sig The given signature that must match (`subject`, `claimhash`)
+  /// @return The subject of the claim, or address(0) if none was found
   function verifyClaim(
     address subject,
     address issuer,

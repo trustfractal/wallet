@@ -64,17 +64,6 @@ describe("ClaimsRegistry", () => {
       });
     });
 
-    describe("setSelfClaimWithSignature", () => {
-      it("registers a self claim when given a valid signature", async () => {
-        dataToSign = arrayify(
-          await registry.computeSignableKey(issuer.address, value)
-        );
-        sig = await issuer.signMessage(dataToSign);
-
-        await registry.connect(issuer).setSelfClaimWithSignature(value, sig);
-      });
-    });
-
     describe("getClaim", () => {
       it("returns the subject of a given issuer's claim", async () => {
         await registry.setClaimWithSignature(
