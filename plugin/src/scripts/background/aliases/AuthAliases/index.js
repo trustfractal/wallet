@@ -23,9 +23,11 @@ export const signUp = () => {
       // init the encrypted user store
       await Store.init(registeredPassword);
 
-      // save the hashed password for authentication purposes
+      // save a double hash password for authentication purposes
       const hashedPassword = (
-        await UserStore.getHashedPassword(registeredPassword)
+        await UserStore.getHashedPassword(registeredPassword).then(
+          UserStore.getHashedPassword,
+        )
       ).toString();
       dispatch(authActions.setHashedPassword(hashedPassword));
 
@@ -52,7 +54,9 @@ export const signIn = ({ payload: attemptedPassword }) => {
 
       // Hash attempted password
       const hashedAttemptedPassword = (
-        await UserStore.getHashedPassword(attemptedPassword)
+        await UserStore.getHashedPassword(attemptedPassword).then(
+          UserStore.getHashedPassword,
+        )
       ).toString();
 
       // Compare passwords hashes
