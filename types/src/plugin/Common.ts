@@ -4,3 +4,4 @@ export type StringOrNumberOrBoolean = string | number | boolean;
 
 export type SyncCallback = (...args: any[]) => void;
 export type AsyncCallback = (...args: any[]) => Promise<void>;
+export type Callback = SyncCallback | AsyncCallback;

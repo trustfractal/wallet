@@ -8,6 +8,7 @@ import { inpage, background } from "@models/Connection/params";
 import types from "@models/Connection/types";
 
 import { injectScript } from "./injector";
+import ConnectionNames from "@models/Connection/names";
 
 const sdk = chrome.runtime.getURL("sdk.bundle.js");
 injectScript(sdk);
@@ -16,7 +17,9 @@ const inpageConnection = new InpageConnection(inpage);
 const backgroundConnection = new BackgroundConnection(background);
 const proxyConnection = new ProxyConnection(
   inpageConnection,
+  ConnectionNames.INPAGE,
   backgroundConnection,
+  ConnectionNames.BACKGROUND,
 );
 
 inpageConnection.on(types.VERIFY_CONNECTION, () => {

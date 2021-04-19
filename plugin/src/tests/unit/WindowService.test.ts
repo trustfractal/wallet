@@ -7,9 +7,8 @@ import {
   ERROR_GET_ALL_WINDOWS,
   ERROR_CLOSE_WINDOW,
 } from "@services/WindowsService/Errors";
-import { POPUP } from "@services/WindowsService/Params";
 
-describe("Windows Service", () => {
+describe("Unit Windows Service", () => {
   describe("createWindow()", () => {
     afterEach(() => {
       jest.resetAllMocks();
