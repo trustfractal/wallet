@@ -37,7 +37,9 @@ describe("ClaimsRegistry", () => {
       issuer = signers[0];
       subject = signers[1];
       johnDoe = signers[2];
-      dataToSign = arrayify(await registry.computeKey(subject.address, value));
+      dataToSign = arrayify(
+        await registry.computeSignableKey(subject.address, value)
+      );
       sig = await issuer.signMessage(dataToSign);
     });
 
@@ -64,7 +66,9 @@ describe("ClaimsRegistry", () => {
 
     describe("setSelfClaimWithSignature", () => {
       it("registers a self claim when given a valid signature", async () => {
-        dataToSign = arrayify(await registry.computeKey(issuer.address, value));
+        dataToSign = arrayify(
+          await registry.computeSignableKey(issuer.address, value)
+        );
         sig = await issuer.signMessage(dataToSign);
 
         await registry.connect(issuer).setSelfClaimWithSignature(value, sig);

@@ -21,15 +21,13 @@ contract ClaimsRegistry is Verifier {
     bytes32 claimHash,
     bytes calldata sig
   ) public {
-    bytes32 signable = computeSignableHash(subject, claimHash);
+    bytes32 signable = computeSignableKey(subject, claimHash);
 
     require(verifyWithPrefix(signable, sig, issuer), "ClaimsRegistry: Claim signature does not match issuer");
 
-    bytes32 encryptedBytes = keccak256(abi.encodePacked(issuer, sig));
+    bytes32 key = keccak256(abi.encodePacked(issuer, sig));
 
-    Claim memory claim = Claim(subject);
-
-    registry[encryptedBytes] = claim;
+    registry[key] = Claim(subject);
   }
 
   function setSelfClaimWithSignature(
@@ -43,11 +41,9 @@ contract ClaimsRegistry is Verifier {
     address issuer,
     bytes calldata sig
   ) public view returns (address) {
-    bytes32 encryptedBytes = keccak256(abi.encodePacked(issuer, sig));
+    bytes32 key = keccak256(abi.encodePacked(issuer, sig));
 
-    Claim memory claim = registry[encryptedBytes];
-
-    return (claim.subject);
+    return registry[key].subject;
   }
 
   function verifyClaim(
