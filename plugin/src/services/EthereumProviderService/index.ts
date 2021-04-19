@@ -11,11 +11,6 @@ import {
 class EthereumProviderService {
   private static instance: EthereumProviderService;
   private provider?: IEthereum;
-  private available: boolean;
-
-  constructor() {
-    this.available = false;
-  }
 
   public static getInstance(): EthereumProviderService {
     if (!EthereumProviderService.instance) {
@@ -40,14 +35,19 @@ class EthereumProviderService {
       throw ERROR_PROVIDER_NOT_METAMASK();
     }
 
-    this.available = true;
     this.provider = window.ethereum;
 
     return this.provider;
   }
 
   public isAvailable() {
-    return this.available;
+    return this.provider !== undefined;
+  }
+
+  private ensureProviderIsInitialized() {
+    if (!this.isAvailable()) {
+      throw ERROR_PROVIDER_NOT_INITIALIZED();
+    }
   }
 
   public async commitCredential(credential: string) {
@@ -76,12 +76,6 @@ class EthereumProviderService {
     }
 
     return accounts[0];
-  }
-
-  private ensureProviderIsInitialized() {
-    if (this.provider === undefined) {
-      throw ERROR_PROVIDER_NOT_INITIALIZED();
-    }
   }
 }
 

@@ -3,15 +3,11 @@ import ConnectionTypes from "@models/Connection/types";
 
 import { FRACTAL_WEBSITE_HOSTNAME } from "@constants";
 
-import WindowsService from "@services/WindowsService";
+import walletActions, { walletTypes } from "@redux/stores/user/reducers/wallet";
 
-import registerActions, {
-  registerTypes,
-} from "@redux/stores/application/reducers/register";
-
-export const walletSetup = () => {
-  return async (dispatch) => {
-    dispatch(registerActions.walletSetupPending());
+export const connectWallet = () => {
+  return async (dispatch, getState) => {
+    dispatch(walletActions.connectWalletPending());
 
     try {
       // get active connected chrome port
@@ -22,30 +18,29 @@ export const walletSetup = () => {
       }
 
       // check if the active port is on the fractal domain
-      const { id, hostname, protocol } = new URL(activePort.sender.url);
+      const { id, port } = activePort;
+      const { hostname, protocol } = new URL(port.sender.url);
 
       const senderHostname = hostname.startsWith("www.")
         ? hostname.substr(4)
         : hostname;
 
       if (senderHostname !== FRACTAL_WEBSITE_HOSTNAME) {
-        WindowsService.redirectTab(id, `https://${FRACTAL_WEBSITE_HOSTNAME}`);
-
         throw new Error(
-          "Active tab is not on the fractal website domain, redirecting...",
+          "Active tab is not on the fractal website domain, redirecting.",
         );
       }
 
       // check ssl
       if (protocol !== "https:") {
-        throw new Error("Not on an ssl connection, redirecting...");
+        throw new Error("Not on a ssl connection.");
       }
 
       // get ethereumm wallet account address
       const account = await ContentScriptConnection.invoke(
         ConnectionTypes.GET_ACCOUNT_ADDRESS,
         [],
-        activePort.id,
+        id,
       );
 
       if (!account) {
@@ -53,17 +48,17 @@ export const walletSetup = () => {
       }
 
       // save wallet address on the redux store
-      dispatch(registerActions.setRegisterAccount(account));
-      dispatch(registerActions.walletSetupSuccess());
+      dispatch(walletActions.setAccount(account));
+      dispatch(walletActions.connectWalletSuccess());
     } catch (error) {
       console.error(error);
-      dispatch(registerActions.walletSetupFailed(error.message));
+      dispatch(walletActions.connectWalletFailed(error.message));
     }
   };
 };
 
 const Aliases = {
-  [registerTypes.WALLET_SETUP_REQUEST]: walletSetup,
+  [walletTypes.CONNECT_WALLET_REQUEST]: connectWallet,
 };
 
 export default Aliases;

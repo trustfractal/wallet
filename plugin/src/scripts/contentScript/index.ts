@@ -29,8 +29,6 @@ inpageConnection.on(ConnectionTypes.VERIFY_EXTENSION_CONNECTION, () => {
 
 proxyConnection
   .proxy(ConnectionTypes.CONFIRM_CREDENTIAL)
-  .proxy(ConnectionTypes.REPORT_WALLET_AVAILABLE)
-  .proxy(ConnectionTypes.REPORT_WALLET_UNAVAILABLE)
   .proxy(ConnectionTypes.REQUEST_CREDENTIAL)
   .reversedProxy(ConnectionTypes.COMMIT_CREDENTIAL)
   .reversedProxy(ConnectionTypes.GET_ACCOUNT_ADDRESS);

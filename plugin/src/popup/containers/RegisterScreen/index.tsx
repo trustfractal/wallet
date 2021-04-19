@@ -10,11 +10,11 @@ import {
   isSignUpLoading,
 } from "@redux/stores/application/reducers/auth/selectors";
 
-import PasswordSetup from "@popup/components/PasswordSetup";
+import Register from "@popup/components/Register";
 
 import "@popup/styles.css";
 
-function PasswordSetupScreen() {
+function RegisterScreen() {
   const dispatch = useAppDispatch();
 
   const isLoading = useAppSelector(isSignUpLoading);
@@ -25,9 +25,7 @@ function PasswordSetupScreen() {
     dispatch(authActions.signUpRequest());
   };
 
-  return (
-    <PasswordSetup onNext={onNext} loading={isLoading} error={signUpError} />
-  );
+  return <Register onNext={onNext} loading={isLoading} error={signUpError} />;
 }
 
-export default PasswordSetupScreen;
+export default RegisterScreen;

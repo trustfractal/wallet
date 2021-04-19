@@ -65,8 +65,8 @@ export default class ProxyConnection implements IProxyConnection {
         // listen for destination reply
         this.destinationConnection
           .listen(invokation.id)
-          .then((value) => resolve(value))
-          .catch((error) => reject(error));
+          .then((value: any) => resolve(value))
+          .catch((error: string) => reject(error));
       });
     });
 

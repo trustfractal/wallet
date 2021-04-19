@@ -2,7 +2,7 @@ export enum ErrorCode {
   ERROR_PROVIDER_NOT_DETECTED = 3000,
   ERROR_PROVIDER_OVERRIDE = 3001,
   ERROR_PROVIDER_NOT_METAMASK = 3002,
-  ERROR_PROVIDER_NOT_INITIALIZED = 3002,
+  ERROR_PROVIDER_NOT_INITIALIZED = 3003,
 }
 
 export class EthereumProviderError extends Error {
@@ -37,7 +37,7 @@ export const ERROR_PROVIDER_NOT_METAMASK = (): EthereumProviderError => {
 
 export const ERROR_PROVIDER_NOT_INITIALIZED = (): EthereumProviderError => {
   return new EthereumProviderError(
-    ErrorCode.ERROR_PROVIDER_NOT_METAMASK,
+    ErrorCode.ERROR_PROVIDER_NOT_INITIALIZED,
     `EthereumProvider: Ethereum provider is not initialized, please call init before trying to access it`,
   );
 };

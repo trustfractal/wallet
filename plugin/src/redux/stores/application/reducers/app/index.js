@@ -1,21 +1,12 @@
 import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
-const types = mirrorCreator([
-  "STARTUP",
-  "SET_LAUNCHED",
-  "SET_WALLET_AVAILABILITY",
-]);
+const types = mirrorCreator(["STARTUP", "SET_LAUNCHED"]);
 
-export const creators = createActions(
-  types.STARTUP,
-  types.SET_LAUNCHED,
-  types.SET_WALLET_AVAILABILITY,
-);
+export const creators = createActions(types.STARTUP, types.SET_LAUNCHED);
 
 export const initialState = {
   launched: false,
-  wallet: false,
 };
 
 export const reducer = handleActions(
@@ -24,11 +15,6 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         launched,
-      }),
-    [types.SET_WALLET_AVAILABILITY]: (state, { payload: wallet }) =>
-      Object.freeze({
-        ...state,
-        wallet,
       }),
   },
   initialState,

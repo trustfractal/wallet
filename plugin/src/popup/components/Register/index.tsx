@@ -4,13 +4,13 @@ import Button from "@popup/components/Button";
 
 import "@popup/styles.css";
 
-type PasswordSetupProps = {
+type RegisterProps = {
   loading: boolean;
   onNext: (password: string) => void;
   error: string;
 };
 
-function PasswordSetup(props: PasswordSetupProps) {
+function Register(props: RegisterProps) {
   const { loading, onNext, error: propError } = props;
 
   const [passwordError, setPasswordError] = useState("");
@@ -50,13 +50,14 @@ function PasswordSetup(props: PasswordSetupProps) {
 
   return (
     <div className="Popup">
-      <h2>Create Password</h2>
+      <h2>Welcome to the Fractal Identity Wallet</h2>
+      <p>Please start by creating your password</p>
       <div>
         <label htmlFor="new_password" />
         <input
           id="new_password"
           name="value"
-          placeholder="New Password"
+          placeholder="Enter a password"
           type="password"
           value={newPassword}
           onChange={onChangeNewPassword}
@@ -66,7 +67,7 @@ function PasswordSetup(props: PasswordSetupProps) {
         <input
           id="confirm_password"
           name="value"
-          placeholder="Confirm Password"
+          placeholder="Confirm the password"
           type="password"
           value={confirmPassword}
           onChange={onChangeConfirmPassword}
@@ -80,10 +81,10 @@ function PasswordSetup(props: PasswordSetupProps) {
         loading={loading}
         disabled={arePasswordsEmpty || hasError}
       >
-        Next
+        Save my password
       </Button>
     </div>
   );
 }
 
-export default PasswordSetup;
+export default Register;

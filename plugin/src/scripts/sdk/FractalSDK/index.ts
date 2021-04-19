@@ -16,10 +16,8 @@ export default class FractalSDK implements IFractalSDK {
     // init ethereum provider service
     try {
       await EthereumProviderService.init();
-      ExtensionConnection.invoke(ConnectionTypes.REPORT_WALLET_AVAILABLE);
     } catch (error) {
       console.error(error);
-      ExtensionConnection.invoke(ConnectionTypes.REPORT_WALLET_UNAVAILABLE);
     }
 
     this.initialized = true;

@@ -1,14 +1,10 @@
-import walletActions from "@redux/stores/user/reducers/wallet";
 import authActions, {
   authTypes,
 } from "@redux/stores/application/reducers/auth";
 import registerActions from "@redux/stores/application/reducers/register";
 
 import Store, { UserStore } from "@redux/stores/user";
-import {
-  getRegisterAccount,
-  getRegisterPassword,
-} from "@redux/stores/application/reducers/register/selectors";
+import { getRegisterPassword } from "@redux/stores/application/reducers/register/selectors";
 import { getHashedPassword } from "@redux/stores/application/reducers/auth/selectors";
 
 export const signUp = () => {
@@ -17,11 +13,10 @@ export const signUp = () => {
 
     try {
       // get registered data
-      const registeredAccount = getRegisterAccount(getState());
       const registeredPassword = getRegisterPassword(getState());
 
       // init the encrypted user store
-      const userStore = await Store.init(registeredPassword);
+      await Store.init(registeredPassword);
 
       // save a double hash password for authentication purposes
       const hashedPassword = (
@@ -30,9 +25,6 @@ export const signUp = () => {
         )
       ).toString();
       dispatch(authActions.setHashedPassword(hashedPassword));
-
-      // save the selected account information in the user store
-      userStore.dispatch(walletActions.setAccount(registeredAccount));
 
       // reset register state
       dispatch(registerActions.resetRegister());

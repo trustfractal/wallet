@@ -25,7 +25,7 @@ function Login(props: LoginProps) {
 
   return (
     <div className="Popup">
-      <h2>Welcome back!</h2>
+      <h2>Enter your password to login</h2>
       <div>
         <input
           id="password"
@@ -43,7 +43,7 @@ function Login(props: LoginProps) {
         loading={loading}
         disabled={hasError || isPasswordEmpty}
       >
-        Next
+        Login
       </Button>
     </div>
   );

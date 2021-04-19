@@ -5,7 +5,7 @@ import ConnectionTypes from "@models/Connection/types";
 
 import { ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED } from "@background/connection/Errors";
 
-import { IConnectionPorts } from "@fractalwallet/types";
+import { IConnectionPorts, IPort } from "@fractalwallet/types";
 
 import WindowsService from "@services/WindowsService";
 
@@ -47,9 +47,7 @@ class Connection {
     return this.connection!.ports;
   }
 
-  public async getActiveConnectionPort(): Promise<
-    chrome.runtime.Port | undefined
-  > {
+  public async getActiveConnectionPort(): Promise<IPort | undefined> {
     this.ensureConnectionIsInitialized();
 
     // get current active tab
@@ -62,9 +60,10 @@ class Connection {
 
     // query ports to get the active one
     for (const portId in connectionPorts) {
-      const { port } = connectionPorts[portId];
+      const connectedPort = connectionPorts[portId];
 
-      if (port?.sender?.tab?.id === activeTab.id) return port;
+      if (connectedPort.port?.sender?.tab?.id === activeTab.id)
+        return connectedPort;
     }
   }
 

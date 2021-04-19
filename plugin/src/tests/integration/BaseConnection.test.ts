@@ -85,7 +85,6 @@ describe("Integration Base Connection", () => {
       false,
       invoker,
     );
-    console.log(response.serialize());
 
     // Execute
     mockedConnection.testHandleMessage({
