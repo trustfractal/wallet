@@ -43,8 +43,9 @@ export const walletSetup = () => {
 
       // get ethereumm wallet account address
       const account = await ContentScriptConnection.invoke(
-        activePort.id,
         ConnectionTypes.GET_ACCOUNT_ADDRESS,
+        [],
+        activePort.id,
       );
 
       if (!account) {

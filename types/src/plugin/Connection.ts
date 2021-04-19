@@ -7,6 +7,7 @@ export interface IResponse {
   method: string;
   value: any;
   success: boolean;
+  port?: string;
   getMessageType: () => string;
   serialize: () => string;
 }
@@ -57,16 +58,13 @@ export type DuplexConnectionParams = {
   targetWindow?: Window;
 };
 
-export type ConnectionParams =
-  | chrome.runtime.ConnectInfo
-  | DuplexConnectionParams;
-
 export interface IBackgroundConnection extends IConnection {
   port: chrome.runtime.Port;
 }
 
-export interface IPort extends chrome.runtime.Port {
+export interface IPort {
   id: string;
+  port: chrome.runtime.Port;
 }
 
 export interface IContentScriptConnection extends IConnection {

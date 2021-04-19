@@ -37,8 +37,8 @@ class Connection {
     return this.connection!;
   }
 
-  public invoke(method: ConnectionTypes, ...args: any[]): any {
-    return this.getConnection().invoke(method, ...args);
+  public invoke(method: ConnectionTypes, args?: any[]): any {
+    return this.getConnection().invoke(method, args);
   }
 
   private ensureConnectionIsInitialized() {
