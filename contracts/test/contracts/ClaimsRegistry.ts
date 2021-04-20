@@ -12,6 +12,7 @@ const { expect } = chai;
 const { deployContract } = waffle;
 
 let registry: any;
+const zero = "0x0000000000000000000000000000000000000000";
 
 describe("ClaimsRegistry", () => {
   beforeEach(async () => {
@@ -61,6 +62,19 @@ describe("ClaimsRegistry", () => {
           .setClaimWithSignature(subject.address, issuer.address, value, sig);
 
         await expect(action).not.to.be.reverted;
+      });
+
+      it("emits a ClaimIssued event", async () => {
+        const action = registry.setClaimWithSignature(
+          subject.address,
+          issuer.address,
+          value,
+          sig
+        );
+
+        await expect(action)
+          .to.emit(registry, "ClaimStored")
+          .withArgs(subject.address, issuer.address, sig);
       });
     });
 
@@ -122,6 +136,63 @@ describe("ClaimsRegistry", () => {
         );
 
         expect(result).to.eq(false);
+      });
+    });
+
+    describe("revokeClaim", () => {
+      it("allows issuer to revoke an existing claim", async () => {
+        await registry.setClaimWithSignature(
+          subject.address,
+          issuer.address,
+          value,
+          sig
+        );
+
+        expect(await registry.getClaim(issuer.address, sig)).to.eq(
+          subject.address
+        );
+
+        await registry.connect(issuer).revokeClaim(sig);
+
+        expect(await registry.getClaim(issuer.address, sig)).to.eq(zero);
+      });
+
+      it("emits a ClaimRevoked event", async () => {
+        await registry.setClaimWithSignature(
+          subject.address,
+          issuer.address,
+          value,
+          sig
+        );
+
+        const action = registry.revokeClaim(sig);
+
+        await expect(action)
+          .to.emit(registry, "ClaimRevoked")
+          .withArgs(subject.address, issuer.address, sig);
+      });
+
+      it("does not allow issuer to revoke non-existing claims", async () => {
+        const action = registry.connect(issuer).revokeClaim(sig);
+
+        await expect(action).to.be.revertedWith(
+          "ClaimsRegistry: Claim not found"
+        );
+      });
+
+      it("does not allow the subject to revoke an issuer's claim", async () => {
+        await registry.setClaimWithSignature(
+          subject.address,
+          issuer.address,
+          value,
+          sig
+        );
+
+        const action = registry.connect(subject).revokeClaim(sig);
+
+        await expect(action).to.be.revertedWith(
+          "ClaimsRegistry: Claim not found"
+        );
       });
     });
   });
