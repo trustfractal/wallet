@@ -214,11 +214,13 @@ describe("Staking", () => {
 
       staking = (await deploy(owner, StakingArtifact, args)) as Staking;
 
-      // give 1000 tokens to the staking contract
+      // give 1000 tokens to staking contract and alice
       await fcl.transfer(staking.address, parseEther("1000"));
+      await fcl.transfer(alice.address, parseEther("1000"));
 
-      // pre-approve staking of 1000 tokens
-      await fcl.approve(staking.address, parseEther("2000"));
+      // pre-approve staking of 1000 tokens for owner & alice
+      await fcl.connect(owner).approve(staking.address, parseEther("2000"));
+      await fcl.connect(alice).approve(staking.address, parseEther("2000"));
 
       amount = parseEther("1000");
       now = start + 1000;
@@ -363,7 +365,7 @@ describe("Staking", () => {
         expect(reward).to.eq("998845000000000000000");
       });
 
-      it("is zero for non-existing subscriptions", async () => {
+      it("is zero for withdrawn subscriptions", async () => {
         await staking.stake(parseEther("1000"), "0x00");
         await staking.withdraw();
 
@@ -372,7 +374,7 @@ describe("Staking", () => {
         expect(reward).to.eq(0);
       });
 
-      it("is zero for withdrawn subscriptions", async () => {
+      it("is zero for non-existing subscriptions", async () => {
         const reward = await staking.getMaxStakeReward(owner.address);
 
         expect(reward).to.eq(0);
@@ -388,6 +390,84 @@ describe("Staking", () => {
         const action = staking.withdraw();
 
         await expect(action).to.emit(staking, "Withdrawn");
+      });
+
+      it("does not work for already-withdrawn subscriptions", async () => {
+        await staking.stake(parseEther("1000"), "0x00");
+        await staking.withdraw();
+
+        ensureTimestamp(oneMonthLater);
+
+        const action = staking.withdraw();
+
+        await expect(action).to.revertedWith(
+          "Staking: no active subscription found for this address"
+        );
+      });
+
+      it("can withdrawn two subscriptions to the same address", async () => {
+        await staking.stake(parseEther("500"), "0x00");
+        await staking.withdraw();
+        await staking.stake(parseEther("500"), "0x00");
+        await staking.withdraw();
+      });
+
+      it("allows multiple users to withdrawn their stake", async () => {
+        await staking.connect(owner).stake(parseEther("500"), "0x00");
+        await staking.connect(alice).stake(parseEther("500"), "0x00");
+        await staking.connect(alice).withdraw();
+        await staking.connect(owner).withdraw();
+      });
+    });
+
+    describe("withdrawPool", () => {
+      it("transfers the pool's available balance to the owner", async () => {
+        ensureTimestamp(oneMonthLater + 1);
+
+        const ownerBalanceBefore = await fcl.balanceOf(owner.address);
+        await staking.withdrawPool();
+        const ownerBalanceAfter = await fcl.balanceOf(owner.address);
+
+        expect(ownerBalanceAfter).to.eq(
+          ownerBalanceBefore.add(parseEther("1000"))
+        );
+      });
+
+      it("depletes the available pool", async () => {
+        const poolBefore = await staking.availablePoolBalance();
+        ensureTimestamp(oneMonthLater + 1);
+        await staking.withdrawPool();
+        const poolAfter = await staking.availablePoolBalance();
+
+        expect(poolBefore).to.be.gt(poolAfter);
+        expect(poolAfter).to.eq(0);
+      });
+
+      it("does not transfer locked tokens", async () => {
+        await staking.connect(alice).stake(parseEther("10"), "0x00");
+
+        const balanceBefore = await fcl.balanceOf(staking.address);
+        ensureTimestamp(oneMonthLater + 1);
+        await staking.withdrawPool();
+        const balanceAfter = await fcl.balanceOf(staking.address);
+
+        const locked = await staking.lockedTokens();
+        const aliceStake = await staking.getStakedAmount(alice.address);
+        const aliceReward = await staking.getMaxStakeReward(alice.address);
+
+        expect(balanceBefore).to.be.gt(balanceAfter);
+        expect(balanceAfter).to.eq(locked);
+        expect(balanceAfter).to.eq(aliceStake.add(aliceReward));
+      });
+
+      it("fails during the staking period", async () => {
+        ensureTimestamp(oneMonthLater - 1);
+
+        const action = staking.withdrawPool();
+
+        await expect(action).to.be.revertedWith(
+          "Staking: staking not over yet"
+        );
       });
     });
   });

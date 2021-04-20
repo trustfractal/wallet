@@ -30,7 +30,9 @@ contract ClaimsRegistry is IClaimsRegistryVerifier, Verifier {
 
   // TODO events
 
-  /// @notice Stores a claim about `subject`, signed by `issuer`. Instead of actual data, receives only `claimHash` and `sig`, and checks whether the signature matches the expected key, and is signed by `issuer`
+  /// @notice Stores a claim about `subject`, signed by `issuer`. Instead of
+  ///   actual data, receives only `claimHash` and `sig`, and checks whether the
+  ///   signature matches the expected key, and is signed by `issuer`
   /// @param subject Account the claim refers to
   /// @param issuer Account that signed the claim
   /// @param claimHash the claimHash that was signed along with the subject

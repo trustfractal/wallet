@@ -18,7 +18,8 @@ contract Staking is StakingInfra, CappedRewardCalculator {
   /// @notice claim registry where signatures are to be stored and verified
   IClaimsRegistryVerifier public registry;
 
-  /// @notice The expected issuer address against which claims will be verified (i.e. they must be signed by this address)
+  /// @notice The expected issuer address against which claims will be verified
+  ///   (i.e. they must be signed by this address)
   address public claimIssuer;
 
   /// @notice The minimum staking amount per account
@@ -49,18 +50,18 @@ contract Staking is StakingInfra, CappedRewardCalculator {
   struct Subscription {
     bool active;
     address subscriberAddress; // addres the subscriptions refers to
-    uint startDate;            // Block timestamp at which the subscription was made
-    uint stakedAmount;         // How much was staked
-    uint maxReward;            // Maximum reward given if user stays until the end of the staking period
-    uint withdrawAmount;       // Total amount withdrawn (initial amount + final calculated reward)
-    uint withdrawDate;         // Block timestamp at which the subscription was withdrawn (or 0 while staking is in progress)
+    uint startDate;      // Block timestamp at which the subscription was made
+    uint stakedAmount;   // How much was staked
+    uint maxReward;      // Maximum reward given if user stays until the end of the staking period
+    uint withdrawAmount; // Total amount withdrawn (initial amount + final calculated reward)
+    uint withdrawDate;   // Block timestamp at which the subscription was withdrawn (or 0 while staking is in progress)
   }
 
   /// @notice Staking constructor
   /// @param _token ERC20 token address to use
   /// @param _registry ClaimsRegistry address to use
   /// @param _issuer expected issuer of claims when verifying them
-  /// @param _startDate timestamp at which stake requests begin to be allowed. Must be greater than the contract instantiation timestamp
+  /// @param _startDate timestamp starting at which stakes are allowed. Must be greater than instantiation timestamp
   /// @param _endDate timestamp at which staking is over (no more rewards are given, and new stakes are not allowed)
   /// @param _individualMinimumAmount minimum staking amount for each account
   /// @param _cap max % of individual reward for curve period
@@ -91,7 +92,10 @@ contract Staking is StakingInfra, CappedRewardCalculator {
     return erc20.balanceOf(address(this)) - lockedTokens;
   }
 
-  /// @notice Requests a new stake to be created. Only one stake per account is created, maximum rewards are calculated upfront, and a valid claim signature needs to be provided, which will be checked against the expected issuer on the registry contract
+  /// @notice Requests a new stake to be created. Only one stake per account is
+  ///   created, maximum rewards are calculated upfront, and a valid claim
+  ///   signature needs to be provided, which will be checked against the expected
+  ///   issuer on the registry contract
   /// @param _amount Amount of tokens to stake
   /// @param claimSig Signature to check against the registry contract
   function stake(uint _amount, bytes calldata claimSig) external whenNotPaused {
@@ -149,7 +153,7 @@ contract Staking is StakingInfra, CappedRewardCalculator {
     subscriptions[subscriber] = sub;
 
     // update locked amount
-    lockedTokens = lockedTokens - sub.stakedAmount + sub.maxReward;
+    lockedTokens = lockedTokens - (sub.stakedAmount + sub.maxReward);
 
     emit Withdrawn(subscriber, time, total);
   }
@@ -189,5 +193,11 @@ contract Staking is StakingInfra, CappedRewardCalculator {
     } else {
       return 0;
     }
+  }
+
+  function withdrawPool() external onlyOwner {
+    require(block.timestamp > endDate, "Staking: staking not over yet");
+
+    erc20.transfer(owner(), availablePoolBalance());
   }
 }
