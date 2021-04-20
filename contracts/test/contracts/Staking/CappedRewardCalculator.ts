@@ -175,7 +175,7 @@ describe("CappedRewardCalculator", () => {
         const [r1, r2] = await tester.testToCurvePercents(start, oneYearLater);
 
         expect(r1).to.eq(0);
-        expect(r2).to.eq(100);
+        expect(r2).to.eq(1000000);
       });
 
       it("calculates 0% to 50%", async () => {
@@ -185,7 +185,7 @@ describe("CappedRewardCalculator", () => {
         );
 
         expect(r1).to.eq(0);
-        expect(r2).to.eq(50);
+        expect(r2).to.eq(500000);
       });
 
       it("calculates 50% to 100%", async () => {
@@ -194,8 +194,8 @@ describe("CappedRewardCalculator", () => {
           oneYearLater
         );
 
-        expect(r1).to.eq(50);
-        expect(r2).to.eq(100);
+        expect(r1).to.eq(500000);
+        expect(r2).to.eq(1000000);
       });
 
       it("calculates 10% to 90%", async () => {
@@ -204,22 +204,22 @@ describe("CappedRewardCalculator", () => {
           start + (oneYearLater - start) * 0.9
         );
 
-        expect(r1).to.eq(10);
-        expect(r2).to.eq(90);
+        expect(r1).to.eq(100000);
+        expect(r2).to.eq(900000);
       });
     });
 
     describe("curvePeriodPercentage", () => {
       it("is maximum from 0% to 100%", async () => {
-        const apr1 = await tester.testCurvePeriodPercentage(0, 100);
-        const apr2 = await tester.testCurvePeriodPercentage(0, 90);
+        const apr1 = await tester.testCurvePeriodPercentage(0, 1000000);
+        const apr2 = await tester.testCurvePeriodPercentage(0, 900000);
 
         expect(apr1).to.be.gt(apr2);
       });
 
       it("is greater if you enter earlier but stay the same time", async () => {
-        const apr1 = await tester.testCurvePeriodPercentage(0, 30);
-        const apr2 = await tester.testCurvePeriodPercentage(10, 40);
+        const apr1 = await tester.testCurvePeriodPercentage(0, 300000);
+        const apr2 = await tester.testCurvePeriodPercentage(100000, 400000);
 
         expect(apr1).to.be.gt(apr2);
       });
@@ -227,8 +227,8 @@ describe("CappedRewardCalculator", () => {
       it("each 10% segment is smaller than or equal the last", async () => {
         let last = 10e10;
 
-        for (let i = 0; i < 100; i += 10) {
-          const apr = await tester.testCurvePeriodPercentage(i, i + 10);
+        for (let i = 0; i < 1000000; i += 1000000) {
+          const apr = await tester.testCurvePeriodPercentage(i, i + 100000);
 
           expect(apr).to.be.lte(last);
           last = apr;
@@ -238,7 +238,7 @@ describe("CappedRewardCalculator", () => {
       it("staying for 10% more increases your total APR", async () => {
         let last = 0;
 
-        for (let i = 0; i < 100; i += 10) {
+        for (let i = 0; i < 1000000; i += 100000) {
           const apr = await tester.testCurvePeriodPercentage(0, i + 10);
 
           expect(apr).to.be.gte(last);
@@ -249,8 +249,8 @@ describe("CappedRewardCalculator", () => {
       it("at least on the first 80%, each 10% segment is smaller than the last", async () => {
         let last = 10e10;
 
-        for (let i = 0; i < 80; i += 10) {
-          const apr = await tester.testCurvePeriodPercentage(i, i + 10);
+        for (let i = 0; i < 800000; i += 100000) {
+          const apr = await tester.testCurvePeriodPercentage(i, i + 100000);
 
           expect(apr).to.be.lt(last);
           last = apr;
@@ -374,10 +374,16 @@ describe("CappedRewardCalculator", () => {
   //       CappedRewardCalculatorArtifact,
   //       args
   //     )) as CappedRewardCalculator;
+
+  //     tester = (await deploy(
+  //       owner,
+  //       TestCappedRewardCalculatorArtifact,
+  //       args
+  //     )) as TestCappedRewardCalculator;
   //   });
 
   //   it.only("enter at 0%, cumulative earnings", async () => {
-  //     for (let enter = 0; enter <= 14; enter += 1) {
+  //     for (let enter = 0; enter <= 15; enter += 1) {
   //       for (let exit = enter + 1; exit <= 15; exit += 1) {
   //         const enter_t = dayjs.unix(start).add(enter, "days").unix();
   //         const exit_t = dayjs.unix(start).add(exit, "days").unix();

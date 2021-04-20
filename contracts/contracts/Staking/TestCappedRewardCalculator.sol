@@ -32,7 +32,11 @@ contract TestCappedRewardCalculator is CappedRewardCalculator {
     return truncateToPeriod(_start, _end, const.start, const.end);
   }
 
-  function testCurvePeriodPercentage(uint _start, uint _end) public pure returns (uint) {
+  function testCurvePeriodPercentage(uint _start, uint _end) public view returns (uint) {
     return curvePeriodPercentage(_start, _end);
+  }
+
+  function testIntegralAtPoint(uint x) public pure returns (int) {
+    return integralAtPoint(x);
   }
 }

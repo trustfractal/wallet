@@ -13,18 +13,26 @@ import "hardhat/console.sol";
 /// @title Calculates rewards based on an initial downward curve period, and a second constant period
 /// @author Miguel Palhas <miguel@subvisual.co>
 contract CappedRewardCalculator {
+  /// @notice A definition of a period, with start and end dates
   struct Period {
     uint start;
     uint end;
   }
 
+  /// @notice period during which a rapidly descending curve is in place
   Period public curve;
+
+  /// @notice Period during which a constant APR is in place
   Period public const;
+
+  /// @notice Reward cap for curve period
   uint public curveCap;
+
+  /// @notice APR (multiplied by 100) in place during constant period
   uint public constantAPR;
 
   uint constant private year = 365 days;
-  int private constant mul = 100000000;
+  uint private constant mul = 1000000;
 
   constructor(
     uint _startDate,
@@ -34,8 +42,14 @@ contract CappedRewardCalculator {
     uint _constantAPR
   ) {
     require(block.timestamp <= _startDate, "CappedRewardCalculator: start date must be in the future");
-    require( _startDate < _constantStartDate, "CappedRewardCalculator: constant start date must be after curve start date");
-    require( _constantStartDate <= _endDate, "CappedRewardCalculator: end date must be after or at constant start date");
+    require(
+      _startDate < _constantStartDate,
+      "CappedRewardCalculator: constant start date must be after curve start date"
+    );
+    require(
+      _constantStartDate <= _endDate,
+      "CappedRewardCalculator: end date must be after or at constant start date"
+    );
 
     require(_curveCap > 0, "CappedRewardCalculator: curve cap cannot be 0");
     require(_constantAPR > 0, "CappedRewardCalculator: constant APR cannot be 0");
@@ -84,7 +98,7 @@ contract CappedRewardCalculator {
 
     uint percentage = curvePeriodPercentage(startPercent, endPercent);
 
-    uint reward = _amount * curveCap * percentage / (100 * 100);
+    uint reward = _amount * curveCap * percentage / (mul * 100);
 
     return reward;
   }
@@ -110,11 +124,11 @@ contract CappedRewardCalculator {
     uint totalDuration = _periodEnd - _periodStart;
 
     if (totalDuration == 0) {
-      return (0, 100);
+      return (0, mul);
     }
 
-    uint startPercent = (_start - _periodStart) * 100 / totalDuration;
-    uint endPercent = (_end - _periodStart) * 100 / totalDuration;
+    uint startPercent = (_start - _periodStart) * mul / totalDuration;
+    uint endPercent = (_end - _periodStart) * mul / totalDuration;
 
     return (startPercent, endPercent);
   }
@@ -136,18 +150,18 @@ contract CappedRewardCalculator {
   }
 
   function curvePeriodPercentage(uint _start, uint _end) internal pure returns (uint) {
-    int maxArea = integralAtPoint(100) - integralAtPoint(0);
+    int maxArea = integralAtPoint(mul) - integralAtPoint(0);
     int actualArea = integralAtPoint(_end) - integralAtPoint(_start);
 
-    uint ratio = uint(actualArea * 100 / maxArea);
+    uint ratio = uint(actualArea * int(mul) / maxArea);
 
     return ratio;
   }
 
   function integralAtPoint(uint _x) internal pure returns (int) {
     int x = int(_x);
-    int p1 = ((x - 100) ** 3) * 100 * mul / 30000;
+    int p1 = ((x - int(mul)) ** 3) / (3 * int(mul));
 
-    return p1 / mul;
+    return p1;
   }
 }
