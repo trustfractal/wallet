@@ -195,6 +195,7 @@ contract Staking is CappedRewardCalculator, Ownable {
     }
   }
 
+  /// @notice Withdraws all unlocked tokens from the pool to the owner. Only works if staking period has already ended
   function withdrawPool() external onlyOwner {
     require(block.timestamp > endDate, "Staking: staking not over yet");
 

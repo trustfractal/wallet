@@ -26,9 +26,20 @@ contract ClaimsRegistry is IClaimsRegistryVerifier, Verifier {
   /// @notice Struct containing all public data about a claim (currently only the subject)
   struct Claim {
     address subject; // Subject the claim refers to
+    bool revoked;    // Whether the claim is revoked or not
   }
 
-  // TODO events
+  event ClaimStored(
+    address subject,
+    address issuer,
+    bytes sig
+  );
+
+  event ClaimRevoked(
+    address subject,
+    address issuer,
+    bytes sig
+  );
 
   /// @notice Stores a claim about `subject`, signed by `issuer`. Instead of
   ///   actual data, receives only `claimHash` and `sig`, and checks whether the
@@ -38,8 +49,8 @@ contract ClaimsRegistry is IClaimsRegistryVerifier, Verifier {
   /// @param claimHash the claimHash that was signed along with the subject
   /// @param sig The given signature that must match (`subject`, `claimhash`)
   function setClaimWithSignature(
-    address issuer,
     address subject,
+    address issuer,
     bytes32 claimHash,
     bytes calldata sig
   ) public {
@@ -47,14 +58,16 @@ contract ClaimsRegistry is IClaimsRegistryVerifier, Verifier {
 
     require(verifyWithPrefix(signable, sig, issuer), "ClaimsRegistry: Claim signature does not match issuer");
 
-    bytes32 key = keccak256(abi.encodePacked(issuer, sig));
+    bytes32 key = computeKey(issuer, sig);
 
-    registry[key] = Claim(subject);
+    registry[key] = Claim(subject, false);
+
+    emit ClaimStored(subject, issuer, sig);
   }
 
   /// @notice Checks if a claim signature is valid and stored, and returns the corresponding subject
   /// @param issuer Account that signed the claim
-  /// @param sig The given signature that must match (`subject`, `claimhash`)
+  /// @param sig The given signature that must match keccak256([`subject`, `claimhash`])
   /// @return The subject of the claim, or address(0) if none was found
   function getClaim(
     address issuer,
@@ -62,13 +75,18 @@ contract ClaimsRegistry is IClaimsRegistryVerifier, Verifier {
   ) public view returns (address) {
     bytes32 key = keccak256(abi.encodePacked(issuer, sig));
 
-    return registry[key].subject;
+    if (registry[key].revoked) {
+      return address(0);
+    } else {
+      return registry[key].subject;
+    }
+
   }
 
   /// @notice Checks if a claim signature is valid, and corresponds to the given subject
   /// @param subject Account the claim refers to
   /// @param issuer Account that signed the claim
-  /// @param sig The given signature that must match (`subject`, `claimhash`)
+  /// @param sig The given signature that must match keccak256([`subject`, `claimhash`])
   /// @return The subject of the claim, or address(0) if none was found
   function verifyClaim(
     address subject,
@@ -78,19 +96,29 @@ contract ClaimsRegistry is IClaimsRegistryVerifier, Verifier {
     return getClaim(issuer, sig) == subject;
   }
 
-  // TODO who can revoke claims and when?
-  function removeClaim(
-    address issuer,
-    address subject,
+  /// @notice Callable by an issuer, to revoke previously signed claims about a subject
+  /// @param sig The given signature that must match keccak256([`subject`, `claimhash`])
+  function revokeClaim(
     bytes calldata sig
   ) public {
-    require(msg.sender == subject || msg.sender == issuer);
+    bytes32 key = computeKey(msg.sender, sig);
 
-    bytes32 encryptedBytes = keccak256(abi.encodePacked(issuer, sig));
-    delete registry[encryptedBytes];
+    require(registry[key].subject != address(0), "ClaimsRegistry: Claim not found");
+
+    registry[key].revoked = true;
+
+    emit ClaimRevoked(registry[key].subject, msg.sender, sig);
   }
 
-  function computeSignableKey(address subject, bytes32 hash) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(subject, hash));
+  /// @notice computes the hash that must be signed by the issuer before storing a claim
+  /// @param subject Account the claim refers to
+  /// @param claimHash the claimHash that was signed along with the subject
+  /// @return The hash to be signed by the issuer
+  function computeSignableKey(address subject, bytes32 claimHash) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(subject, claimHash));
+  }
+
+  function computeKey(address issuer, bytes calldata sig) internal pure returns (bytes32) {
+    return keccak256(abi.encodePacked(issuer, sig));
   }
 }

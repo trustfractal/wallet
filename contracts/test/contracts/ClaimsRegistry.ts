@@ -46,8 +46,8 @@ describe("ClaimsRegistry", () => {
     describe("setClaimWithSignature", () => {
       it("issuer can subject a claim about a subject", async () => {
         const action = registry.setClaimWithSignature(
-          issuer.address,
           subject.address,
+          issuer.address,
           value,
           sig
         );
@@ -58,7 +58,7 @@ describe("ClaimsRegistry", () => {
       it("any anonymous user can issue pre-signed claims", async () => {
         const action = registry
           .connect(johnDoe)
-          .setClaimWithSignature(issuer.address, subject.address, value, sig);
+          .setClaimWithSignature(subject.address, issuer.address, value, sig);
 
         await expect(action).not.to.be.reverted;
       });
@@ -67,8 +67,8 @@ describe("ClaimsRegistry", () => {
     describe("getClaim", () => {
       it("returns the subject of a given issuer's claim", async () => {
         await registry.setClaimWithSignature(
-          issuer.address,
           subject.address,
+          issuer.address,
           value,
           sig
         );
@@ -82,8 +82,8 @@ describe("ClaimsRegistry", () => {
     describe("verifyClaim", () => {
       it("is true if issuer & claim match the subject", async () => {
         await registry.setClaimWithSignature(
-          issuer.address,
           subject.address,
+          issuer.address,
           value,
           sig
         );
@@ -109,8 +109,8 @@ describe("ClaimsRegistry", () => {
 
       it("is false if subject is not the expected address", async () => {
         await registry.setClaimWithSignature(
-          issuer.address,
           subject.address,
+          issuer.address,
           value,
           sig
         );
