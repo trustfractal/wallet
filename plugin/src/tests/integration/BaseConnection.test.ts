@@ -36,7 +36,7 @@ describe("Integration Base Connection", () => {
     );
 
     // get the registered invokation id
-    const invokationId = Object.keys(mockedConnection.responseCallbacks)[0];
+    const invokationId = Object.keys(mockedConnection.responses)[0];
     const response = new Response(
       method,
       returnedValue,
@@ -54,9 +54,7 @@ describe("Integration Base Connection", () => {
     // Assert
     // eslint-disable-next-line jest/valid-expect
     expect(invokationResult).resolves.toStrictEqual(returnedValue);
-    const responseCallbackKeys = Object.keys(
-      mockedConnection.responseCallbacks,
-    );
+    const responseCallbackKeys = Object.keys(mockedConnection.responses);
     expect(responseCallbackKeys).toHaveLength(0);
   });
 
@@ -77,7 +75,7 @@ describe("Integration Base Connection", () => {
     );
 
     // get the registered invokation id
-    const invokationId = Object.keys(mockedConnection.responseCallbacks)[0];
+    const invokationId = Object.keys(mockedConnection.responses)[0];
     const response = new Response(
       method,
       returnedValue,
@@ -96,9 +94,7 @@ describe("Integration Base Connection", () => {
     // expect.assertions(1);
     // eslint-disable-next-line jest/valid-expect
     expect(invokationResult).rejects.toStrictEqual(returnedValue);
-    const responseCallbackKeys = Object.keys(
-      mockedConnection.responseCallbacks,
-    );
+    const responseCallbackKeys = Object.keys(mockedConnection.responses);
     expect(responseCallbackKeys).toHaveLength(0);
   });
   it("Receives a 'Invokation' message, calls the registered the callback with success and posts a message to the source with the result", async () => {
@@ -121,11 +117,12 @@ describe("Integration Base Connection", () => {
       message: invokation.serialize(),
     });
 
+    // wait for the callback to called
+    await new Promise<void>((resolve) => setTimeout(() => resolve(), 100));
+
     // Assert
     expect(callback).toHaveBeenCalled();
     expect(callback).toHaveBeenCalledWith(invokationPayload, invoker);
-    // wait for the callback to resolved
-    await new Promise<void>((resolve) => setTimeout(() => resolve(), 100));
     expect(mockedConnection.postMessage).toHaveBeenCalled();
     // @ts-ignore
     const response: Response = mockedConnection.postMessage.mock.calls[0][0];
@@ -157,11 +154,12 @@ describe("Integration Base Connection", () => {
       message: invokation.serialize(),
     });
 
+    // wait for the callback to called
+    await new Promise<void>((resolve) => setTimeout(() => resolve(), 100));
+
     // Assert
     expect(callback).toHaveBeenCalled();
     expect(callback).toHaveBeenCalledWith(invokationPayload, invoker);
-    // wait for the callback to resolved
-    await new Promise<void>((resolve) => setTimeout(() => resolve(), 100));
     expect(mockedConnection.postMessage).toHaveBeenCalled();
     // @ts-ignore
     const response: Response = mockedConnection.postMessage.mock.calls[0][0];

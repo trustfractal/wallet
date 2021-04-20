@@ -1,7 +1,6 @@
 import { IResponse, IInvokation, Message } from "@fractalwallet/types";
 import BaseConnection from "@models/Base/BaseConnection";
 import ConnectionNames from "@models/Connection/names";
-import Response from "@models/Message/Response";
 import Invokation from "@models/Message/Invokation";
 import ProxyConnection from "@models/Connection/ProxyConnection";
 
@@ -46,12 +45,13 @@ describe("Integration Proxy Connection", () => {
       message: invokation.serialize(),
     });
 
+    // wait for the callback to called
+    await new Promise<void>((resolve) => setTimeout(() => resolve(), 100));
+
     // Assert
     expect(destinationConnection.postMessage).toHaveBeenCalled();
     expect(sourceConnection.postMessage).not.toHaveBeenCalled();
-    const responseCallbackKeys = Object.keys(
-      destinationConnection.responseCallbacks,
-    );
+    const responseCallbackKeys = Object.keys(destinationConnection.responses);
     expect(responseCallbackKeys).toHaveLength(1);
   });
   it("Receives an invokation message on a reversed proxied connection, forwards the call to the source connection and listen the response reply", async () => {
@@ -80,12 +80,13 @@ describe("Integration Proxy Connection", () => {
       message: invokation.serialize(),
     });
 
+    // wait for the callback to called
+    await new Promise<void>((resolve) => setTimeout(() => resolve(), 100));
+
     // Assert
     expect(sourceConnection.postMessage).toHaveBeenCalled();
     expect(destinationConnection.postMessage).not.toHaveBeenCalled();
-    const responseCallbackKeys = Object.keys(
-      sourceConnection.responseCallbacks,
-    );
+    const responseCallbackKeys = Object.keys(sourceConnection.responses);
     expect(responseCallbackKeys).toHaveLength(1);
   });
 });

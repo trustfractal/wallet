@@ -31,10 +31,8 @@ describe("Unit Proxy Connection", () => {
       proxyConnection.proxy(method);
 
       // Assert
-      expect(sourceConnection.invokationCallbacks).toHaveProperty(method);
-      expect(
-        Object.keys(destinationConnection.invokationCallbacks),
-      ).toHaveLength(0);
+      expect(sourceConnection.invokations).toHaveProperty(method);
+      expect(Object.keys(destinationConnection.invokations)).toHaveLength(0);
     });
   });
   describe("reversedProxy", () => {
@@ -54,8 +52,8 @@ describe("Unit Proxy Connection", () => {
       proxyConnection.reversedProxy(method);
 
       // Assert
-      expect(destinationConnection.invokationCallbacks).toHaveProperty(method);
-      expect(Object.keys(sourceConnection.invokationCallbacks)).toHaveLength(0);
+      expect(destinationConnection.invokations).toHaveProperty(method);
+      expect(Object.keys(sourceConnection.invokations)).toHaveLength(0);
     });
   });
 });
