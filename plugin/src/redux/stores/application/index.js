@@ -6,13 +6,9 @@ import watcher from "@redux/middleware/watcher";
 
 import StorageService from "@services/StorageService";
 
-import aliases from "@background/aliases";
+import aliases from "@redux/stores/application/aliases";
 
-import {
-  reducer as appReducer,
-  restore as appRestore,
-  store as appStore,
-} from "@redux/stores/application/reducers/app";
+import { reducer as appReducer } from "@redux/stores/application/reducers/app";
 import {
   reducer as authReducer,
   restore as authRestore,
@@ -30,7 +26,7 @@ export class AppStore {
     this.storeInternal = undefined;
   }
 
-  get store() {
+  getStore() {
     return this.storeInternal;
   }
 
@@ -108,14 +104,12 @@ export class AppStore {
     const deserializedState = JSON.parse(state);
 
     return {
-      app: await appRestore(deserializedState.app),
       auth: await authRestore(deserializedState.auth),
     };
   }
 
   static async serialize(state) {
     return JSON.stringify({
-      app: await appStore(state.app),
       auth: await authStore(state.auth),
     });
   }

@@ -20,6 +20,11 @@ export const getSignInError = createSelector(
   (auth) => auth.signIn.error,
 );
 
+export const isSignInSuccess = createSelector(
+  (state) => state.auth,
+  (auth) => auth.signIn.success,
+);
+
 export const isSignUpLoading = createSelector(
   (state) => state.auth,
   (auth) => auth.signUp.loading,
@@ -28,6 +33,11 @@ export const isSignUpLoading = createSelector(
 export const getSignUpError = createSelector(
   (state) => state.auth,
   (auth) => auth.signUp.error,
+);
+
+export const isSignUpSuccess = createSelector(
+  (state) => state.auth,
+  (auth) => auth.signUp.success,
 );
 
 export const getHashedPassword = createSelector(

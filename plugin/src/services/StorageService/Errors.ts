@@ -21,13 +21,10 @@ export class StorageServiceError extends Error {
   }
 }
 
-export const ERROR_HAS_ITEM: (
+export const ERROR_HAS_ITEM = (
   errorChrome: chrome.runtime.LastError,
   key: string,
-) => StorageServiceError = (
-  errorChrome: chrome.runtime.LastError,
-  key: string,
-) => {
+): StorageServiceError => {
   return new StorageServiceError(
     ErrorCode.ERROR_HAS_ITEM,
     errorChrome,
@@ -35,13 +32,10 @@ export const ERROR_HAS_ITEM: (
   );
 };
 
-export const ERROR_GET_ITEM: (
+export const ERROR_GET_ITEM = (
   errorChrome: chrome.runtime.LastError,
   key: string,
-) => StorageServiceError = (
-  errorChrome: chrome.runtime.LastError,
-  key: string,
-) => {
+): StorageServiceError => {
   return new StorageServiceError(
     ErrorCode.ERROR_GET_ITEM,
     errorChrome,
@@ -49,15 +43,11 @@ export const ERROR_GET_ITEM: (
   );
 };
 
-export const ERROR_SET_ITEM: (
+export const ERROR_SET_ITEM = (
   errorChrome: chrome.runtime.LastError,
   key: string,
   value: string,
-) => StorageServiceError = (
-  errorChrome: chrome.runtime.LastError,
-  key: string,
-  value: string,
-) => {
+): StorageServiceError => {
   return new StorageServiceError(
     ErrorCode.ERROR_SET_ITEM,
     errorChrome,
@@ -65,13 +55,10 @@ export const ERROR_SET_ITEM: (
   );
 };
 
-export const ERROR_REMOVE_ITEM: (
+export const ERROR_REMOVE_ITEM = (
   errorChrome: chrome.runtime.LastError,
   key: string,
-) => StorageServiceError = (
-  errorChrome: chrome.runtime.LastError,
-  key: string,
-) => {
+): StorageServiceError => {
   return new StorageServiceError(
     ErrorCode.ERROR_REMOVE_ITEM,
     errorChrome,
@@ -81,7 +68,9 @@ export const ERROR_REMOVE_ITEM: (
 
 export const ERROR_CLEAR: (
   errorChrome: chrome.runtime.LastError,
-) => StorageServiceError = (errorChrome: chrome.runtime.LastError) => {
+) => StorageServiceError = (
+  errorChrome: chrome.runtime.LastError,
+): StorageServiceError => {
   return new StorageServiceError(
     ErrorCode.ERROR_CLEAR,
     errorChrome,

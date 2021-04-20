@@ -1,8 +1,11 @@
 export enum ErrorCode {
   ERROR_CREATE_WINDOW = 2000,
   ERROR_GET_CURRENT_WINDOW = 2001,
-  ERROR_GET_ALL_WINDOWS = 2002,
-  ERROR_CLOSE_WINDOW = 2003,
+  ERROR_GET_WINDOW = 2002,
+  ERROR_GET_ALL_WINDOWS = 2003,
+  ERROR_CLOSE_WINDOW = 2004,
+  ERROR_GET_TAB = 2005,
+  ERROR_QUERY_TABS = 2006,
 }
 
 export class StorageServiceError extends Error {
@@ -20,9 +23,9 @@ export class StorageServiceError extends Error {
   }
 }
 
-export const ERROR_CREATE_WINDOW: (
+export const ERROR_CREATE_WINDOW = (
   errorChrome: chrome.runtime.LastError,
-) => StorageServiceError = (errorChrome: chrome.runtime.LastError) => {
+): StorageServiceError => {
   return new StorageServiceError(
     ErrorCode.ERROR_CREATE_WINDOW,
     errorChrome,
@@ -30,9 +33,9 @@ export const ERROR_CREATE_WINDOW: (
   );
 };
 
-export const ERROR_GET_CURRENT_WINDOW: (
+export const ERROR_GET_CURRENT_WINDOW = (
   errorChrome: chrome.runtime.LastError,
-) => StorageServiceError = (errorChrome: chrome.runtime.LastError) => {
+): StorageServiceError => {
   return new StorageServiceError(
     ErrorCode.ERROR_GET_CURRENT_WINDOW,
     errorChrome,
@@ -40,9 +43,20 @@ export const ERROR_GET_CURRENT_WINDOW: (
   );
 };
 
-export const ERROR_GET_ALL_WINDOWS: (
+export const ERROR_GET_WINDOW = (
   errorChrome: chrome.runtime.LastError,
-) => StorageServiceError = (errorChrome: chrome.runtime.LastError) => {
+  windowId: number,
+): StorageServiceError => {
+  return new StorageServiceError(
+    ErrorCode.ERROR_GET_WINDOW,
+    errorChrome,
+    `WindowsService: could not get the window with the ID ${windowId}`,
+  );
+};
+
+export const ERROR_GET_ALL_WINDOWS = (
+  errorChrome: chrome.runtime.LastError,
+): StorageServiceError => {
   return new StorageServiceError(
     ErrorCode.ERROR_GET_ALL_WINDOWS,
     errorChrome,
@@ -50,12 +64,44 @@ export const ERROR_GET_ALL_WINDOWS: (
   );
 };
 
-export const ERROR_CLOSE_WINDOW: (
+export const ERROR_CLOSE_WINDOW = (
   errorChrome: chrome.runtime.LastError,
-) => StorageServiceError = (errorChrome: chrome.runtime.LastError) => {
+): StorageServiceError => {
   return new StorageServiceError(
     ErrorCode.ERROR_CLOSE_WINDOW,
     errorChrome,
     "WindowsService: could not close window",
+  );
+};
+
+export const ERROR_GET_TAB = (
+  errorChrome: chrome.runtime.LastError,
+  tabId: number,
+): StorageServiceError => {
+  return new StorageServiceError(
+    ErrorCode.ERROR_GET_TAB,
+    errorChrome,
+    `WindowsService: could not get the tab with the ID ${tabId}`,
+  );
+};
+
+export const ERROR_UPDATE_TAB = (
+  errorChrome: chrome.runtime.LastError,
+  tabId: number,
+): StorageServiceError => {
+  return new StorageServiceError(
+    ErrorCode.ERROR_GET_TAB,
+    errorChrome,
+    `WindowsService: could not update the tab with the ID ${tabId}`,
+  );
+};
+
+export const ERROR_QUERY_TABS = (
+  errorChrome: chrome.runtime.LastError,
+): StorageServiceError => {
+  return new StorageServiceError(
+    ErrorCode.ERROR_GET_TAB,
+    errorChrome,
+    "WindowsService: could not get query the tabs",
   );
 };

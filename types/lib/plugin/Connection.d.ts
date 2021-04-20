@@ -6,6 +6,7 @@ export interface IResponse {
     method: string;
     value: any;
     success: boolean;
+    port?: string;
     getMessageType: () => string;
     serialize: () => string;
 }
@@ -46,12 +47,15 @@ export declare type DuplexConnectionParams = {
     target: string;
     targetWindow?: Window;
 };
-export declare type ConnectionParams = chrome.runtime.ConnectInfo | DuplexConnectionParams;
 export interface IBackgroundConnection extends IConnection {
     port: chrome.runtime.Port;
 }
+export interface IPort {
+    id: string;
+    port: chrome.runtime.Port;
+}
 export interface IContentScriptConnection extends IConnection {
-    ports: Record<string, chrome.runtime.Port>;
+    ports: Record<string, IPort>;
 }
 export interface IExtensionConnection extends IConnection {
     extension: LocalMessageDuplexStream;
@@ -59,3 +63,7 @@ export interface IExtensionConnection extends IConnection {
 export interface IInpageConnection extends IConnection {
     inpage: LocalMessageDuplexStream;
 }
+export interface IConnectionCallbacks {
+    [key: string]: (...args: any[]) => any;
+}
+export declare type IConnectionPorts = Record<string, IPort>;

@@ -2,8 +2,12 @@ import { POPUP } from "./Params";
 import {
   ERROR_CREATE_WINDOW,
   ERROR_GET_CURRENT_WINDOW,
+  ERROR_GET_WINDOW,
   ERROR_GET_ALL_WINDOWS,
   ERROR_CLOSE_WINDOW,
+  ERROR_GET_TAB,
+  ERROR_UPDATE_TAB,
+  ERROR_QUERY_TABS,
 } from "./Errors";
 
 class WindowsService {
@@ -122,6 +126,78 @@ class WindowsService {
     }
 
     return popups;
+  }
+
+  getWindow(
+    windowId: number,
+    config: chrome.windows.GetInfo = {},
+  ): Promise<chrome.windows.Window> {
+    return new Promise((resolve, reject) => {
+      chrome.windows.get(windowId, config, (window) => {
+        if (chrome.runtime.lastError !== undefined) {
+          console.error(chrome.runtime.lastError);
+          reject(ERROR_GET_WINDOW(chrome.runtime.lastError, windowId));
+        }
+
+        resolve(window);
+      });
+    });
+  }
+
+  getTab(tabId: number): Promise<chrome.tabs.Tab> {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.get(tabId, (tab) => {
+        if (chrome.runtime.lastError !== undefined) {
+          console.error(chrome.runtime.lastError);
+          reject(ERROR_GET_TAB(chrome.runtime.lastError, tabId));
+        }
+
+        resolve(tab);
+      });
+    });
+  }
+
+  updateTab(
+    tabId: number,
+    config: chrome.tabs.UpdateProperties,
+  ): Promise<chrome.tabs.Tab | undefined> {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.update(tabId, config, (updatedtab) => {
+        if (chrome.runtime.lastError !== undefined) {
+          console.error(chrome.runtime.lastError);
+          reject(ERROR_UPDATE_TAB(chrome.runtime.lastError, tabId));
+        }
+
+        resolve(updatedtab);
+      });
+    });
+  }
+
+  queryTabs(queryInfo: chrome.tabs.QueryInfo = {}): Promise<chrome.tabs.Tab[]> {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.query(queryInfo, (tabs) => {
+        if (chrome.runtime.lastError !== undefined) {
+          console.error(chrome.runtime.lastError);
+          reject(ERROR_QUERY_TABS(chrome.runtime.lastError));
+        }
+
+        resolve(tabs);
+      });
+    });
+  }
+
+  redirectTab(id: number, url: string) {
+    return this.updateTab(id, { url });
+  }
+
+  async getActiveTab(): Promise<chrome.tabs.Tab | undefined> {
+    const tabs = await this.queryTabs({ active: true });
+
+    if (tabs.length === 0) {
+      return;
+    }
+
+    return tabs[0];
   }
 }
 

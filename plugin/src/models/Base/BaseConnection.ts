@@ -82,7 +82,7 @@ export default abstract class BaseConnection implements IConnection {
 
   public invoke(
     method: string,
-    payload: any[],
+    payload: any[] = [],
     invoker?: string,
   ): Promise<any> {
     return new Promise((resolve, reject) => {

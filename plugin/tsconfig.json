@@ -7,9 +7,11 @@
       "@models/*": ["src/models/*"],
       "@background/*": ["src/scripts/background/*"],
       "@contentScript/*": ["src/scripts/contentScript/*"],
+      "@sdk/*": ["src/scripts/sdk/*"],
       "@popup/*": ["src/popup/*"],
       "@redux/*": ["src/redux/*"],
       "@services/*": ["src/services/*"],
+      "@constants/*": ["src/constants/*"],
       "@utils/*": ["src/utils/*"]
     }
   },

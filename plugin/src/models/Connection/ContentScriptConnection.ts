@@ -34,8 +34,8 @@ export default class ContentScriptConnection
 
       const id = `${port.name}-${uuidv4()}`;
 
-      this.ports[id] = port;
-      this.ports[id].onMessage.addListener(({ type, message }) => {
+      this.ports[id] = { id, port };
+      this.ports[id].port.onMessage.addListener(({ type, message }) => {
         // inject port in the message
         const messageObject = JSON.parse(message);
         messageObject.port = id;
@@ -45,13 +45,13 @@ export default class ContentScriptConnection
         this.handleMessage({ type, message: messageString });
       });
 
-      this.ports[id].onDisconnect.addListener(() => delete this.ports[id]);
+      this.ports[id].port.onDisconnect.addListener(() => delete this.ports[id]);
     });
   }
 
   public postMessage(message: IResponse | IInvokation): void {
     if (message.port && this.ports[message.port]) {
-      this.ports[message.port].postMessage({
+      this.ports[message.port].port.postMessage({
         type: message.getMessageType(),
         message: message.serialize(),
       });

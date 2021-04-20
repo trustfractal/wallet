@@ -8,18 +8,18 @@
 
 import ConnectionNames from "@models/Connection/names";
 
-import { ConnectionParams } from "@fractalwallet/types";
+import { DuplexConnectionParams } from "@fractalwallet/types";
 
-export const inpage: ConnectionParams = {
+export const inpage: DuplexConnectionParams = {
   name: ConnectionNames.CONTENT_SCRIPT,
   target: ConnectionNames.INPAGE,
 };
 
-export const extension: ConnectionParams = {
+export const extension: DuplexConnectionParams = {
   name: ConnectionNames.INPAGE,
   target: ConnectionNames.CONTENT_SCRIPT,
 };
 
-export const background: ConnectionParams = {
+export const background: chrome.runtime.ConnectInfo = {
   name: ConnectionNames.BACKGROUND,
 };
