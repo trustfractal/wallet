@@ -58,20 +58,31 @@ describe("Staking", () => {
         start,
         end,
         2,
+        parseEther("10000"),
         100,
       ];
 
       const staking = (await deploy(owner, StakingArtifact, args)) as Staking;
 
       expect(await staking.erc20()).to.eq(fcl.address);
-      expect(await staking.individualMinimumAmount()).to.eq(2);
+      expect(await staking.minAmount()).to.eq(2);
+      expect(await staking.maxAmount()).to.eq(parseEther("10000"));
       expect(await staking.cap()).to.eq(100);
       expect(await staking.lockedTokens()).to.eq(0);
     });
 
     it("fails if token address is 0x0", async () => {
       const zero = "0x0000000000000000000000000000000000000000";
-      const args = [zero, registry.address, issuer.address, start, end, 2, 100];
+      const args = [
+        zero,
+        registry.address,
+        issuer.address,
+        start,
+        end,
+        2,
+        parseEther("10000"),
+        100,
+      ];
 
       const action = deploy(owner, StakingArtifact, args);
 
@@ -82,7 +93,16 @@ describe("Staking", () => {
 
     it("fails if registry address is 0x0", async () => {
       const zero = "0x0000000000000000000000000000000000000000";
-      const args = [fcl.address, zero, issuer.address, start, end, 2, 100];
+      const args = [
+        fcl.address,
+        zero,
+        issuer.address,
+        start,
+        end,
+        2,
+        parseEther("10000"),
+        100,
+      ];
 
       const action = deploy(owner, StakingArtifact, args);
 
@@ -93,7 +113,16 @@ describe("Staking", () => {
 
     it("fails if issuer address is 0x0", async () => {
       const zero = "0x0000000000000000000000000000000000000000";
-      const args = [fcl.address, registry.address, zero, start, end, 2, 100];
+      const args = [
+        fcl.address,
+        registry.address,
+        zero,
+        start,
+        end,
+        2,
+        parseEther("10000"),
+        100,
+      ];
 
       const action = deploy(owner, StakingArtifact, args);
 
@@ -113,6 +142,7 @@ describe("Staking", () => {
         start,
         one_hour_before,
         2,
+        parseEther("10000"),
         100,
       ];
 
@@ -123,7 +153,7 @@ describe("Staking", () => {
       );
     });
 
-    it("fails if minIndividualAmount is 0", async () => {
+    it("fails if minAmount is 0", async () => {
       const args = [
         fcl.address,
         registry.address,
@@ -131,6 +161,7 @@ describe("Staking", () => {
         start,
         end,
         0,
+        parseEther("10000"),
         100,
       ];
 
@@ -138,6 +169,44 @@ describe("Staking", () => {
 
       await expect(action).to.be.revertedWith(
         "Staking: invalid individual min amount"
+      );
+    });
+
+    it("fails if maxAmount is lower than minAmount", async () => {
+      const args = [
+        fcl.address,
+        registry.address,
+        issuer.address,
+        start,
+        end,
+        2,
+        1,
+        100,
+      ];
+
+      const action = deploy(owner, StakingArtifact, args);
+
+      await expect(action).to.be.revertedWith(
+        "Staking: max amount must be higher than min amount"
+      );
+    });
+
+    it("fails if maxAmount is equal to minAmount", async () => {
+      const args = [
+        fcl.address,
+        registry.address,
+        issuer.address,
+        start,
+        end,
+        2,
+        2,
+        100,
+      ];
+
+      const action = deploy(owner, StakingArtifact, args);
+
+      await expect(action).to.be.revertedWith(
+        "Staking: max amount must be higher than min amount"
       );
     });
 
@@ -149,6 +218,7 @@ describe("Staking", () => {
         start,
         end,
         2,
+        parseEther("10000"),
         0,
       ];
 
@@ -186,7 +256,8 @@ describe("Staking", () => {
       .add(30 * 12, "day")
       .unix();
     let now = start + 1000;
-    const minSubscription = 100;
+    const minSubscription = parseEther("1");
+    const maxSubscription = parseEther("10000");
     let amount: any;
     const APR = 10;
 
@@ -226,7 +297,8 @@ describe("Staking", () => {
         issuer.address,
         start,
         oneMonthLater,
-        2,
+        minSubscription,
+        maxSubscription,
         100,
       ];
 
@@ -299,11 +371,19 @@ describe("Staking", () => {
         await expect(action).to.emit(staking, "Subscribed");
       });
 
-      it("fails if amount is 0", async () => {
-        const action = staking.stake(parseEther("0"), "0x00");
+      it("fails if amount is lower than minAmount", async () => {
+        const action = staking.stake(parseEther("0.5"), "0x00");
 
         await expect(action).to.be.revertedWith(
-          "Staking: staked amount needs to be greater than 0"
+          "Staking: staked amount needs to be greater than or equal to minimum amount"
+        );
+      });
+
+      it("fails if amount is higher than maxAmount", async () => {
+        const action = staking.stake(parseEther("10001"), "0x00");
+
+        await expect(action).to.be.revertedWith(
+          "Staking: staked amount needs to be lower than or equal to maximum amount"
         );
       });
 
@@ -316,6 +396,7 @@ describe("Staking", () => {
           oneMonthLater,
           oneYearLater,
           minSubscription,
+          maxSubscription,
           100,
         ])) as Staking;
 
