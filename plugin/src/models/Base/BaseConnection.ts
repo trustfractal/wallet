@@ -69,20 +69,24 @@ export default abstract class BaseConnection implements IConnection {
     const { method, args, id, port } = message;
     const invokation = this.invokations[method];
 
-    if (!invokation) throw new Error(`Unexpected invokation method ${method}`);
+    try {
+      if (!invokation)
+        throw new Error(`Unexpected invokation method ${method}`);
 
-    await BaseConnection.applyMiddlewares(invokation.middlewares, message);
+      // apply middlewares
+      await BaseConnection.applyMiddlewares(invokation.middlewares, message);
 
-    invokation
-      .callback(args, port)
-      .then((value: any) => {
-        const response = new Response(method, value, id, true, port);
-        this.postMessage(response);
-      })
-      .catch((error: any) => {
-        const response = new Response(method, error, id, false, port);
-        this.postMessage(response);
-      });
+      // call invokation
+      const value = await invokation.callback(args, port);
+
+      const response = new Response(method, value, id, true, port);
+      this.postMessage(response);
+    } catch (error: any) {
+      console.error(error);
+
+      const response = new Response(method, error, id, false, port);
+      this.postMessage(response);
+    }
   }
 
   public on(

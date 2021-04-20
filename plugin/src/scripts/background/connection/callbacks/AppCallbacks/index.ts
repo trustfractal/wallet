@@ -36,7 +36,7 @@ export const verifyConnection = () =>
   });
 
 const Callbacks = {
-  [ConnectionTypes.VERIFY_CONNECTION]: verifyConnection,
+  [ConnectionTypes.VERIFY_CONNECTION]: { callback: verifyConnection },
 };
 
 export default Callbacks;

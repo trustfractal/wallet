@@ -27,3 +27,6 @@ export declare type WatcherAction = {
     action: string;
     callback: Callback;
 };
+export interface IAuthWatcher extends IWatcher {
+    listenForLogin: (onSuccess: Callback, onFailed: Callback, onTimeout: Callback, timeOutTime?: number) => void;
+}

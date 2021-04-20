@@ -38,11 +38,7 @@ function Login(props: LoginProps) {
         <br />
         {hasError && <p>{error}</p>}
       </div>
-      <Button
-        onClick={onClick}
-        loading={loading}
-        disabled={hasError || isPasswordEmpty}
-      >
+      <Button onClick={onClick} loading={loading} disabled={isPasswordEmpty}>
         Login
       </Button>
     </div>

@@ -1,5 +1,5 @@
 /// <reference types="chrome" />
-import { AsyncCallback, ISerializable, SyncCallback } from "./Common";
+import { AsyncCallback, Callback, ISerializable, SyncCallback } from "./Common";
 import LocalMessageDuplexStream from "post-message-stream";
 export interface IResponse extends ISerializable {
     id: string;
@@ -17,7 +17,7 @@ export interface IInvokation extends ISerializable {
     getMessageType: () => string;
 }
 export declare type IMiddleware = {
-    apply(invokation: IInvokation): void;
+    apply(invokation: IInvokation): Promise<void>;
 };
 export interface ConnectionResponse {
     resolve: SyncCallback;
@@ -68,7 +68,11 @@ export interface IExtensionConnection extends IConnection {
 export interface IInpageConnection extends IConnection {
     inpage: LocalMessageDuplexStream;
 }
-export interface IConnectionCallbacks {
-    [key: string]: (...args: any[]) => any;
+export interface ConnectionCallback {
+    callback: Callback;
+    middlewares?: IMiddleware[];
+}
+export interface ConnectionCallbacks {
+    [key: string]: ConnectionCallback;
 }
 export declare type IConnectionPorts = Record<string, IPort>;

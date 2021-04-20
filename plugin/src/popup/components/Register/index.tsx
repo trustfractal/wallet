@@ -76,11 +76,7 @@ function Register(props: RegisterProps) {
         <br />
         {hasError && <p>{error}</p>}
       </div>
-      <Button
-        onClick={onClick}
-        loading={loading}
-        disabled={arePasswordsEmpty || hasError}
-      >
+      <Button onClick={onClick} loading={loading} disabled={arePasswordsEmpty}>
         Save my password
       </Button>
     </div>

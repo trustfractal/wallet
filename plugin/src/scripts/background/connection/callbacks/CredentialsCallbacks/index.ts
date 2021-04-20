@@ -1,3 +1,4 @@
+import AuthMiddleware from "@models/Connection/AuthMiddleware";
 import ConnectionTypes from "@models/Connection/types";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
@@ -21,7 +22,10 @@ export const hasCredential = ([id]: [string]) =>
   });
 
 const Callbacks = {
-  [ConnectionTypes.HAS_CREDENTIAL]: hasCredential,
+  [ConnectionTypes.HAS_CREDENTIAL]: {
+    callback: hasCredential,
+    middlewares: [new AuthMiddleware()],
+  },
 };
 
 export default Callbacks;

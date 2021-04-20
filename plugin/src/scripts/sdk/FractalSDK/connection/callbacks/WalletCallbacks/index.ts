@@ -9,8 +9,8 @@ export const getAccountAddress = () =>
   EthereumProviderService.getAccountAddress();
 
 const Callbacks = {
-  [ConnectionTypes.COMMIT_CREDENTIAL]: commitCredential,
-  [ConnectionTypes.GET_ACCOUNT_ADDRESS]: getAccountAddress,
+  [ConnectionTypes.COMMIT_CREDENTIAL]: { callback: commitCredential },
+  [ConnectionTypes.GET_ACCOUNT_ADDRESS]: { callback: getAccountAddress },
 };
 
 export default Callbacks;
