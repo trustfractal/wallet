@@ -2,8 +2,8 @@ import { useHistory } from "react-router";
 
 import Home from "@popup/components/Home";
 
-import { useUserSelector } from "@redux/stores/user/context";
-import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
+import { useUserSelector } from "@redux/user/context";
+import { getAccount } from "@redux/user/reducers/wallet/selectors";
 
 import "@popup/styles.css";
 import RoutesPaths from "@popup/routes/paths";

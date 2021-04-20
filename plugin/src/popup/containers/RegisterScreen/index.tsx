@@ -1,14 +1,11 @@
-import {
-  useAppDispatch,
-  useAppSelector,
-} from "@redux/stores/application/context";
-import authActions from "@redux/stores/application/reducers/auth";
-import registerActions from "@redux/stores/application/reducers/register";
+import { useAppDispatch, useAppSelector } from "@redux/application/context";
+import authActions from "@redux/application/reducers/auth";
+import registerActions from "@redux/application/reducers/register";
 
 import {
   getSignUpError,
   isSignUpLoading,
-} from "@redux/stores/application/reducers/auth/selectors";
+} from "@redux/application/reducers/auth/selectors";
 
 import Register from "@popup/components/Register";
 

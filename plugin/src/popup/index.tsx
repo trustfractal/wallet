@@ -2,7 +2,7 @@ import ReactDOM from "react-dom";
 
 import App from "@popup/app";
 
-import { AppContextProvider } from "@redux/stores/application/context";
+import { AppContextProvider } from "@redux/application/context";
 
 function Popup() {
   return (

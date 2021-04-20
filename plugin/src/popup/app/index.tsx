@@ -4,14 +4,14 @@ import RegisterScreen from "@popup/containers/RegisterScreen";
 
 import Routes from "@popup/routes";
 
-import { useAppSelector } from "@redux/stores/application/context";
-import { UserContextProvider } from "@redux/stores/user/context";
+import { useAppSelector } from "@redux/application/context";
+import { UserContextProvider } from "@redux/user/context";
 
-import { isLaunched } from "@redux/stores/application/reducers/app/selectors";
+import { isLaunched } from "@redux/application/reducers/app/selectors";
 import {
   isRegistered,
   isLoggedIn,
-} from "@redux/stores/application/reducers/auth/selectors";
+} from "@redux/application/reducers/auth/selectors";
 
 function App() {
   const launched = useAppSelector(isLaunched);

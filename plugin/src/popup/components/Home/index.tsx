@@ -16,8 +16,6 @@ function Home(props: HomeProps) {
       <div>
         <Link to="/credentials">Credentials</Link>
         <br />
-        <br />
-        <Link to="/requests">Requests</Link>
       </div>
     </div>
   );

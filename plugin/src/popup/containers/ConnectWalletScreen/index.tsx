@@ -1,8 +1,8 @@
 import { useHistory } from "react-router";
 
-import { useUserDispatch, useUserSelector } from "@redux/stores/user/context";
+import { useUserDispatch, useUserSelector } from "@redux/user/context";
 
-import walletActions from "@redux/stores/user/reducers/wallet";
+import walletActions from "@redux/user/reducers/wallet";
 
 import ConnectWalletRequest from "@popup/components/ConnectWalletRequest";
 import ConnectWalletCompleted from "@popup/components/ConnectWalletCompleted";
@@ -12,7 +12,7 @@ import {
   getAccount,
   getConnectWalletError,
   isConnectWalletLoading,
-} from "@redux/stores/user/reducers/wallet/selectors";
+} from "@redux/user/reducers/wallet/selectors";
 import RoutesPaths from "@popup/routes/paths";
 
 function ConnectWalletScreen() {
