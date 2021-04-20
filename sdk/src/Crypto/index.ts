@@ -1,4 +1,3 @@
-import Web3 from "web3";
 import { v4 as uuidv4 } from "uuid";
 import { utils as ethersUtils } from "ethers";
 
@@ -19,10 +18,11 @@ import {
   Hash,
 } from "@src/types";
 
-const web3 = new Web3();
-
 const doHash = (str: string, nonce: string = ""): string => {
-  const value = web3.utils.soliditySha3(nonce + str);
+  const value = ethersUtils.solidityKeccak256(
+    ["string", "string"],
+    [nonce, str]
+  );
 
   if (value === null) throw FractalError.invalidHashing(str);
 

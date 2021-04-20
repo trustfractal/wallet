@@ -1,24 +1,19 @@
-import {
-  IClaim,
-  ICredential,
-  ISerializable,
-  Hash,
-  Address,
-  Signature,
-  HashWithNonce,
-  HashTree,
-} from "@fractalwallet/types";
+import { ICredential, ISerializable } from "@fractalwallet/types";
 
-export default class Credential implements ICredential, ISerializable {
+import { Credential as SDKCredential } from "@fractalwallet/sdk";
+import {
+  Address,
+  Hash,
+  HashTree,
+  HashWithNonce,
+  Signature,
+} from "@fractalwallet/sdk/src/types/base";
+import { IClaim } from "@fractalwallet/sdk/src/types/Claim";
+
+export default class Credential
+  extends SDKCredential
+  implements ICredential, ISerializable {
   public id: string;
-  public claim: IClaim;
-  public rootHash: Hash;
-  public attesterAddress: Address | null;
-  public attesterSignature: Signature | null;
-  public claimerAddress: Address;
-  public claimerSignature: Signature;
-  public claimTypeHash: HashWithNonce;
-  public claimHashTree: HashTree;
 
   public constructor(
     id: string,
@@ -31,15 +26,17 @@ export default class Credential implements ICredential, ISerializable {
     claimTypeHash: HashWithNonce,
     claimHashTree: HashTree,
   ) {
+    super({
+      claim,
+      rootHash,
+      attesterAddress,
+      attesterSignature,
+      claimerAddress,
+      claimerSignature,
+      claimTypeHash,
+      claimHashTree,
+    });
     this.id = id;
-    this.claim = claim;
-    this.rootHash = rootHash;
-    this.attesterAddress = attesterAddress;
-    this.attesterSignature = attesterSignature;
-    this.claimerAddress = claimerAddress;
-    this.claimerSignature = claimerSignature;
-    this.claimTypeHash = claimTypeHash;
-    this.claimHashTree = claimHashTree;
   }
 
   public serialize(): string {

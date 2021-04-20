@@ -1,21 +1,7 @@
-import {
-  Address,
-  Hash,
-  Signature,
-  HashWithNonce,
-  HashTree,
-  ISerializable,
-} from "./Common";
-import { IClaim } from "./Claim";
+import { ISerializable } from "./Common";
 
-export interface ICredential extends ISerializable {
+import { ICredential as ISDKCredential } from "@fractalwallet/sdk/src/types/Credential";
+
+export interface ICredential extends ISDKCredential, ISerializable {
   id: String;
-  claim: IClaim;
-  rootHash: Hash;
-  attesterAddress: Address | null;
-  attesterSignature: Signature | null;
-  claimerAddress: Address;
-  claimerSignature: Signature;
-  claimTypeHash: HashWithNonce;
-  claimHashTree: HashTree;
 }

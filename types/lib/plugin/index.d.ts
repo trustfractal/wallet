@@ -1,5 +1,4 @@
 export * from "./Common";
-export * from "./Claim";
 export * from "./Credential";
 export * from "./Connection";
 export * from "./Crypto";

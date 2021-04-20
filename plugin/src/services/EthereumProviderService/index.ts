@@ -50,20 +50,6 @@ class EthereumProviderService {
     }
   }
 
-  public async commitCredential(credential: string) {
-    this.ensureProviderIsInitialized();
-
-    console.log("credential", credential);
-
-    // Credential transaction commit
-    await new Promise<void>((resolve) => setTimeout(() => resolve(), 3000));
-
-    const transactionHash =
-      "0x9ed9d53fddb685493ef99f4ce622f15573966dbb6031ff55a828b76445cdb7ba";
-
-    return transactionHash;
-  }
-
   public async getAccountAddress() {
     this.ensureProviderIsInitialized();
 
