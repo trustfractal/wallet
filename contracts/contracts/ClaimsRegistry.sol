@@ -29,15 +29,13 @@ contract ClaimsRegistry is IClaimsRegistryVerifier, Verifier {
     bool revoked;    // Whether the claim is revoked or not
   }
 
+  /// @notice Emitted when a signed claim is successfuly stored
   event ClaimStored(
-    address subject,
-    address issuer,
     bytes sig
   );
 
+  /// @notice Emitted when a previously stored claim is successfuly revoked by the issuer
   event ClaimRevoked(
-    address subject,
-    address issuer,
     bytes sig
   );
 
@@ -62,7 +60,7 @@ contract ClaimsRegistry is IClaimsRegistryVerifier, Verifier {
 
     registry[key] = Claim(subject, false);
 
-    emit ClaimStored(subject, issuer, sig);
+    emit ClaimStored(sig);
   }
 
   /// @notice Checks if a claim signature is valid and stored, and returns the corresponding subject
@@ -107,7 +105,7 @@ contract ClaimsRegistry is IClaimsRegistryVerifier, Verifier {
 
     registry[key].revoked = true;
 
-    emit ClaimRevoked(registry[key].subject, msg.sender, sig);
+    emit ClaimRevoked(sig);
   }
 
   /// @notice computes the hash that must be signed by the issuer before storing a claim

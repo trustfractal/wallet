@@ -9,7 +9,7 @@ pragma solidity ^0.8.3;
 // https://www.wolframalpha.com/input/?i=integrate%5B-1%2B1.01*10%5E%282-0.02*x%29%2C+x%5D
 
 import "hardhat/console.sol";
-import "./CappedRewardCalculator.sol";
+import "../Staking/CappedRewardCalculator.sol";
 
 contract TestCappedRewardCalculator is CappedRewardCalculator {
   constructor(

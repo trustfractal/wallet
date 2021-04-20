@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import { CappedRewardCalculator } from "../../../typechain/CappedRewardCalculator";
 import CappedRewardCalculatorArtifact from "../../../artifacts/contracts/Staking/CappedRewardCalculator.sol/CappedRewardCalculator.json";
 import { TestCappedRewardCalculator } from "../../../typechain/TestCappedRewardCalculator";
-import TestCappedRewardCalculatorArtifact from "../../../artifacts/contracts/Staking/TestCappedRewardCalculator.sol/TestCappedRewardCalculator.json";
+import TestCappedRewardCalculatorArtifact from "../../../artifacts/contracts/Test/CappedRewardCalculator.sol/TestCappedRewardCalculator.json";
 
 chai.use(solidity);
 
@@ -21,8 +21,14 @@ describe("CappedRewardCalculator", () => {
   let tester: any;
 
   let deployDate = dayjs().unix();
-  let start = dayjs.unix(deployDate).add(1, "day").unix();
-  let oneYearLater = dayjs.unix(start).add(365, "day").unix();
+  let start = dayjs
+    .unix(deployDate)
+    .add(1, "day")
+    .unix();
+  let oneYearLater = dayjs
+    .unix(start)
+    .add(365, "day")
+    .unix();
 
   const ensureTimestamp = (timestamp: number): Promise<unknown> => {
     return network.provider.send("evm_setNextBlockTimestamp", [timestamp]);
@@ -39,8 +45,14 @@ describe("CappedRewardCalculator", () => {
 
     deployDate = timestamp + 1;
 
-    start = dayjs.unix(deployDate).add(1, "day").unix();
-    oneYearLater = dayjs.unix(start).add(365, "day").unix();
+    start = dayjs
+      .unix(deployDate)
+      .add(1, "day")
+      .unix();
+    oneYearLater = dayjs
+      .unix(start)
+      .add(365, "day")
+      .unix();
 
     ensureTimestamp(deployDate);
   });
@@ -59,7 +71,9 @@ describe("CappedRewardCalculator", () => {
     });
 
     it("fails if startDate is in the past", async () => {
-      const yesterday = dayjs().subtract(1, "day").unix();
+      const yesterday = dayjs()
+        .subtract(1, "day")
+        .unix();
       const args = [yesterday, oneYearLater, 100];
 
       const action = deploy(owner, CappedRewardCalculatorArtifact, args);

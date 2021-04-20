@@ -74,7 +74,7 @@ describe("ClaimsRegistry", () => {
 
         await expect(action)
           .to.emit(registry, "ClaimStored")
-          .withArgs(subject.address, issuer.address, sig);
+          .withArgs(sig);
       });
     });
 
@@ -169,7 +169,7 @@ describe("ClaimsRegistry", () => {
 
         await expect(action)
           .to.emit(registry, "ClaimRevoked")
-          .withArgs(subject.address, issuer.address, sig);
+          .withArgs(sig);
       });
 
       it("does not allow issuer to revoke non-existing claims", async () => {
