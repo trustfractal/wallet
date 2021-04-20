@@ -8,18 +8,18 @@ import {
 
 import LoadingScreen from "@popup/containers/LoadingScreen";
 
-import { UserStore } from "@redux/user";
+import { AppStore } from "@redux/stores/application";
 
-export const UserContext = createContext(null);
+export const AppContext = createContext(null);
 
-export const UserContextProvider = ({ children }) => {
+export const AppContextProvider = ({ children }) => {
   const [store, setStore] = useState();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     if (!isReady) {
       const setupStore = async () => {
-        setStore(await UserStore.connect());
+        setStore(await AppStore.connect());
         setIsReady(true);
       };
 
@@ -32,12 +32,12 @@ export const UserContextProvider = ({ children }) => {
   }
 
   return (
-    <ReduxProvider store={store} context={UserContext}>
+    <ReduxProvider store={store} context={AppContext}>
       {children}
     </ReduxProvider>
   );
 };
 
-export const useUserStore = createStoreHook(UserContext);
-export const useUserDispatch = createDispatchHook(UserContext);
-export const useUserSelector = createSelectorHook(UserContext);
+export const useAppStore = createStoreHook(AppContext);
+export const useAppDispatch = createDispatchHook(AppContext);
+export const useAppSelector = createSelectorHook(AppContext);

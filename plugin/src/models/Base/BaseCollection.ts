@@ -5,7 +5,7 @@ export default class BaseCollection<
   >
   extends Array<T>
   implements ICollection<T> {
-  public serialize() {
+  public serialize(): string {
     return JSON.stringify(this.map((element) => element.serialize()));
   }
 

@@ -5,18 +5,19 @@ import thunk from "redux-thunk";
 import StorageService from "@services/StorageService";
 import CryptoUtils from "@utils/CryptoUtils";
 
-import aliases from "@redux/user/aliases";
+import aliases from "@redux/stores/user/aliases";
+import watcher from "@redux/middlewares/watcher";
 
 import {
   reducer as credentialsReducer,
   restore as credentialsRestore,
   store as credentialsStore,
-} from "@redux/user/reducers/credentials";
+} from "@redux/stores/user/reducers/credentials";
 import {
   reducer as walletReducer,
   restore as walletRestore,
   store as walletStore,
-} from "@redux/user/reducers/wallet";
+} from "@redux/stores/user/reducers/wallet";
 
 export class UserStore {
   static instance = undefined;
@@ -96,7 +97,7 @@ export class UserStore {
   }
 
   static getMiddleware() {
-    return applyMiddleware(alias(aliases), thunk);
+    return applyMiddleware(watcher, alias(aliases), thunk);
   }
 
   static async createSalt() {

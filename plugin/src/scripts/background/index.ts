@@ -1,6 +1,6 @@
-import AppStore from "@redux/application";
+import AppStore from "@redux/stores/application";
 
-import appActions from "@redux/application/reducers/app";
+import appActions from "@redux/stores/application/reducers/app";
 
 import ContentScriptConnection from "@background/connection";
 

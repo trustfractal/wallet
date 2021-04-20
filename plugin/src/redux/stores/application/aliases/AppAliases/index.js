@@ -1,4 +1,4 @@
-import appActions, { appTypes } from "@redux/application/reducers/app";
+import appActions, { appTypes } from "@redux/stores/application/reducers/app";
 
 export const startup = () => {
   return async (dispatch) => {

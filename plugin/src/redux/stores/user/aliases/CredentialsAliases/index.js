@@ -1,7 +1,7 @@
 import credentialsActions, {
   credentialsTypes,
-} from "@redux/user/reducers/credentials";
-import { getCredentials } from "@redux/user/reducers/credentials/selectors";
+} from "@redux/stores/user/reducers/credentials";
+import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 
 import Credential from "@models/Credential";
 

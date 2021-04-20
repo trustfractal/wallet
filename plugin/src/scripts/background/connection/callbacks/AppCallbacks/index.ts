@@ -1,13 +1,13 @@
 import ConnectionTypes from "@models/Connection/types";
 
-import AppStore from "@redux/application";
-import UserStore from "@redux/user";
+import AppStore from "@redux/stores/application";
+import UserStore from "@redux/stores/user";
 
 import {
   isLoggedIn,
   isRegistered,
-} from "@redux/application/reducers/auth/selectors";
-import { getAccount } from "@redux/user/reducers/wallet/selectors";
+} from "@redux/stores/application/reducers/auth/selectors";
+import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 
 export const verifyConnection = () =>
   new Promise((resolve, reject) => {

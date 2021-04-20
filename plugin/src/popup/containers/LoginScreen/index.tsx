@@ -1,11 +1,14 @@
-import { useAppDispatch, useAppSelector } from "@redux/application/context";
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "@redux/stores/application/context";
 
-import authActions from "@redux/application/reducers/auth";
+import authActions from "@redux/stores/application/reducers/auth";
 
 import {
   getSignInError,
   isSignInLoading,
-} from "@redux/application/reducers/auth/selectors";
+} from "@redux/stores/application/reducers/auth/selectors";
 
 import Login from "@popup/components/Login";
 

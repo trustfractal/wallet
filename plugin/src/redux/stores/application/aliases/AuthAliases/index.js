@@ -1,9 +1,11 @@
-import authActions, { authTypes } from "@redux/application/reducers/auth";
-import registerActions from "@redux/application/reducers/register";
+import authActions, {
+  authTypes,
+} from "@redux/stores/application/reducers/auth";
+import registerActions from "@redux/stores/application/reducers/register";
 
-import Store, { UserStore } from "@redux/user";
-import { getRegisterPassword } from "@redux/application/reducers/register/selectors";
-import { getHashedPassword } from "@redux/application/reducers/auth/selectors";
+import Store, { UserStore } from "@redux/stores/user";
+import { getRegisterPassword } from "@redux/stores/application/reducers/register/selectors";
+import { getHashedPassword } from "@redux/stores/application/reducers/auth/selectors";
 
 export const signUp = () => {
   return async (dispatch, getState) => {

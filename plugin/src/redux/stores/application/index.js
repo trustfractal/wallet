@@ -4,15 +4,16 @@ import thunk from "redux-thunk";
 
 import StorageService from "@services/StorageService";
 
-import aliases from "@redux/application/aliases";
+import aliases from "@redux/stores/application/aliases";
+import watcher from "@redux/middlewares/watcher";
 
-import { reducer as appReducer } from "@redux/application/reducers/app";
+import { reducer as appReducer } from "@redux/stores/application/reducers/app";
 import {
   reducer as authReducer,
   restore as authRestore,
   store as authStore,
-} from "@redux/application/reducers/auth";
-import { reducer as registerReducer } from "@redux/application/reducers/register";
+} from "@redux/stores/application/reducers/auth";
+import { reducer as registerReducer } from "@redux/stores/application/reducers/register";
 
 export class AppStore {
   static instance = undefined;
@@ -77,7 +78,7 @@ export class AppStore {
   }
 
   static getMiddleware() {
-    return applyMiddleware(alias(aliases), thunk);
+    return applyMiddleware(watcher, alias(aliases), thunk);
   }
 
   static async createState() {

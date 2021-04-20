@@ -1,8 +1,8 @@
 import ConnectionTypes from "@models/Connection/types";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
-import UserStore from "@redux/user";
-import { getCredentials } from "@redux/user/reducers/credentials/selectors";
+import UserStore from "@redux/stores/user";
+import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 
 export const hasCredential = ([id]: [string]) =>
   new Promise((resolve, reject) => {

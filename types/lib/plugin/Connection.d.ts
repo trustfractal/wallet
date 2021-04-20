@@ -16,9 +16,16 @@ export interface IInvokation extends ISerializable {
     port?: string;
     getMessageType: () => string;
 }
-export interface PromiseObject {
+export declare type IMiddleware = {
+    apply(invokation: IInvokation): void;
+};
+export interface ConnectionResponse {
     resolve: SyncCallback;
     reject: SyncCallback;
+}
+export interface ConnectionInvokation {
+    callback: AsyncCallback;
+    middlewares: IMiddleware[];
 }
 export declare type Message = {
     type: string;
@@ -27,8 +34,8 @@ export declare type Message = {
 export interface IConnection {
     from: string;
     to: string;
-    responseCallbacks: Record<string, PromiseObject>;
-    invokationCallbacks: Record<string, AsyncCallback>;
+    responses: Record<string, ConnectionResponse>;
+    invokations: Record<string, ConnectionInvokation>;
     postMessage: (message: IResponse | IInvokation) => void;
     on: (method: string, callback: any) => IConnection;
     invoke: (method: string, ...args: any[]) => Promise<any>;

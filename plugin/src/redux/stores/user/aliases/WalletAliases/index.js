@@ -3,7 +3,7 @@ import ConnectionTypes from "@models/Connection/types";
 
 import { FRACTAL_WEBSITE_HOSTNAME } from "@constants";
 
-import walletActions, { walletTypes } from "@redux/user/reducers/wallet";
+import walletActions, { walletTypes } from "@redux/stores/user/reducers/wallet";
 
 export const connectWallet = () => {
   return async (dispatch, getState) => {
