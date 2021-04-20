@@ -3,15 +3,15 @@
 pragma solidity ^0.8.3;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-import "./Staking/Infra.sol";
 import "./Staking/CappedRewardCalculator.sol";
 import "./ClaimsRegistry.sol";
 
 /// @title A staking contract which allows only verified users (by checking a separate contract for a valid signature)
 /// @author Miguel Palhas <miguel@subvisual.co>
-contract Staking is StakingInfra, CappedRewardCalculator {
+contract Staking is CappedRewardCalculator, Ownable {
   /// @notice the token to stake
   ERC20 public erc20;
 
@@ -98,7 +98,7 @@ contract Staking is StakingInfra, CappedRewardCalculator {
   ///   issuer on the registry contract
   /// @param _amount Amount of tokens to stake
   /// @param claimSig Signature to check against the registry contract
-  function stake(uint _amount, bytes calldata claimSig) external whenNotPaused {
+  function stake(uint _amount, bytes calldata claimSig) external {
     uint time = block.timestamp;
     address subscriber = msg.sender;
 
@@ -131,7 +131,7 @@ contract Staking is StakingInfra, CappedRewardCalculator {
   }
 
   /// @notice Withdrawn the stake belonging to `msg.sender`
-  function withdraw() external whenNotPaused {
+  function withdraw() external {
     address subscriber = msg.sender;
     uint time = block.timestamp;
 

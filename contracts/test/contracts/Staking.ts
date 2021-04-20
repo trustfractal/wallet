@@ -23,8 +23,12 @@ let bob: any;
 let fcl: any;
 let issuer: any;
 let registry: any;
-const start = dayjs().add(1, "day").unix();
-const end = dayjs().add(2, "day").unix();
+const start = dayjs()
+  .add(1, "day")
+  .unix();
+const end = dayjs()
+  .add(2, "day")
+  .unix();
 
 describe("Staking", () => {
   before(async () => {
@@ -99,7 +103,9 @@ describe("Staking", () => {
     });
 
     it("fails if endDate is before startDate", async () => {
-      const one_hour_before = dayjs(start).subtract(1, "hour").unix();
+      const one_hour_before = dayjs(start)
+        .subtract(1, "hour")
+        .unix();
       const args = [
         fcl.address,
         registry.address,
@@ -163,8 +169,14 @@ describe("Staking", () => {
      * and 50% of the supply available as rewards
      */
     let start = dayjs().unix();
-    let oneDayLater = dayjs.unix(start).add(1, "day").unix();
-    let oneMonthLater = dayjs.unix(start).add(30, "day").unix();
+    let oneDayLater = dayjs
+      .unix(start)
+      .add(1, "day")
+      .unix();
+    let oneMonthLater = dayjs
+      .unix(start)
+      .add(30, "day")
+      .unix();
     let sixMonthsLater = dayjs
       .unix(start)
       .add(30 * 6, "day")
@@ -189,8 +201,14 @@ describe("Staking", () => {
 
       start = timestamp + 1;
 
-      oneDayLater = dayjs.unix(start).add(1, "day").unix();
-      oneMonthLater = dayjs.unix(start).add(30, "day").unix();
+      oneDayLater = dayjs
+        .unix(start)
+        .add(1, "day")
+        .unix();
+      oneMonthLater = dayjs
+        .unix(start)
+        .add(30, "day")
+        .unix();
       sixMonthsLater = dayjs
         .unix(start)
         .add(30 * 6, "day")
@@ -467,6 +485,16 @@ describe("Staking", () => {
 
         await expect(action).to.be.revertedWith(
           "Staking: staking not over yet"
+        );
+      });
+
+      it("fails if called by a non-owner", async () => {
+        ensureTimestamp(oneMonthLater + 1);
+
+        const action = staking.connect(alice).withdrawPool();
+
+        await expect(action).to.be.revertedWith(
+          "Ownable: caller is not the owner"
         );
       });
     });
