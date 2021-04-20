@@ -6,6 +6,8 @@ import "hardhat/console.sol";
 
 import "../ClaimsRegistry.sol";
 
+/// @title Calculates rewards based on an initial downward curve period, and a second linear period
+/// @author Miguel Palhas <miguel@subvisual.co>
 contract FakeClaimsRegistry is IClaimsRegistryVerifier {
   bool result;
 

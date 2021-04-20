@@ -21,9 +21,6 @@ contract Staking is StakingInfra, CappedRewardCalculator {
   /// @notice The expected issuer address against which claims will be verified (i.e. they must be signed by this address)
   address public claimIssuer;
 
-  /// @notice How much can be staked in total
-  uint public totalMaxAmount;
-
   /// @notice The minimum staking amount per account
   uint public individualMinimumAmount;
 
@@ -50,6 +47,7 @@ contract Staking is StakingInfra, CappedRewardCalculator {
 
   /// @notice Details of a particular subscription
   struct Subscription {
+    bool active;
     address subscriberAddress; // addres the subscriptions refers to
     uint startDate;            // Block timestamp at which the subscription was made
     uint stakedAmount;         // How much was staked
@@ -65,7 +63,6 @@ contract Staking is StakingInfra, CappedRewardCalculator {
   /// @param _startDate timestamp at which stake requests begin to be allowed. Must be greater than the contract instantiation timestamp
   /// @param _linearStartDate timestamp at which staking switches form a curve calculation to a linear calculation. Must be after _startDate
   /// @param _endDate timestamp at which staking is over (no more rewards are given, and new stakes are not allowed)
-  /// @param _totalMaxAmount total amount of tokens that should be allowed during the entire period
   /// @param _individualMinimumAmount minimum staking amount for each account
   /// @param _curveCap max % of individual reward for curve period
   /// @param _constantAPR APR to use for constant period after curvec
@@ -76,7 +73,6 @@ contract Staking is StakingInfra, CappedRewardCalculator {
     uint _startDate,
     uint _linearStartDate,
     uint _endDate,
-    uint _totalMaxAmount,
     uint _individualMinimumAmount,
     uint _curveCap,
     uint _constantAPR
@@ -85,23 +81,20 @@ contract Staking is StakingInfra, CappedRewardCalculator {
     require(_registry != address(0), "Staking: claims registry address cannot be 0x0");
     require(_issuer != address(0), "Staking: claim issuer cannot be 0x0");
     require(block.timestamp <= _startDate, "Staking: start date must be in the future");
-    require(_totalMaxAmount > 0, "Staking: invalid max amount");
     require(_individualMinimumAmount > 0, "Staking: invalid individual min amount");
-    require(
-      _totalMaxAmount > _individualMinimumAmount,
-      "Staking: max amount needs to be greater than individual minimum"
-    );
 
     erc20 = ERC20(_token);
     registry = IClaimsRegistryVerifier(_registry);
     claimIssuer = _issuer;
-    require(_totalMaxAmount <= erc20.totalSupply(), "Staking: max amount is greater than total available supply");
 
-    totalMaxAmount = _totalMaxAmount;
     individualMinimumAmount = _individualMinimumAmount;
   }
 
-  /// TODO: totalMaxAcount not being considered
+  /// @notice return
+  function availablePoolBalance() public view returns (uint) {
+    return erc20.balanceOf(address(this)) - lockedTokens;
+  }
+
   /// @notice Requests a new stake to be created. Only one stake per account is created, maximum rewards are calculated upfront, and a valid claim signature needs to be provided, which will be checked against the expected issuer on the registry contract
   /// @param _amount Amount of tokens to stake
   /// @param claimSig Signature to check against the registry contract
@@ -110,19 +103,21 @@ contract Staking is StakingInfra, CappedRewardCalculator {
     address subscriber = msg.sender;
 
     require(registry.verifyClaim(msg.sender, claimIssuer, claimSig), "Staking: could not verify claim");
-    require(_amount > 0, "Staking: staked amount needs to be greather than 0");
+    require(_amount > 0, "Staking: staked amount needs to be greater than 0");
     require(time >= startDate(), "Staking: staking period not started");
     require(time < endDate(), "Staking: staking period finished");
-    require(subscriptions[subscriber].startDate == 0, "Staking: this account has already staked");
+    require(subscriptions[subscriber].active == false, "Staking: this account has already staked");
 
     // transfer tokens from subscriber to the contract
     require(erc20.transferFrom(subscriber, address(this), _amount),
       "Staking: Could not transfer tokens from subscriber");
 
     uint maxReward = calculateReward(time, endDate(), _amount);
+    require(maxReward <= availablePoolBalance(), "Staking: not enough tokens available in the pool");
     lockedTokens += _amount + maxReward;
 
     subscriptions[subscriber] = Subscription(
+      true,
       subscriber,
       time,
       _amount,
@@ -139,11 +134,9 @@ contract Staking is StakingInfra, CappedRewardCalculator {
     address subscriber = msg.sender;
     uint time = block.timestamp;
 
-    require(subscriptions[subscriber].startDate > 0, "Staking: no subscription found for this address");
-    require(subscriptions[subscriber].withdrawDate == 0, "Staking: subscription already withdrawn");
+    require(subscriptions[subscriber].active == true, "Staking: no active subscription found for this address");
 
     Subscription memory sub = subscriptions[subscriber];
-
 
     uint reward = calculateReward(sub.startDate, time, sub.stakedAmount);
     uint total = sub.stakedAmount + reward;
@@ -155,6 +148,7 @@ contract Staking is StakingInfra, CappedRewardCalculator {
     // update subscription state
     sub.withdrawAmount = sub.stakedAmount + reward;
     sub.withdrawDate = time;
+    sub.active = false;
     subscriptions[subscriber] = sub;
 
     // update locked amount
@@ -174,5 +168,29 @@ contract Staking is StakingInfra, CappedRewardCalculator {
     }
   }
 
-  // TODO function getStakeReward(address _subscriber)
+  /// @notice Gets the maximum reward for an existing subscription
+  /// @param _subscriber address of the subscription to check
+  /// @return Maximum amount of tokens the subscriber can get by staying until the end of the staking period
+  function getMaxStakeReward(address _subscriber) external view returns (uint) {
+    Subscription memory sub = subscriptions[_subscriber];
+
+    if (sub.active) {
+      return subscriptions[_subscriber].maxReward;
+    } else {
+      return 0;
+    }
+  }
+
+  /// @notice Gets the amount already earned by an existing subscription
+  /// @param _subscriber address of the subscription to check
+  /// @return Amount the subscriber has earned to date
+  function getCurrentReward(address _subscriber) external view returns (uint) {
+    Subscription memory sub = subscriptions[_subscriber];
+
+    if (sub.active) {
+      return calculateReward(sub.startDate, block.timestamp, sub.stakedAmount);
+    } else {
+      return 0;
+    }
+  }
 }

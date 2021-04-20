@@ -55,7 +55,6 @@ describe("Staking", () => {
         start,
         mid,
         end,
-        3,
         2,
         100,
         15,
@@ -64,7 +63,6 @@ describe("Staking", () => {
       const staking = (await deploy(owner, StakingArtifact, args)) as Staking;
 
       expect(await staking.erc20()).to.eq(fcl.address);
-      expect(await staking.totalMaxAmount()).to.eq(3);
       expect(await staking.individualMinimumAmount()).to.eq(2);
       expect(await staking.curveCap()).to.eq(100);
       expect(await staking.constantAPR()).to.eq(15);
@@ -80,7 +78,6 @@ describe("Staking", () => {
         start,
         mid,
         end,
-        3,
         2,
         100,
         15,
@@ -102,7 +99,6 @@ describe("Staking", () => {
         start,
         mid,
         end,
-        3,
         2,
         100,
         15,
@@ -124,7 +120,6 @@ describe("Staking", () => {
         start,
         mid,
         end,
-        3,
         2,
         100,
         15,
@@ -146,7 +141,6 @@ describe("Staking", () => {
         start,
         mid,
         one_hour_before,
-        3,
         2,
         100,
         15,
@@ -159,25 +153,6 @@ describe("Staking", () => {
       );
     });
 
-    it("fails if maxAmount is 0", async () => {
-      const args = [
-        fcl.address,
-        registry.address,
-        issuer.address,
-        start,
-        mid,
-        end,
-        0,
-        2,
-        100,
-        15,
-      ];
-
-      const action = deploy(owner, StakingArtifact, args);
-
-      await expect(action).to.be.revertedWith("Staking: invalid max amount");
-    });
-
     it("fails if minIndividualAmount is 0", async () => {
       const args = [
         fcl.address,
@@ -186,7 +161,6 @@ describe("Staking", () => {
         start,
         mid,
         end,
-        3,
         0,
         100,
         15,
@@ -207,7 +181,6 @@ describe("Staking", () => {
         start,
         mid,
         end,
-        3,
         2,
         0,
         15,
@@ -228,7 +201,6 @@ describe("Staking", () => {
         start,
         mid,
         end,
-        1,
         2,
         100,
         0,
@@ -240,31 +212,9 @@ describe("Staking", () => {
         "CappedRewardCalculator: constant APR cannot be 0"
       );
     });
-
-    it("fails if max amount is larger than the token's own supply", async () => {
-      const supply = await fcl.totalSupply();
-      const args = [
-        fcl.address,
-        registry.address,
-        issuer.address,
-        start,
-        mid,
-        end,
-        supply + 1,
-        2,
-        100,
-        15,
-      ];
-
-      const action = deploy(owner, StakingArtifact, args);
-
-      await expect(action).to.be.revertedWith(
-        "Staking: max amount is greater than total available supply"
-      );
-    });
   });
 
-  describe("stake", () => {
+  describe("public functions", () => {
     let staking: any;
 
     /**
@@ -285,7 +235,6 @@ describe("Staking", () => {
       .unix();
     let now = start + 1000;
     const minSubscription = 100;
-    let pool: any;
     let amount: any;
     const APR = 10;
 
@@ -313,16 +262,13 @@ describe("Staking", () => {
 
       ensureTimestamp(start);
 
-      pool = (await fcl.totalSupply()).div(2);
-
       const args = [
         fcl.address,
         registry.address,
         issuer.address,
         start,
-        mid,
-        end,
-        3,
+        oneMonthLater,
+        sixMonthsLater,
         2,
         100,
         15,
@@ -330,11 +276,11 @@ describe("Staking", () => {
 
       staking = (await deploy(owner, StakingArtifact, args)) as Staking;
 
-      // give 50% of the supply to the staking contract
-      await fcl.transfer(staking.address, (await fcl.totalSupply()).div(2));
+      // give 2000 tokens to the staking contract
+      await fcl.transfer(staking.address, parseEther("2000"));
 
       // pre-approve staking of 1000 tokens
-      await fcl.approve(staking.address, parseEther("1000"));
+      await fcl.approve(staking.address, parseEther("2000"));
 
       amount = parseEther("1000");
       now = start + 1000;
@@ -351,10 +297,26 @@ describe("Staking", () => {
 
         const action = staking.stake(parseEther("1000"), "0x00");
 
-        expect(action).to.be.revertedWith("Staking: could not verify claim");
+        await expect(action).to.be.revertedWith(
+          "Staking: could not verify claim"
+        );
       });
 
+      it("fails if there are not enough tokens on the pool", async () => {
+        const action = staking.stake(parseEther("2000"), "0x00");
+
+        await expect(action).to.be.revertedWith(
+          "Staking: not enough tokens available in the pool"
+        );
+      });
+
+      // it("fails if maximum")
+
       it("transfers the desired amount tokens from your account to the contract", async () => {
+        expect(await fcl.allowance(owner.address, staking.address)).to.eq(
+          parseEther("2000")
+        );
+
         const ownerBalanceBefore = await fcl.balanceOf(owner.address);
         const stakingBalanceBefore = await fcl.balanceOf(staking.address);
         await staking.stake(parseEther("1000"), "0x00");
@@ -367,8 +329,10 @@ describe("Staking", () => {
         // contract has 1000 more tokens
         expect(stakingBalanceAfter).to.eq(stakingBalanceBefore.add(amount));
 
-        // allowance is depleted
-        expect(await fcl.allowance(owner.address, staking.address)).to.eq(0);
+        // allowance is now lower
+        expect(await fcl.allowance(owner.address, staking.address)).to.eq(
+          parseEther("1000")
+        );
       });
 
       it("emits a subscription event", async () => {
@@ -381,7 +345,7 @@ describe("Staking", () => {
         const action = staking.stake(parseEther("0"), "0x00");
 
         await expect(action).to.be.revertedWith(
-          "Staking: staked amount needs to be greather than 0"
+          "Staking: staked amount needs to be greater than 0"
         );
       });
 
@@ -394,7 +358,6 @@ describe("Staking", () => {
           oneMonthLater,
           oneMonthLater + 1,
           oneYearLater,
-          pool,
           minSubscription,
           100,
           15,
@@ -441,6 +404,43 @@ describe("Staking", () => {
         const result = await staking.getStakedAmount(owner.address);
 
         expect(result).to.eq(0);
+      });
+    });
+
+    describe("calculateReward", () => {
+      it("estimates a reward", async () => {
+        const estimation = await staking.calculateReward(
+          start,
+          oneMonthLater,
+          parseEther("1000")
+        );
+
+        expect(estimation).to.eq(parseEther("1000"));
+      });
+    });
+
+    describe("getMaxStakeReward", () => {
+      it("retrieves the maximum reward set for an existing subscription", async () => {
+        await staking.stake(parseEther("1000"), "0x00");
+
+        const reward = await staking.getMaxStakeReward(owner.address);
+
+        expect(reward).to.eq(parseEther("1000"));
+      });
+
+      it("is zero for non-existing subscriptions", async () => {
+        await staking.stake(parseEther("1000"), "0x00");
+        await staking.withdraw();
+
+        const reward = await staking.getMaxStakeReward(owner.address);
+
+        expect(reward).to.eq(0);
+      });
+
+      it("is zero for withdrawn subscriptions", async () => {
+        const reward = await staking.getMaxStakeReward(owner.address);
+
+        expect(reward).to.eq(0);
       });
     });
 
