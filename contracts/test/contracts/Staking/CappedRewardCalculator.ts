@@ -23,10 +23,6 @@ describe("CappedRewardCalculator", () => {
   let deployDate = dayjs().unix();
   let start = dayjs.unix(deployDate).add(1, "day").unix();
   let oneYearLater = dayjs.unix(start).add(365, "day").unix();
-  let twoYearsLater = dayjs
-    .unix(start)
-    .add(365 * 2, "day")
-    .unix();
 
   const ensureTimestamp = (timestamp: number): Promise<unknown> => {
     return network.provider.send("evm_setNextBlockTimestamp", [timestamp]);
@@ -45,10 +41,6 @@ describe("CappedRewardCalculator", () => {
 
     start = dayjs.unix(deployDate).add(1, "day").unix();
     oneYearLater = dayjs.unix(start).add(365, "day").unix();
-    twoYearsLater = dayjs
-      .unix(start)
-      .add(365 * 2, "day")
-      .unix();
 
     ensureTimestamp(deployDate);
   });
@@ -58,27 +50,17 @@ describe("CappedRewardCalculator", () => {
       const calc = (await deploy(owner, CappedRewardCalculatorArtifact, [
         start,
         oneYearLater,
-        twoYearsLater,
         100,
-        15,
       ])) as CappedRewardCalculator;
 
       expect(await calc.startDate()).to.eq(start);
-      expect(await calc.endDate()).to.eq(twoYearsLater);
-
-      expect((await calc.curve()).start).to.eq(start);
-      expect((await calc.curve()).end).to.eq(oneYearLater);
-
-      expect((await calc.const()).start).to.eq(oneYearLater);
-      expect((await calc.const()).end).to.eq(twoYearsLater);
-
-      expect(await calc.curveCap()).to.eq(100);
-      expect(await calc.constantAPR()).to.eq(15);
+      expect(await calc.endDate()).to.eq(oneYearLater);
+      expect(await calc.cap()).to.eq(100);
     });
 
     it("fails if startDate is in the past", async () => {
       const yesterday = dayjs().subtract(1, "day").unix();
-      const args = [yesterday, oneYearLater, twoYearsLater, 100, 15];
+      const args = [yesterday, oneYearLater, 100];
 
       const action = deploy(owner, CappedRewardCalculatorArtifact, args);
 
@@ -87,28 +69,18 @@ describe("CappedRewardCalculator", () => {
       );
     });
 
-    it("fails if linearStartDate is before startDate", async () => {
-      const args = [oneYearLater, start, twoYearsLater, 100, 15];
+    it("fails if endDate is before startDate", async () => {
+      const args = [oneYearLater, start, 100];
 
       const action = deploy(owner, CappedRewardCalculatorArtifact, args);
 
       await expect(action).to.be.revertedWith(
-        "CappedRewardCalculator: constant start date must be after curve start date"
-      );
-    });
-
-    it("fails if endDate is before linearStartDate", async () => {
-      const args = [start, twoYearsLater, oneYearLater, 100, 15];
-
-      const action = deploy(owner, CappedRewardCalculatorArtifact, args);
-
-      await expect(action).to.be.revertedWith(
-        "CappedRewardCalculator: end date must be after or at constant start date"
+        "CappedRewardCalculator: end date must be after start date"
       );
     });
 
     it("fails if curveCap is zero", async () => {
-      const args = [start, oneYearLater, twoYearsLater, 0, 15];
+      const args = [start, oneYearLater, 0];
 
       const action = deploy(owner, CappedRewardCalculatorArtifact, args);
 
@@ -116,21 +88,11 @@ describe("CappedRewardCalculator", () => {
         "CappedRewardCalculator: curve cap cannot be 0"
       );
     });
-
-    it("fails if constantAPR is zero", async () => {
-      const args = [start, oneYearLater, twoYearsLater, 100, 0];
-
-      const action = deploy(owner, CappedRewardCalculatorArtifact, args);
-
-      await expect(action).to.be.revertedWith(
-        "CappedRewardCalculator: constant APR cannot be 0"
-      );
-    });
   });
 
   describe("private functions", () => {
     beforeEach(async () => {
-      const args = [start, oneYearLater, twoYearsLater, 100, 15];
+      const args = [start, oneYearLater, 100];
 
       tester = (await deploy(
         owner,
@@ -139,19 +101,16 @@ describe("CappedRewardCalculator", () => {
       )) as TestCappedRewardCalculator;
     });
 
-    describe("truncateToCurvePeriod", () => {
+    describe("truncatePeriod", () => {
       it("truncates given startDate", async () => {
-        const [r1, r2] = await tester.testTruncateToCurvePeriod(
-          start - 1,
-          start + 1
-        );
+        const [r1, r2] = await tester.testTruncatePeriod(start - 1, start + 1);
 
         expect(r1).to.eq(start);
         expect(r2).to.eq(start + 1);
       });
 
       it("truncates given endDate", async () => {
-        const [r1, r2] = await tester.testTruncateToCurvePeriod(
+        const [r1, r2] = await tester.testTruncatePeriod(
           start + 1,
           oneYearLater + 1
         );
@@ -161,25 +120,25 @@ describe("CappedRewardCalculator", () => {
       });
 
       it("gives a 0-length period if outside of bounds", async () => {
-        const [r1, r2] = await tester.testTruncateToCurvePeriod(
+        const [r1, r2] = await tester.testTruncatePeriod(
           oneYearLater,
-          twoYearsLater
+          oneYearLater + 10
         );
 
         expect(r1).to.eq(r2);
       });
     });
 
-    describe("toCurvePercents", () => {
+    describe("toPeriodPercents", () => {
       it("calculates 0% to 100%", async () => {
-        const [r1, r2] = await tester.testToCurvePercents(start, oneYearLater);
+        const [r1, r2] = await tester.testToPeriodPercents(start, oneYearLater);
 
         expect(r1).to.eq(0);
         expect(r2).to.eq(1000000);
       });
 
       it("calculates 0% to 50%", async () => {
-        const [r1, r2] = await tester.testToCurvePercents(
+        const [r1, r2] = await tester.testToPeriodPercents(
           start,
           (start + oneYearLater) / 2
         );
@@ -189,7 +148,7 @@ describe("CappedRewardCalculator", () => {
       });
 
       it("calculates 50% to 100%", async () => {
-        const [r1, r2] = await tester.testToCurvePercents(
+        const [r1, r2] = await tester.testToPeriodPercents(
           (start + oneYearLater) / 2,
           oneYearLater
         );
@@ -199,7 +158,7 @@ describe("CappedRewardCalculator", () => {
       });
 
       it("calculates 10% to 90%", async () => {
-        const [r1, r2] = await tester.testToCurvePercents(
+        const [r1, r2] = await tester.testToPeriodPercents(
           start + (oneYearLater - start) * 0.1,
           start + (oneYearLater - start) * 0.9
         );
@@ -211,15 +170,15 @@ describe("CappedRewardCalculator", () => {
 
     describe("curvePeriodPercentage", () => {
       it("is maximum from 0% to 100%", async () => {
-        const apr1 = await tester.testCurvePeriodPercentage(0, 1000000);
-        const apr2 = await tester.testCurvePeriodPercentage(0, 900000);
+        const apr1 = await tester.testCurvePercentage(0, 1000000);
+        const apr2 = await tester.testCurvePercentage(0, 900000);
 
         expect(apr1).to.be.gt(apr2);
       });
 
       it("is greater if you enter earlier but stay the same time", async () => {
-        const apr1 = await tester.testCurvePeriodPercentage(0, 300000);
-        const apr2 = await tester.testCurvePeriodPercentage(100000, 400000);
+        const apr1 = await tester.testCurvePercentage(0, 300000);
+        const apr2 = await tester.testCurvePercentage(100000, 400000);
 
         expect(apr1).to.be.gt(apr2);
       });
@@ -228,7 +187,7 @@ describe("CappedRewardCalculator", () => {
         let last = 10e10;
 
         for (let i = 0; i < 1000000; i += 1000000) {
-          const apr = await tester.testCurvePeriodPercentage(i, i + 100000);
+          const apr = await tester.testCurvePercentage(i, i + 100000);
 
           expect(apr).to.be.lte(last);
           last = apr;
@@ -239,7 +198,7 @@ describe("CappedRewardCalculator", () => {
         let last = 0;
 
         for (let i = 0; i < 1000000; i += 100000) {
-          const apr = await tester.testCurvePeriodPercentage(0, i + 10);
+          const apr = await tester.testCurvePercentage(0, i + 10);
 
           expect(apr).to.be.gte(last);
           last = apr;
@@ -250,7 +209,7 @@ describe("CappedRewardCalculator", () => {
         let last = 10e10;
 
         for (let i = 0; i < 800000; i += 100000) {
-          const apr = await tester.testCurvePeriodPercentage(i, i + 100000);
+          const apr = await tester.testCurvePercentage(i, i + 100000);
 
           expect(apr).to.be.lt(last);
           last = apr;
@@ -261,7 +220,7 @@ describe("CappedRewardCalculator", () => {
 
   describe("public functions", () => {
     beforeEach(async () => {
-      const args = [start, oneYearLater, twoYearsLater, 100, 15];
+      const args = [start, oneYearLater, 100];
 
       calc = (await deploy(
         owner,
@@ -325,32 +284,6 @@ describe("CappedRewardCalculator", () => {
             );
 
             expect(reward).to.be.lt(last);
-            last = reward;
-          }
-        });
-      });
-      describe("for linear period", () => {
-        it("work for 100 units through the entire linear period", async () => {
-          const reward = await calc.calculateReward(
-            oneYearLater,
-            twoYearsLater,
-            1000
-          );
-
-          expect(reward).to.eq(150);
-        });
-
-        it("cumulative value increases over time", async () => {
-          let last = 0;
-
-          for (let i = 0.1; i <= 1; i += 0.1) {
-            const reward = await calc.calculateReward(
-              oneYearLater,
-              oneYearLater + (twoYearsLater - oneYearLater) * i,
-              1000
-            );
-
-            expect(reward).to.be.gt(last);
             last = reward;
           }
         });

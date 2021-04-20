@@ -61,22 +61,18 @@ contract Staking is StakingInfra, CappedRewardCalculator {
   /// @param _registry ClaimsRegistry address to use
   /// @param _issuer expected issuer of claims when verifying them
   /// @param _startDate timestamp at which stake requests begin to be allowed. Must be greater than the contract instantiation timestamp
-  /// @param _linearStartDate timestamp at which staking switches form a curve calculation to a linear calculation. Must be after _startDate
   /// @param _endDate timestamp at which staking is over (no more rewards are given, and new stakes are not allowed)
   /// @param _individualMinimumAmount minimum staking amount for each account
-  /// @param _curveCap max % of individual reward for curve period
-  /// @param _constantAPR APR to use for constant period after curvec
+  /// @param _cap max % of individual reward for curve period
   constructor(
     address _token,
     address _registry,
     address _issuer,
     uint _startDate,
-    uint _linearStartDate,
     uint _endDate,
     uint _individualMinimumAmount,
-    uint _curveCap,
-    uint _constantAPR
-  ) CappedRewardCalculator(_startDate, _linearStartDate, _endDate, _curveCap, _constantAPR) {
+    uint _cap
+  ) CappedRewardCalculator(_startDate, _endDate, _cap) {
     require(_token != address(0), "Staking: token address cannot be 0x0");
     require(_registry != address(0), "Staking: claims registry address cannot be 0x0");
     require(_issuer != address(0), "Staking: claim issuer cannot be 0x0");
@@ -104,17 +100,18 @@ contract Staking is StakingInfra, CappedRewardCalculator {
 
     require(registry.verifyClaim(msg.sender, claimIssuer, claimSig), "Staking: could not verify claim");
     require(_amount > 0, "Staking: staked amount needs to be greater than 0");
-    require(time >= startDate(), "Staking: staking period not started");
-    require(time < endDate(), "Staking: staking period finished");
+    require(time >= startDate, "Staking: staking period not started");
+    require(time < endDate, "Staking: staking period finished");
     require(subscriptions[subscriber].active == false, "Staking: this account has already staked");
+
+
+    uint maxReward = calculateReward(time, endDate, _amount);
+    require(maxReward <= availablePoolBalance(), "Staking: not enough tokens available in the pool");
+    lockedTokens += _amount + maxReward;
 
     // transfer tokens from subscriber to the contract
     require(erc20.transferFrom(subscriber, address(this), _amount),
       "Staking: Could not transfer tokens from subscriber");
-
-    uint maxReward = calculateReward(time, endDate(), _amount);
-    require(maxReward <= availablePoolBalance(), "Staking: not enough tokens available in the pool");
-    lockedTokens += _amount + maxReward;
 
     subscriptions[subscriber] = Subscription(
       true,

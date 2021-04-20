@@ -24,8 +24,7 @@ let fcl: any;
 let issuer: any;
 let registry: any;
 const start = dayjs().add(1, "day").unix();
-const mid = dayjs().add(2, "day").unix();
-const end = dayjs().add(3, "day").unix();
+const end = dayjs().add(2, "day").unix();
 
 describe("Staking", () => {
   before(async () => {
@@ -53,35 +52,22 @@ describe("Staking", () => {
         registry.address,
         issuer.address,
         start,
-        mid,
         end,
         2,
         100,
-        15,
       ];
 
       const staking = (await deploy(owner, StakingArtifact, args)) as Staking;
 
       expect(await staking.erc20()).to.eq(fcl.address);
       expect(await staking.individualMinimumAmount()).to.eq(2);
-      expect(await staking.curveCap()).to.eq(100);
-      expect(await staking.constantAPR()).to.eq(15);
+      expect(await staking.cap()).to.eq(100);
       expect(await staking.lockedTokens()).to.eq(0);
     });
 
     it("fails if token address is 0x0", async () => {
       const zero = "0x0000000000000000000000000000000000000000";
-      const args = [
-        zero,
-        registry.address,
-        issuer.address,
-        start,
-        mid,
-        end,
-        2,
-        100,
-        15,
-      ];
+      const args = [zero, registry.address, issuer.address, start, end, 2, 100];
 
       const action = deploy(owner, StakingArtifact, args);
 
@@ -92,17 +78,7 @@ describe("Staking", () => {
 
     it("fails if registry address is 0x0", async () => {
       const zero = "0x0000000000000000000000000000000000000000";
-      const args = [
-        fcl.address,
-        zero,
-        issuer.address,
-        start,
-        mid,
-        end,
-        2,
-        100,
-        15,
-      ];
+      const args = [fcl.address, zero, issuer.address, start, end, 2, 100];
 
       const action = deploy(owner, StakingArtifact, args);
 
@@ -113,17 +89,7 @@ describe("Staking", () => {
 
     it("fails if issuer address is 0x0", async () => {
       const zero = "0x0000000000000000000000000000000000000000";
-      const args = [
-        fcl.address,
-        registry.address,
-        zero,
-        start,
-        mid,
-        end,
-        2,
-        100,
-        15,
-      ];
+      const args = [fcl.address, registry.address, zero, start, end, 2, 100];
 
       const action = deploy(owner, StakingArtifact, args);
 
@@ -139,17 +105,15 @@ describe("Staking", () => {
         registry.address,
         issuer.address,
         start,
-        mid,
         one_hour_before,
         2,
         100,
-        15,
       ];
 
       const action = deploy(owner, StakingArtifact, args);
 
       await expect(action).to.be.revertedWith(
-        "CappedRewardCalculator: end date must be after or at constant start date"
+        "CappedRewardCalculator: end date must be after start date"
       );
     });
 
@@ -159,11 +123,9 @@ describe("Staking", () => {
         registry.address,
         issuer.address,
         start,
-        mid,
         end,
         0,
         100,
-        15,
       ];
 
       const action = deploy(owner, StakingArtifact, args);
@@ -173,43 +135,21 @@ describe("Staking", () => {
       );
     });
 
-    it("fails if curveCap is 0", async () => {
+    it("fails if cap is 0", async () => {
       const args = [
         fcl.address,
         registry.address,
         issuer.address,
         start,
-        mid,
         end,
         2,
         0,
-        15,
       ];
 
       const action = deploy(owner, StakingArtifact, args);
 
       await expect(action).to.be.revertedWith(
         "CappedRewardCalculator: curve cap cannot be 0"
-      );
-    });
-
-    it("fails if constant APR is 0", async () => {
-      const args = [
-        fcl.address,
-        registry.address,
-        issuer.address,
-        start,
-        mid,
-        end,
-        2,
-        100,
-        0,
-      ];
-
-      const action = deploy(owner, StakingArtifact, args);
-
-      await expect(action).to.be.revertedWith(
-        "CappedRewardCalculator: constant APR cannot be 0"
       );
     });
   });
@@ -268,16 +208,14 @@ describe("Staking", () => {
         issuer.address,
         start,
         oneMonthLater,
-        sixMonthsLater,
         2,
         100,
-        15,
       ];
 
       staking = (await deploy(owner, StakingArtifact, args)) as Staking;
 
-      // give 2000 tokens to the staking contract
-      await fcl.transfer(staking.address, parseEther("2000"));
+      // give 1000 tokens to the staking contract
+      await fcl.transfer(staking.address, parseEther("1000"));
 
       // pre-approve staking of 1000 tokens
       await fcl.approve(staking.address, parseEther("2000"));
@@ -303,7 +241,7 @@ describe("Staking", () => {
       });
 
       it("fails if there are not enough tokens on the pool", async () => {
-        const action = staking.stake(parseEther("2000"), "0x00");
+        const action = staking.stake(parseEther("1010"), "0x00");
 
         await expect(action).to.be.revertedWith(
           "Staking: not enough tokens available in the pool"
@@ -356,11 +294,9 @@ describe("Staking", () => {
           registry.address,
           issuer.address,
           oneMonthLater,
-          oneMonthLater + 1,
           oneYearLater,
           minSubscription,
           100,
-          15,
         ])) as Staking;
 
         const action = staking.stake(parseEther("1"), "0x00");
@@ -370,9 +306,8 @@ describe("Staking", () => {
         );
       });
 
-      it("fails if address has already staked before", async () => {
+      it("fails if address already has an active stake", async () => {
         await staking.stake(parseEther("1000"), "0x00");
-        await staking.withdraw();
 
         const action = staking.stake(parseEther("1000"), "0x00");
 
@@ -425,7 +360,7 @@ describe("Staking", () => {
 
         const reward = await staking.getMaxStakeReward(owner.address);
 
-        expect(reward).to.eq(parseEther("1000"));
+        expect(reward).to.eq("998845000000000000000");
       });
 
       it("is zero for non-existing subscriptions", async () => {
