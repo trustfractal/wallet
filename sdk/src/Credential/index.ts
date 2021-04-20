@@ -20,7 +20,7 @@ export default class Credential implements ICredential {
     if (!request.validate())
       throw FractalError.credentialFromInvalidRequest(request);
 
-    new Credential({
+    return new Credential({
       claim: request.claim,
       rootHash: request.rootHash,
       attesterAddress: null,
@@ -66,6 +66,10 @@ export default class Credential implements ICredential {
     delete this.claimHashTree[property]["nonce"];
   }
 
+  public getProperty(property: string): any {
+    return this.claim.properties[property];
+  }
+
   // check if all fields are valid
   public verifyIntegrity(): boolean {
     return (
@@ -88,7 +92,7 @@ export default class Credential implements ICredential {
     return Crypto.verifyPartialClaimHashTree(
       this.claimHashTree,
       this.claim.properties,
-      this.claimTypeHash.hash
+      this.claim.claimTypeHash
     );
   }
 
