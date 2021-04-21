@@ -10,7 +10,8 @@ import {
   Signature,
 } from "@fractalwallet/sdk/src/types";
 
-export default class Credential extends SDKCredential
+export default class Credential
+  extends SDKCredential
   implements ICredential, ISerializable {
   public id: string;
 
