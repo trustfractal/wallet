@@ -43,3 +43,12 @@ export interface IAuthWatcher extends IWatcher {
     timeOutTime?: number
   ) => void;
 }
+
+export interface ISetupWatcher extends IWatcher {
+  listenForSetup: (
+    onSuccess: Callback,
+    onFailed: Callback,
+    onTimeout: Callback,
+    timeOutTime?: number
+  ) => void;
+}

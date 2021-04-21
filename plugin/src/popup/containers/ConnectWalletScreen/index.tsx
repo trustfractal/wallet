@@ -14,6 +14,8 @@ import {
   isConnectWalletLoading,
 } from "@redux/stores/user/reducers/wallet/selectors";
 import RoutesPaths from "@popup/routes/paths";
+import { useAppSelector } from "@redux/stores/application/context";
+import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
 function ConnectWalletScreen() {
   const dispatch = useUserDispatch();
@@ -22,11 +24,12 @@ function ConnectWalletScreen() {
   const isLoading = useUserSelector(isConnectWalletLoading);
   const error = useUserSelector(getConnectWalletError);
   const account = useUserSelector(getAccount);
+  const setup = useAppSelector(isSetup);
 
   const onDone = () => history.replace(RoutesPaths.HOME);
   const onConnect = () => dispatch(walletActions.connectWalletRequest());
 
-  if (account.length > 0) {
+  if (setup) {
     return <ConnectWalletCompleted onNext={onDone} account={account} />;
   }
 

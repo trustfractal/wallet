@@ -4,6 +4,8 @@ import ConnectionTypes from "@models/Connection/types";
 import { FRACTAL_WEBSITE_HOSTNAME } from "@constants";
 
 import walletActions, { walletTypes } from "@redux/stores/user/reducers/wallet";
+import AppStore from "@redux/stores/application";
+import appActions from "@redux/stores/application/reducers/app";
 
 export const connectWallet = () => {
   return async (dispatch, getState) => {
@@ -46,6 +48,9 @@ export const connectWallet = () => {
       if (!account) {
         throw new Error("No accounts could be found");
       }
+
+      // save app setup flag
+      AppStore.getStore().dispatch(appActions.setSetup(true));
 
       // save wallet address on the redux store
       dispatch(walletActions.setAccount(account));

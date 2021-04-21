@@ -23,9 +23,9 @@ class Connection {
     // register callbacks
     for (let index = 0; index < Object.keys(callbacks).length; index++) {
       const connectionType = Object.keys(callbacks)[index];
-      const callback = callbacks[connectionType];
+      const { callback, middlewares } = callbacks[connectionType];
 
-      this.connection.on(connectionType, callback);
+      this.connection.on(connectionType, callback, middlewares);
     }
 
     return this.connection;

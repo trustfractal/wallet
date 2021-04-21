@@ -2,13 +2,12 @@ import AuthMiddleware from "@models/Connection/AuthMiddleware";
 import ConnectionTypes from "@models/Connection/types";
 
 import AppStore from "@redux/stores/application";
-import UserStore from "@redux/stores/user";
 
 import {
   isLoggedIn,
   isRegistered,
 } from "@redux/stores/application/reducers/auth/selectors";
-import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
+import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
 export const verifyConnection = () =>
   new Promise((resolve, reject) => {
@@ -18,17 +17,13 @@ export const verifyConnection = () =>
       const registered = isRegistered(AppStore.getStore().getState());
       const loggedIn = isLoggedIn(AppStore.getStore().getState());
 
-      let account = "";
-
-      if (loggedIn) {
-        account = getAccount(UserStore.getStore().getState());
-      }
+      const setup = isSetup(AppStore.getStore().getState());
 
       resolve({
         version,
         registered,
         locked: !loggedIn,
-        setup: account.length > 0,
+        setup,
       });
     } catch (error) {
       console.error(error);
