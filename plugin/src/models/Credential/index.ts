@@ -2,16 +2,15 @@ import { ICredential, ISerializable } from "@fractalwallet/types";
 
 import { Credential as SDKCredential } from "@fractalwallet/sdk";
 import {
+  IClaim,
   Address,
   Hash,
   HashTree,
   HashWithNonce,
   Signature,
-} from "@fractalwallet/sdk/src/types/base";
-import { IClaim } from "@fractalwallet/sdk/src/types/Claim";
+} from "@fractalwallet/sdk/src/types";
 
-export default class Credential
-  extends SDKCredential
+export default class Credential extends SDKCredential
   implements ICredential, ISerializable {
   public id: string;
 
