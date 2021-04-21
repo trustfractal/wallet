@@ -4,7 +4,7 @@
   "private": true,
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "exports": "dist/index.modern.js",
+  "exports": "./dist/index.modern.js",
   "typings": "dist/index.d.ts",
   "module": "dist/index.module.js",
   "unpkg": "dist/index.umd.js",

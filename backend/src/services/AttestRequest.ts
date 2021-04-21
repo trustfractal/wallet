@@ -16,7 +16,7 @@ const validRequestJson = ({
   !!claimTypeHash &&
   !!rootHash;
 
-const buildRequest = (json: IAttestationRequest): AttestationRequest => {
+const buildRequest = (json: IAttestationRequest): AttestationRequest | null => {
   if (!validRequestJson(json)) return null;
 
   const request = new AttestationRequest(json);
@@ -24,23 +24,25 @@ const buildRequest = (json: IAttestationRequest): AttestationRequest => {
   return request.validate() ? request : null;
 };
 
-const addSignature = (credential: Credential) => {
+const addSignature = async (credential: Credential) => {
   const attesterSignature = await wallet.signMessage(credential.rootHash);
 
   credential.attesterAddress = wallet.address;
   credential.attesterSignature = attesterSignature;
 };
 
-const AttestRequest = (requestJson: IAttestationRequest): Credential => {
+const perform = async (
+  requestJson: IAttestationRequest
+): Promise<Credential | null> => {
   const request = buildRequest(requestJson);
   if (!request) return null;
 
   const credential = Credential.fromRequest(request);
-  addSignature(credential);
+  await addSignature(credential);
 
   if (!credential.verifyIntegrity()) return null;
 
   return credential;
 };
 
-export default AttestRequest;
+export default { perform };

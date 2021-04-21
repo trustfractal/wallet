@@ -16,7 +16,8 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@src/*": ["src/*"]
+      "@src/*": ["src/*"],
+      "@services/*": ["src/services/*"]
     }
   },
   "exclude": ["node_modules"]
