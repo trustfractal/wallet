@@ -9,16 +9,16 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.post("/", (req, res) => {
+app.post("/", async (req, res) => {
   const { request } = req.body;
 
   if (!request) return badRequest(res);
 
-  const credential = AttestRequest(request);
+  const credential = await AttestRequest.perform(request);
 
   if (!credential) return badRequest(res);
 
-  res.send(JSON.stringify(credential));
+  res.send({ credential });
 });
 
 const start = () =>

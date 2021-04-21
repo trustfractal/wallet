@@ -39,6 +39,8 @@ describe("attesting a credential", () => {
     expect(request.rootHash).toBeDefined();
     expect(request.validate()).toBeTrue();
 
+    console.log(JSON.stringify(request, null, 2));
+
     // As an attester generate a credential
     const credential = Credential.fromRequest(request);
     const attesterSignature = await attesterWallet.signMessage(
