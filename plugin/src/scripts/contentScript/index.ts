@@ -24,5 +24,6 @@ const proxyConnection = new ProxyConnection(
 
 proxyConnection
   .proxy(ConnectionTypes.HAS_CREDENTIAL)
+  .proxy(ConnectionTypes.SETUP_PLUGIN)
   .proxy(ConnectionTypes.VERIFY_CONNECTION)
   .reversedProxy(ConnectionTypes.GET_ACCOUNT_ADDRESS);

@@ -1,3 +1,4 @@
+import AuthMiddleware from "@models/Connection/AuthMiddleware";
 import ConnectionTypes from "@models/Connection/types";
 
 import AppStore from "@redux/stores/application";
@@ -36,6 +37,10 @@ export const verifyConnection = () =>
   });
 
 const Callbacks = {
+  [ConnectionTypes.SETUP_PLUGIN]: {
+    callback: verifyConnection,
+    middlewares: [new AuthMiddleware()],
+  },
   [ConnectionTypes.VERIFY_CONNECTION]: { callback: verifyConnection },
 };
 

@@ -35,6 +35,12 @@ export default class FractalSDK implements IFractalSDK {
     return ExtensionConnection.invoke(ConnectionTypes.HAS_CREDENTIAL, [id]);
   }
 
+  public setupPlugin(): Promise<any> {
+    this.ensureFractalIsInitialized();
+
+    return ExtensionConnection.invoke(ConnectionTypes.SETUP_PLUGIN);
+  }
+
   public verifyConnection(): Promise<any> {
     this.ensureFractalIsInitialized();
 
