@@ -66,7 +66,7 @@ const hasJsxRuntime = (() => {
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
-module.exports = function (webpackEnv) {
+module.exports = function(webpackEnv) {
   const isEnvDevelopment = webpackEnv === "development";
   const isEnvProduction = webpackEnv === "production";
 
@@ -175,13 +175,12 @@ module.exports = function (webpackEnv) {
       publicPath: "",
       // Point sourcemap entries to original disk location (format as URL on Windows)
       devtoolModuleFilenameTemplate: isEnvProduction
-        ? (info) =>
+        ? info =>
             path
               .relative(paths.appSrc, info.absoluteResourcePath)
               .replace(/\\/g, "/")
         : isEnvDevelopment &&
-          ((info) =>
-            path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")),
+          (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")),
       // Prevents conflicts when multiple webpack runtimes (from different apps)
       // are used on the same page.
       jsonpFunction: `webpackJsonp${appPackageJson.name}`,
@@ -269,8 +268,8 @@ module.exports = function (webpackEnv) {
       // `web` extension prefixes have been added for better support
       // for React Native Web.
       extensions: paths.moduleFileExtensions
-        .map((ext) => `.${ext}`)
-        .filter((ext) => useTypeScript || !ext.includes("ts")),
+        .map(ext => `.${ext}`)
+        .filter(ext => useTypeScript || !ext.includes("ts")),
       alias: {
         // Support React Native Web
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
@@ -293,6 +292,7 @@ module.exports = function (webpackEnv) {
         "@redux": path.resolve(__dirname, "../src/redux/"),
         "@services": path.resolve(__dirname, "../src/services/"),
         "@constants": path.resolve(__dirname, "../src/constants/"),
+        "@contracts": path.resolve(__dirname, "../src/contracts/"),
         "@utils": path.resolve(__dirname, "../src/utils/"),
         ...(modules.webpackAliases || {}),
       },
@@ -597,7 +597,7 @@ module.exports = function (webpackEnv) {
           }, seed);
           const entrypointFiles = Object.keys(entrypoints).reduce(
             (files, entry) => {
-              entrypoints[entry].forEach((fileName) => {
+              entrypoints[entry].forEach(fileName => {
                 if (!fileName.endsWith(".map")) {
                   files.push(fileName);
                 }

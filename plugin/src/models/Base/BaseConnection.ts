@@ -81,7 +81,7 @@ export default abstract class BaseConnection implements IConnection {
 
       const response = new Response(method, value, id, true, port);
       this.postMessage(response);
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
 
       const response = new Response(method, error, id, false, port);

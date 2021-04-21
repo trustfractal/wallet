@@ -1,5 +1,5 @@
 import { IMiddleware, IInvokation } from "@fractalwallet/types";
-import { authWatcher, setupWatcher } from "@redux/middlewares/watcher";
+import { authWatcher, setupWatcher } from "@redux/middlewares/watchers";
 
 import AppStore from "@redux/stores/application";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";

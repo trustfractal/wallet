@@ -23,7 +23,14 @@ const proxyConnection = new ProxyConnection(
 );
 
 proxyConnection
-  .proxy(ConnectionTypes.HAS_CREDENTIAL)
-  .proxy(ConnectionTypes.SETUP_PLUGIN)
-  .proxy(ConnectionTypes.VERIFY_CONNECTION)
-  .reversedProxy(ConnectionTypes.GET_ACCOUNT_ADDRESS);
+  .proxy(ConnectionTypes.CREDENTIAL_STORE_REQUEST)
+  .proxy(ConnectionTypes.HAS_CREDENTIAL_REQUEST)
+  .proxy(ConnectionTypes.SETUP_PLUGIN_REQUEST)
+  .proxy(ConnectionTypes.STAKE_REQUEST)
+  .proxy(ConnectionTypes.VERIFY_CONNECTION_REQUEST)
+  .proxy(ConnectionTypes.WITHDRAW_REQUEST)
+
+  .reversedProxy(ConnectionTypes.CREDENTIAL_STORE_COMMIT)
+  .reversedProxy(ConnectionTypes.GET_ACCOUNT_ADDRESS)
+  .reversedProxy(ConnectionTypes.STAKE_COMMIT)
+  .reversedProxy(ConnectionTypes.WITHDRAW_COMMIT);

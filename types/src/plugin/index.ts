@@ -3,7 +3,6 @@ export * from "./Credential";
 export * from "./Connection";
 export * from "./Crypto";
 export * from "./Fractal";
-export * from "./Ethereum";
 export * from "./Watcher";
 export * from "./Window";
 export * from "./WindowsService";

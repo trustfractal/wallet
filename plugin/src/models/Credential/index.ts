@@ -1,47 +1,33 @@
 import { ICredential, ISerializable } from "@fractalwallet/types";
 
 import { Credential as SDKCredential } from "@fractalwallet/sdk";
-import {
-  IClaim,
-  Address,
-  Hash,
-  HashTree,
-  HashWithNonce,
-  Signature,
-} from "@fractalwallet/sdk/src/types";
-
 export default class Credential
   extends SDKCredential
   implements ICredential, ISerializable {
-  public id: string;
+  public id?: string;
+  public transactionHash?: string;
 
   public constructor(
-    id: string,
-    claim: IClaim,
-    rootHash: Hash,
-    attesterAddress: Address | null,
-    attesterSignature: Signature | null,
-    claimerAddress: Address,
-    claimerSignature: Signature,
-    claimTypeHash: HashWithNonce,
-    claimHashTree: HashTree,
+    credential: SDKCredential,
+    id?: string,
+    transactionHash?: string,
   ) {
     super({
-      claim,
-      rootHash,
-      attesterAddress,
-      attesterSignature,
-      claimerAddress,
-      claimerSignature,
-      claimTypeHash,
-      claimHashTree,
+      claim: credential.claim,
+      rootHash: credential.rootHash,
+      attesterAddress: credential.attesterAddress,
+      attesterSignature: credential.attesterSignature,
+      claimerAddress: credential.claimerAddress,
+      claimerSignature: credential.claimerSignature,
+      claimTypeHash: credential.claimTypeHash,
+      claimHashTree: credential.claimHashTree,
     });
     this.id = id;
+    this.transactionHash = transactionHash;
   }
 
   public serialize(): string {
     return JSON.stringify({
-      id: this.id,
       claim: this.claim,
       rootHash: this.rootHash,
       attesterAddress: this.attesterAddress,
@@ -50,12 +36,13 @@ export default class Credential
       claimerSignature: this.claimerSignature,
       claimTypeHash: this.claimTypeHash,
       claimHashTree: this.claimHashTree,
+      id: this.id,
+      transactionHash: this.transactionHash,
     });
   }
 
   public static parse(str: string): ICredential {
     const {
-      id,
       claim,
       rootHash,
       attesterAddress,
@@ -64,10 +51,11 @@ export default class Credential
       claimerSignature,
       claimTypeHash,
       claimHashTree,
+      id,
+      transactionHash,
     } = JSON.parse(str);
 
-    return new Credential(
-      id,
+    const sdkCredential = new SDKCredential({
       claim,
       rootHash,
       attesterAddress,
@@ -76,6 +64,8 @@ export default class Credential
       claimerSignature,
       claimTypeHash,
       claimHashTree,
-    );
+    });
+
+    return new Credential(sdkCredential, id, transactionHash);
   }
 }
