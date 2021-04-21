@@ -2,11 +2,10 @@ import { createStore, combineReducers, applyMiddleware } from "redux";
 import { Store, alias, wrapStore } from "webext-redux";
 import thunk from "redux-thunk";
 
-import watcher from "@redux/middleware/watcher";
-
 import StorageService from "@services/StorageService";
 
 import aliases from "@redux/stores/application/aliases";
+import watcher from "@redux/middlewares/watcher";
 
 import { reducer as appReducer } from "@redux/stores/application/reducers/app";
 import {

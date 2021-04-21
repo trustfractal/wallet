@@ -5,6 +5,7 @@ import {
   IConnection,
   IResponse,
   IInvokation,
+  IMiddleware,
   AsyncCallback,
   Message,
 } from "@fractalwallet/types";
@@ -14,15 +15,15 @@ import ConnectionNames from "@models/Connection/names";
 export default abstract class BaseConnection implements IConnection {
   public from: IConnection["from"];
   public to: IConnection["to"];
-  public responseCallbacks: IConnection["responseCallbacks"];
-  public invokationCallbacks: IConnection["invokationCallbacks"];
+  public responses: IConnection["responses"];
+  public invokations: IConnection["invokations"];
 
   constructor(from: ConnectionNames, to: ConnectionNames) {
     this.from = from;
     this.to = to;
 
-    this.responseCallbacks = {};
-    this.invokationCallbacks = {};
+    this.responses = {};
+    this.invokations = {};
   }
 
   public abstract postMessage(message: IResponse | IInvokation): void;
@@ -40,43 +41,69 @@ export default abstract class BaseConnection implements IConnection {
     }
   }
 
+  private static applyMiddlewares(
+    middlewares: IMiddleware[],
+    invokation: IInvokation,
+  ): Promise<void[]> {
+    return Promise.all(
+      middlewares.map((middleware: IMiddleware) =>
+        middleware.apply(invokation),
+      ),
+    );
+  }
+
   private handleResponse(msg: string): void {
     const { value, id, success } = Response.parse(msg);
-    const callback = this.responseCallbacks[id];
+    const response = this.responses[id];
 
-    if (!callback) throw new Error(`Unexpected response message ${msg}`);
+    if (!response) throw new Error(`Unexpected response message ${msg}`);
 
-    const { resolve, reject } = callback;
+    const { resolve, reject } = response;
     success ? resolve(value) : reject(value);
 
-    delete this.responseCallbacks[id];
+    delete this.responses[id];
   }
 
-  private handleInvokation(msg: string): void {
-    const { method, args, id, port } = Invokation.parse(msg);
-    const callback = this.invokationCallbacks[method];
+  private async handleInvokation(msg: string): Promise<void> {
+    const message = Invokation.parse(msg);
+    const { method, args, id, port } = message;
+    const invokation = this.invokations[method];
 
-    if (!callback) throw new Error(`Unexpected invokation method ${method}`);
+    try {
+      if (!invokation)
+        throw new Error(`Unexpected invokation method ${method}`);
 
-    callback(args, port)
-      .then((value) => {
-        const response = new Response(method, value, id, true, port);
-        this.postMessage(response);
-      })
-      .catch((error) => {
-        const response = new Response(method, error, id, false, port);
-        this.postMessage(response);
-      });
+      // apply middlewares
+      await BaseConnection.applyMiddlewares(invokation.middlewares, message);
+
+      // call invokation
+      const value = await invokation.callback(args, port);
+
+      const response = new Response(method, value, id, true, port);
+      this.postMessage(response);
+    } catch (error: any) {
+      console.error(error);
+
+      const response = new Response(method, error, id, false, port);
+      this.postMessage(response);
+    }
   }
 
-  public on(method: string, callback: any): BaseConnection {
+  public on(
+    method: string,
+    callback: any,
+    middlewares: IMiddleware[] = [],
+  ): BaseConnection {
     let promiseCallback: AsyncCallback = callback;
 
     if (!callback.then) {
       promiseCallback = async (...args: any[]) => callback(...args);
     }
 
-    this.invokationCallbacks[method] = promiseCallback;
+    this.invokations[method] = {
+      callback: promiseCallback,
+      middlewares,
+    };
     return this;
   }
 
@@ -89,7 +116,7 @@ export default abstract class BaseConnection implements IConnection {
       const invokation = new Invokation(method, payload, invoker);
       const { id } = invokation;
 
-      this.responseCallbacks[id] = { resolve, reject };
+      this.responses[id] = { resolve, reject };
 
       this.postMessage(invokation);
     });
@@ -97,7 +124,7 @@ export default abstract class BaseConnection implements IConnection {
 
   public listen(id: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.responseCallbacks[id] = { resolve, reject };
+      this.responses[id] = { resolve, reject };
     });
   }
 }

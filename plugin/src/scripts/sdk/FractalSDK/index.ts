@@ -29,17 +29,21 @@ export default class FractalSDK implements IFractalSDK {
     }
   }
 
-  public confirmCredential(...args: any[]): Promise<any> {
+  public hasCredential(id: string): Promise<any> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(ConnectionTypes.CONFIRM_CREDENTIAL, args);
+    return ExtensionConnection.invoke(ConnectionTypes.HAS_CREDENTIAL, [id]);
+  }
+
+  public setupPlugin(): Promise<any> {
+    this.ensureFractalIsInitialized();
+
+    return ExtensionConnection.invoke(ConnectionTypes.SETUP_PLUGIN);
   }
 
   public verifyConnection(): Promise<any> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(
-      ConnectionTypes.VERIFY_EXTENSION_CONNECTION,
-    );
+    return ExtensionConnection.invoke(ConnectionTypes.VERIFY_CONNECTION);
   }
 }

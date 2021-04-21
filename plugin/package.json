@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fractalwallet/sdk": "0.1.0",
     "@metamask/detect-provider": "^1.2.0",
     "@polkadot/util": "^6.1.1",
     "@polkadot/util-crypto": "^6.1.1",

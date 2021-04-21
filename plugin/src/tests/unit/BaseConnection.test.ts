@@ -25,7 +25,7 @@ describe("Unit Base Connection", () => {
       mockedConnection.on(method, callback);
 
       // Assert
-      expect(mockedConnection.invokationCallbacks).toHaveProperty(method);
+      expect(mockedConnection.invokations).toHaveProperty(method);
     });
   });
   describe("invoke", () => {
@@ -41,9 +41,7 @@ describe("Unit Base Connection", () => {
       mockedConnection.invoke(method, payload, invoker);
 
       // Assert
-      const responseCallbackKeys = Object.keys(
-        mockedConnection.responseCallbacks,
-      );
+      const responseCallbackKeys = Object.keys(mockedConnection.responses);
       expect(responseCallbackKeys).toHaveLength(1);
       expect(mockedConnection.postMessage).toHaveBeenCalled();
       const invokation: Invokation =
@@ -64,7 +62,7 @@ describe("Unit Base Connection", () => {
       mockedConnection.listen(id);
 
       // Assert
-      expect(mockedConnection.responseCallbacks).toHaveProperty(id);
+      expect(mockedConnection.responses).toHaveProperty(id);
     });
   });
 });

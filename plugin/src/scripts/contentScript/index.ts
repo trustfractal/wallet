@@ -22,13 +22,8 @@ const proxyConnection = new ProxyConnection(
   ConnectionNames.BACKGROUND,
 );
 
-inpageConnection.on(ConnectionTypes.VERIFY_EXTENSION_CONNECTION, () => {
-  const { version } = chrome.runtime.getManifest();
-  return version;
-});
-
 proxyConnection
-  .proxy(ConnectionTypes.CONFIRM_CREDENTIAL)
-  .proxy(ConnectionTypes.REQUEST_CREDENTIAL)
-  .reversedProxy(ConnectionTypes.COMMIT_CREDENTIAL)
+  .proxy(ConnectionTypes.HAS_CREDENTIAL)
+  .proxy(ConnectionTypes.SETUP_PLUGIN)
+  .proxy(ConnectionTypes.VERIFY_CONNECTION)
   .reversedProxy(ConnectionTypes.GET_ACCOUNT_ADDRESS);

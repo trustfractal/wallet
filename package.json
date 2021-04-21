@@ -3,6 +3,7 @@
   "workspaces": [
     "plugin",
     "contracts",
+    "sdk",
     "types"
   ]
 }

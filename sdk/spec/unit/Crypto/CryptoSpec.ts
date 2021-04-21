@@ -4,9 +4,10 @@ import { Wallet } from "ethers";
 import Crypto from "@src/Crypto";
 import ClaimType from "@src/ClaimType";
 import Claim from "@src/Claim";
-import Web3 from "web3";
+import { utils as ethersUtils } from "ethers";
 
-const soliditySha3 = (str: string) => new Web3().utils.soliditySha3(str);
+const soliditySha3 = (str: string) =>
+  ethersUtils.solidityKeccak256(["string"], [str]);
 
 const buildHashTree = () => {
   const claimTypeHash = "0x0";

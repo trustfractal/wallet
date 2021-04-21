@@ -2,23 +2,17 @@ import { createStore, combineReducers, applyMiddleware } from "redux";
 import { Store, alias, wrapStore } from "webext-redux";
 import thunk from "redux-thunk";
 
-import watcher from "@redux/middleware/watcher";
-
 import StorageService from "@services/StorageService";
 import CryptoUtils from "@utils/CryptoUtils";
 
 import aliases from "@redux/stores/user/aliases";
+import watcher from "@redux/middlewares/watcher";
 
 import {
   reducer as credentialsReducer,
   restore as credentialsRestore,
   store as credentialsStore,
 } from "@redux/stores/user/reducers/credentials";
-import {
-  reducer as requestsReducer,
-  restore as requestsRestore,
-  store as requestsStore,
-} from "@redux/stores/user/reducers/requests";
 import {
   reducer as walletReducer,
   restore as walletRestore,
@@ -98,7 +92,6 @@ export class UserStore {
   static getCombinedReducers() {
     return combineReducers({
       credentials: credentialsReducer,
-      requests: requestsReducer,
       wallet: walletReducer,
     });
   }
@@ -174,7 +167,6 @@ export class UserStore {
       credentials: await credentialsRestore(
         deserializedState.credentialsReducer,
       ),
-      requests: await requestsRestore(deserializedState.requests),
       wallet: await walletRestore(deserializedState.wallet),
     };
   }
@@ -182,7 +174,6 @@ export class UserStore {
   static async serialize(state) {
     return JSON.stringify({
       credentials: await credentialsStore(state.credentials),
-      requests: await requestsStore(state.requests),
       wallet: await walletStore(state.wallet),
     });
   }

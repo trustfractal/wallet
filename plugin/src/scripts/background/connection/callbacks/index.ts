@@ -1,8 +1,10 @@
-import { IConnectionCallbacks } from "@fractalwallet/types";
+import { ConnectionCallbacks } from "@fractalwallet/types";
 
+import AppCallbacks from "./AppCallbacks";
 import CredentialsCallbacks from "./CredentialsCallbacks";
 
-const callbacks: IConnectionCallbacks = {
+const callbacks: ConnectionCallbacks = {
+  ...AppCallbacks,
   ...CredentialsCallbacks,
 };
 

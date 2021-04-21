@@ -1,29 +1,36 @@
-import { AsyncCallback, SyncCallback } from "./Common";
+import { AsyncCallback, Callback, ISerializable, SyncCallback } from "./Common";
 
 import LocalMessageDuplexStream from "post-message-stream";
 
-export interface IResponse {
+export interface IResponse extends ISerializable {
   id: string;
   method: string;
   value: any;
   success: boolean;
   port?: string;
   getMessageType: () => string;
-  serialize: () => string;
 }
 
-export interface IInvokation {
+export interface IInvokation extends ISerializable {
   id: string;
   method: string;
   args: any[];
   port?: string;
   getMessageType: () => string;
-  serialize: () => string;
 }
 
-export interface PromiseObject {
+export type IMiddleware = {
+  apply(invokation: IInvokation): Promise<void>;
+};
+
+export interface ConnectionResponse {
   resolve: SyncCallback;
   reject: SyncCallback;
+}
+
+export interface ConnectionInvokation {
+  callback: AsyncCallback;
+  middlewares: IMiddleware[];
 }
 
 export type Message = {
@@ -35,8 +42,8 @@ export interface IConnection {
   from: string;
   to: string;
 
-  responseCallbacks: Record<string, PromiseObject>;
-  invokationCallbacks: Record<string, AsyncCallback>;
+  responses: Record<string, ConnectionResponse>;
+  invokations: Record<string, ConnectionInvokation>;
 
   postMessage: (message: IResponse | IInvokation) => void;
 
@@ -79,8 +86,13 @@ export interface IInpageConnection extends IConnection {
   inpage: LocalMessageDuplexStream;
 }
 
-export interface IConnectionCallbacks {
-  [key: string]: (...args: any[]) => any;
+export interface ConnectionCallback {
+  callback: Callback;
+  middlewares?: IMiddleware[];
+}
+
+export interface ConnectionCallbacks {
+  [key: string]: ConnectionCallback;
 }
 
 export type IConnectionPorts = Record<string, IPort>;

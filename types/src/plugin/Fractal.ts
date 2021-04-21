@@ -1,5 +1,5 @@
 export interface IFractalSDK {
   init: () => Promise<void>;
-  confirmCredential(...args: any[]): Promise<any>;
+  hasCredential(id: string): Promise<any>;
   verifyConnection(): Promise<any>;
 }
