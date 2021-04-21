@@ -8,7 +8,7 @@ export const watcher = new Watcher();
 export const authWatcher = new AuthWatcher();
 export const setupWatcher = new SetupWatcher();
 
-function createActionsWatcherMiddleware() {
+function createActionsWatchersMiddleware() {
   return () => (next: (action: WatcherInvokation) => void) => (
     action: WatcherInvokation,
   ) => {
@@ -20,6 +20,6 @@ function createActionsWatcherMiddleware() {
   };
 }
 
-const middleware = createActionsWatcherMiddleware();
+const middleware = createActionsWatchersMiddleware();
 
 export default middleware;

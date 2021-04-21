@@ -26,6 +26,7 @@
       "@redux/*": ["src/redux/*"],
       "@services/*": ["src/services/*"],
       "@constants/*": ["src/constants/*"],
+      "@contracts/*": ["src/contracts/*"],
       "@utils/*": ["src/utils/*"]
     }
   },

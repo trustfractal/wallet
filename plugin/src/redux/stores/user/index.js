@@ -6,7 +6,7 @@ import StorageService from "@services/StorageService";
 import CryptoUtils from "@utils/CryptoUtils";
 
 import aliases from "@redux/stores/user/aliases";
-import watcher from "@redux/middlewares/watcher";
+import watchers from "@redux/middlewares/watchers";
 
 import {
   reducer as credentialsReducer,
@@ -97,7 +97,7 @@ export class UserStore {
   }
 
   static getMiddleware() {
-    return applyMiddleware(watcher, alias(aliases), thunk);
+    return applyMiddleware(watchers, alias(aliases), thunk);
   }
 
   static async createSalt() {
@@ -164,9 +164,7 @@ export class UserStore {
     const deserializedState = JSON.parse(state);
 
     return {
-      credentials: await credentialsRestore(
-        deserializedState.credentialsReducer,
-      ),
+      credentials: await credentialsRestore(deserializedState.credentials),
       wallet: await walletRestore(deserializedState.wallet),
     };
   }

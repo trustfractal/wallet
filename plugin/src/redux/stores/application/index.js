@@ -5,7 +5,7 @@ import thunk from "redux-thunk";
 import StorageService from "@services/StorageService";
 
 import aliases from "@redux/stores/application/aliases";
-import watcher from "@redux/middlewares/watcher";
+import watchers from "@redux/middlewares/watchers";
 
 import {
   reducer as appReducer,
@@ -82,7 +82,7 @@ export class AppStore {
   }
 
   static getMiddleware() {
-    return applyMiddleware(watcher, alias(aliases), thunk);
+    return applyMiddleware(watchers, alias(aliases), thunk);
   }
 
   static async createState() {

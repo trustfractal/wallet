@@ -32,11 +32,11 @@ export const verifyConnection = () =>
   });
 
 const Callbacks = {
-  [ConnectionTypes.SETUP_PLUGIN]: {
+  [ConnectionTypes.SETUP_PLUGIN_REQUEST]: {
     callback: verifyConnection,
     middlewares: [new AuthMiddleware()],
   },
-  [ConnectionTypes.VERIFY_CONNECTION]: { callback: verifyConnection },
+  [ConnectionTypes.VERIFY_CONNECTION_REQUEST]: { callback: verifyConnection },
 };
 
 export default Callbacks;
