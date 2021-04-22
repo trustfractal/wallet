@@ -21,7 +21,7 @@ export const credentialStore = (
 
       // Redirect request to the inpage fractal provider
       const storedSerializedCredential = await ContentScriptConnection.invoke(
-        ConnectionTypes.CREDENTIAL_STORE_COMMIT,
+        ConnectionTypes.CREDENTIAL_STORE_INPAGE,
         [address, serializedCredential],
         port,
       );
@@ -64,11 +64,11 @@ export const hasCredential = ([id]: [string]) =>
   });
 
 const Callbacks = {
-  [ConnectionTypes.HAS_CREDENTIAL_REQUEST]: {
+  [ConnectionTypes.HAS_CREDENTIAL_BACKGROUND]: {
     callback: hasCredential,
     middlewares: [new AuthMiddleware()],
   },
-  [ConnectionTypes.CREDENTIAL_STORE_REQUEST]: {
+  [ConnectionTypes.CREDENTIAL_STORE_BACKGROUND]: {
     callback: credentialStore,
     middlewares: [new AuthMiddleware()],
   },

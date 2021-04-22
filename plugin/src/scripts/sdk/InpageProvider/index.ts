@@ -1,5 +1,9 @@
-import { Wallet, utils as ethersUtils } from "ethers";
-
+import {
+  Wallet,
+  Contract,
+  utils as ethersUtils,
+  providers as ethersProviders,
+} from "ethers";
 import Credential from "@models/Credential";
 import { AttestationRequest, Claim, ClaimType } from "@fractalwallet/sdk";
 
@@ -10,6 +14,10 @@ import { ERROR_FRACTAL_NOT_INITIALIZED } from "@sdk/InpageProvider/Errors";
 import { IFractalInpageProvider, ICredential } from "@fractalwallet/types";
 
 import ExtensionConnection from "@sdk/InpageProvider/connection";
+import TokenTypes from "@models/Token/types";
+
+import ContractsAddresses from "@contracts/addresses.json";
+import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
 
 export default class InpageProvider implements IFractalInpageProvider {
   private initialized: boolean = false;
@@ -34,29 +42,43 @@ export default class InpageProvider implements IFractalInpageProvider {
     }
   }
 
-  public stake(amount: number): Promise<any> {
+  public stake(
+    amount: string,
+    token: TokenTypes,
+    credentialId: string,
+  ): Promise<any> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(ConnectionTypes.STAKE_REQUEST, [amount]);
+    return ExtensionConnection.invoke(ConnectionTypes.STAKE_BACKGROUND, [
+      amount,
+      token,
+      credentialId,
+    ]);
   }
 
-  public withdraw(): Promise<any> {
+  public withdraw(token: TokenTypes): Promise<any> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(ConnectionTypes.WITHDRAW_REQUEST);
-  }
-
-  public hash(types: ReadonlyArray<string>, values: ReadonlyArray<any>) {
-    return ethersUtils.solidityKeccak256(types, values);
+    return ExtensionConnection.invoke(ConnectionTypes.WITHDRAW_BACKGROUND, [
+      token,
+    ]);
   }
 
   public async getSignedCredential() {
     // create the necessary ethereum accounts
     const claimerWallet = Wallet.fromMnemonic(
-      "pizza job meadow mammal cake initial gain gym family banana steel favorite",
+      "planet universe gather keen dream kind pony lonely question nut essay verb",
     );
     const attesterWallet = Wallet.fromMnemonic(
-      "planet universe gather keen dream kind pony lonely question nut essay verb",
+      "pizza job meadow mammal cake initial gain gym family banana steel favorite",
+      "m/44'/60'/0'/0/1",
+    );
+
+    // init claims registry smart contract
+    const claimsRegistryContract = new Contract(
+      ContractsAddresses.CLAIMS_REGISTRY,
+      ClaimsRegistry.abi,
+      new ethersProviders.Web3Provider(window.ethereum),
     );
 
     // Generate a claim type
@@ -81,13 +103,18 @@ export default class InpageProvider implements IFractalInpageProvider {
     request.claimerSignature = claimerSignature;
 
     // As an attester generate a credential
-    const credential = new Credential(Credential.fromRequest(request));
-    const attesterSignature = await attesterWallet.signMessage(
-      credential.rootHash,
+    const credential = new Credential(Credential.fromRequest(request), "12");
+    credential.attesterAddress = attesterWallet.address;
+
+    // sign the signable hash with attester's wallet
+    const signableHash = await claimsRegistryContract.computeSignableKey(
+      credential.claimerAddress,
+      ethersUtils.arrayify(credential.rootHash),
     );
 
-    credential.id = "12";
-    credential.attesterAddress = attesterWallet.address;
+    const attesterSignature = await attesterWallet.signMessage(
+      ethersUtils.arrayify(signableHash),
+    );
     credential.attesterSignature = attesterSignature;
 
     return credential;
@@ -97,7 +124,7 @@ export default class InpageProvider implements IFractalInpageProvider {
     this.ensureFractalIsInitialized();
 
     return ExtensionConnection.invoke(
-      ConnectionTypes.CREDENTIAL_STORE_REQUEST,
+      ConnectionTypes.CREDENTIAL_STORE_BACKGROUND,
       [credential.serialize()],
     );
   }
@@ -105,22 +132,23 @@ export default class InpageProvider implements IFractalInpageProvider {
   public hasCredential(id: string): Promise<any> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(ConnectionTypes.HAS_CREDENTIAL_REQUEST, [
-      id,
-    ]);
+    return ExtensionConnection.invoke(
+      ConnectionTypes.HAS_CREDENTIAL_BACKGROUND,
+      [id],
+    );
   }
 
   public setupPlugin(): Promise<any> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(ConnectionTypes.SETUP_PLUGIN_REQUEST);
+    return ExtensionConnection.invoke(ConnectionTypes.SETUP_PLUGIN_BACKGROUND);
   }
 
   public verifyConnection(): Promise<any> {
     this.ensureFractalIsInitialized();
 
     return ExtensionConnection.invoke(
-      ConnectionTypes.VERIFY_CONNECTION_REQUEST,
+      ConnectionTypes.VERIFY_CONNECTION_BACKGROUND,
     );
   }
 }

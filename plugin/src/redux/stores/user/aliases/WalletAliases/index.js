@@ -40,7 +40,7 @@ export const connectWallet = () => {
 
       // get ethereumm wallet account address
       const account = await ContentScriptConnection.invoke(
-        ConnectionTypes.GET_ACCOUNT_ADDRESS,
+        ConnectionTypes.GET_ACCOUNT_ADDRESS_INPAGE,
         [],
         id,
       );
