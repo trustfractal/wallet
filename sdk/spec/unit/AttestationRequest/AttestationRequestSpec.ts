@@ -2,10 +2,10 @@ import "jasmine";
 import { Wallet } from "ethers";
 import { v4 as uuidv4 } from "uuid";
 
-import Crypto from "@src/Crypto";
-import ClaimType from "@src/ClaimType";
-import Claim from "@src/Claim";
-import AttestationRequest from "@src/AttestationRequest";
+import Crypto from "../../../src/Crypto";
+import ClaimType from "../../../src/ClaimType";
+import Claim from "../../../src/Claim";
+import AttestationRequest from "../../../src/AttestationRequest";
 
 const pseudoSchema = ClaimType.buildSchema("Foo", {
   name: { type: "string" },

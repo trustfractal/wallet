@@ -1,6 +1,6 @@
-import Crypto from "@src/Crypto";
-import AttestationRequest from "@src/AttestationRequest";
-import FractalError from "@src/FractalError";
+import Crypto from "../Crypto";
+import AttestationRequest from "../AttestationRequest";
+import FractalError from "../FractalError";
 
 import {
   IClaim,
@@ -10,7 +10,7 @@ import {
   Signature,
   HashWithNonce,
   HashTree,
-} from "@src/types";
+} from "../types";
 
 export default class Credential implements ICredential {
   public static fromRequest(request: AttestationRequest) {

@@ -1,4 +1,4 @@
-import { IAttestationRequest, ICredential } from "@src/types";
+import { IAttestationRequest, ICredential } from "../types";
 
 export default class FractalError extends Error {
   constructor(message: string) {

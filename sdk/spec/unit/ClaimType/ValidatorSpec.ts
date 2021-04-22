@@ -1,7 +1,7 @@
 import "jasmine";
 
-import ClaimType from "@src/ClaimType";
-import Validator from "@src/ClaimType/Validator";
+import ClaimType from "../../../src/ClaimType";
+import Validator from "../../../src/ClaimType/Validator";
 
 describe("validate", () => {
   it("errors for invalid ClaimTypes", () => {

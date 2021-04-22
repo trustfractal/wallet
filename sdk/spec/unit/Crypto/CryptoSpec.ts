@@ -1,9 +1,9 @@
 import "jasmine";
 import { Wallet } from "ethers";
 
-import Crypto from "@src/Crypto";
-import ClaimType from "@src/ClaimType";
-import Claim from "@src/Claim";
+import Crypto from "../../../src/Crypto";
+import ClaimType from "../../../src/ClaimType";
+import Claim from "../../../src/Claim";
 import { utils as ethersUtils } from "ethers";
 
 const soliditySha3 = (str: string) =>

@@ -16,7 +16,7 @@ import {
   Signature,
   Address,
   Hash,
-} from "@src/types";
+} from "../types";
 
 const doHash = (str: string, nonce: string = ""): string => {
   const value = ethersUtils.solidityKeccak256(

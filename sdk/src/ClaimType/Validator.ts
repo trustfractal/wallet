@@ -1,7 +1,7 @@
 import { Validator as SchemaValidator } from "jsonschema";
 
-import FractalError from "@src/FractalError";
-import { IClaimProperties, IClaimSchema } from "@src/types";
+import FractalError from "../FractalError";
+import { IClaimProperties, IClaimSchema } from "../types";
 
 import { ClaimTypeMetaschema } from "./meta";
 

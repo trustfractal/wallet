@@ -1,10 +1,12 @@
 {
-  "name": "@fractalwallet/attester",
+  "name": "@fractalwallet/backend",
   "version": "0.1.0",
   "main": "index.ts",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node src/index.ts"
+    "start": "node build/index.js",
+    "dev": "ts-node src/index.ts",
+    "build": "tsc --project ."
   },
   "dependencies": {
     "@fractalwallet/sdk": "0.1.0",

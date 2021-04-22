@@ -1,9 +1,9 @@
 import "jasmine";
 import { Wallet } from "ethers";
 
-import AttestationRequest from "@src/AttestationRequest";
-import Claim from "@src/Claim";
-import ClaimType from "@src/ClaimType";
+import AttestationRequest from "../../src/AttestationRequest";
+import Claim from "../../src/Claim";
+import ClaimType from "../../src/ClaimType";
 
 describe("generate a request", () => {
   it("results in a valid AttestationRequest", async () => {

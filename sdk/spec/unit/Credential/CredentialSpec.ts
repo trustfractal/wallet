@@ -1,6 +1,6 @@
 import "jasmine";
 
-import Credential from "@src/Credential";
+import Credential from "../../../src/Credential";
 
 describe("removeProperty", () => {
   it("deletes the property and the corresponding nonce", () => {
