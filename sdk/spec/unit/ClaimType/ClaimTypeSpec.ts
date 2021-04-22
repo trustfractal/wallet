@@ -1,6 +1,6 @@
 import "jasmine";
 
-import ClaimType from "@src/ClaimType";
+import ClaimType from "../../../src/ClaimType";
 
 describe(".fromSchema", () => {
   it("generates a hash", () => {

@@ -1,6 +1,6 @@
-import type { IClaimPseudoSchema, IClaimType } from "@src/types";
+import type { IClaimPseudoSchema, IClaimType } from "../types";
 
-import Crypto from "@src/Crypto";
+import Crypto from "../Crypto";
 
 // TODO: what to do about schema versioning?
 const DEFAULT_SCHEMA_VERSION = "http://kilt-protocol.org/draft-01/ctype#";

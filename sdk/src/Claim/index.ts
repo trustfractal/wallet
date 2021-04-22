@@ -1,5 +1,5 @@
-import Validator from "@src/ClaimType/Validator";
-import type { Address, IClaim, IClaimProperties, IClaimType } from "@src/types";
+import Validator from "../ClaimType/Validator";
+import type { Address, IClaim, IClaimProperties, IClaimType } from "../types";
 
 export default class Claim implements IClaim {
   public claimTypeHash: IClaim["claimTypeHash"];

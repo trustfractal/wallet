@@ -1,4 +1,4 @@
-import Crypto from "@src/Crypto";
+import Crypto from "../Crypto";
 
 import {
   Hash,
@@ -7,7 +7,7 @@ import {
   HashWithNonce,
   HashTree,
   Signature,
-} from "@src/types";
+} from "../types";
 
 export default class Request implements IAttestationRequest {
   public static fromClaim(claim: IClaim) {

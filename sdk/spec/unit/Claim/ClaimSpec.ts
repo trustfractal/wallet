@@ -1,7 +1,7 @@
 import "jasmine";
 
-import Claim from "@src/Claim";
-import ClaimType from "@src/ClaimType";
+import Claim from "../../../src/Claim";
+import ClaimType from "../../../src/ClaimType";
 
 describe("constructor", () => {
   it("errors for invalid ClaimTypes", () => {

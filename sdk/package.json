@@ -1,16 +1,10 @@
 {
   "name": "@fractalwallet/sdk",
   "version": "0.1.0",
-  "private": true,
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "exports": "./dist/index.modern.js",
-  "typings": "dist/index.d.ts",
-  "module": "dist/index.module.js",
-  "unpkg": "dist/index.umd.js",
+  "main": "build/index.js",
   "scripts": {
-    "build": "microbundle",
-    "dev": "microbundle watch",
+    "build": "tsc --project . --declaration",
+    "postinstall": "tsc --project . --declaration",
     "test": "ts-node -r tsconfig-paths/register node_modules/.bin/jasmine"
   },
   "devDependencies": {
@@ -18,7 +12,6 @@
     "@types/jasmine": "^3.6.9",
     "@types/uuid": "^8.3.0",
     "jasmine": "^3.7.0",
-    "microbundle": "^0.13.0",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
     "tsconfig-paths": "^3.9.0",

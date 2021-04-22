@@ -1,4 +1,5 @@
 {
+  "name": "root",
   "private": true,
   "workspaces": [
     "backend",
@@ -6,5 +7,11 @@
     "contracts",
     "sdk",
     "types"
-  ]
+  ],
+  "scripts": {
+    "backend:start": "yarn workspace @fractalwallet/backend start",
+    "backend:build": "yarn workspace @fractalwallet/backend build",
+    "backend:dev": "yarn workspace @fractalwallet/backend dev",
+    "sdk:build": "yarn workspace @fractalwallet/sdk build"
+  }
 }

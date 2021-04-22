@@ -1,10 +1,10 @@
 import "jasmine";
 import { Wallet } from "ethers";
 
-import AttestationRequest from "@src/AttestationRequest";
-import Claim from "@src/Claim";
-import ClaimType from "@src/ClaimType";
-import Credential from "@src/Credential";
+import AttestationRequest from "../../src/AttestationRequest";
+import Claim from "../../src/Claim";
+import ClaimType from "../../src/ClaimType";
+import Credential from "../../src/Credential";
 
 describe("attesting a credential", () => {
   it("results in a verifiable Credential object", async () => {
@@ -38,8 +38,6 @@ describe("attesting a credential", () => {
     expect(request.claimTypeHash).toBeDefined();
     expect(request.rootHash).toBeDefined();
     expect(request.validate()).toBeTrue();
-
-    console.log(JSON.stringify(request, null, 2));
 
     // As an attester generate a credential
     const credential = Credential.fromRequest(request);
