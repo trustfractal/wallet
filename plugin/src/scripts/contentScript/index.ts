@@ -23,14 +23,14 @@ const proxyConnection = new ProxyConnection(
 );
 
 proxyConnection
-  .proxy(ConnectionTypes.CREDENTIAL_STORE_REQUEST)
-  .proxy(ConnectionTypes.HAS_CREDENTIAL_REQUEST)
-  .proxy(ConnectionTypes.SETUP_PLUGIN_REQUEST)
-  .proxy(ConnectionTypes.STAKE_REQUEST)
-  .proxy(ConnectionTypes.VERIFY_CONNECTION_REQUEST)
-  .proxy(ConnectionTypes.WITHDRAW_REQUEST)
+  .proxy(ConnectionTypes.CREDENTIAL_STORE_BACKGROUND)
+  .proxy(ConnectionTypes.HAS_CREDENTIAL_BACKGROUND)
+  .proxy(ConnectionTypes.SETUP_PLUGIN_BACKGROUND)
+  .proxy(ConnectionTypes.STAKE_BACKGROUND)
+  .proxy(ConnectionTypes.VERIFY_CONNECTION_BACKGROUND)
+  .proxy(ConnectionTypes.WITHDRAW_BACKGROUND)
 
-  .reversedProxy(ConnectionTypes.CREDENTIAL_STORE_COMMIT)
-  .reversedProxy(ConnectionTypes.GET_ACCOUNT_ADDRESS)
-  .reversedProxy(ConnectionTypes.STAKE_COMMIT)
-  .reversedProxy(ConnectionTypes.WITHDRAW_COMMIT);
+  .reversedProxy(ConnectionTypes.CREDENTIAL_STORE_INPAGE)
+  .reversedProxy(ConnectionTypes.GET_ACCOUNT_ADDRESS_INPAGE)
+  .reversedProxy(ConnectionTypes.STAKE_INPAGE)
+  .reversedProxy(ConnectionTypes.WITHDRAW_INPAGE);

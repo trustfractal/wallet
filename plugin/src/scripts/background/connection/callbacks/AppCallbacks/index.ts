@@ -33,11 +33,13 @@ export const verifyConnection = () =>
   });
 
 const Callbacks = {
-  [ConnectionTypes.SETUP_PLUGIN_REQUEST]: {
+  [ConnectionTypes.SETUP_PLUGIN_BACKGROUND]: {
     callback: verifyConnection,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
-  [ConnectionTypes.VERIFY_CONNECTION_REQUEST]: { callback: verifyConnection },
+  [ConnectionTypes.VERIFY_CONNECTION_BACKGROUND]: {
+    callback: verifyConnection,
+  },
 };
 
 export default Callbacks;

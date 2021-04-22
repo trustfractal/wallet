@@ -7,7 +7,7 @@ export const credentialStore = ([address, serializedCredential]: [
 ]) => EthereumProviderService.credentialStore(address, serializedCredential);
 
 const Callbacks = {
-  [ConnectionTypes.CREDENTIAL_STORE_COMMIT]: { callback: credentialStore },
+  [ConnectionTypes.CREDENTIAL_STORE_INPAGE]: { callback: credentialStore },
 };
 
 export default Callbacks;
