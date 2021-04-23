@@ -147,6 +147,15 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
   }
 
+  public getStakingDetails(token: string): Promise<any> {
+    this.ensureFractalIsInitialized();
+
+    return ExtensionConnection.invoke(
+      ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND,
+      [token],
+    );
+  }
+
   public setupPlugin(): Promise<any> {
     this.ensureFractalIsInitialized();
 
