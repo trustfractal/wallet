@@ -19,7 +19,7 @@ export const credentialStore = (
     try {
       const address: string = getAccount(UserStore.getStore().getState());
 
-      // Redirect request to the inpage fractal provider
+      // redirect request to the inpage fractal provider
       const storedSerializedCredential = await ContentScriptConnection.invoke(
         ConnectionTypes.CREDENTIAL_STORE_INPAGE,
         [address, serializedCredential],
@@ -63,13 +63,55 @@ export const hasCredential = ([id]: [string]) =>
     }
   });
 
+export const isCredentialValid = ([id]: [string], port: string) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const address: string = getAccount(UserStore.getStore().getState());
+      const credentials: CredentialsCollection = getCredentials(
+        UserStore.getStore().getState(),
+      );
+
+      const credential = credentials.getByField("id", id);
+
+      if (!credential) {
+        throw new Error(`Credential ${id} could not be found`);
+      }
+
+      // redirect request to the inpage fractal provider
+      const isValid = await ContentScriptConnection.invoke(
+        ConnectionTypes.IS_CREDENTIAL_VALID_INPAGE,
+        [address, credential.serialize()],
+        port,
+      );
+
+      // update credential data
+      credential.valid = isValid;
+      credentials.removeByField("id", id);
+      credentials.push(credential);
+
+      // store the credential
+      await UserStore.getStore().dispatch(
+        credentialsActions.setCredentials(credentials),
+      );
+
+      resolve(isValid);
+    } catch (error) {
+      console.error(error);
+      reject(error);
+    }
+  });
+
 const Callbacks = {
+  [ConnectionTypes.CREDENTIAL_STORE_BACKGROUND]: {
+    callback: credentialStore,
+    middlewares: [new AuthMiddleware()],
+  },
   [ConnectionTypes.HAS_CREDENTIAL_BACKGROUND]: {
     callback: hasCredential,
     middlewares: [new AuthMiddleware()],
   },
-  [ConnectionTypes.CREDENTIAL_STORE_BACKGROUND]: {
-    callback: credentialStore,
+  [ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND]: {
+    callback: isCredentialValid,
     middlewares: [new AuthMiddleware()],
   },
 };

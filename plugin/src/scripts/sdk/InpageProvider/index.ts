@@ -138,6 +138,15 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
   }
 
+  public isCredentialValid(id: string): Promise<any> {
+    this.ensureFractalIsInitialized();
+
+    return ExtensionConnection.invoke(
+      ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND,
+      [id],
+    );
+  }
+
   public setupPlugin(): Promise<any> {
     this.ensureFractalIsInitialized();
 

@@ -1,16 +1,19 @@
 import { ICredential, ISerializable } from "@fractalwallet/types";
 
 import { Credential as SDKCredential } from "@fractalwallet/sdk";
+
 export default class Credential
   extends SDKCredential
   implements ICredential, ISerializable {
   public id?: string;
   public transactionHash?: string;
+  public valid: boolean;
 
   public constructor(
     credential: SDKCredential,
     id?: string,
     transactionHash?: string,
+    valid: boolean = false,
   ) {
     super({
       claim: credential.claim,
@@ -24,6 +27,7 @@ export default class Credential
     });
     this.id = id;
     this.transactionHash = transactionHash;
+    this.valid = valid;
   }
 
   public serialize(): string {
@@ -38,6 +42,7 @@ export default class Credential
       claimHashTree: this.claimHashTree,
       id: this.id,
       transactionHash: this.transactionHash,
+      valid: this.valid,
     });
   }
 
@@ -53,6 +58,7 @@ export default class Credential
       claimHashTree,
       id,
       transactionHash,
+      valid,
     } = JSON.parse(str);
 
     const sdkCredential = new SDKCredential({
@@ -64,8 +70,9 @@ export default class Credential
       claimerSignature,
       claimTypeHash,
       claimHashTree,
+      valid,
     });
 
-    return new Credential(sdkCredential, id, transactionHash);
+    return new Credential(sdkCredential, id, transactionHash, valid);
   }
 }
