@@ -6,8 +6,14 @@ export const credentialStore = ([address, serializedCredential]: [
   string,
 ]) => EthereumProviderService.credentialStore(address, serializedCredential);
 
+export const isCredentialValid = ([address, serializedCredential]: [
+  string,
+  string,
+]) => EthereumProviderService.isCredentialValid(address, serializedCredential);
+
 const Callbacks = {
   [ConnectionTypes.CREDENTIAL_STORE_INPAGE]: { callback: credentialStore },
+  [ConnectionTypes.IS_CREDENTIAL_VALID_INPAGE]: { callback: isCredentialValid },
 };
 
 export default Callbacks;

@@ -108,6 +108,36 @@ class EthereumProviderService {
     }
   }
 
+  public async isCredentialValid(
+    address: string,
+    serializedCredential: string,
+  ) {
+    try {
+      // prepare data
+      const parsedCredential = Credential.parse(serializedCredential);
+      const signer = this.web3Provider!.getSigner(address);
+
+      // init smart contract
+      const claimsRegistryContract = new Contract(
+        ContractsAddresses.CLAIMS_REGISTRY,
+        ClaimsRegistry.abi,
+        signer,
+      );
+
+      // verify claim
+      const verifyClaim = await claimsRegistryContract.verifyClaim(
+        parsedCredential.claimerAddress,
+        parsedCredential.attesterAddress,
+        parsedCredential.attesterSignature,
+      );
+
+      return verifyClaim;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   public async stake(
     address: string,
     amount: string,
