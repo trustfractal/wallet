@@ -9,6 +9,24 @@ import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 import TokenTypes from "@models/Token/types";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 
+export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const address = getAccount(UserStore.getStore().getState());
+
+      const transaction = await ContentScriptConnection.invoke(
+        ConnectionTypes.GET_STAKING_DETAILS_INPAGE,
+        [address, token],
+        port,
+      );
+
+      resolve(transaction);
+    } catch (error) {
+      console.error(error);
+      reject(error);
+    }
+  });
+
 export const stakeRequest = (
   [amount, token, credentialId]: [string, TokenTypes, string],
   port: string,
@@ -57,6 +75,10 @@ export const withdrawRequest = ([token]: [TokenTypes], port: string) =>
   });
 
 const Callbacks = {
+  [ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND]: {
+    callback: getStakingDetails,
+    middlewares: [new AuthMiddleware()],
+  },
   [ConnectionTypes.STAKE_BACKGROUND]: {
     callback: stakeRequest,
     middlewares: [new AuthMiddleware()],

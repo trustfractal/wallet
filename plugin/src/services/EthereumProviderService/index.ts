@@ -138,6 +138,71 @@ class EthereumProviderService {
     }
   }
 
+  public async getStakingDetails(address: string, token: TokenTypes) {
+    try {
+      // prepare data
+      const signer = this.web3Provider!.getSigner(address);
+
+      // init smart contract
+      const tokenContract = new Contract(
+        ContractsAddresses.ERC_20[token],
+        ERC20.abi,
+        signer,
+      );
+      const stakingContract = new Contract(
+        ContractsAddresses.STAKING[token],
+        Staking.abi,
+        signer,
+      );
+
+      // get user balance, current stake, current rewards and expected rewards
+      const balance = await tokenContract.balanceOf(address);
+      const stakedAmount = await stakingContract.getStakedAmount(address);
+      const currentReward = await stakingContract.getCurrentReward(address);
+      const maxReward = await stakingContract.getMaxStakeReward(address);
+
+      // get liquidity pool details
+      const poolTotalTokens = await stakingContract.totalPool();
+      const poolAvailableTokens = await stakingContract.availablePool();
+
+      // get staking details
+      const stakingStartDate = await stakingContract.startDate();
+      const stakingEndDate = await stakingContract.endDate();
+      const stakingMinAmount = await stakingContract.minAmount();
+      const stakingMaxAmount = await stakingContract.maxAmount();
+      const currentAPY = await stakingContract.currentAPY();
+      const currentExpectedRewardRate = await stakingContract.calculateReward(
+        Date.now(),
+        stakingEndDate,
+        100,
+      );
+
+      return {
+        user: {
+          balance,
+          staked_amount: stakedAmount,
+          current_reward: currentReward,
+          max_reward: maxReward,
+        },
+        pool: {
+          available: poolAvailableTokens,
+          total: poolTotalTokens,
+        },
+        staking: {
+          min: stakingMinAmount,
+          max: stakingMaxAmount,
+          start_date: stakingStartDate,
+          end_date: stakingEndDate,
+          apy: currentAPY,
+          current_expected_reward_rate: currentExpectedRewardRate,
+        },
+      };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   public async stake(
     address: string,
     amount: string,

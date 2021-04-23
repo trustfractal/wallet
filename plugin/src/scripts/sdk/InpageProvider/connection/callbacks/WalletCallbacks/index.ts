@@ -6,6 +6,9 @@ import TokenTypes from "@models/Token/types";
 export const getAccountAddress = () =>
   EthereumProviderService.getAccountAddress();
 
+export const getStakingDetails = ([address, token]: [string, TokenTypes]) =>
+  EthereumProviderService.getStakingDetails(address, token);
+
 export const stake = ([address, amount, token, serializedCredential]: [
   string,
   string,
@@ -19,6 +22,7 @@ export const withdraw = ([address, token]: [string, TokenTypes]) =>
 
 const Callbacks = {
   [ConnectionTypes.GET_ACCOUNT_ADDRESS_INPAGE]: { callback: getAccountAddress },
+  [ConnectionTypes.GET_STAKING_DETAILS_INPAGE]: { callback: getStakingDetails },
   [ConnectionTypes.STAKE_INPAGE]: { callback: stake },
   [ConnectionTypes.WITHDRAW_INPAGE]: { callback: withdraw },
 };
