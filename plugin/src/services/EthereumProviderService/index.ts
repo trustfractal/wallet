@@ -1,10 +1,18 @@
 import detectEthereumProvider from "@metamask/detect-provider";
 import {
+  BigNumberish,
   Contract,
   providers as ethersProviders,
   utils as ethersUtils,
 } from "ethers";
 
+import {
+  Erc20 as IERC20,
+  Staking as IStaking,
+  ClaimsRegistry as IClaimsRegistry,
+  IEthereumProviderService,
+} from "@fractalwallet/types";
+import StakingDetails from "@models/Staking/StakingDetails";
 import TokenTypes from "@models/Token/types";
 import Credential from "@models/Credential";
 import {
@@ -19,7 +27,7 @@ import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
 import Staking from "@contracts/Staking.json";
 import ERC20 from "@contracts/ERC20.json";
 
-class EthereumProviderService {
+class EthereumProviderService implements IEthereumProviderService {
   private static instance: EthereumProviderService;
   private web3Provider?: ethersProviders.Web3Provider;
 
@@ -52,17 +60,17 @@ class EthereumProviderService {
     return this.web3Provider;
   }
 
-  public isAvailable() {
+  public isAvailable(): boolean {
     return this.web3Provider !== undefined;
   }
 
-  private ensureProviderIsInitialized() {
+  private ensureProviderIsInitialized(): void {
     if (!this.isAvailable()) {
       throw ERROR_PROVIDER_NOT_INITIALIZED();
     }
   }
 
-  public async getAccountAddress() {
+  public async getAccountAddress(): Promise<string | undefined> {
     this.ensureProviderIsInitialized();
 
     const accounts = await this.web3Provider!.provider.request!({
@@ -76,7 +84,10 @@ class EthereumProviderService {
     return accounts[0];
   }
 
-  public async credentialStore(address: string, serializedCredential: string) {
+  public async credentialStore(
+    address: string,
+    serializedCredential: string,
+  ): Promise<string> {
     try {
       // prepare data
       const parsedCredential = Credential.parse(serializedCredential);
@@ -88,14 +99,14 @@ class EthereumProviderService {
         ContractsAddresses.CLAIMS_REGISTRY,
         ClaimsRegistry.abi,
         signer,
-      );
+      ) as IClaimsRegistry;
 
       // store the credential on-chain
       const storingResult = await claimsRegistryContract.setClaimWithSignature(
         parsedCredential.claimerAddress,
-        parsedCredential.attesterAddress,
+        parsedCredential.attesterAddress as string,
         rootHashByteArray,
-        parsedCredential.attesterSignature,
+        parsedCredential.attesterSignature as string,
       );
 
       // add transaction hash to the credential
@@ -111,7 +122,7 @@ class EthereumProviderService {
   public async isCredentialValid(
     address: string,
     serializedCredential: string,
-  ) {
+  ): Promise<boolean> {
     try {
       // prepare data
       const parsedCredential = Credential.parse(serializedCredential);
@@ -122,13 +133,13 @@ class EthereumProviderService {
         ContractsAddresses.CLAIMS_REGISTRY,
         ClaimsRegistry.abi,
         signer,
-      );
+      ) as IClaimsRegistry;
 
       // verify claim
       const verifyClaim = await claimsRegistryContract.verifyClaim(
         parsedCredential.claimerAddress,
-        parsedCredential.attesterAddress,
-        parsedCredential.attesterSignature,
+        parsedCredential.attesterAddress as string,
+        parsedCredential.attesterSignature as string,
       );
 
       return verifyClaim;
@@ -138,7 +149,10 @@ class EthereumProviderService {
     }
   }
 
-  public async getStakingDetails(address: string, token: TokenTypes) {
+  public async getStakingDetails(
+    address: string,
+    token: TokenTypes,
+  ): Promise<string> {
     try {
       // prepare data
       const signer = this.web3Provider!.getSigner(address);
@@ -148,12 +162,12 @@ class EthereumProviderService {
         ContractsAddresses.ERC_20[token],
         ERC20.abi,
         signer,
-      );
+      ) as IERC20;
       const stakingContract = new Contract(
         ContractsAddresses.STAKING[token],
         Staking.abi,
         signer,
-      );
+      ) as IStaking;
 
       // get user balance, current stake, current rewards and expected rewards
       const balance = await tokenContract.balanceOf(address);
@@ -166,6 +180,10 @@ class EthereumProviderService {
       const poolAvailableTokens = await stakingContract.availablePool();
 
       // get staking details
+      const stakingAllowedAmount = await tokenContract.allowance(
+        address,
+        ContractsAddresses.STAKING[token],
+      );
       const stakingStartDate = await stakingContract.startDate();
       const stakingEndDate = await stakingContract.endDate();
       const stakingMinAmount = await stakingContract.minAmount();
@@ -177,29 +195,59 @@ class EthereumProviderService {
         100,
       );
 
-      return {
-        user: {
-          balance,
-          staked_amount: stakedAmount,
-          current_reward: currentReward,
-          max_reward: maxReward,
-        },
-        pool: {
-          available: poolAvailableTokens,
-          total: poolTotalTokens,
-        },
-        staking: {
-          min: stakingMinAmount,
-          max: stakingMaxAmount,
-          start_date: stakingStartDate,
-          end_date: stakingEndDate,
-          apy: currentAPY,
-          current_expected_reward_rate: currentExpectedRewardRate,
-        },
-      };
+      const details = new StakingDetails(
+        balance,
+        stakedAmount,
+        currentReward,
+        maxReward,
+        poolAvailableTokens,
+        poolTotalTokens,
+        stakingAllowedAmount,
+        stakingMinAmount,
+        stakingMaxAmount,
+        stakingStartDate,
+        stakingEndDate,
+        currentAPY,
+        currentExpectedRewardRate,
+      );
+
+      return details.serialize();
     } catch (error) {
       console.error(error);
       throw error;
+    }
+  }
+
+  public async approveStake(
+    address: string,
+    amount: string,
+    token: TokenTypes,
+  ): Promise<string | undefined> {
+    // prepare data
+    const signer = this.web3Provider!.getSigner(address);
+    const etherAmount = ethersUtils.parseEther(amount) as BigNumberish;
+
+    // init smart contract
+    const tokenContract = new Contract(
+      ContractsAddresses.ERC_20[token],
+      ERC20.abi,
+      signer,
+    ) as IERC20;
+
+    // check if approve is needed
+    const allowanceValue = await tokenContract.allowance(
+      address,
+      ContractsAddresses.STAKING[token],
+    );
+
+    if (allowanceValue.lt(etherAmount)) {
+      // pre-approve stake for the address
+      const approveResult = await tokenContract.approve(
+        ContractsAddresses.STAKING[token],
+        etherAmount,
+      );
+
+      return approveResult.hash;
     }
   }
 
@@ -208,37 +256,50 @@ class EthereumProviderService {
     amount: string,
     token: TokenTypes,
     serializedCredential: string,
-  ) {
+  ): Promise<string> {
     // prepare data
     const parsedCredential = Credential.parse(serializedCredential);
     const signer = this.web3Provider!.getSigner(address);
-    const etherAmount = ethersUtils.parseEther(amount);
+    const etherAmount = ethersUtils.parseEther(amount) as BigNumberish;
 
     // init smart contract
     const tokenContract = new Contract(
       ContractsAddresses.ERC_20[token],
       ERC20.abi,
       signer,
-    );
+    ) as IERC20;
     const stakingContract = new Contract(
       ContractsAddresses.STAKING[token],
       Staking.abi,
       signer,
+    ) as IStaking;
+
+    // check if approve is needed
+    const allowanceValue = await tokenContract.allowance(
+      address,
+      ContractsAddresses.STAKING[token],
     );
 
-    // pre-approve stake for the address
-    await tokenContract.approve(ContractsAddresses.STAKING[token], etherAmount);
+    if (allowanceValue.lt(etherAmount)) {
+      // pre-approve stake for the address
+      const approveResult = await tokenContract.approve(
+        ContractsAddresses.STAKING[token],
+        etherAmount,
+      );
+
+      return approveResult.hash;
+    }
 
     // stake amount
     const stakingResult = await stakingContract.stake(
       etherAmount,
-      parsedCredential.attesterSignature,
+      parsedCredential.attesterSignature as string,
     );
 
     return stakingResult.hash;
   }
 
-  public async withdraw(address: string, token: TokenTypes) {
+  public async withdraw(address: string, token: TokenTypes): Promise<string> {
     // prepare data
     const signer = this.web3Provider!.getSigner(address);
 

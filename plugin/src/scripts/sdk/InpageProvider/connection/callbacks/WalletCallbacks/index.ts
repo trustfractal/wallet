@@ -9,6 +9,12 @@ export const getAccountAddress = () =>
 export const getStakingDetails = ([address, token]: [string, TokenTypes]) =>
   EthereumProviderService.getStakingDetails(address, token);
 
+export const approveStake = ([address, amount, token]: [
+  string,
+  string,
+  TokenTypes,
+]) => EthereumProviderService.approveStake(address, amount, token);
+
 export const stake = ([address, amount, token, serializedCredential]: [
   string,
   string,
@@ -23,6 +29,7 @@ export const withdraw = ([address, token]: [string, TokenTypes]) =>
 const Callbacks = {
   [ConnectionTypes.GET_ACCOUNT_ADDRESS_INPAGE]: { callback: getAccountAddress },
   [ConnectionTypes.GET_STAKING_DETAILS_INPAGE]: { callback: getStakingDetails },
+  [ConnectionTypes.APPROVE_STAKE_INPAGE]: { callback: approveStake },
   [ConnectionTypes.STAKE_INPAGE]: { callback: stake },
   [ConnectionTypes.WITHDRAW_INPAGE]: { callback: withdraw },
 };

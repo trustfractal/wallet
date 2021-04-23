@@ -40,7 +40,7 @@ export const credentialStore = (
         credentialsActions.setCredentials(credentials),
       );
 
-      resolve(parsedCredential.serialize());
+      resolve(parsedCredential.transactionHash);
     } catch (error) {
       console.error(error);
       reject(error);
