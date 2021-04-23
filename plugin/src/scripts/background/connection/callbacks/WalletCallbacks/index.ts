@@ -27,6 +27,27 @@ export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
     }
   });
 
+export const approveStake = (
+  [amount, token]: [string, TokenTypes],
+  port: string,
+) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const address = getAccount(UserStore.getStore().getState());
+
+      const transaction = await ContentScriptConnection.invoke(
+        ConnectionTypes.APPROVE_STAKE_INPAGE,
+        [address, amount, token],
+        port,
+      );
+
+      resolve(transaction);
+    } catch (error) {
+      console.error(error);
+      reject(error);
+    }
+  });
+
 export const stakeRequest = (
   [amount, token, credentialId]: [string, TokenTypes, string],
   port: string,
@@ -77,6 +98,10 @@ export const withdrawRequest = ([token]: [TokenTypes], port: string) =>
 const Callbacks = {
   [ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND]: {
     callback: getStakingDetails,
+    middlewares: [new AuthMiddleware()],
+  },
+  [ConnectionTypes.APPROVE_STAKE_BACKGROUND]: {
+    callback: approveStake,
     middlewares: [new AuthMiddleware()],
   },
   [ConnectionTypes.STAKE_BACKGROUND]: {

@@ -96,3 +96,10 @@ export interface ConnectionCallbacks {
 }
 
 export type IConnectionPorts = Record<string, IPort>;
+
+export interface IConnectionStatus extends ISerializable {
+  version: string;
+  registered: boolean;
+  locked: boolean;
+  setup: boolean;
+}

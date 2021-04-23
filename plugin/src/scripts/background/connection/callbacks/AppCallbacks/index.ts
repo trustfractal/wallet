@@ -8,6 +8,7 @@ import {
   isRegistered,
 } from "@redux/stores/application/reducers/auth/selectors";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
+import ConnectionStatus from "@models/Connection/ConnectionStatus";
 
 export const verifyConnection = () =>
   new Promise((resolve, reject) => {
@@ -19,12 +20,14 @@ export const verifyConnection = () =>
 
       const setup = isSetup(AppStore.getStore().getState());
 
-      resolve({
+      const status = new ConnectionStatus(
         version,
         registered,
-        locked: !loggedIn,
+        !loggedIn,
         setup,
-      });
+      );
+
+      resolve(status.serialize());
     } catch (error) {
       console.error(error);
       reject(error);

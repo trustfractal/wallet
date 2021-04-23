@@ -11,13 +11,20 @@ import ConnectionTypes from "@models/Connection/types";
 import EthereumProviderService from "@services/EthereumProviderService";
 import { ERROR_FRACTAL_NOT_INITIALIZED } from "@sdk/InpageProvider/Errors";
 
-import { IFractalInpageProvider, ICredential } from "@fractalwallet/types";
+import {
+  IFractalInpageProvider,
+  ICredential,
+  IStakingDetails,
+  IConnectionStatus,
+} from "@fractalwallet/types";
 
 import ExtensionConnection from "@sdk/InpageProvider/connection";
 import TokenTypes from "@models/Token/types";
 
 import ContractsAddresses from "@contracts/addresses.json";
 import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
+import StakingDetails from "@models/Staking/StakingDetails";
+import ConnectionStatus from "@models/Connection/ConnectionStatus";
 
 export default class InpageProvider implements IFractalInpageProvider {
   private initialized: boolean = false;
@@ -42,11 +49,23 @@ export default class InpageProvider implements IFractalInpageProvider {
     }
   }
 
+  public approveStake(
+    amount: string,
+    token: TokenTypes,
+  ): Promise<string | undefined> {
+    this.ensureFractalIsInitialized();
+
+    return ExtensionConnection.invoke(
+      ConnectionTypes.APPROVE_STAKE_BACKGROUND,
+      [amount, token],
+    );
+  }
+
   public stake(
     amount: string,
     token: TokenTypes,
     credentialId: string,
-  ): Promise<any> {
+  ): Promise<string> {
     this.ensureFractalIsInitialized();
 
     return ExtensionConnection.invoke(ConnectionTypes.STAKE_BACKGROUND, [
@@ -56,7 +75,7 @@ export default class InpageProvider implements IFractalInpageProvider {
     ]);
   }
 
-  public withdraw(token: TokenTypes): Promise<any> {
+  public withdraw(token: TokenTypes): Promise<string> {
     this.ensureFractalIsInitialized();
 
     return ExtensionConnection.invoke(ConnectionTypes.WITHDRAW_BACKGROUND, [
@@ -64,7 +83,7 @@ export default class InpageProvider implements IFractalInpageProvider {
     ]);
   }
 
-  public async getSignedCredential() {
+  public async getSignedCredential(): Promise<ICredential> {
     // create the necessary ethereum accounts
     const claimerWallet = Wallet.fromMnemonic(
       "planet universe gather keen dream kind pony lonely question nut essay verb",
@@ -78,7 +97,7 @@ export default class InpageProvider implements IFractalInpageProvider {
     const claimsRegistryContract = new Contract(
       ContractsAddresses.CLAIMS_REGISTRY,
       ClaimsRegistry.abi,
-      new ethersProviders.Web3Provider(window.ethereum),
+      new ethersProviders.Web3Provider(window.ethereum!),
     );
 
     // Generate a claim type
@@ -120,7 +139,7 @@ export default class InpageProvider implements IFractalInpageProvider {
     return credential;
   }
 
-  public storeCredential(credential: ICredential): Promise<any> {
+  public storeCredential(credential: ICredential): Promise<string> {
     this.ensureFractalIsInitialized();
 
     return ExtensionConnection.invoke(
@@ -129,7 +148,7 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
   }
 
-  public hasCredential(id: string): Promise<any> {
+  public hasCredential(id: string): Promise<boolean> {
     this.ensureFractalIsInitialized();
 
     return ExtensionConnection.invoke(
@@ -138,7 +157,7 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
   }
 
-  public isCredentialValid(id: string): Promise<any> {
+  public isCredentialValid(id: string): Promise<boolean> {
     this.ensureFractalIsInitialized();
 
     return ExtensionConnection.invoke(
@@ -147,26 +166,34 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
   }
 
-  public getStakingDetails(token: string): Promise<any> {
+  public async getStakingDetails(token: string): Promise<IStakingDetails> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(
+    const detailsString = await ExtensionConnection.invoke(
       ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND,
       [token],
     );
+
+    return StakingDetails.parse(detailsString);
   }
 
-  public setupPlugin(): Promise<any> {
+  public async setupPlugin(): Promise<IConnectionStatus> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(ConnectionTypes.SETUP_PLUGIN_BACKGROUND);
+    const connectionStatus = await ExtensionConnection.invoke(
+      ConnectionTypes.SETUP_PLUGIN_BACKGROUND,
+    );
+
+    return ConnectionStatus.parse(connectionStatus);
   }
 
-  public verifyConnection(): Promise<any> {
+  public async verifyConnection(): Promise<IConnectionStatus> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(
+    const connectionStatus = await ExtensionConnection.invoke(
       ConnectionTypes.VERIFY_CONNECTION_BACKGROUND,
     );
+
+    return ConnectionStatus.parse(connectionStatus);
   }
 }
