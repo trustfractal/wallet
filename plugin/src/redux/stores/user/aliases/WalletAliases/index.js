@@ -1,7 +1,7 @@
 import ContentScriptConnection from "@background/connection";
 import ConnectionTypes from "@models/Connection/types";
 
-import { FRACTAL_WEBSITE_HOSTNAME } from "@constants";
+import { FRACTAL_WEBSITE_HOSTNAME } from "@constants/common";
 
 import walletActions, { walletTypes } from "@redux/stores/user/reducers/wallet";
 import AppStore from "@redux/stores/application";
