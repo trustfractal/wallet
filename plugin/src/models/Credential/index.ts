@@ -70,7 +70,6 @@ export default class Credential
       claimerSignature,
       claimTypeHash,
       claimHashTree,
-      valid,
     });
 
     return new Credential(sdkCredential, id, transactionHash, valid);
