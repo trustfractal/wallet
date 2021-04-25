@@ -1,11 +1,18 @@
 import { IMiddleware, IInvokation } from "@fractalwallet/types";
 import ContentScriptConnection from "@background/connection";
-import { FRACTAL_WEBSITE_HOSTNAME } from "@constants/common";
 import WindowsService from "@services/WindowsService";
+
+import {
+  ERROR_NO_SENDER,
+  ERROR_NO_ACTIVE_TAB,
+  ERROR_NOT_ON_FRACTAL,
+} from "@models/Connection/Errors";
+
+import { FRACTAL_WEBSITE_HOSTNAME } from "@constants/common";
 
 function isOnFractalWebpage(port: chrome.runtime.Port): boolean {
   if (!port.sender || !port.sender.url) {
-    throw new Error("Couldn't get sender");
+    throw ERROR_NO_SENDER();
   }
 
   const { hostname, protocol } = new URL(port.sender.url);
@@ -32,7 +39,7 @@ export default class FractalWebpageMiddleware implements IMiddleware {
     const activePort = await ContentScriptConnection.getActiveConnectionPort();
 
     if (!activePort) {
-      throw new Error("No active tabs could be found");
+      throw ERROR_NO_ACTIVE_TAB();
     }
 
     // checj if the active port is on the fractal domain
@@ -46,7 +53,7 @@ export default class FractalWebpageMiddleware implements IMiddleware {
         );
       }
 
-      throw new Error("Active tab is not on the fractal website domain.");
+      throw ERROR_NOT_ON_FRACTAL();
     }
   }
 }
