@@ -31,17 +31,17 @@ export const approveStake = (
   [amount, token]: [string, TokenTypes],
   port: string,
 ) =>
-  new Promise(async (resolve, reject) => {
+  new Promise<void | string>(async (resolve, reject) => {
     try {
       const address = getAccount(UserStore.getStore().getState());
 
-      const transaction = await ContentScriptConnection.invoke(
+      const serializedTransactionDetails = await ContentScriptConnection.invoke(
         ConnectionTypes.APPROVE_STAKE_INPAGE,
         [address, amount, token],
         port,
       );
 
-      resolve(transaction);
+      resolve(serializedTransactionDetails);
     } catch (error) {
       console.error(error);
       reject(error);
@@ -64,13 +64,13 @@ export const stakeRequest = (
         throw new Error(`Credential '${credentialId}' could not be found`);
       }
 
-      const transaction = await ContentScriptConnection.invoke(
+      const serializedTransactionDetails = await ContentScriptConnection.invoke(
         ConnectionTypes.STAKE_INPAGE,
         [address, amount, token, credential.serialize()],
         port,
       );
 
-      resolve(transaction);
+      resolve(serializedTransactionDetails);
     } catch (error) {
       console.error(error);
       reject(error);
@@ -82,13 +82,13 @@ export const withdrawRequest = ([token]: [TokenTypes], port: string) =>
     try {
       const address = getAccount(UserStore.getStore().getState());
 
-      const transaction = await ContentScriptConnection.invoke(
+      const serializedTransactionDetails = await ContentScriptConnection.invoke(
         ConnectionTypes.WITHDRAW_INPAGE,
         [address, token],
         port,
       );
 
-      resolve(transaction);
+      resolve(serializedTransactionDetails);
     } catch (error) {
       console.error(error);
       reject(error);

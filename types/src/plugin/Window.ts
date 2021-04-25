@@ -1,6 +1,6 @@
 import { providers as ethersProviders } from "ethers";
 
-import { IFractalInpageProvider } from "./Fractal";
+import { IFractalInpageProvider } from "./InpageProvider";
 
 declare global {
   interface Window {

@@ -10,6 +10,8 @@ import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import credentialsActions from "@redux/stores/user/reducers/credentials";
 import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+import TransactionDetails from "@models/Transaction/TransactionDetails";
+import EtherscanService from "@services/EtherscanService";
 
 export const credentialStore = (
   [serializedCredential]: [string],
@@ -20,17 +22,33 @@ export const credentialStore = (
       const address: string = getAccount(UserStore.getStore().getState());
 
       // redirect request to the inpage fractal provider
-      const storedSerializedCredential = await ContentScriptConnection.invoke(
+      const serializedTransactionDetails = await ContentScriptConnection.invoke(
         ConnectionTypes.CREDENTIAL_STORE_INPAGE,
         [address, serializedCredential],
         port,
       );
 
+      // parse transaction details
+      const parsedTransactionDetails = TransactionDetails.parse(
+        serializedTransactionDetails,
+      );
+
+      // calculate estimated confirmation time
+      const estimatedTime = await EtherscanService.getEstimationOfConfirmationTime(
+        parsedTransactionDetails.gasPrice,
+      );
+
+      // update transaction details
+      parsedTransactionDetails.estimatedTime = estimatedTime;
+
       // parse the string credential
-      const parsedCredential = Credential.parse(storedSerializedCredential);
+      const parsedCredential = Credential.parse(serializedCredential);
 
       // get all credentials
       const credentials = getCredentials(UserStore.getStore().getState());
+
+      // update parsed credentials
+      parsedCredential.transaction = parsedTransactionDetails;
 
       // append new credential
       credentials.push(parsedCredential);
@@ -40,7 +58,7 @@ export const credentialStore = (
         credentialsActions.setCredentials(credentials),
       );
 
-      resolve(parsedCredential.transactionHash);
+      resolve(serializedTransactionDetails);
     } catch (error) {
       console.error(error);
       reject(error);

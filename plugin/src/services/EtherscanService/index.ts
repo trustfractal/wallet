@@ -1,15 +1,7 @@
-import { BigNumber, BigNumberish } from "ethers";
+import { BigNumber } from "ethers";
+import { EtherscanApiResponse } from "@fractalwallet/types";
 
-enum EtherscanApiStatus {
-  FAILED = "0",
-  SUCCESS = "1",
-}
-
-type EtherscanApiResponse = {
-  status: EtherscanApiStatus;
-  result: string;
-  message: string;
-};
+import EtherscanApiStatus from "./status";
 
 export default class EtherscanService {
   public static API_BASE_URL: string = "https://api.etherscan.io/api";
@@ -39,9 +31,9 @@ export default class EtherscanService {
     return response;
   }
 
-  public static async getEstimationofConfirmationTime(
-    gasPrice: BigNumberish,
-  ): Promise<BigNumberish | undefined> {
+  public static async getEstimationOfConfirmationTime(
+    gasPrice: BigNumber,
+  ): Promise<BigNumber | undefined> {
     const params = {
       module: "gastracker",
       action: "gasestimate",
