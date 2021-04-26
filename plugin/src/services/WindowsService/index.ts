@@ -191,7 +191,10 @@ class WindowsService {
   }
 
   async getActiveTab(): Promise<chrome.tabs.Tab | undefined> {
-    const tabs = await this.queryTabs({ active: true });
+    const tabs = await this.queryTabs({
+      active: true,
+      lastFocusedWindow: true,
+    });
 
     if (tabs.length === 0) {
       return;

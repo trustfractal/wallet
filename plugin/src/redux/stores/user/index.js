@@ -48,6 +48,10 @@ export class UserStore {
     return UserStore.instance;
   }
 
+  async isInitialized() {
+    return this.storeInternal !== undefined;
+  }
+
   async init(password) {
     const storedState = await UserStore.getStoredState();
     if (!storedState) {

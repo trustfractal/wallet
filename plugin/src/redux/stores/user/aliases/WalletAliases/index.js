@@ -1,14 +1,13 @@
 import ContentScriptConnection from "@background/connection";
 import ConnectionTypes from "@models/Connection/types";
-
-import { FRACTAL_WEBSITE_HOSTNAME } from "@constants";
+import { ensureIsOnFractalWebpage } from "@models/Connection/middlewares/FractalWebpageMiddleware";
 
 import walletActions, { walletTypes } from "@redux/stores/user/reducers/wallet";
 import AppStore from "@redux/stores/application";
 import appActions from "@redux/stores/application/reducers/app";
 
 export const connectWallet = () => {
-  return async (dispatch, getState) => {
+  return async (dispatch) => {
     dispatch(walletActions.connectWalletPending());
 
     try {
@@ -19,24 +18,10 @@ export const connectWallet = () => {
         throw new Error("No active tabs could be found");
       }
 
-      // check if the active port is on the fractal domain
-      const { id, port } = activePort;
-      const { hostname, protocol } = new URL(port.sender.url);
+      // ensure that the active port is on the fractal domain
+      const { port, id } = activePort;
 
-      const senderHostname = hostname.startsWith("www.")
-        ? hostname.substr(4)
-        : hostname;
-
-      if (senderHostname !== FRACTAL_WEBSITE_HOSTNAME) {
-        throw new Error(
-          "Active tab is not on the fractal website domain, redirecting.",
-        );
-      }
-
-      // check ssl
-      if (protocol !== "https:") {
-        throw new Error("Not on a ssl connection.");
-      }
+      ensureIsOnFractalWebpage(port);
 
       // get ethereumm wallet account address
       const account = await ContentScriptConnection.invoke(

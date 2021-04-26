@@ -1,4 +1,4 @@
-import AuthMiddleware from "@models/Connection/AuthMiddleware";
+import AuthMiddleware from "@models/Connection/middlewares/AuthMiddleware";
 import ConnectionTypes from "@models/Connection/types";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 

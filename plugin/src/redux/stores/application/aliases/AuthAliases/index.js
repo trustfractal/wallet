@@ -53,8 +53,12 @@ export const signIn = ({ payload: attemptedPassword }) => {
 
       // compare passwords hashes
       if (hashedAttemptedPassword === hashedPassword) {
-        // init the encrypted user store
-        await Store.init(attemptedPassword);
+        const isInitialized = await Store.isInitialized();
+
+        if (!isInitialized) {
+          // init the encrypted user store
+          await Store.init(attemptedPassword);
+        }
 
         dispatch(authActions.signInSuccess());
       } else {
