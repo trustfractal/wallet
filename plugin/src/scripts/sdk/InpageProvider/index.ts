@@ -7,6 +7,10 @@ import {
 } from "ethers";
 import Credential from "@models/Credential";
 import { AttestationRequest, Claim, ClaimType } from "@fractalwallet/sdk";
+import {
+  IClaimProperties,
+  IClaimPseudoSchema,
+} from "@fractalwallet/sdk/src/types";
 
 import ConnectionTypes from "@models/Connection/types";
 import EthereumProviderService from "@services/EthereumProviderService";
@@ -117,46 +121,39 @@ export default class InpageProvider implements IFractalInpageProvider {
     return TransactionDetails.parse(serializedTransactionDetails);
   }
 
-  public async generateSignedCredential(): Promise<ICredential> {
-    // create the necessary ethereum accounts
-    const claimerWallet = Wallet.fromMnemonic(
-      "planet universe gather keen dream kind pony lonely question nut essay verb",
+  public async generateSignedCredential(
+    credentialId: string,
+  ): Promise<ICredential> {
+    this.ensureFractalIsInitialized();
+
+    // prepare data
+    const properties = { name: "Foo", age: 20 };
+    const pseudoSchema = ClaimType.buildSchema("Foo", {
+      name: { type: "string" },
+      age: { type: "number" },
+    });
+
+    // call the signer
+    const serializedCredential = await ExtensionConnection.invoke(
+      ConnectionTypes.GENERATE_SIGNED_CREDENTIAL_BACKGROUND,
+      [credentialId, JSON.stringify(properties), JSON.stringify(pseudoSchema)],
     );
+
+    // parse credential
+    const credential = JSON.parse(serializedCredential);
+
+    // init claims registry smart contract
     const attesterWallet = Wallet.fromMnemonic(
       "pizza job meadow mammal cake initial gain gym family banana steel favorite",
       "m/44'/60'/0'/0/1",
     );
-
-    // init claims registry smart contract
     const claimsRegistryContract = new Contract(
       CLAIMS_REGISTRY_ADDRESS,
       ClaimsRegistry.abi,
       new ethersProviders.Web3Provider(window.ethereum!),
     );
 
-    // Generate a claim type
-    const pseudoSchema = ClaimType.buildSchema("Foo", {
-      name: { type: "string" },
-      age: { type: "number" },
-    });
-
-    const claimType = ClaimType.fromSchema(
-      pseudoSchema,
-      claimerWallet.publicKey,
-    );
-
-    // Create a claim with our data
-    const properties = { name: "Foo", age: 20 };
-    const claim = new Claim(claimType, properties, claimerWallet.address);
-
-    // Generate an AttestationRequest
-    const request = AttestationRequest.fromClaim(claim);
-
-    const claimerSignature = await claimerWallet.signMessage(request.rootHash);
-    request.claimerSignature = claimerSignature;
-
-    // As an attester generate a credential
-    const credential = new Credential(Credential.fromRequest(request), "12");
+    // add attester address
     credential.attesterAddress = attesterWallet.address;
 
     // sign the signable hash with attester's wallet

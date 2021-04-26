@@ -57,6 +57,32 @@ export const credentialStore = (
     }
   });
 
+export const generateSignedCredential = (
+  [credentialId, serializedProperties, serializedPseudoSchema]: [
+    string,
+    string,
+    string,
+  ],
+  port: string,
+) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const address: string = getAccount(UserStore.getStore().getState());
+
+      // redirect request to the inpage fractal provider
+      const serializedCredential = await ContentScriptConnection.invoke(
+        ConnectionTypes.CREDENTIAL_STORE_INPAGE,
+        [address, credentialId, serializedProperties, serializedPseudoSchema],
+        port,
+      );
+
+      resolve(serializedCredential);
+    } catch (error) {
+      console.error(error);
+      reject(error);
+    }
+  });
+
 export const hasCredential = ([id]: [string]) =>
   new Promise((resolve, reject) => {
     try {
@@ -114,6 +140,10 @@ export const isCredentialValid = ([id]: [string], port: string) =>
 const Callbacks = {
   [ConnectionTypes.CREDENTIAL_STORE_BACKGROUND]: {
     callback: credentialStore,
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
+  },
+  [ConnectionTypes.GENERATE_SIGNED_CREDENTIAL_BACKGROUND]: {
+    callback: generateSignedCredential,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
   [ConnectionTypes.HAS_CREDENTIAL_BACKGROUND]: {

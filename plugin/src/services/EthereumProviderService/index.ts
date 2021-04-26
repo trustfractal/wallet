@@ -13,9 +13,17 @@ import {
   ClaimsRegistry as IClaimsRegistry,
   IEthereumProviderService,
 } from "@fractalwallet/types";
+import { AttestationRequest, Claim, ClaimType } from "@fractalwallet/sdk";
+import {
+  IClaimProperties,
+  IClaimPseudoSchema,
+} from "@fractalwallet/sdk/src/types";
+
 import StakingDetails from "@models/Staking/StakingDetails";
 import TokenTypes from "@models/Token/types";
 import Credential from "@models/Credential";
+import TransactionDetails from "@models/Transaction/TransactionDetails";
+
 import {
   ERROR_PROVIDER_NOT_DETECTED,
   ERROR_PROVIDER_NOT_METAMASK,
@@ -31,7 +39,6 @@ import {
 import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
 import Staking from "@contracts/Staking.json";
 import ERC20 from "@contracts/ERC20.json";
-import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 class EthereumProviderService implements IEthereumProviderService {
   private static instance: EthereumProviderService;
@@ -160,6 +167,37 @@ class EthereumProviderService implements IEthereumProviderService {
       console.error(error);
       throw error;
     }
+  }
+
+  public async generateSignedCredential(
+    address: string,
+    credentialId: string,
+    serializedProperties: string,
+    serializedPseudoSchema: string,
+  ): Promise<string> {
+    // prepare data
+    const properties: IClaimProperties = JSON.parse(serializedProperties);
+    const pseudoSchema: IClaimPseudoSchema = JSON.parse(serializedPseudoSchema);
+    const signer = this.web3Provider!.getSigner(address);
+
+    const claimType = ClaimType.fromSchema(pseudoSchema, address);
+
+    // Create a claim with our data
+    const claim = new Claim(claimType, properties, address);
+
+    // Generate an AttestationRequest
+    const request = AttestationRequest.fromClaim(claim);
+
+    const claimerSignature = await signer.signMessage(request.rootHash);
+    request.claimerSignature = claimerSignature;
+
+    // As an attester generate a credential
+    const credential = new Credential(
+      Credential.fromRequest(request),
+      credentialId,
+    );
+
+    return JSON.stringify(credential);
   }
 
   public async getStakingDetails(
