@@ -1,18 +1,23 @@
-import { ICredential, ISerializable } from "@fractalwallet/types";
+import {
+  ICredential,
+  ITransactionDetails,
+  ISerializable,
+} from "@fractalwallet/types";
 
 import { Credential as SDKCredential } from "@fractalwallet/sdk";
+import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 export default class Credential
   extends SDKCredential
   implements ICredential, ISerializable {
   public id?: string;
-  public transactionHash?: string;
+  public transaction?: ITransactionDetails;
   public valid: boolean;
 
   public constructor(
     credential: SDKCredential,
     id?: string,
-    transactionHash?: string,
+    transaction?: ITransactionDetails,
     valid: boolean = false,
   ) {
     super({
@@ -26,7 +31,7 @@ export default class Credential
       claimHashTree: credential.claimHashTree,
     });
     this.id = id;
-    this.transactionHash = transactionHash;
+    this.transaction = transaction;
     this.valid = valid;
   }
 
@@ -41,7 +46,7 @@ export default class Credential
       claimTypeHash: this.claimTypeHash,
       claimHashTree: this.claimHashTree,
       id: this.id,
-      transactionHash: this.transactionHash,
+      transaction: this.transaction?.serialize(),
       valid: this.valid,
     });
   }
@@ -57,7 +62,7 @@ export default class Credential
       claimTypeHash,
       claimHashTree,
       id,
-      transactionHash,
+      transaction,
       valid,
     } = JSON.parse(str);
 
@@ -70,9 +75,14 @@ export default class Credential
       claimerSignature,
       claimTypeHash,
       claimHashTree,
-      valid,
     });
 
-    return new Credential(sdkCredential, id, transactionHash, valid);
+    let transactionInstance;
+
+    if (transaction) {
+      transactionInstance = TransactionDetails.parse(transaction);
+    }
+
+    return new Credential(sdkCredential, id, transactionInstance, valid);
   }
 }

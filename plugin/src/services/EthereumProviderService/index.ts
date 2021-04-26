@@ -26,6 +26,7 @@ import ContractsAddresses from "@contracts/addresses.json";
 import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
 import Staking from "@contracts/Staking.json";
 import ERC20 from "@contracts/ERC20.json";
+import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 class EthereumProviderService implements IEthereumProviderService {
   private static instance: EthereumProviderService;
@@ -109,10 +110,17 @@ class EthereumProviderService implements IEthereumProviderService {
         parsedCredential.attesterSignature as string,
       );
 
-      // add transaction hash to the credential
-      parsedCredential.transactionHash = storingResult.hash;
+      // create transaction details
+      const transactionDetails = new TransactionDetails(
+        storingResult.chainId,
+        storingResult.data,
+        storingResult.from,
+        storingResult.gasLimit,
+        storingResult.gasPrice,
+        storingResult.value,
+      );
 
-      return parsedCredential.serialize();
+      return transactionDetails.serialize();
     } catch (error) {
       console.error(error);
       throw error;
@@ -247,7 +255,17 @@ class EthereumProviderService implements IEthereumProviderService {
         etherAmount,
       );
 
-      return approveResult.hash;
+      // create transaction details
+      const transactionDetails = new TransactionDetails(
+        approveResult.chainId,
+        approveResult.data,
+        approveResult.from,
+        approveResult.gasLimit,
+        approveResult.gasPrice,
+        approveResult.value,
+      );
+
+      return transactionDetails.serialize();
     }
   }
 
@@ -282,12 +300,10 @@ class EthereumProviderService implements IEthereumProviderService {
 
     if (allowanceValue.lt(etherAmount)) {
       // pre-approve stake for the address
-      const approveResult = await tokenContract.approve(
+      await tokenContract.approve(
         ContractsAddresses.STAKING[token],
         etherAmount,
       );
-
-      return approveResult.hash;
     }
 
     // stake amount
@@ -296,7 +312,17 @@ class EthereumProviderService implements IEthereumProviderService {
       parsedCredential.attesterSignature as string,
     );
 
-    return stakingResult.hash;
+    // create transaction details
+    const transactionDetails = new TransactionDetails(
+      stakingResult.chainId,
+      stakingResult.data,
+      stakingResult.from,
+      stakingResult.gasLimit,
+      stakingResult.gasPrice,
+      stakingResult.value,
+    );
+
+    return transactionDetails.serialize();
   }
 
   public async withdraw(address: string, token: TokenTypes): Promise<string> {
@@ -313,7 +339,17 @@ class EthereumProviderService implements IEthereumProviderService {
     // withdraw from pool
     const withdrawResult = await stakingContract.withdraw();
 
-    return withdrawResult.hash;
+    // create transaction details
+    const transactionDetails = new TransactionDetails(
+      withdrawResult.chainId,
+      withdrawResult.data,
+      withdrawResult.from,
+      withdrawResult.gasLimit,
+      withdrawResult.gasPrice,
+      withdrawResult.value,
+    );
+
+    return transactionDetails.serialize();
   }
 }
 
