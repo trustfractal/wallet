@@ -6,7 +6,7 @@ import AttestRequest from "../../services/AttestRequest";
 import RequestBuilder from "../../services/RequestBuilder";
 import RequestValidator from "../../services/RequestValidator";
 
-export default class CredentialCrontroller extends Controller {
+export default class CredentialController extends Controller {
   public req: AuthenticatedRequest;
   public res: Response;
 

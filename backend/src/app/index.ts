@@ -1,9 +1,11 @@
 import express from "express";
 
+import { AuthenticatedRequest } from "./types";
+
+import CredentialCrontroller from "./controllers/CredentialController";
+import HealthcheckController from "./controllers/HealthcheckController";
 import ensureAuthentication from "./middleware/ensureAuthentication";
 import addCurrentUser from "./middleware/addCurrentUser";
-import CredentialCrontroller from "./controllers/CredentialController";
-import { AuthenticatedRequest } from "./types";
 
 const port = process.env["PORT"] || 3000;
 
@@ -16,6 +18,10 @@ app.use("/credential", addCurrentUser);
 app.post("/credential", async (req, res) => {
   const authenticatedRequest = req as AuthenticatedRequest;
   new CredentialCrontroller(authenticatedRequest, res).create();
+});
+
+app.get("/healthcheck", (req, res) => {
+  new HealthcheckController(req, res).show();
 });
 
 const start = () =>
