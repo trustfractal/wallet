@@ -12,7 +12,6 @@
     "module": "commonjs",
     "baseUrl": ".",
     "paths": {
-      "@src/*": ["src/*"],
       "@services/*": ["src/services/*"]
     }
   },

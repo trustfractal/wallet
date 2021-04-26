@@ -1,24 +1,21 @@
 import express from "express";
 
-import AttestRequest from "../services/AttestRequest";
-import { badRequest } from "./errors";
+import ensureAuthentication from "./middleware/ensureAuthentication";
+import addCurrentUser from "./middleware/addCurrentUser";
+import CredentialCrontroller from "./controllers/CredentialController";
+import { AuthenticatedRequest } from "./types";
 
 const port = process.env["PORT"] || 3000;
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/credential", ensureAuthentication);
+app.use("/credential", addCurrentUser);
 
-app.post("/", async (req, res) => {
-  const { request } = req.body;
-
-  if (!request) return badRequest(res);
-
-  const credential = await AttestRequest.perform(request);
-
-  if (!credential) return badRequest(res);
-
-  res.send({ credential });
+app.post("/credential", async (req, res) => {
+  const authenticatedRequest = req as AuthenticatedRequest;
+  new CredentialCrontroller(authenticatedRequest, res).create();
 });
 
 const start = () =>
