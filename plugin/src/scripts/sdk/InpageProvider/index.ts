@@ -15,6 +15,7 @@ import {
   IFractalInpageProvider,
   ICredential,
   IStakingDetails,
+  ITransactionDetails,
   IConnectionStatus,
 } from "@fractalwallet/types";
 
@@ -25,6 +26,7 @@ import ContractsAddresses from "@contracts/addresses.json";
 import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
 import StakingDetails from "@models/Staking/StakingDetails";
 import ConnectionStatus from "@models/Connection/ConnectionStatus";
+import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 export default class InpageProvider implements IFractalInpageProvider {
   private initialized: boolean = false;
@@ -49,38 +51,45 @@ export default class InpageProvider implements IFractalInpageProvider {
     }
   }
 
-  public approveStake(
+  public async approveStake(
     amount: string,
     token: TokenTypes,
-  ): Promise<string | undefined> {
+  ): Promise<ITransactionDetails | undefined> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(
+    const serializedTransactionDetails = await ExtensionConnection.invoke(
       ConnectionTypes.APPROVE_STAKE_BACKGROUND,
       [amount, token],
     );
+
+    if (serializedTransactionDetails)
+      return TransactionDetails.parse(serializedTransactionDetails);
   }
 
-  public stake(
+  public async stake(
     amount: string,
     token: TokenTypes,
     credentialId: string,
-  ): Promise<string> {
+  ): Promise<ITransactionDetails> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(ConnectionTypes.STAKE_BACKGROUND, [
-      amount,
-      token,
-      credentialId,
-    ]);
+    const serializedTransactionDetails = await ExtensionConnection.invoke(
+      ConnectionTypes.STAKE_BACKGROUND,
+      [amount, token, credentialId],
+    );
+
+    return TransactionDetails.parse(serializedTransactionDetails);
   }
 
-  public withdraw(token: TokenTypes): Promise<string> {
+  public async withdraw(token: TokenTypes): Promise<ITransactionDetails> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(ConnectionTypes.WITHDRAW_BACKGROUND, [
-      token,
-    ]);
+    const serializedTransactionDetails = await ExtensionConnection.invoke(
+      ConnectionTypes.WITHDRAW_BACKGROUND,
+      [token],
+    );
+
+    return TransactionDetails.parse(serializedTransactionDetails);
   }
 
   public async getSignedCredential(): Promise<ICredential> {
@@ -139,13 +148,17 @@ export default class InpageProvider implements IFractalInpageProvider {
     return credential;
   }
 
-  public storeCredential(credential: ICredential): Promise<string> {
+  public async storeCredential(
+    credential: ICredential,
+  ): Promise<ITransactionDetails> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(
+    const serializedTransactionDetails = await ExtensionConnection.invoke(
       ConnectionTypes.CREDENTIAL_STORE_BACKGROUND,
       [credential.serialize()],
     );
+
+    return TransactionDetails.parse(serializedTransactionDetails);
   }
 
   public hasCredential(id: string): Promise<boolean> {
