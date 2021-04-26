@@ -52,6 +52,19 @@ export default class InpageProvider implements IFractalInpageProvider {
     }
   }
 
+  public async getTransactionEstimationTime(
+    gasPrice: BigNumber,
+  ): Promise<BigNumber> {
+    this.ensureFractalIsInitialized();
+
+    const serializedEstimatedTime = await ExtensionConnection.invoke(
+      ConnectionTypes.GET_TRANSACTION_ESTIMATION_TIME_BACKGROUND,
+      [gasPrice.toJSON()],
+    );
+
+    return BigNumber.from(serializedEstimatedTime);
+  }
+
   public async approveStake(
     amount: string,
     token: TokenTypes,
@@ -104,7 +117,7 @@ export default class InpageProvider implements IFractalInpageProvider {
     return TransactionDetails.parse(serializedTransactionDetails);
   }
 
-  public async getSignedCredential(): Promise<ICredential> {
+  public async generateSignedCredential(): Promise<ICredential> {
     // create the necessary ethereum accounts
     const claimerWallet = Wallet.fromMnemonic(
       "planet universe gather keen dream kind pony lonely question nut essay verb",

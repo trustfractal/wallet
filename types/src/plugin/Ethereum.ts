@@ -10,6 +10,7 @@ export interface IEthereumProviderService {
     serializedCredential: string
   ): Promise<boolean>;
   getStakingDetails(address: string, token: string): Promise<string>;
+  generateSignedCredential(serializedCredential: string): Promise<string>;
   approveStake(
     address: string,
     amount: string,

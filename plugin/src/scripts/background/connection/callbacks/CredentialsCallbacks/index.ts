@@ -12,7 +12,6 @@ import credentialsActions from "@redux/stores/user/reducers/credentials";
 import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
-import EtherscanService from "@services/EtherscanService";
 
 export const credentialStore = (
   [serializedCredential]: [string],
@@ -33,14 +32,6 @@ export const credentialStore = (
       const parsedTransactionDetails = TransactionDetails.parse(
         serializedTransactionDetails,
       );
-
-      // calculate estimated confirmation time
-      const estimatedTime = await EtherscanService.getEstimationOfConfirmationTime(
-        parsedTransactionDetails.gasPrice,
-      );
-
-      // update transaction details
-      parsedTransactionDetails.estimatedTime = estimatedTime;
 
       // parse the string credential
       const parsedCredential = Credential.parse(serializedCredential);

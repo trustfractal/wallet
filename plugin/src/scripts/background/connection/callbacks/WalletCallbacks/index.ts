@@ -11,6 +11,9 @@ import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 import TokenTypes from "@models/Token/types";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 
+import EtherscanService from "@services/EtherscanService";
+import { BigNumber } from "ethers";
+
 export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
@@ -50,7 +53,7 @@ export const approveStake = (
     }
   });
 
-export const stakeRequest = (
+export const stake = (
   [amount, token, credentialId]: [string, TokenTypes, string],
   port: string,
 ) =>
@@ -79,6 +82,31 @@ export const stakeRequest = (
     }
   });
 
+export const getTransactionEstimationTime = (
+  [serializedGasPrice]: [string],
+  port: string,
+) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      // parse gas fee
+      const gasPrice = BigNumber.from(serializedGasPrice);
+
+      // calculate estimated confirmation time
+      const estimatedTime = await EtherscanService.getEstimationOfConfirmationTime(
+        gasPrice,
+      );
+
+      if (estimatedTime) {
+        resolve(estimatedTime.toJSON());
+      }
+
+      resolve(estimatedTime);
+    } catch (error) {
+      console.error(error);
+      reject(error);
+    }
+  });
+
 export const getAllowedAmount = ([token]: [TokenTypes], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
@@ -97,7 +125,7 @@ export const getAllowedAmount = ([token]: [TokenTypes], port: string) =>
     }
   });
 
-export const withdrawRequest = ([token]: [TokenTypes], port: string) =>
+export const withdraw = ([token]: [TokenTypes], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
       const address = getAccount(UserStore.getStore().getState());
@@ -116,24 +144,28 @@ export const withdrawRequest = ([token]: [TokenTypes], port: string) =>
   });
 
 const Callbacks = {
-  [ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND]: {
-    callback: getStakingDetails,
-    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
-  },
   [ConnectionTypes.APPROVE_STAKE_BACKGROUND]: {
     callback: approveStake,
-    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
-  },
-  [ConnectionTypes.STAKE_BACKGROUND]: {
-    callback: stakeRequest,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
   [ConnectionTypes.GET_ALLOWED_AMOUNT_BACKGROUND]: {
     callback: getAllowedAmount,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
+  [ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND]: {
+    callback: getStakingDetails,
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
+  },
+  [ConnectionTypes.GET_TRANSACTION_ESTIMATION_TIME_BACKGROUND]: {
+    callback: getTransactionEstimationTime,
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
+  },
+  [ConnectionTypes.STAKE_BACKGROUND]: {
+    callback: stake,
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
+  },
   [ConnectionTypes.WITHDRAW_BACKGROUND]: {
-    callback: withdrawRequest,
+    callback: withdraw,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
 };

@@ -17,6 +17,8 @@ export interface IFractalInpageProvider {
   ): Promise<ITransactionDetails>;
   withdraw(token: string): Promise<ITransactionDetails>;
   getAllowedAmount(token: string): Promise<BigNumber>;
+  generateSignedCredential(token: string): Promise<BigNumber>;
+  getTransactionEstimationTime(gasPrice: BigNumber): Promise<BigNumber>;
   storeCredential(credential: ICredential): Promise<ITransactionDetails>;
   hasCredential(id: string): Promise<boolean>;
   isCredentialValid(id: string): Promise<boolean>;
