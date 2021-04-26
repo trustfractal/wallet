@@ -1,5 +1,6 @@
 import detectEthereumProvider from "@metamask/detect-provider";
 import {
+  BigNumber,
   BigNumberish,
   Contract,
   providers as ethersProviders,
@@ -119,9 +120,9 @@ class EthereumProviderService implements IEthereumProviderService {
         storingResult.chainId,
         storingResult.data,
         storingResult.from,
-        storingResult.gasLimit,
-        storingResult.gasPrice,
-        storingResult.value,
+        storingResult.gasLimit as BigNumber,
+        storingResult.gasPrice as BigNumber,
+        storingResult.value as BigNumber,
       );
 
       return transactionDetails.serialize();
@@ -264,9 +265,9 @@ class EthereumProviderService implements IEthereumProviderService {
         approveResult.chainId,
         approveResult.data,
         approveResult.from,
-        approveResult.gasLimit,
-        approveResult.gasPrice,
-        approveResult.value,
+        approveResult.gasLimit as BigNumber,
+        approveResult.gasPrice as BigNumber,
+        approveResult.value as BigNumber,
       );
 
       return transactionDetails.serialize();
@@ -318,9 +319,9 @@ class EthereumProviderService implements IEthereumProviderService {
       stakingResult.chainId,
       stakingResult.data,
       stakingResult.from,
-      stakingResult.gasLimit,
-      stakingResult.gasPrice,
-      stakingResult.value,
+      stakingResult.gasLimit as BigNumber,
+      stakingResult.gasPrice as BigNumber,
+      stakingResult.value as BigNumber,
     );
 
     return transactionDetails.serialize();
@@ -345,9 +346,9 @@ class EthereumProviderService implements IEthereumProviderService {
       withdrawResult.chainId,
       withdrawResult.data,
       withdrawResult.from,
-      withdrawResult.gasLimit,
-      withdrawResult.gasPrice,
-      withdrawResult.value,
+      withdrawResult.gasLimit as BigNumber,
+      withdrawResult.gasPrice as BigNumber,
+      withdrawResult.value as BigNumber,
     );
 
     return transactionDetails.serialize();

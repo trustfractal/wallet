@@ -94,17 +94,11 @@ jobs:
       - name: Build staging plugin extension
         run: yarn plugin:build
 
-      - name: Create staging artifact zip file
-        uses: papeloto/action-zip@v1
-        with:
-          files: plugin/build
-          dest: build-staging.zip
-
       - name: Upload staging artifact zip file
         uses: actions/upload-artifact@v2
         with:
           name: build-staging.zip
-          path: build-staging.zip
+          path: plugin/build
 
       - name: Setup production environment
         run: cp plugin/src/constants/addresses.production.ts plugin/src/constants/addresses.ts
@@ -112,14 +106,8 @@ jobs:
       - name: Build production plugin extension
         run: yarn plugin:build
 
-      - name: Create production artifact zip file
-        uses: papeloto/action-zip@v1
-        with:
-          files: plugin/build
-          dest: build-production.zip
-
       - name: Upload production artifact zip file
         uses: actions/upload-artifact@v2
         with:
           name: build-production.zip
-          path: build-production.zip
+          path: plugin/build
