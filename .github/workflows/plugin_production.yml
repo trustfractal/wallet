@@ -1,4 +1,4 @@
-name: Plugin Workflows
+name: Plugin Production Build Workflow
 
 on:
   push:
@@ -6,11 +6,6 @@ on:
       - master
     tags:
       - "*"
-  pull_request:
-    types: [opened, synchronize]
-    paths:
-      - "plugin/**"
-      - "!plugin/**/*.md"
 
 jobs:
   test-plugin:
@@ -87,18 +82,6 @@ jobs:
 
       - name: Build types
         run: yarn types:build
-
-      - name: Setup staging environment
-        run: cp plugin/src/constants/addresses.staging.ts plugin/src/constants/addresses.ts
-
-      - name: Build staging plugin extension
-        run: yarn plugin:build
-
-      - name: Upload staging artifact zip file
-        uses: actions/upload-artifact@v2
-        with:
-          name: build-staging.zip
-          path: plugin/build
 
       - name: Setup production environment
         run: cp plugin/src/constants/addresses.production.ts plugin/src/constants/addresses.ts
