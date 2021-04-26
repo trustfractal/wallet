@@ -41,15 +41,13 @@ export default abstract class BaseConnection implements IConnection {
     }
   }
 
-  private static applyMiddlewares(
+  private static async applyMiddlewares(
     middlewares: IMiddleware[],
     invokation: IInvokation,
-  ): Promise<void[]> {
-    return Promise.all(
-      middlewares.map((middleware: IMiddleware) =>
-        middleware.apply(invokation),
-      ),
-    );
+  ): Promise<void> {
+    for (const middleware of middlewares) {
+      await middleware.apply(invokation);
+    }
   }
 
   private handleResponse(msg: string): void {

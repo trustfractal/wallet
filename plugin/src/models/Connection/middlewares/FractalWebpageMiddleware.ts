@@ -1,8 +1,9 @@
 import { IMiddleware, IInvokation } from "@fractalwallet/types";
 import ContentScriptConnection from "@background/connection";
 import { FRACTAL_WEBSITE_HOSTNAME } from "@constants/common";
+import WindowsService from "@services/WindowsService";
 
-export function ensureIsOnFractalWebpage(port: chrome.runtime.Port) {
+function isOnFractalWebpage(port: chrome.runtime.Port): boolean {
   if (!port.sender || !port.sender.url) {
     throw new Error("Couldn't get sender");
   }
@@ -14,13 +15,15 @@ export function ensureIsOnFractalWebpage(port: chrome.runtime.Port) {
     : hostname;
 
   if (senderHostname !== FRACTAL_WEBSITE_HOSTNAME) {
-    throw new Error("Active tab is not on the fractal website domain.");
+    return false;
   }
 
   // check ssl
   if (protocol !== "https:") {
-    throw new Error("Not on a ssl connection.");
+    return false;
   }
+
+  return true;
 }
 
 export default class FractalWebpageMiddleware implements IMiddleware {
@@ -32,7 +35,18 @@ export default class FractalWebpageMiddleware implements IMiddleware {
       throw new Error("No active tabs could be found");
     }
 
-    // ensure that the active port is on the fractal domain
-    ensureIsOnFractalWebpage(activePort.port);
+    // checj if the active port is on the fractal domain
+    const onFractal = isOnFractalWebpage(activePort.port);
+
+    if (!onFractal) {
+      if (activePort.port?.sender?.tab?.id) {
+        WindowsService.redirectTab(
+          activePort.port?.sender?.tab?.id,
+          `https://${FRACTAL_WEBSITE_HOSTNAME}`,
+        );
+      }
+
+      throw new Error("Active tab is not on the fractal website domain.");
+    }
   }
 }

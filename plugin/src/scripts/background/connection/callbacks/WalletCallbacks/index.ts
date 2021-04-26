@@ -1,4 +1,5 @@
 import AuthMiddleware from "@models/Connection/middlewares/AuthMiddleware";
+import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
 
 import ConnectionTypes from "@models/Connection/types";
 
@@ -99,19 +100,19 @@ export const withdrawRequest = ([token]: [TokenTypes], port: string) =>
 const Callbacks = {
   [ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND]: {
     callback: getStakingDetails,
-    middlewares: [new AuthMiddleware()],
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
   [ConnectionTypes.APPROVE_STAKE_BACKGROUND]: {
     callback: approveStake,
-    middlewares: [new AuthMiddleware()],
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
   [ConnectionTypes.STAKE_BACKGROUND]: {
     callback: stakeRequest,
-    middlewares: [new AuthMiddleware()],
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
   [ConnectionTypes.WITHDRAW_BACKGROUND]: {
     callback: withdrawRequest,
-    middlewares: [new AuthMiddleware()],
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
 };
 

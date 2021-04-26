@@ -3,9 +3,10 @@ import Credential from "@models/Credential";
 import UserStore from "@redux/stores/user";
 
 import ContentScriptConnection from "@background/connection";
-import AuthMiddleware from "@models/Connection/middlewares/AuthMiddleware";
-import ConnectionTypes from "@models/Connection/types";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
+import AuthMiddleware from "@models/Connection/middlewares/AuthMiddleware";
+import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
+import ConnectionTypes from "@models/Connection/types";
 
 import credentialsActions from "@redux/stores/user/reducers/credentials";
 import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
@@ -122,15 +123,15 @@ export const isCredentialValid = ([id]: [string], port: string) =>
 const Callbacks = {
   [ConnectionTypes.CREDENTIAL_STORE_BACKGROUND]: {
     callback: credentialStore,
-    middlewares: [new AuthMiddleware()],
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
   [ConnectionTypes.HAS_CREDENTIAL_BACKGROUND]: {
     callback: hasCredential,
-    middlewares: [new AuthMiddleware()],
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
   [ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND]: {
     callback: isCredentialValid,
-    middlewares: [new AuthMiddleware()],
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
 };
 
