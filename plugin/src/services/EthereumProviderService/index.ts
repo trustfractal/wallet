@@ -13,15 +13,14 @@ import {
   ClaimsRegistry as IClaimsRegistry,
   IEthereumProviderService,
 } from "@fractalwallet/types";
-import { AttestationRequest, Claim, ClaimType } from "@fractalwallet/sdk";
-import {
-  IClaimProperties,
-  IClaimPseudoSchema,
-} from "@fractalwallet/sdk/src/types";
+import { Claim } from "@fractalwallet/sdk";
+import { IClaimProperties } from "@fractalwallet/sdk/src/types";
 
 import StakingDetails from "@models/Staking/StakingDetails";
 import TokenTypes from "@models/Token/types";
 import Credential from "@models/Credential";
+import AttestationRequest from "@models/AttestationRequest";
+import ClaimType from "@models/ClaimType";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 import {
@@ -169,35 +168,29 @@ class EthereumProviderService implements IEthereumProviderService {
     }
   }
 
-  public async generateSignedCredential(
+  public async getAttestationRequest(
     address: string,
-    credentialId: string,
+    level: string,
     serializedProperties: string,
-    serializedPseudoSchema: string,
   ): Promise<string> {
     // prepare data
     const properties: IClaimProperties = JSON.parse(serializedProperties);
-    const pseudoSchema: IClaimPseudoSchema = JSON.parse(serializedPseudoSchema);
     const signer = this.web3Provider!.getSigner(address);
 
-    const claimType = ClaimType.fromSchema(pseudoSchema, address);
+    // Generate the claim type
+    const pseudoSchema = ClaimType.buildSchemaFromLevel(level);
+    const claimType = ClaimType.fromSchema(pseudoSchema, signer._address);
 
     // Create a claim with our data
-    const claim = new Claim(claimType, properties, address);
+    const claim = new Claim(claimType, properties, signer._address);
 
     // Generate an AttestationRequest
-    const request = AttestationRequest.fromClaim(claim);
+    const request = new AttestationRequest(AttestationRequest.fromClaim(claim));
 
     const claimerSignature = await signer.signMessage(request.rootHash);
     request.claimerSignature = claimerSignature;
 
-    // As an attester generate a credential
-    const credential = new Credential(
-      Credential.fromRequest(request),
-      credentialId,
-    );
-
-    return JSON.stringify(credential);
+    return request.serialize();
   }
 
   public async getStakingDetails(

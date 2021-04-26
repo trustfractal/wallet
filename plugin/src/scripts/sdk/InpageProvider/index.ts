@@ -6,11 +6,7 @@ import {
   BigNumber,
 } from "ethers";
 import Credential from "@models/Credential";
-import { AttestationRequest, Claim, ClaimType } from "@fractalwallet/sdk";
-import {
-  IClaimProperties,
-  IClaimPseudoSchema,
-} from "@fractalwallet/sdk/src/types";
+import AttestationRequest from "@models/AttestationRequest";
 
 import ConnectionTypes from "@models/Connection/types";
 import EthereumProviderService from "@services/EthereumProviderService";
@@ -121,26 +117,25 @@ export default class InpageProvider implements IFractalInpageProvider {
     return TransactionDetails.parse(serializedTransactionDetails);
   }
 
-  public async generateSignedCredential(
+  public async getAttestationRequest(
     credentialId: string,
   ): Promise<ICredential> {
     this.ensureFractalIsInitialized();
 
     // prepare data
     const properties = { name: "Foo", age: 20 };
-    const pseudoSchema = ClaimType.buildSchema("Foo", {
-      name: { type: "string" },
-      age: { type: "number" },
-    });
+    const level = "foo";
 
     // call the signer
-    const serializedCredential = await ExtensionConnection.invoke(
-      ConnectionTypes.GENERATE_SIGNED_CREDENTIAL_BACKGROUND,
-      [credentialId, JSON.stringify(properties), JSON.stringify(pseudoSchema)],
+    const serializedRequest = await ExtensionConnection.invoke(
+      ConnectionTypes.GET_ATTESTATION_REQUEST_BACKGROUND,
+      [level, JSON.stringify(properties)],
     );
 
-    // parse credential
-    const credential = JSON.parse(serializedCredential);
+    // parse request
+    const request: AttestationRequest = AttestationRequest.parse(
+      serializedRequest,
+    );
 
     // init claims registry smart contract
     const attesterWallet = Wallet.fromMnemonic(
@@ -154,6 +149,10 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
 
     // add attester address
+    const credential = new Credential(
+      Credential.fromRequest(request),
+      credentialId,
+    );
     credential.attesterAddress = attesterWallet.address;
 
     // sign the signable hash with attester's wallet

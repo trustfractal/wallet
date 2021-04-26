@@ -22,7 +22,7 @@ export interface IFractalInpageProvider {
   ): Promise<ITransactionDetails>;
   withdraw(token: string): Promise<ITransactionDetails>;
   getAllowedAmount(token: string): Promise<BigNumber>;
-  generateSignedCredential(credentialId: string): Promise<ICredential>;
+  getAttestationRequest(credentialId: string): Promise<ICredential>;
   getTransactionEstimationTime(gasPrice: BigNumber): Promise<BigNumber>;
   storeCredential(credential: ICredential): Promise<ITransactionDetails>;
   hasCredential(id: string): Promise<boolean>;

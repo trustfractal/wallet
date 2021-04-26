@@ -6,17 +6,15 @@ export const credentialStore = ([address, serializedCredential]: [
   string,
 ]) => EthereumProviderService.credentialStore(address, serializedCredential);
 
-export const generateSignedCredential = ([
+export const getAttestationRequest = ([
   address,
   credentialId,
   serializedProperties,
-  serializedPseudoSchema,
-]: [string, string, string, string]) =>
-  EthereumProviderService.generateSignedCredential(
+]: [string, string, string]) =>
+  EthereumProviderService.getAttestationRequest(
     address,
     credentialId,
     serializedProperties,
-    serializedPseudoSchema,
   );
 
 export const isCredentialValid = ([address, serializedCredential]: [
@@ -26,8 +24,8 @@ export const isCredentialValid = ([address, serializedCredential]: [
 
 const Callbacks = {
   [ConnectionTypes.CREDENTIAL_STORE_INPAGE]: { callback: credentialStore },
-  [ConnectionTypes.GENERATE_SIGNED_CREDENTIAL_INPAGE]: {
-    callback: generateSignedCredential,
+  [ConnectionTypes.GET_ATTESTATION_REQUEST_INPAGE]: {
+    callback: getAttestationRequest,
   },
   [ConnectionTypes.IS_CREDENTIAL_VALID_INPAGE]: { callback: isCredentialValid },
 };
