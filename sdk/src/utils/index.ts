@@ -1,3 +1,5 @@
+import sort from "./sort";
+
 export * from "./sort";
 
 export const isArray = (term: any): boolean => Array.isArray(term);
@@ -13,3 +15,15 @@ export const normaliseObject = (obj: any) => {
     JSON.stringify({ [key]: value })
   );
 };
+
+export const compareObjects = (objA: object, objB: object) => {
+  const sortedA = sort.deepSortObject(objA);
+  const sortedB = sort.deepSortObject(objB);
+
+  const strA = JSON.stringify(sortedA);
+  const strB = JSON.stringify(sortedB);
+
+  return strA === strB;
+};
+
+export default { isArray, isPlainObject, compareObjects, Sort: sort };

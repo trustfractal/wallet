@@ -40,3 +40,5 @@ export const deepSortArray = (arr: Array<any>): Array<any> =>
 
     return compare(strA, strB);
   });
+
+export default { deepSort, deepSortObject, deepSortArray };
