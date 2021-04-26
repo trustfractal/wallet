@@ -1,5 +1,6 @@
 import detectEthereumProvider from "@metamask/detect-provider";
 import {
+  BigNumber,
   BigNumberish,
   Contract,
   providers as ethersProviders,
@@ -22,7 +23,11 @@ import {
   ERROR_PROVIDER_NOT_INITIALIZED,
 } from "@services/EthereumProviderService/Errors";
 
-import ContractsAddresses from "@contracts/addresses.json";
+import {
+  CLAIMS_REGISTRY_ADDRESS,
+  ERC_20_ADDRESSES,
+  STAKING_ADDRESSES,
+} from "@constants/addresses";
 import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
 import Staking from "@contracts/Staking.json";
 import ERC20 from "@contracts/ERC20.json";
@@ -97,7 +102,7 @@ class EthereumProviderService implements IEthereumProviderService {
 
       // init smart contract
       const claimsRegistryContract = new Contract(
-        ContractsAddresses.CLAIMS_REGISTRY,
+        CLAIMS_REGISTRY_ADDRESS,
         ClaimsRegistry.abi,
         signer,
       ) as IClaimsRegistry;
@@ -115,9 +120,9 @@ class EthereumProviderService implements IEthereumProviderService {
         storingResult.chainId,
         storingResult.data,
         storingResult.from,
-        storingResult.gasLimit,
-        storingResult.gasPrice,
-        storingResult.value,
+        storingResult.gasLimit as BigNumber,
+        storingResult.gasPrice as BigNumber,
+        storingResult.value as BigNumber,
       );
 
       return transactionDetails.serialize();
@@ -138,7 +143,7 @@ class EthereumProviderService implements IEthereumProviderService {
 
       // init smart contract
       const claimsRegistryContract = new Contract(
-        ContractsAddresses.CLAIMS_REGISTRY,
+        CLAIMS_REGISTRY_ADDRESS,
         ClaimsRegistry.abi,
         signer,
       ) as IClaimsRegistry;
@@ -167,12 +172,12 @@ class EthereumProviderService implements IEthereumProviderService {
 
       // init smart contract
       const tokenContract = new Contract(
-        ContractsAddresses.ERC_20[token],
+        ERC_20_ADDRESSES[token],
         ERC20.abi,
         signer,
       ) as IERC20;
       const stakingContract = new Contract(
-        ContractsAddresses.STAKING[token],
+        STAKING_ADDRESSES[token],
         Staking.abi,
         signer,
       ) as IStaking;
@@ -190,7 +195,7 @@ class EthereumProviderService implements IEthereumProviderService {
       // get staking details
       const stakingAllowedAmount = await tokenContract.allowance(
         address,
-        ContractsAddresses.STAKING[token],
+        STAKING_ADDRESSES[token],
       );
       const stakingStartDate = await stakingContract.startDate();
       const stakingEndDate = await stakingContract.endDate();
@@ -237,7 +242,7 @@ class EthereumProviderService implements IEthereumProviderService {
 
     // init smart contract
     const tokenContract = new Contract(
-      ContractsAddresses.ERC_20[token],
+      ERC_20_ADDRESSES[token],
       ERC20.abi,
       signer,
     ) as IERC20;
@@ -245,13 +250,13 @@ class EthereumProviderService implements IEthereumProviderService {
     // check if approve is needed
     const allowanceValue = await tokenContract.allowance(
       address,
-      ContractsAddresses.STAKING[token],
+      STAKING_ADDRESSES[token],
     );
 
     if (allowanceValue.lt(etherAmount)) {
       // pre-approve stake for the address
       const approveResult = await tokenContract.approve(
-        ContractsAddresses.STAKING[token],
+        STAKING_ADDRESSES[token],
         etherAmount,
       );
 
@@ -260,9 +265,9 @@ class EthereumProviderService implements IEthereumProviderService {
         approveResult.chainId,
         approveResult.data,
         approveResult.from,
-        approveResult.gasLimit,
-        approveResult.gasPrice,
-        approveResult.value,
+        approveResult.gasLimit as BigNumber,
+        approveResult.gasPrice as BigNumber,
+        approveResult.value as BigNumber,
       );
 
       return transactionDetails.serialize();
@@ -282,12 +287,12 @@ class EthereumProviderService implements IEthereumProviderService {
 
     // init smart contract
     const tokenContract = new Contract(
-      ContractsAddresses.ERC_20[token],
+      ERC_20_ADDRESSES[token],
       ERC20.abi,
       signer,
     ) as IERC20;
     const stakingContract = new Contract(
-      ContractsAddresses.STAKING[token],
+      STAKING_ADDRESSES[token],
       Staking.abi,
       signer,
     ) as IStaking;
@@ -295,15 +300,12 @@ class EthereumProviderService implements IEthereumProviderService {
     // check if approve is needed
     const allowanceValue = await tokenContract.allowance(
       address,
-      ContractsAddresses.STAKING[token],
+      STAKING_ADDRESSES[token],
     );
 
     if (allowanceValue.lt(etherAmount)) {
       // pre-approve stake for the address
-      await tokenContract.approve(
-        ContractsAddresses.STAKING[token],
-        etherAmount,
-      );
+      await tokenContract.approve(STAKING_ADDRESSES[token], etherAmount);
     }
 
     // stake amount
@@ -317,9 +319,9 @@ class EthereumProviderService implements IEthereumProviderService {
       stakingResult.chainId,
       stakingResult.data,
       stakingResult.from,
-      stakingResult.gasLimit,
-      stakingResult.gasPrice,
-      stakingResult.value,
+      stakingResult.gasLimit as BigNumber,
+      stakingResult.gasPrice as BigNumber,
+      stakingResult.value as BigNumber,
     );
 
     return transactionDetails.serialize();
@@ -331,7 +333,7 @@ class EthereumProviderService implements IEthereumProviderService {
 
     // init smart contract
     const stakingContract = new Contract(
-      ContractsAddresses.STAKING[token],
+      STAKING_ADDRESSES[token],
       Staking.abi,
       signer,
     );
@@ -344,9 +346,9 @@ class EthereumProviderService implements IEthereumProviderService {
       withdrawResult.chainId,
       withdrawResult.data,
       withdrawResult.from,
-      withdrawResult.gasLimit,
-      withdrawResult.gasPrice,
-      withdrawResult.value,
+      withdrawResult.gasLimit as BigNumber,
+      withdrawResult.gasPrice as BigNumber,
+      withdrawResult.value as BigNumber,
     );
 
     return transactionDetails.serialize();
