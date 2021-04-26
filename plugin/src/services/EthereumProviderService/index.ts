@@ -274,6 +274,29 @@ class EthereumProviderService implements IEthereumProviderService {
     }
   }
 
+  public async getAllowedAmount(
+    address: string,
+    token: TokenTypes,
+  ): Promise<string> {
+    // prepare data
+    const signer = this.web3Provider!.getSigner(address);
+
+    // init smart contract
+    const tokenContract = new Contract(
+      ERC_20_ADDRESSES[token],
+      ERC20.abi,
+      signer,
+    ) as IERC20;
+
+    // get allowance value
+    const allowanceValue = await tokenContract.allowance(
+      address,
+      STAKING_ADDRESSES[token],
+    );
+
+    return allowanceValue.toJSON();
+  }
+
   public async stake(
     address: string,
     amount: string,

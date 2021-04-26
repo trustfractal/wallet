@@ -15,5 +15,6 @@ export interface IEthereumProviderService {
     amount: string,
     token: string
   ): Promise<string | undefined>;
+  getAllowedAmount(address: string, token: string): Promise<string>;
   withdraw(address: string, token: string): Promise<string>;
 }

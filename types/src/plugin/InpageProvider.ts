@@ -1,3 +1,4 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import { IConnectionStatus } from "./Connection";
 import { ICredential } from "./Credential";
 import { IStakingDetails } from "./Staking";
@@ -15,6 +16,7 @@ export interface IFractalInpageProvider {
     credentialId: string
   ): Promise<ITransactionDetails>;
   withdraw(token: string): Promise<ITransactionDetails>;
+  getAllowedAmount(token: string): Promise<BigNumber>;
   storeCredential(credential: ICredential): Promise<ITransactionDetails>;
   hasCredential(id: string): Promise<boolean>;
   isCredentialValid(id: string): Promise<boolean>;

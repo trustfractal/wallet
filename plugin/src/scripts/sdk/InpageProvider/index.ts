@@ -3,6 +3,7 @@ import {
   Contract,
   utils as ethersUtils,
   providers as ethersProviders,
+  BigNumber,
 } from "ethers";
 import Credential from "@models/Credential";
 import { AttestationRequest, Claim, ClaimType } from "@fractalwallet/sdk";
@@ -79,6 +80,17 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
 
     return TransactionDetails.parse(serializedTransactionDetails);
+  }
+
+  public async getAllowedAmount(token: string): Promise<BigNumber> {
+    this.ensureFractalIsInitialized();
+
+    const serializedAllowedAmount = await ExtensionConnection.invoke(
+      ConnectionTypes.GET_ALLOWED_AMOUNT_BACKGROUND,
+      [token],
+    );
+
+    return BigNumber.from(serializedAllowedAmount);
   }
 
   public async withdraw(token: TokenTypes): Promise<ITransactionDetails> {

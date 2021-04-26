@@ -79,6 +79,24 @@ export const stakeRequest = (
     }
   });
 
+export const getAllowedAmount = ([token]: [TokenTypes], port: string) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const address = getAccount(UserStore.getStore().getState());
+
+      const serializedAllowedAmount = await ContentScriptConnection.invoke(
+        ConnectionTypes.GET_ALLOWED_AMOUNT_INPAGE,
+        [address, token],
+        port,
+      );
+
+      resolve(serializedAllowedAmount);
+    } catch (error) {
+      console.error(error);
+      reject(error);
+    }
+  });
+
 export const withdrawRequest = ([token]: [TokenTypes], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
@@ -108,6 +126,10 @@ const Callbacks = {
   },
   [ConnectionTypes.STAKE_BACKGROUND]: {
     callback: stakeRequest,
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
+  },
+  [ConnectionTypes.GET_ALLOWED_AMOUNT_BACKGROUND]: {
+    callback: getAllowedAmount,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
   [ConnectionTypes.WITHDRAW_BACKGROUND]: {
