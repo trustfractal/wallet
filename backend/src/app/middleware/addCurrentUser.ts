@@ -3,10 +3,9 @@ import { Request, Response } from "express";
 
 import { AuthenticatedRequest } from "../types";
 import Controller from "../controllers/Controller";
+import { getEnv } from "../../utils";
 
-const megalodonUrl = process.env["MEGALODON_URL"];
-
-if (!megalodonUrl) throw new Error("Missing MEGALODON_URL env variable");
+const megalodonUrl = getEnv("MEGALODON_URL");
 
 const endpoint = `${megalodonUrl}/users/me`;
 

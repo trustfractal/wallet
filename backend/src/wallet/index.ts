@@ -1,10 +1,8 @@
 import { Wallet } from "ethers";
+import { getEnv } from "../utils";
 
-const mnemonic = process.env["BACKEND_WALLET_MNEMONIC"];
-const path = process.env["BACKEND_WALLET_PATH"];
-
-if (!mnemonic) throw new Error("Missing BACKEND_WALLET_MNEMONIC env variable");
-if (!path) throw new Error("Missing BACKEND_WALLET_PATH env variable");
+const mnemonic = getEnv("BACKEND_WALLET_MNEMONIC");
+const path = getEnv("BACKEND_WALLET_PATH");
 
 const wallet = Wallet.fromMnemonic(mnemonic, path);
 

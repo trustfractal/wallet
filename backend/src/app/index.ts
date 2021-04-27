@@ -4,10 +4,14 @@ import { AuthenticatedRequest } from "./types";
 
 import CredentialCrontroller from "./controllers/CredentialController";
 import HealthcheckController from "./controllers/HealthcheckController";
+import AddressController from "./controllers/AddressController";
+
 import ensureAuthentication from "./middleware/ensureAuthentication";
 import addCurrentUser from "./middleware/addCurrentUser";
 
-const port = process.env["PORT"] || 3000;
+import { getEnv } from "../utils";
+
+const port = getEnv("PORT", 3000);
 
 const app = express();
 app.use(express.json());
@@ -22,6 +26,10 @@ app.post("/credential", async (req, res) => {
 
 app.get("/healthcheck", (req, res) => {
   new HealthcheckController(req, res).show();
+});
+
+app.get("/addresses", (req, res) => {
+  new AddressController(req, res).show();
 });
 
 const start = () =>
