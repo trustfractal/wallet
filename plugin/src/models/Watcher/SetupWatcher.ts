@@ -46,7 +46,12 @@ export default class SetupWatcher extends Watcher implements ISetupWatcher {
 
     const failed = {
       action: walletTypes.CONNECT_WALLET_FAILED,
-      callback: onFailed,
+      callback: () => {
+        unlisten();
+        clearTimeout(timeout);
+
+        onFailed();
+      },
     };
 
     // wait the user to finish the setup

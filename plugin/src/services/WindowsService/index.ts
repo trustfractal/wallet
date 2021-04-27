@@ -191,16 +191,28 @@ class WindowsService {
   }
 
   async getActiveTab(): Promise<chrome.tabs.Tab | undefined> {
-    const tabs = await this.queryTabs({
-      active: true,
-      lastFocusedWindow: true,
+    return new Promise<chrome.tabs.Tab | undefined>((resolve) => {
+      // get last normal window focused
+      chrome.windows.getLastFocused(
+        {
+          // @ts-ignore
+          windowTypes: ["normal"],
+        },
+        async (lastWindowFocused) => {
+          // get window active tab
+          const tabs = await this.queryTabs({
+            windowId: lastWindowFocused.id,
+            active: true,
+          });
+
+          if (tabs.length === 0) {
+            resolve(undefined);
+          }
+
+          resolve(tabs[0]);
+        },
+      );
     });
-
-    if (tabs.length === 0) {
-      return;
-    }
-
-    return tabs[0];
   }
 }
 

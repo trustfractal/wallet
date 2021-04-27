@@ -9,11 +9,13 @@ import "@popup/styles.css";
 import RoutesPaths from "@popup/routes/paths";
 import { useAppSelector } from "@redux/stores/application/context";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
+import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 
 function HomeScreen() {
   const history = useHistory();
 
   const account = useUserSelector(getAccount);
+  const credentials = useUserSelector(getCredentials);
   const setup = useAppSelector(isSetup);
 
   // redirect to wallet connect
@@ -21,7 +23,7 @@ function HomeScreen() {
     history.push(RoutesPaths.CONNECT_WALLET);
   }
 
-  return <Home account={account} />;
+  return <Home account={account} credentials={credentials} />;
 }
 
 export default HomeScreen;

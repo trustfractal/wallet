@@ -1,38 +1,37 @@
 import ContentScriptConnection from "@background/connection";
 import ConnectionTypes from "@models/Connection/types";
-import { ensureIsOnFractalWebpage } from "@models/Connection/middlewares/FractalWebpageMiddleware";
+import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
 
 import walletActions, { walletTypes } from "@redux/stores/user/reducers/wallet";
 import AppStore from "@redux/stores/application";
 import appActions from "@redux/stores/application/reducers/app";
+
+import {
+  ERROR_NO_ACTIVE_TAB,
+  ERROR_NO_ACCOUNT,
+} from "@models/Connection/Errors";
 
 export const connectWallet = () => {
   return async (dispatch) => {
     dispatch(walletActions.connectWalletPending());
 
     try {
+      // ensure that the active port is on the fractal domain
+      await new FractalWebpageMiddleware().apply();
+
       // get active connected chrome port
       const activePort = await ContentScriptConnection.getActiveConnectionPort();
 
-      if (!activePort) {
-        throw new Error("No active tabs could be found");
-      }
-
-      // ensure that the active port is on the fractal domain
-      const { port, id } = activePort;
-
-      ensureIsOnFractalWebpage(port);
+      if (!activePort) throw ERROR_NO_ACTIVE_TAB();
 
       // get ethereumm wallet account address
       const account = await ContentScriptConnection.invoke(
-        ConnectionTypes.GET_ACCOUNT_ADDRESS,
+        ConnectionTypes.GET_ACCOUNT_ADDRESS_INPAGE,
         [],
-        id,
+        activePort.id,
       );
 
-      if (!account) {
-        throw new Error("No accounts could be found");
-      }
+      if (!account) throw ERROR_NO_ACCOUNT();
 
       // save app setup flag
       AppStore.getStore().dispatch(appActions.setSetup(true));

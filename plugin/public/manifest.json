@@ -4,17 +4,7 @@
   "version": "0.0.1",
   "short_name": "Fractal ID Wallet",
   "name": "Fractal ID Wallet",
-  "description": "The Fractal ID Wallet is a browser extension that lets users receive staking rewards for issuing a validated credential to a Decentralized ID (DID) contract.",
-  "commands": {
-    "_execute_browser_action": {
-      "suggested_key": {
-        "windows": "Alt+Shift+F",
-        "mac": "Alt+Shift+F",
-        "chromeos": "Alt+Shift+F",
-        "linux": "Alt+Shift+F"
-      }
-    }
-  },
+  "description": "The Fractal ID Wallet is a browser extension that lets users receive staking rewards for issuing a credential to a DID contract.",
   "action": {
     "default_title": "Fractal ID Wallet",
     "default_popup": "popup.html",

@@ -1,10 +1,15 @@
 import { IMiddleware, IInvokation } from "@fractalwallet/types";
-import { authWatcher, setupWatcher } from "@redux/middlewares/watcher";
+import { authWatcher, setupWatcher } from "@redux/middlewares/watchers";
 
 import AppStore from "@redux/stores/application";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 import { isLoggedIn } from "@redux/stores/application/reducers/auth/selectors";
 import WindowsService from "@services/WindowsService";
+import {
+  ERROR_LOGIN_WINDOW_OPEN,
+  ERROR_LOGIN_TIMEOUT,
+  ERROR_LOGIN_WINDOW_CLOSED,
+} from "@models/Connection/Errors";
 
 function loginFlow(): Promise<void> {
   return new Promise(async (resolve, reject) => {
@@ -14,14 +19,15 @@ function loginFlow(): Promise<void> {
     const window = await WindowsService.createPopup();
 
     if (!window) {
-      throw new Error("Could not create extension popup to login");
+      reject(ERROR_LOGIN_WINDOW_OPEN());
+      return;
     }
 
     // register a listener for on close window event
     chrome.windows.onRemoved.addListener((windowId) => {
       if (windowId === window.id) {
-        reject("login failed");
         unlisten();
+        reject(ERROR_LOGIN_WINDOW_CLOSED());
       }
     });
 
@@ -34,7 +40,7 @@ function loginFlow(): Promise<void> {
       resolve();
     };
 
-    const onLoginFailed = async () => {
+    const onLoginFailed = () => {
       // let the user try again
     };
 
@@ -43,7 +49,7 @@ function loginFlow(): Promise<void> {
       await WindowsService.closeWindow(window.id);
 
       // resolve promise
-      reject("login timed out");
+      reject(ERROR_LOGIN_TIMEOUT());
     };
 
     // register listener
@@ -64,14 +70,15 @@ function setupFlow(): Promise<void> {
     const window = await WindowsService.createPopup();
 
     if (!window) {
-      throw new Error("Could not create extension popup to setup");
+      reject(ERROR_LOGIN_WINDOW_OPEN());
+      return;
     }
 
     // register a listener for on close window event
     chrome.windows.onRemoved.addListener((windowId) => {
       if (windowId === window.id) {
-        reject("setup failed");
         unlisten();
+        reject(ERROR_LOGIN_WINDOW_CLOSED());
       }
     });
 
@@ -90,7 +97,7 @@ function setupFlow(): Promise<void> {
       await WindowsService.closeWindow(window.id);
 
       // resolve promise
-      reject("setup timed out");
+      reject(ERROR_LOGIN_TIMEOUT());
     };
 
     // register listener

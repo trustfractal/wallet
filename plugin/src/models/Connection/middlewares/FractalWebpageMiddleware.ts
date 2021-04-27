@@ -1,10 +1,18 @@
 import { IMiddleware, IInvokation } from "@fractalwallet/types";
 import ContentScriptConnection from "@background/connection";
-import { FRACTAL_WEBSITE_HOSTNAME } from "@constants/common";
+import WindowsService from "@services/WindowsService";
 
-export function ensureIsOnFractalWebpage(port: chrome.runtime.Port) {
+import {
+  ERROR_NO_SENDER,
+  ERROR_NO_ACTIVE_TAB,
+  ERROR_NOT_ON_FRACTAL,
+} from "@models/Connection/Errors";
+
+import env from "@environment/index";
+
+function isOnFractalWebpage(port: chrome.runtime.Port): boolean {
   if (!port.sender || !port.sender.url) {
-    throw new Error("Couldn't get sender");
+    throw ERROR_NO_SENDER();
   }
 
   const { hostname, protocol } = new URL(port.sender.url);
@@ -13,14 +21,16 @@ export function ensureIsOnFractalWebpage(port: chrome.runtime.Port) {
     ? hostname.substr(4)
     : hostname;
 
-  if (senderHostname !== FRACTAL_WEBSITE_HOSTNAME) {
-    throw new Error("Active tab is not on the fractal website domain.");
+  if (senderHostname !== env.FRACTAL_WEBSITE_HOSTNAME) {
+    return false;
   }
 
   // check ssl
   if (protocol !== "https:") {
-    throw new Error("Not on a ssl connection.");
+    return false;
   }
+
+  return true;
 }
 
 export default class FractalWebpageMiddleware implements IMiddleware {
@@ -29,10 +39,21 @@ export default class FractalWebpageMiddleware implements IMiddleware {
     const activePort = await ContentScriptConnection.getActiveConnectionPort();
 
     if (!activePort) {
-      throw new Error("No active tabs could be found");
+      throw ERROR_NO_ACTIVE_TAB();
     }
 
-    // ensure that the active port is on the fractal domain
-    ensureIsOnFractalWebpage(activePort.port);
+    // checj if the active port is on the fractal domain
+    const onFractal = isOnFractalWebpage(activePort.port);
+
+    if (!onFractal) {
+      if (activePort.port?.sender?.tab?.id) {
+        WindowsService.redirectTab(
+          activePort.port?.sender?.tab?.id,
+          `https://${env.FRACTAL_WEBSITE_HOSTNAME}`,
+        );
+      }
+
+      throw ERROR_NOT_ON_FRACTAL();
+    }
   }
 }

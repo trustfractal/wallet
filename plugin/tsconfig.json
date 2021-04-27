@@ -25,7 +25,8 @@
       "@popup/*": ["src/popup/*"],
       "@redux/*": ["src/redux/*"],
       "@services/*": ["src/services/*"],
-      "@constants/*": ["src/constants/*"],
+      "@environment/*": ["src/environment/*"],
+      "@contracts/*": ["src/contracts/*"],
       "@utils/*": ["src/utils/*"]
     }
   },

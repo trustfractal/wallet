@@ -11,6 +11,11 @@ import {
 } from "@fractalwallet/types";
 
 import ConnectionNames from "@models/Connection/names";
+import {
+  ERROR_HANDLE_INVOKATION,
+  ERROR_HANDLE_MESSAGE,
+  ERROR_HANDLE_RESPONSE,
+} from "@models/Connection/Errors";
 
 export default abstract class BaseConnection implements IConnection {
   public from: IConnection["from"];
@@ -37,26 +42,24 @@ export default abstract class BaseConnection implements IConnection {
     } else if (type === Invokation.NAME) {
       this.handleInvokation(message);
     } else {
-      throw new Error(`Unexpected message ${message} of type ${type}`);
+      throw ERROR_HANDLE_MESSAGE(message, type);
     }
   }
 
-  private static applyMiddlewares(
+  private static async applyMiddlewares(
     middlewares: IMiddleware[],
     invokation: IInvokation,
-  ): Promise<void[]> {
-    return Promise.all(
-      middlewares.map((middleware: IMiddleware) =>
-        middleware.apply(invokation),
-      ),
-    );
+  ): Promise<void> {
+    for (const middleware of middlewares) {
+      await middleware.apply(invokation);
+    }
   }
 
   private handleResponse(msg: string): void {
     const { value, id, success } = Response.parse(msg);
     const response = this.responses[id];
 
-    if (!response) throw new Error(`Unexpected response message ${msg}`);
+    if (!response) throw ERROR_HANDLE_RESPONSE(msg);
 
     const { resolve, reject } = response;
     success ? resolve(value) : reject(value);
@@ -69,10 +72,9 @@ export default abstract class BaseConnection implements IConnection {
     const { method, args, id, port } = message;
     const invokation = this.invokations[method];
 
-    try {
-      if (!invokation)
-        throw new Error(`Unexpected invokation method ${method}`);
+    if (!invokation) throw ERROR_HANDLE_INVOKATION(msg);
 
+    try {
       // apply middlewares
       await BaseConnection.applyMiddlewares(invokation.middlewares, message);
 
@@ -81,7 +83,7 @@ export default abstract class BaseConnection implements IConnection {
 
       const response = new Response(method, value, id, true, port);
       this.postMessage(response);
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
 
       const response = new Response(method, error, id, false, port);

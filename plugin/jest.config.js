@@ -31,7 +31,8 @@ module.exports = {
     "^\\@popup(.*)$": "<rootDir>/src/popup/$1",
     "^\\@redux(.*)$": "<rootDir>/src/redux/$1",
     "^\\@services(.*)$": "<rootDir>/src/services/$1",
-    "^\\@constants(.*)$": "<rootDir>/src/constants/$1",
+    "^\\@environment(.*)$": "<rootDir>/src/environment/$1",
+    "^\\@contracts(.*)$": "<rootDir>/src/contracts/$1",
     "^\\@utils(.*)$": "<rootDir>/src/utils/$1",
   },
   moduleFileExtensions: [

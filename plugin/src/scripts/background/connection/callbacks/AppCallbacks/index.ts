@@ -9,6 +9,7 @@ import {
   isRegistered,
 } from "@redux/stores/application/reducers/auth/selectors";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
+import ConnectionStatus from "@models/Connection/ConnectionStatus";
 
 export const verifyConnection = () =>
   new Promise((resolve, reject) => {
@@ -20,12 +21,14 @@ export const verifyConnection = () =>
 
       const setup = isSetup(AppStore.getStore().getState());
 
-      resolve({
+      const status = new ConnectionStatus(
         version,
         registered,
-        locked: !loggedIn,
+        !loggedIn,
         setup,
-      });
+      );
+
+      resolve(status.serialize());
     } catch (error) {
       console.error(error);
       reject(error);
@@ -33,11 +36,13 @@ export const verifyConnection = () =>
   });
 
 const Callbacks = {
-  [ConnectionTypes.SETUP_PLUGIN]: {
+  [ConnectionTypes.SETUP_PLUGIN_BACKGROUND]: {
     callback: verifyConnection,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
-  [ConnectionTypes.VERIFY_CONNECTION]: { callback: verifyConnection },
+  [ConnectionTypes.VERIFY_CONNECTION_BACKGROUND]: {
+    callback: verifyConnection,
+  },
 };
 
 export default Callbacks;

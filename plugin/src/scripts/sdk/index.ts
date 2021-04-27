@@ -1,6 +1,6 @@
-import FractalSDK from "src/scripts/sdk/FractalSDK";
+import InpageProvider from "src/scripts/sdk/InpageProvider";
 
 (() => {
-  window.Fractal = new FractalSDK();
+  window.Fractal = new InpageProvider();
   window.Fractal.init();
 })();

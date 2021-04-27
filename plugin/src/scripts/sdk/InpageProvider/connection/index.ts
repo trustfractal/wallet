@@ -2,8 +2,8 @@ import ExtensionConnection from "@models/Connection/ExtensionConnection";
 import ConnectionTypes from "@models/Connection/types";
 import { extension } from "@models/Connection/params";
 
-import callbacks from "@sdk/FractalSDK/connection/callbacks";
-import { ERROR_EXTENSION_CONNECTION_NOT_INITIALIZED } from "@sdk/FractalSDK/connection/Errors";
+import callbacks from "@sdk/InpageProvider/connection/callbacks";
+import { ERROR_EXTENSION_CONNECTION_NOT_INITIALIZED } from "@sdk/InpageProvider/Errors";
 
 class Connection {
   private static instance?: Connection;
