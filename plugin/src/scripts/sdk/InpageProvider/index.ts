@@ -54,7 +54,7 @@ export default class InpageProvider implements IFractalInpageProvider {
 
   public async getTransactionEstimationTime(
     gasPrice: BigNumber,
-  ): Promise<BigNumber> {
+  ): Promise<BigNumber | undefined> {
     this.ensureFractalIsInitialized();
 
     const serializedEstimatedTime = await ExtensionConnection.invoke(
@@ -62,7 +62,7 @@ export default class InpageProvider implements IFractalInpageProvider {
       [gasPrice.toJSON()],
     );
 
-    return BigNumber.from(serializedEstimatedTime);
+    if (serializedEstimatedTime) return BigNumber.from(serializedEstimatedTime);
   }
 
   public async approveStake(

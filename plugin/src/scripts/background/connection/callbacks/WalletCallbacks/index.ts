@@ -82,10 +82,7 @@ export const stake = (
     }
   });
 
-export const getTransactionEstimationTime = (
-  [serializedGasPrice]: [string],
-  port: string,
-) =>
+export const getTransactionEstimationTime = ([serializedGasPrice]: [string]) =>
   new Promise(async (resolve, reject) => {
     try {
       // parse gas fee
