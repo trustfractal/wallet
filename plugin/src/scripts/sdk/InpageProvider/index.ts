@@ -23,7 +23,7 @@ import {
 import ExtensionConnection from "@sdk/InpageProvider/connection";
 import TokenTypes from "@models/Token/types";
 
-import { CLAIMS_REGISTRY_ADDRESS } from "@constants/addresses";
+import env from "@environment/index";
 import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
 import StakingDetails from "@models/Staking/StakingDetails";
 import ConnectionStatus from "@models/Connection/ConnectionStatus";
@@ -143,7 +143,7 @@ export default class InpageProvider implements IFractalInpageProvider {
       "m/44'/60'/0'/0/1",
     );
     const claimsRegistryContract = new Contract(
-      CLAIMS_REGISTRY_ADDRESS,
+      env.CONTRACTS.CLAIMS_REGISTRY_CONTRACT,
       ClaimsRegistry.abi,
       new ethersProviders.Web3Provider(window.ethereum!),
     );

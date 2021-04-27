@@ -199,15 +199,11 @@ class WindowsService {
           windowTypes: ["normal"],
         },
         async (lastWindowFocused) => {
-          console.log("lastWindowFocused", lastWindowFocused);
-
           // get window active tab
           const tabs = await this.queryTabs({
             windowId: lastWindowFocused.id,
             active: true,
           });
-
-          console.log("tabs", tabs);
 
           if (tabs.length === 0) {
             resolve(undefined);

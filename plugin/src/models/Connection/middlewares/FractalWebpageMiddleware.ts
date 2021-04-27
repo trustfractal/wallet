@@ -8,7 +8,7 @@ import {
   ERROR_NOT_ON_FRACTAL,
 } from "@models/Connection/Errors";
 
-import { FRACTAL_WEBSITE_HOSTNAME } from "@constants/common";
+import env from "@environment/index";
 
 function isOnFractalWebpage(port: chrome.runtime.Port): boolean {
   if (!port.sender || !port.sender.url) {
@@ -21,7 +21,7 @@ function isOnFractalWebpage(port: chrome.runtime.Port): boolean {
     ? hostname.substr(4)
     : hostname;
 
-  if (senderHostname !== FRACTAL_WEBSITE_HOSTNAME) {
+  if (senderHostname !== env.FRACTAL_WEBSITE_HOSTNAME) {
     return false;
   }
 
@@ -49,7 +49,7 @@ export default class FractalWebpageMiddleware implements IMiddleware {
       if (activePort.port?.sender?.tab?.id) {
         WindowsService.redirectTab(
           activePort.port?.sender?.tab?.id,
-          `https://${FRACTAL_WEBSITE_HOSTNAME}`,
+          `https://${env.FRACTAL_WEBSITE_HOSTNAME}`,
         );
       }
 

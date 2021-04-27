@@ -31,11 +31,7 @@ import {
   ERROR_USER_DECLINED_REQUEST,
 } from "@services/EthereumProviderService/Errors";
 
-import {
-  CLAIMS_REGISTRY_ADDRESS,
-  ERC_20_ADDRESSES,
-  STAKING_ADDRESSES,
-} from "@constants/addresses";
+import env from "@environment/index";
 import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
 import Staking from "@contracts/Staking.json";
 import ERC20 from "@contracts/ERC20.json";
@@ -119,7 +115,7 @@ class EthereumProviderService implements IEthereumProviderService {
 
       // init smart contract
       const claimsRegistryContract = new Contract(
-        CLAIMS_REGISTRY_ADDRESS,
+        env.CONTRACTS.CLAIMS_REGISTRY_CONTRACT,
         ClaimsRegistry.abi,
         signer,
       ) as IClaimsRegistry;
@@ -164,7 +160,7 @@ class EthereumProviderService implements IEthereumProviderService {
 
       // init smart contract
       const claimsRegistryContract = new Contract(
-        CLAIMS_REGISTRY_ADDRESS,
+        env.CONTRACTS.CLAIMS_REGISTRY_CONTRACT,
         ClaimsRegistry.abi,
         signer,
       ) as IClaimsRegistry;
@@ -225,12 +221,12 @@ class EthereumProviderService implements IEthereumProviderService {
 
       // init smart contract
       const tokenContract = new Contract(
-        ERC_20_ADDRESSES[token],
+        env.CONTRACTS.ERC_20_CONTRACTS[token],
         ERC20.abi,
         signer,
       ) as IERC20;
       const stakingContract = new Contract(
-        STAKING_ADDRESSES[token],
+        env.CONTRACTS.STAKING_CONTRACTS[token],
         Staking.abi,
         signer,
       ) as IStaking;
@@ -248,7 +244,7 @@ class EthereumProviderService implements IEthereumProviderService {
       // get staking details
       const stakingAllowedAmount = await tokenContract.allowance(
         address,
-        STAKING_ADDRESSES[token],
+        env.CONTRACTS.STAKING_CONTRACTS[token],
       );
       const stakingStartDate = await stakingContract.startDate();
       const stakingEndDate = await stakingContract.endDate();
@@ -296,7 +292,7 @@ class EthereumProviderService implements IEthereumProviderService {
 
       // init smart contract
       const tokenContract = new Contract(
-        ERC_20_ADDRESSES[token],
+        env.CONTRACTS.ERC_20_CONTRACTS[token],
         ERC20.abi,
         signer,
       ) as IERC20;
@@ -304,13 +300,13 @@ class EthereumProviderService implements IEthereumProviderService {
       // check if approve is needed
       const allowanceValue = await tokenContract.allowance(
         address,
-        STAKING_ADDRESSES[token],
+        env.CONTRACTS.STAKING_CONTRACTS[token],
       );
 
       if (allowanceValue.lt(etherAmount)) {
         // pre-approve stake for the address
         const approveResult = await tokenContract.approve(
-          STAKING_ADDRESSES[token],
+          env.CONTRACTS.STAKING_CONTRACTS[token],
           etherAmount,
         );
 
@@ -346,7 +342,7 @@ class EthereumProviderService implements IEthereumProviderService {
 
       // init smart contract
       const tokenContract = new Contract(
-        ERC_20_ADDRESSES[token],
+        env.CONTRACTS.ERC_20_CONTRACTS[token],
         ERC20.abi,
         signer,
       ) as IERC20;
@@ -354,7 +350,7 @@ class EthereumProviderService implements IEthereumProviderService {
       // get allowance value
       const allowanceValue = await tokenContract.allowance(
         address,
-        STAKING_ADDRESSES[token],
+        env.CONTRACTS.STAKING_CONTRACTS[token],
       );
 
       return allowanceValue.toJSON();
@@ -378,12 +374,12 @@ class EthereumProviderService implements IEthereumProviderService {
 
       // init smart contract
       const tokenContract = new Contract(
-        ERC_20_ADDRESSES[token],
+        env.CONTRACTS.ERC_20_CONTRACTS[token],
         ERC20.abi,
         signer,
       ) as IERC20;
       const stakingContract = new Contract(
-        STAKING_ADDRESSES[token],
+        env.CONTRACTS.STAKING_CONTRACTS[token],
         Staking.abi,
         signer,
       ) as IStaking;
@@ -391,12 +387,15 @@ class EthereumProviderService implements IEthereumProviderService {
       // check if approve is needed
       const allowanceValue = await tokenContract.allowance(
         address,
-        STAKING_ADDRESSES[token],
+        env.CONTRACTS.STAKING_CONTRACTS[token],
       );
 
       if (allowanceValue.lt(etherAmount)) {
         // pre-approve stake for the address
-        await tokenContract.approve(STAKING_ADDRESSES[token], etherAmount);
+        await tokenContract.approve(
+          env.CONTRACTS.STAKING_CONTRACTS[token],
+          etherAmount,
+        );
       }
 
       // stake amount
@@ -433,7 +432,7 @@ class EthereumProviderService implements IEthereumProviderService {
 
       // init smart contract
       const stakingContract = new Contract(
-        STAKING_ADDRESSES[token],
+        env.CONTRACTS.STAKING_CONTRACTS[token],
         Staking.abi,
         signer,
       );
