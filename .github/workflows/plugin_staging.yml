@@ -90,7 +90,7 @@ jobs:
         run: yarn types:build
 
       - name: Setup staging environment
-        run: cp plugin/src/.env.staging plugin/src/.env
+        run: cp plugin/.env.staging plugin/.env
 
       - name: Build staging plugin extension
         run: yarn plugin:build

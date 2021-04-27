@@ -84,7 +84,7 @@ jobs:
         run: yarn types:build
 
       - name: Setup production environment
-        run: cp plugin/src/.env.production plugin/src/.env
+        run: cp plugin/.env.production plugin/.env
 
       - name: Build production plugin extension
         run: yarn plugin:build
