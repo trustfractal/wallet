@@ -1,4 +1,10 @@
-import { BigNumber } from "ethers";
+import {
+  Wallet,
+  Contract,
+  utils as ethersUtils,
+  providers as ethersProviders,
+  BigNumber,
+} from "ethers";
 
 import ConnectionTypes from "@models/Connection/types";
 import EthereumProviderService from "@services/EthereumProviderService";
@@ -16,9 +22,13 @@ import { IClaimProperties } from "@fractalwallet/sdk/src/types";
 import ExtensionConnection from "@sdk/InpageProvider/connection";
 import TokenTypes from "@models/Token/types";
 
+import env from "@environment/index";
+import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
+
 import AttestationRequest from "@models/AttestationRequest";
-import StakingDetails from "@models/Staking/StakingDetails";
+import Credential from "@models/Credential";
 import ConnectionStatus from "@models/Connection/ConnectionStatus";
+import StakingDetails from "@models/Staking/StakingDetails";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 export default class InpageProvider implements IFractalInpageProvider {
@@ -127,6 +137,44 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
 
     return request;
+  }
+
+  // TODO: remove this method once is integrated with the backend
+  public async _getSignedCredential(
+    request: AttestationRequest,
+    credentialId: string,
+  ): Promise<Credential> {
+    // init claims registry smart contract
+    const attesterWallet = Wallet.fromMnemonic(
+      "pizza job meadow mammal cake initial gain gym family banana steel favorite",
+      "m/44'/60'/0'/0/1",
+    );
+    const claimsRegistryContract = new Contract(
+      env.CONTRACTS.CLAIMS_REGISTRY_CONTRACT,
+      ClaimsRegistry.abi,
+      new ethersProviders.Web3Provider(window.ethereum!),
+    );
+
+    // add attester address
+    const credential = new Credential(
+      Credential.fromRequest(request),
+      credentialId,
+    );
+    credential.attesterAddress = attesterWallet.address;
+
+    // sign the signable hash with attester's wallet
+    const signableHash = await claimsRegistryContract.computeSignableKey(
+      credential.claimerAddress,
+      ethersUtils.arrayify(credential.rootHash),
+    );
+
+    const attesterSignature = await attesterWallet.signMessage(
+      ethersUtils.arrayify(signableHash),
+    );
+    credential.attesterSignature = attesterSignature;
+    credential.id = "12";
+
+    return credential;
   }
 
   public async storeCredential(
