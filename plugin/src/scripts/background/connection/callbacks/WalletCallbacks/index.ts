@@ -10,6 +10,7 @@ import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 
 import TokenTypes from "@models/Token/types";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+import { ERROR_CREDENTIAL_NOT_FOUND } from "@background/Errors";
 
 import EtherscanService from "@services/EtherscanService";
 import { BigNumber } from "ethers";
@@ -66,7 +67,8 @@ export const stake = (
       const credential = credentials.getByField("id", credentialId);
 
       if (!credential) {
-        throw new Error(`Credential '${credentialId}' could not be found`);
+        reject(ERROR_CREDENTIAL_NOT_FOUND(credentialId));
+        return;
       }
 
       const serializedTransactionDetails = await ContentScriptConnection.invoke(

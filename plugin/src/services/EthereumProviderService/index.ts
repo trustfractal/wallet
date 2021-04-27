@@ -28,6 +28,7 @@ import {
   ERROR_PROVIDER_NOT_METAMASK,
   ERROR_PROVIDER_OVERRIDE,
   ERROR_PROVIDER_NOT_INITIALIZED,
+  ERROR_USER_DECLINED_REQUEST,
 } from "@services/EthereumProviderService/Errors";
 
 import {
@@ -38,6 +39,7 @@ import {
 import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
 import Staking from "@contracts/Staking.json";
 import ERC20 from "@contracts/ERC20.json";
+import MetamaskErrors from "./MetamaskErrors";
 
 class EthereumProviderService implements IEthereumProviderService {
   private static instance: EthereumProviderService;
@@ -83,17 +85,26 @@ class EthereumProviderService implements IEthereumProviderService {
   }
 
   public async getAccountAddress(): Promise<string | undefined> {
-    this.ensureProviderIsInitialized();
+    try {
+      this.ensureProviderIsInitialized();
 
-    const accounts = await this.web3Provider!.provider.request!({
-      method: "eth_requestAccounts",
-    });
+      const accounts = await this.web3Provider!.provider.request!({
+        method: "eth_requestAccounts",
+      });
 
-    if (accounts.length === 0) {
-      return;
+      if (accounts.length === 0) {
+        return;
+      }
+
+      return accounts[0];
+    } catch (error) {
+      console.error(error);
+      if (error.code === MetamaskErrors.USER_DECLINED) {
+        throw ERROR_USER_DECLINED_REQUEST();
+      } else {
+        throw error;
+      }
     }
-
-    return accounts[0];
   }
 
   public async credentialStore(
@@ -134,7 +145,11 @@ class EthereumProviderService implements IEthereumProviderService {
       return transactionDetails.serialize();
     } catch (error) {
       console.error(error);
-      throw error;
+      if (error.code === MetamaskErrors.USER_DECLINED) {
+        throw ERROR_USER_DECLINED_REQUEST();
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -173,24 +188,31 @@ class EthereumProviderService implements IEthereumProviderService {
     level: string,
     serializedProperties: string,
   ): Promise<string> {
-    // prepare data
-    const properties: IClaimProperties = JSON.parse(serializedProperties);
-    const signer = this.web3Provider!.getSigner(address);
+    try {
+      // prepare data
+      const properties: IClaimProperties = JSON.parse(serializedProperties);
+      const signer = this.web3Provider!.getSigner(address);
 
-    // Generate the claim type
-    const pseudoSchema = ClaimType.buildSchemaFromLevel(level);
-    const claimType = ClaimType.fromSchema(pseudoSchema, signer._address);
+      // Generate the claim type
+      const pseudoSchema = ClaimType.buildSchemaFromLevel(level);
+      const claimType = ClaimType.fromSchema(pseudoSchema, signer._address);
 
-    // Create a claim with our data
-    const claim = new Claim(claimType, properties, signer._address);
+      // Create a claim with our data
+      const claim = new Claim(claimType, properties, signer._address);
 
-    // Generate an AttestationRequest
-    const request = new AttestationRequest(AttestationRequest.fromClaim(claim));
+      // Generate an AttestationRequest
+      const request = new AttestationRequest(
+        AttestationRequest.fromClaim(claim),
+      );
 
-    const claimerSignature = await signer.signMessage(request.rootHash);
-    request.claimerSignature = claimerSignature;
+      const claimerSignature = await signer.signMessage(request.rootHash);
+      request.claimerSignature = claimerSignature;
 
-    return request.serialize();
+      return request.serialize();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 
   public async getStakingDetails(
@@ -267,41 +289,50 @@ class EthereumProviderService implements IEthereumProviderService {
     amount: string,
     token: TokenTypes,
   ): Promise<string | undefined> {
-    // prepare data
-    const signer = this.web3Provider!.getSigner(address);
-    const etherAmount = ethersUtils.parseEther(amount) as BigNumberish;
+    try {
+      // prepare data
+      const signer = this.web3Provider!.getSigner(address);
+      const etherAmount = ethersUtils.parseEther(amount) as BigNumberish;
 
-    // init smart contract
-    const tokenContract = new Contract(
-      ERC_20_ADDRESSES[token],
-      ERC20.abi,
-      signer,
-    ) as IERC20;
+      // init smart contract
+      const tokenContract = new Contract(
+        ERC_20_ADDRESSES[token],
+        ERC20.abi,
+        signer,
+      ) as IERC20;
 
-    // check if approve is needed
-    const allowanceValue = await tokenContract.allowance(
-      address,
-      STAKING_ADDRESSES[token],
-    );
-
-    if (allowanceValue.lt(etherAmount)) {
-      // pre-approve stake for the address
-      const approveResult = await tokenContract.approve(
+      // check if approve is needed
+      const allowanceValue = await tokenContract.allowance(
+        address,
         STAKING_ADDRESSES[token],
-        etherAmount,
       );
 
-      // create transaction details
-      const transactionDetails = new TransactionDetails(
-        approveResult.chainId,
-        approveResult.data,
-        approveResult.from,
-        approveResult.gasLimit as BigNumber,
-        approveResult.gasPrice as BigNumber,
-        approveResult.value as BigNumber,
-      );
+      if (allowanceValue.lt(etherAmount)) {
+        // pre-approve stake for the address
+        const approveResult = await tokenContract.approve(
+          STAKING_ADDRESSES[token],
+          etherAmount,
+        );
 
-      return transactionDetails.serialize();
+        // create transaction details
+        const transactionDetails = new TransactionDetails(
+          approveResult.chainId,
+          approveResult.data,
+          approveResult.from,
+          approveResult.gasLimit as BigNumber,
+          approveResult.gasPrice as BigNumber,
+          approveResult.value as BigNumber,
+        );
+
+        return transactionDetails.serialize();
+      }
+    } catch (error) {
+      console.error(error);
+      if (error.code === MetamaskErrors.USER_DECLINED) {
+        throw ERROR_USER_DECLINED_REQUEST();
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -309,23 +340,28 @@ class EthereumProviderService implements IEthereumProviderService {
     address: string,
     token: TokenTypes,
   ): Promise<string> {
-    // prepare data
-    const signer = this.web3Provider!.getSigner(address);
+    try {
+      // prepare data
+      const signer = this.web3Provider!.getSigner(address);
 
-    // init smart contract
-    const tokenContract = new Contract(
-      ERC_20_ADDRESSES[token],
-      ERC20.abi,
-      signer,
-    ) as IERC20;
+      // init smart contract
+      const tokenContract = new Contract(
+        ERC_20_ADDRESSES[token],
+        ERC20.abi,
+        signer,
+      ) as IERC20;
 
-    // get allowance value
-    const allowanceValue = await tokenContract.allowance(
-      address,
-      STAKING_ADDRESSES[token],
-    );
+      // get allowance value
+      const allowanceValue = await tokenContract.allowance(
+        address,
+        STAKING_ADDRESSES[token],
+      );
 
-    return allowanceValue.toJSON();
+      return allowanceValue.toJSON();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 
   public async stake(
@@ -334,78 +370,96 @@ class EthereumProviderService implements IEthereumProviderService {
     token: TokenTypes,
     serializedCredential: string,
   ): Promise<string> {
-    // prepare data
-    const parsedCredential = Credential.parse(serializedCredential);
-    const signer = this.web3Provider!.getSigner(address);
-    const etherAmount = ethersUtils.parseEther(amount) as BigNumberish;
+    try {
+      // prepare data
+      const parsedCredential = Credential.parse(serializedCredential);
+      const signer = this.web3Provider!.getSigner(address);
+      const etherAmount = ethersUtils.parseEther(amount) as BigNumberish;
 
-    // init smart contract
-    const tokenContract = new Contract(
-      ERC_20_ADDRESSES[token],
-      ERC20.abi,
-      signer,
-    ) as IERC20;
-    const stakingContract = new Contract(
-      STAKING_ADDRESSES[token],
-      Staking.abi,
-      signer,
-    ) as IStaking;
+      // init smart contract
+      const tokenContract = new Contract(
+        ERC_20_ADDRESSES[token],
+        ERC20.abi,
+        signer,
+      ) as IERC20;
+      const stakingContract = new Contract(
+        STAKING_ADDRESSES[token],
+        Staking.abi,
+        signer,
+      ) as IStaking;
 
-    // check if approve is needed
-    const allowanceValue = await tokenContract.allowance(
-      address,
-      STAKING_ADDRESSES[token],
-    );
+      // check if approve is needed
+      const allowanceValue = await tokenContract.allowance(
+        address,
+        STAKING_ADDRESSES[token],
+      );
 
-    if (allowanceValue.lt(etherAmount)) {
-      // pre-approve stake for the address
-      await tokenContract.approve(STAKING_ADDRESSES[token], etherAmount);
+      if (allowanceValue.lt(etherAmount)) {
+        // pre-approve stake for the address
+        await tokenContract.approve(STAKING_ADDRESSES[token], etherAmount);
+      }
+
+      // stake amount
+      const stakingResult = await stakingContract.stake(
+        etherAmount,
+        parsedCredential.attesterSignature as string,
+      );
+
+      // create transaction details
+      const transactionDetails = new TransactionDetails(
+        stakingResult.chainId,
+        stakingResult.data,
+        stakingResult.from,
+        stakingResult.gasLimit as BigNumber,
+        stakingResult.gasPrice as BigNumber,
+        stakingResult.value as BigNumber,
+      );
+
+      return transactionDetails.serialize();
+    } catch (error) {
+      console.error(error);
+      if (error.code === MetamaskErrors.USER_DECLINED) {
+        throw ERROR_USER_DECLINED_REQUEST();
+      } else {
+        throw error;
+      }
     }
-
-    // stake amount
-    const stakingResult = await stakingContract.stake(
-      etherAmount,
-      parsedCredential.attesterSignature as string,
-    );
-
-    // create transaction details
-    const transactionDetails = new TransactionDetails(
-      stakingResult.chainId,
-      stakingResult.data,
-      stakingResult.from,
-      stakingResult.gasLimit as BigNumber,
-      stakingResult.gasPrice as BigNumber,
-      stakingResult.value as BigNumber,
-    );
-
-    return transactionDetails.serialize();
   }
 
   public async withdraw(address: string, token: TokenTypes): Promise<string> {
-    // prepare data
-    const signer = this.web3Provider!.getSigner(address);
+    try {
+      // prepare data
+      const signer = this.web3Provider!.getSigner(address);
 
-    // init smart contract
-    const stakingContract = new Contract(
-      STAKING_ADDRESSES[token],
-      Staking.abi,
-      signer,
-    );
+      // init smart contract
+      const stakingContract = new Contract(
+        STAKING_ADDRESSES[token],
+        Staking.abi,
+        signer,
+      );
 
-    // withdraw from pool
-    const withdrawResult = await stakingContract.withdraw();
+      // withdraw from pool
+      const withdrawResult = await stakingContract.withdraw();
 
-    // create transaction details
-    const transactionDetails = new TransactionDetails(
-      withdrawResult.chainId,
-      withdrawResult.data,
-      withdrawResult.from,
-      withdrawResult.gasLimit as BigNumber,
-      withdrawResult.gasPrice as BigNumber,
-      withdrawResult.value as BigNumber,
-    );
+      // create transaction details
+      const transactionDetails = new TransactionDetails(
+        withdrawResult.chainId,
+        withdrawResult.data,
+        withdrawResult.from,
+        withdrawResult.gasLimit as BigNumber,
+        withdrawResult.gasPrice as BigNumber,
+        withdrawResult.value as BigNumber,
+      );
 
-    return transactionDetails.serialize();
+      return transactionDetails.serialize();
+    } catch (error) {
+      console.error(error);
+      if (error.code === MetamaskErrors.USER_DECLINED) {
+        throw ERROR_USER_DECLINED_REQUEST();
+      } else {
+        throw error;
+      }
+    }
   }
 }
 

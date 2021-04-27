@@ -13,6 +13,8 @@ import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 
+import { ERROR_CREDENTIAL_NOT_FOUND } from "@background/Errors";
+
 export const credentialStore = (
   [serializedCredential]: [string],
   port: string,
@@ -106,7 +108,8 @@ export const isCredentialValid = ([id]: [string], port: string) =>
       const credential = credentials.getByField("id", id);
 
       if (!credential) {
-        throw new Error(`Credential ${id} could not be found`);
+        reject(ERROR_CREDENTIAL_NOT_FOUND(id));
+        return;
       }
 
       // redirect request to the inpage fractal provider

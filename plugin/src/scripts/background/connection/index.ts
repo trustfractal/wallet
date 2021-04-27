@@ -3,7 +3,7 @@ import ContentScriptConnection from "@models/Connection/ContentScriptConnection"
 import callbacks from "@background/connection/callbacks";
 import ConnectionTypes from "@models/Connection/types";
 
-import { ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED } from "@background/connection/Errors";
+import { ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED } from "@background/Errors";
 
 import { IConnectionPorts, IPort } from "@fractalwallet/types";
 

@@ -6,6 +6,11 @@ import walletActions, { walletTypes } from "@redux/stores/user/reducers/wallet";
 import AppStore from "@redux/stores/application";
 import appActions from "@redux/stores/application/reducers/app";
 
+import {
+  ERROR_NO_ACTIVE_TAB,
+  ERROR_NO_ACCOUNT,
+} from "@models/Connection/Errors";
+
 export const connectWallet = () => {
   return async (dispatch) => {
     dispatch(walletActions.connectWalletPending());
@@ -17,9 +22,7 @@ export const connectWallet = () => {
       // get active connected chrome port
       const activePort = await ContentScriptConnection.getActiveConnectionPort();
 
-      if (!activePort) {
-        throw new Error("No active tabs could be found");
-      }
+      if (!activePort) throw ERROR_NO_ACTIVE_TAB();
 
       // get ethereumm wallet account address
       const account = await ContentScriptConnection.invoke(
@@ -28,9 +31,7 @@ export const connectWallet = () => {
         activePort.id,
       );
 
-      if (!account) {
-        throw new Error("No accounts could be found");
-      }
+      if (!account) throw ERROR_NO_ACCOUNT();
 
       // save app setup flag
       AppStore.getStore().dispatch(appActions.setSetup(true));

@@ -3,7 +3,7 @@ import ConnectionTypes from "@models/Connection/types";
 import { extension } from "@models/Connection/params";
 
 import callbacks from "@sdk/InpageProvider/connection/callbacks";
-import { ERROR_EXTENSION_CONNECTION_NOT_INITIALIZED } from "@sdk/InpageProvider/connection/Errors";
+import { ERROR_EXTENSION_CONNECTION_NOT_INITIALIZED } from "@sdk/InpageProvider/Errors";
 
 class Connection {
   private static instance?: Connection;

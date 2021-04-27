@@ -18,6 +18,12 @@ import {
   restore as walletRestore,
   store as walletStore,
 } from "@redux/stores/user/reducers/wallet";
+import {
+  ERROR_DECRYPT_FAILED,
+  ERROR_LOCAL_STATE_NOT_FOUND,
+  ERROR_SALT_NOT_FOUND,
+  ERROR_STORE_NOT_INITIALIZED,
+} from "./Errors";
 
 export class UserStore {
   static instance = undefined;
@@ -31,11 +37,7 @@ export class UserStore {
   }
 
   getStore() {
-    if (!this.storeInternal) {
-      throw new Error(
-        "UserStore: store not initialized, please call init before trying to access the store",
-      );
-    }
+    if (!this.storeInternal) throw ERROR_STORE_NOT_INITIALIZED();
 
     return this.storeInternal;
   }
@@ -133,7 +135,7 @@ export class UserStore {
 
   static async getHashedPassword(password) {
     const salt = await UserStore.getStoredSalt();
-    if (!salt) throw new Error("No password salt found");
+    if (!salt) throw ERROR_SALT_NOT_FOUND();
 
     return CryptoUtils.passwordHashing(password, salt);
   }
@@ -142,14 +144,14 @@ export class UserStore {
     const localState = await UserStore.getStoredState();
 
     const hashedPassword = await UserStore.getHashedPassword(password);
-    if (!localState) throw new Error("LocalState not found");
+    if (!localState) throw ERROR_LOCAL_STATE_NOT_FOUND();
 
     return CryptoUtils.decryption(localState, hashedPassword);
   }
 
   static async decryptAndDeserialize(password) {
     const decryptedState = await UserStore.decrypt(password);
-    if (!decryptedState) throw new Error("Store could not be decrypted");
+    if (!decryptedState) throw ERROR_DECRYPT_FAILED();
     const persistedState = await UserStore.deserialize(decryptedState);
 
     return persistedState;
