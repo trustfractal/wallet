@@ -786,12 +786,13 @@ describe("Unit Windows Service", () => {
 
     it("getActiveTab gets the active tab", async () => {
       // Prepare
+      const windowId = 12;
       const returnedTabs: chrome.tabs.Tab[] = [
         {
           index: 1,
           pinned: false,
           highlighted: false,
-          windowId: 12,
+          windowId: windowId,
           active: true,
           incognito: false,
           selected: false,
@@ -800,7 +801,26 @@ describe("Unit Windows Service", () => {
           groupId: 123,
         },
       ];
+      const returnedWindow: chrome.windows.Window = {
+        top: 0,
+        height: 400,
+        width: 600,
+        state: "normal",
+        focused: true,
+        alwaysOnTop: false,
+        incognito: false,
+        type: "normal",
+        id: windowId,
+        left: 0,
+        sessionId: "11bf5b37-e0b8-42e0-8dcf-dc8c4aefc000",
+      };
 
+      chrome.windows.getLastFocused.mockImplementation(
+        (
+          _getInfo: chrome.windows.GetInfo,
+          callback: (window: chrome.windows.Window) => void,
+        ) => callback?.(returnedWindow),
+      );
       chrome.tabs.query.mockImplementation(
         // @ts-ignore
         (
@@ -822,6 +842,26 @@ describe("Unit Windows Service", () => {
 
     it("When there is no active tabs, getActiveTab return undefined", async () => {
       // Prepare
+      const returnedWindow: chrome.windows.Window = {
+        top: 0,
+        height: 400,
+        width: 600,
+        state: "normal",
+        focused: true,
+        alwaysOnTop: false,
+        incognito: false,
+        type: "normal",
+        id: 12,
+        left: 0,
+        sessionId: "11bf5b37-e0b8-42e0-8dcf-dc8c4aefc000",
+      };
+
+      chrome.windows.getLastFocused.mockImplementation(
+        (
+          _getInfo: chrome.windows.GetInfo,
+          callback: (window: chrome.windows.Window) => void,
+        ) => callback?.(returnedWindow),
+      );
       chrome.tabs.query.mockImplementation(
         // @ts-ignore
         (
