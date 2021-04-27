@@ -23,7 +23,6 @@
   },
   "content_scripts": [
     {
-      "matches": ["file://*/*", "http://*/*", "https://*/*"],
       "js": ["contentScript.bundle.js"],
       "run_at": "document_end",
       "all_frames": true
