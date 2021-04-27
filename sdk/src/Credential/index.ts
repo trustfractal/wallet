@@ -1,6 +1,7 @@
 import Crypto from "../Crypto";
 import AttestationRequest from "../AttestationRequest";
 import FractalError from "../FractalError";
+import DIDContract from "../DIDContract";
 
 import {
   IClaim,
@@ -25,6 +26,8 @@ export default class Credential implements ICredential {
       rootHash: request.rootHash,
       attesterAddress: null,
       attesterSignature: null,
+      credentialHash: null,
+      credentialSignature: null,
       claimerAddress: request.claim.owner,
       claimerSignature: request.claimerSignature,
       claimTypeHash: request.claimTypeHash,
@@ -36,6 +39,8 @@ export default class Credential implements ICredential {
   public rootHash: Hash;
   public attesterAddress: Address | null;
   public attesterSignature: Signature | null;
+  public credentialHash: Hash | null;
+  public credentialSignature: Signature | null;
   public claimerAddress: Address;
   public claimerSignature: Signature;
   public claimTypeHash: HashWithNonce;
@@ -46,6 +51,8 @@ export default class Credential implements ICredential {
     rootHash,
     attesterAddress,
     attesterSignature,
+    credentialHash,
+    credentialSignature,
     claimerAddress,
     claimerSignature,
     claimTypeHash,
@@ -55,6 +62,8 @@ export default class Credential implements ICredential {
     this.rootHash = rootHash;
     this.attesterAddress = attesterAddress;
     this.attesterSignature = attesterSignature;
+    this.credentialHash = credentialHash;
+    this.credentialSignature = credentialSignature;
     this.claimerAddress = claimerAddress;
     this.claimerSignature = claimerSignature;
     this.claimTypeHash = claimTypeHash;
@@ -70,7 +79,6 @@ export default class Credential implements ICredential {
     return this.claim.properties[property];
   }
 
-  // check if all fields are valid
   public verifyIntegrity(): boolean {
     return (
       this.verifyClaimHashTree() &&
@@ -84,8 +92,12 @@ export default class Credential implements ICredential {
 
   // check if it is present on the blockchain
   // and the attested hash matches the one from the contract
-  public verifyNetwork(): boolean {
-    return this.verifyStorage() && this.verifyAttestedHash();
+  public async verifyNetwork(contract: DIDContract): Promise<boolean> {
+    return (
+      this.verifyCredentialHashIntegrity() &&
+      this.verifyCredentialHash(contract) &&
+      this.verifyStorage(contract)
+    );
   }
 
   private verifyClaimHashTree() {
@@ -134,14 +146,28 @@ export default class Credential implements ICredential {
     );
   }
 
-  // TODO: Fix this when we have the attestedHash field
-  // and a working smart contract
-  private verifyAttestedHash() {
-    return true;
+  public verifyCredentialHashIntegrity() {
+    if (
+      !this.credentialSignature ||
+      !this.credentialHash ||
+      !this.attesterAddress
+    )
+      return false;
+
+    return Crypto.verifySignature(
+      this.credentialSignature,
+      this.credentialHash,
+      this.attesterAddress
+    );
   }
 
-  // TODO: Fix this when we have a working smart contract
-  private verifyStorage() {
-    return true;
+  private async verifyCredentialHash(contract: DIDContract) {
+    const expectedHash = await contract.computeSignableKey(this);
+
+    return expectedHash === this.credentialHash;
+  }
+
+  private async verifyStorage(contract: DIDContract) {
+    return contract.verifyClaim(this);
   }
 }

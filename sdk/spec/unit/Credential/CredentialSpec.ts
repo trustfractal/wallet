@@ -22,6 +22,8 @@ describe("removeProperty", () => {
       rootHash: "0x0",
       attesterAddress: null,
       attesterSignature: null,
+      credentialHash: null,
+      credentialSignature: null,
       claimerSignature: "0x0",
       claimerAddress,
       claimTypeHash,
