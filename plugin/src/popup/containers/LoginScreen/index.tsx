@@ -12,8 +12,6 @@ import {
 
 import Login from "@popup/components/Login";
 
-import "@popup/styles.css";
-
 function LoginScreen() {
   const dispatch = useAppDispatch();
 

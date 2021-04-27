@@ -7,7 +7,6 @@ import walletActions from "@redux/stores/user/reducers/wallet";
 import ConnectWalletRequest from "@popup/components/ConnectWalletRequest";
 import ConnectWalletCompleted from "@popup/components/ConnectWalletCompleted";
 
-import "@popup/styles.css";
 import {
   getAccount,
   getConnectWalletError,

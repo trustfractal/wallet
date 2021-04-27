@@ -1,8 +1,10 @@
 import { ICredential } from "@fractalwallet/types";
 
-import "@popup/styles.css";
+import Text from "@popup/components/common/Text";
+import Title from "@popup/components/common/Title";
+import TopComponent from "@popup/components/TopComponent";
 
-type HomeProps = {
+export type HomeProps = {
   account: string;
   credentials: ICredential[];
 };
@@ -11,11 +13,11 @@ function Home(props: HomeProps) {
   const { account, credentials } = props;
 
   return (
-    <div className="Popup">
-      <h2>Home</h2>
-      <p>{`Account: ${account}`}</p>
-      <p>{`Credentials: ${credentials.length}`}</p>
-    </div>
+    <TopComponent>
+      <Title>Home</Title>
+      <Text>{`Account: ${account}`}</Text>
+      <Text>{`Credentials: ${credentials.length}`}</Text>
+    </TopComponent>
   );
 }
 

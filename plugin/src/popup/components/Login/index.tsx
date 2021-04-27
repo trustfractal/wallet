@@ -1,10 +1,12 @@
 import { useState } from "react";
 
-import Button from "@popup/components/Button";
+import Button from "@popup/components/common/Button";
+import Input from "@popup/components/common/Input";
+import Text from "@popup/components/common/Text";
+import Title from "@popup/components/common/Title";
+import TopComponent from "@popup/components/TopComponent";
 
-import "@popup/styles.css";
-
-type LoginProps = {
+export type LoginProps = {
   loading: boolean;
   onNext: (password: string) => void;
   error: string;
@@ -24,10 +26,10 @@ function Login(props: LoginProps) {
     setPassword(event.target.value);
 
   return (
-    <div className="Popup">
-      <h2>Enter your password to login</h2>
+    <TopComponent>
+      <Title>Enter your password to login</Title>
       <div>
-        <input
+        <Input
           id="password"
           name="value"
           placeholder="Password"
@@ -36,12 +38,12 @@ function Login(props: LoginProps) {
           onChange={onChangePassword}
         />
         <br />
-        {hasError && <p>{error}</p>}
+        {hasError && <Text>{error}</Text>}
       </div>
       <Button onClick={onClick} loading={loading} disabled={isPasswordEmpty}>
         Login
       </Button>
-    </div>
+    </TopComponent>
   );
 }
 

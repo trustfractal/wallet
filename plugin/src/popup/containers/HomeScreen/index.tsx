@@ -5,7 +5,6 @@ import Home from "@popup/components/Home";
 import { useUserSelector } from "@redux/stores/user/context";
 import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 
-import "@popup/styles.css";
 import RoutesPaths from "@popup/routes/paths";
 import { useAppSelector } from "@redux/stores/application/context";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
