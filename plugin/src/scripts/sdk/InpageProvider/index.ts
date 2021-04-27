@@ -1,12 +1,4 @@
-import {
-  Wallet,
-  Contract,
-  utils as ethersUtils,
-  providers as ethersProviders,
-  BigNumber,
-} from "ethers";
-import Credential from "@models/Credential";
-import AttestationRequest from "@models/AttestationRequest";
+import { BigNumber } from "ethers";
 
 import ConnectionTypes from "@models/Connection/types";
 import EthereumProviderService from "@services/EthereumProviderService";
@@ -19,12 +11,12 @@ import {
   ITransactionDetails,
   IConnectionStatus,
 } from "@fractalwallet/types";
+import { IClaimProperties } from "@fractalwallet/sdk/src/types";
 
 import ExtensionConnection from "@sdk/InpageProvider/connection";
 import TokenTypes from "@models/Token/types";
 
-import env from "@environment/index";
-import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
+import AttestationRequest from "@models/AttestationRequest";
 import StakingDetails from "@models/Staking/StakingDetails";
 import ConnectionStatus from "@models/Connection/ConnectionStatus";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
@@ -118,13 +110,10 @@ export default class InpageProvider implements IFractalInpageProvider {
   }
 
   public async getAttestationRequest(
-    credentialId: string,
-  ): Promise<ICredential> {
+    level: string,
+    properties: IClaimProperties,
+  ): Promise<AttestationRequest> {
     this.ensureFractalIsInitialized();
-
-    // prepare data
-    const properties = { name: "Foo", age: 20 };
-    const level = "foo";
 
     // call the signer
     const serializedRequest = await ExtensionConnection.invoke(
@@ -137,36 +126,7 @@ export default class InpageProvider implements IFractalInpageProvider {
       serializedRequest,
     );
 
-    // init claims registry smart contract
-    const attesterWallet = Wallet.fromMnemonic(
-      "pizza job meadow mammal cake initial gain gym family banana steel favorite",
-      "m/44'/60'/0'/0/1",
-    );
-    const claimsRegistryContract = new Contract(
-      env.CONTRACTS.CLAIMS_REGISTRY_CONTRACT,
-      ClaimsRegistry.abi,
-      new ethersProviders.Web3Provider(window.ethereum!),
-    );
-
-    // add attester address
-    const credential = new Credential(
-      Credential.fromRequest(request),
-      credentialId,
-    );
-    credential.attesterAddress = attesterWallet.address;
-
-    // sign the signable hash with attester's wallet
-    const signableHash = await claimsRegistryContract.computeSignableKey(
-      credential.claimerAddress,
-      ethersUtils.arrayify(credential.rootHash),
-    );
-
-    const attesterSignature = await attesterWallet.signMessage(
-      ethersUtils.arrayify(signableHash),
-    );
-    credential.attesterSignature = attesterSignature;
-
-    return credential;
+    return request;
   }
 
   public async storeCredential(

@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import {
   IClaimProperties,
-  IClaimPseudoSchema,
+  IAttestationRequest,
 } from "@fractalwallet/sdk/src/types";
 
 import { IConnectionStatus } from "./Connection";
@@ -22,7 +22,10 @@ export interface IFractalInpageProvider {
   ): Promise<ITransactionDetails>;
   withdraw(token: string): Promise<ITransactionDetails>;
   getAllowedAmount(token: string): Promise<BigNumber>;
-  getAttestationRequest(credentialId: string): Promise<ICredential>;
+  getAttestationRequest(
+    level: string,
+    properties: IClaimProperties
+  ): Promise<IAttestationRequest>;
   getTransactionEstimationTime(
     gasPrice: BigNumber
   ): Promise<BigNumber | undefined>;
