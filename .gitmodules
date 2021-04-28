@@ -1,3 +1,6 @@
 [submodule "contracts"]
 	path = contracts
 	url = git@github.com:trustfractal/fractal-contracts.git
+[submodule "sdk"]
+	path = sdk
+	url = git@github.com:trustfractal/fractal-sdk.git
