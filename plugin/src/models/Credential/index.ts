@@ -10,19 +10,21 @@ import TransactionDetails from "@models/Transaction/TransactionDetails";
 export default class Credential
   extends SDKCredential
   implements ICredential, ISerializable {
-  public id?: string;
+  public level?: string;
   public transaction?: ITransactionDetails;
   public valid: boolean;
 
   public constructor(
     credential: SDKCredential,
-    id?: string,
+    level?: string,
     transaction?: ITransactionDetails,
     valid: boolean = false,
   ) {
     super({
       claim: credential.claim,
       rootHash: credential.rootHash,
+      credentialHash: credential.credentialHash,
+      credentialSignature: credential.credentialSignature,
       attesterAddress: credential.attesterAddress,
       attesterSignature: credential.attesterSignature,
       claimerAddress: credential.claimerAddress,
@@ -30,7 +32,7 @@ export default class Credential
       claimTypeHash: credential.claimTypeHash,
       claimHashTree: credential.claimHashTree,
     });
-    this.id = id;
+    this.level = level;
     this.transaction = transaction;
     this.valid = valid;
   }
@@ -39,13 +41,15 @@ export default class Credential
     return JSON.stringify({
       claim: this.claim,
       rootHash: this.rootHash,
+      credentialHash: this.credentialHash,
+      credentialSignature: this.credentialSignature,
       attesterAddress: this.attesterAddress,
       attesterSignature: this.attesterSignature,
       claimerAddress: this.claimerAddress,
       claimerSignature: this.claimerSignature,
       claimTypeHash: this.claimTypeHash,
       claimHashTree: this.claimHashTree,
-      id: this.id,
+      level: this.level,
       transaction: this.transaction?.serialize(),
       valid: this.valid,
     });
@@ -55,13 +59,15 @@ export default class Credential
     const {
       claim,
       rootHash,
+      credentialHash,
+      credentialSignature,
       attesterAddress,
       attesterSignature,
       claimerAddress,
       claimerSignature,
       claimTypeHash,
       claimHashTree,
-      id,
+      level,
       transaction,
       valid,
     } = JSON.parse(str);
@@ -69,6 +75,8 @@ export default class Credential
     const sdkCredential = new SDKCredential({
       claim,
       rootHash,
+      credentialHash,
+      credentialSignature,
       attesterAddress,
       attesterSignature,
       claimerAddress,
@@ -83,6 +91,6 @@ export default class Credential
       transactionInstance = TransactionDetails.parse(transaction);
     }
 
-    return new Credential(sdkCredential, id, transactionInstance, valid);
+    return new Credential(sdkCredential, level, transactionInstance, valid);
   }
 }

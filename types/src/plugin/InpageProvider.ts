@@ -18,7 +18,7 @@ export interface IFractalInpageProvider {
   stake(
     amount: string,
     token: string,
-    credentialId: string
+    level: string
   ): Promise<ITransactionDetails>;
   withdraw(token: string): Promise<ITransactionDetails>;
   getAllowedAmount(token: string): Promise<BigNumber>;
@@ -29,7 +29,7 @@ export interface IFractalInpageProvider {
   getTransactionEstimationTime(
     gasPrice: BigNumber
   ): Promise<BigNumber | undefined>;
-  storeCredential(credential: ICredential): Promise<ITransactionDetails>;
+  credentialStore(credential: ICredential): Promise<ITransactionDetails>;
   hasCredential(id: string): Promise<boolean>;
   isCredentialValid(id: string): Promise<boolean>;
   getStakingDetails(token: string): Promise<IStakingDetails>;

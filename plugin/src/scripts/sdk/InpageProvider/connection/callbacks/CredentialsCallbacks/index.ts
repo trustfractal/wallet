@@ -1,26 +1,38 @@
 import ConnectionTypes from "@models/Connection/types";
 import EthereumProviderService from "@services/EthereumProviderService";
 
-export const credentialStore = ([address, serializedCredential]: [
-  string,
-  string,
-]) => EthereumProviderService.credentialStore(address, serializedCredential);
-
-export const getAttestationRequest = ([
+export const credentialStore = ([
   address,
-  credentialId,
-  serializedProperties,
+  serializedCredential,
+  claimsRegistryContractAddress,
 ]: [string, string, string]) =>
+  EthereumProviderService.credentialStore(
+    address,
+    serializedCredential,
+    claimsRegistryContractAddress,
+  );
+
+export const getAttestationRequest = ([address, level, serializedProperties]: [
+  string,
+  string,
+  string,
+]) =>
   EthereumProviderService.getAttestationRequest(
     address,
-    credentialId,
+    level,
     serializedProperties,
   );
 
-export const isCredentialValid = ([address, serializedCredential]: [
-  string,
-  string,
-]) => EthereumProviderService.isCredentialValid(address, serializedCredential);
+export const isCredentialValid = ([
+  address,
+  serializedCredential,
+  claimsRegistryAddress,
+]: [string, string, string]) =>
+  EthereumProviderService.isCredentialValid(
+    address,
+    serializedCredential,
+    claimsRegistryAddress,
+  );
 
 const Callbacks = {
   [ConnectionTypes.CREDENTIAL_STORE_INPAGE]: { callback: credentialStore },
