@@ -4,3 +4,6 @@
 [submodule "sdk"]
 	path = sdk
 	url = git@github.com:trustfractal/fractal-sdk.git
+[submodule "backend"]
+	path = backend
+	url = git@github.com:trustfractal/goldfish.git
