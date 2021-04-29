@@ -22,14 +22,12 @@ export type LogoProps = {
 
 Logo.defaultProps = {
   clickable: false,
-  width: "46px",
-  height: "40px",
 };
 
 function Logo(props: LogoProps & React.HtmlHTMLAttributes<HTMLImageElement>) {
   return (
     <Root>
-      <Icon name={IconNames.LOGO} {...props} />
+      <Icon name={IconNames.LOGO} />
     </Root>
   );
 }

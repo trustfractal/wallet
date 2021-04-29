@@ -12,6 +12,7 @@ export const global = css`
     --c-transparent: transparent;
     --c-orange: #ff671d;
     --s-5: 0.3125rem;
+    --s-8: 0.5rem;
     --s-12: 0.75rem;
     --s-14: 0.875rem;
     --s-16: 1rem;
@@ -22,6 +23,7 @@ export const global = css`
     --s-23: 1.4375rem;
     --s-24: 1.5rem;
     --s-35: 2.1875rem;
+    --s-48: 3rem;
   }
 
   html {

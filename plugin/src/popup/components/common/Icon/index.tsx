@@ -2,10 +2,10 @@ import React from "react";
 
 import styled, { css } from "styled-components";
 
-const Check = require("@assets/check.svg");
-const Eye = require("@assets/eye.svg");
-const EyeSlash = require("@assets/eye-slash.svg");
-const Logo = require("@assets/logo.svg");
+const { default: Check } = require("@assets/check.svg");
+const { default: Eye } = require("@assets/eye.svg");
+const { default: EyeSlash } = require("@assets/eye-slash.svg");
+const { default: Logo } = require("@assets/logo.svg");
 
 const Root = styled.div<{ clickable: boolean }>`
   ${(props) =>
@@ -43,9 +43,11 @@ Icon.defaultProps = {
 function Icon(props: IconProps & React.HtmlHTMLAttributes<HTMLImageElement>) {
   const { name, clickable, onClick, ...otherProps } = props;
 
+  const SVG = Icons[name];
+
   return (
     <Root clickable={clickable} onClick={onClick}>
-      <img src={Icons[name].default} alt={name} {...otherProps} />
+      <SVG alt={name} {...otherProps} />
     </Root>
   );
 }

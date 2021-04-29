@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styled from "styled-components";
 
 import Button from "@popup/components/common/Button";
 import PasswordInput from "@popup/components/common/PasswordInput";
@@ -11,6 +12,28 @@ import Title from "@popup/components/common/Title";
 import TopComponent from "@popup/components/TopComponent";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 import Logo from "@popup/components/common/Logo";
+
+const LogoContainer = styled.div`
+  display: flex;
+  justify-content: center;
+
+  margin-bottom: var(--s-48);
+`;
+const RootContainer = styled.div`
+  padding: var(--s-24) 0px;
+`;
+const HeaderContainer = styled.div`
+  margin-bottom: var(--s-24);
+`;
+const InputsContainer = styled.div`
+  margin-bottom: var(--s-8);
+`;
+const InputContainer = styled.div``;
+const ActionContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 export type RegisterProps = {
   loading: boolean;
@@ -60,66 +83,72 @@ function Register(props: RegisterProps) {
 
   return (
     <TopComponent>
-      <Logo />
-      <Title>Welcome to the Fractal Identity Wallet</Title>
-      <Text>Please start by creating your password</Text>
-      <div>
-        <label htmlFor="new_password" />
-        <PasswordInput
-          id="new_password"
-          name="value"
-          label="Create a password"
-          hint={hint}
-          minLength={minLength}
-          value={newPassword}
-          onChange={onChangeNewPassword}
-        />
-        {isNewPasswordValid && <Icon name={IconNames.CHECK} />}
-        <label htmlFor="confirm_password" />
-        <PasswordInput
-          id="confirm_password"
-          name="value"
-          label="Confirm Password"
-          minLength={minLength}
-          value={confirmPassword}
-          onChange={onChangeConfirmPassword}
-        />
-        {arePasswordsValidAndEquals && <Icon name={IconNames.CHECK} />}
-      </div>
-      {arePasswordsValid && (
-        <Button
-          onClick={onClick}
-          loading={loading}
-          disabled={!arePasswordsValidAndEquals}
-        >
-          Save my password
-        </Button>
-      )}
-      {!arePasswordsValid && (
-        <>
-          <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-            Note
-          </Text>
+      <RootContainer>
+        <LogoContainer>
+          <Logo />
+        </LogoContainer>
+        <HeaderContainer>
+          <Title>Welcome to the Fractal Identity Wallet</Title>
+          <Text>Please start by creating your password</Text>
+        </HeaderContainer>
+        <InputsContainer>
+          <PasswordInput
+            id="new_password"
+            name="value"
+            label="Create a password"
+            hint={hint}
+            minLength={minLength}
+            value={newPassword}
+            onChange={onChangeNewPassword}
+          />
+          {isNewPasswordValid && <Icon name={IconNames.CHECK} />}
+          <PasswordInput
+            id="confirm_password"
+            name="value"
+            label="Confirm Password"
+            minLength={minLength}
+            value={confirmPassword}
+            onChange={onChangeConfirmPassword}
+          />
+          {arePasswordsValidAndEquals && <Icon name={IconNames.CHECK} />}
+        </InputsContainer>
+        {arePasswordsValid && (
+          <ActionContainer>
+            <Button
+              onClick={onClick}
+              loading={loading}
+              disabled={!arePasswordsValidAndEquals}
+            >
+              Save my password
+            </Button>
+          </ActionContainer>
+        )}
+        {!arePasswordsValid && (
+          <>
+            <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+              Note
+            </Text>
 
-          <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-            Your password is used to unlock your Fractal ID Wallet and we don’t
-            have access to it.
-          </Text>
+            <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+              Your password is used to unlock your Fractal ID Wallet and we
+              don’t have access to it.
+            </Text>
 
-          <Text size={TextSizes.SMALL}>
-            <br />
-          </Text>
+            <Text size={TextSizes.SMALL}>
+              <br />
+            </Text>
 
-          <Text
-            size={TextSizes.SMALL}
-            height={TextHeights.SMALL}
-            weight={TextWeights.BOLD}
-          >
-            If you forget your password, you’ll lose the ability to use the
-            wallet.
-          </Text>
-        </>
-      )}
+            <Text
+              size={TextSizes.SMALL}
+              height={TextHeights.SMALL}
+              weight={TextWeights.BOLD}
+            >
+              If you forget your password, you’ll lose the ability to use the
+              wallet.
+            </Text>
+          </>
+        )}
+      </RootContainer>
     </TopComponent>
   );
 }
