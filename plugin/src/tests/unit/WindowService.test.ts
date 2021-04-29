@@ -10,6 +10,7 @@ import {
   ERROR_GET_TAB,
   ERROR_UPDATE_TAB,
   ERROR_QUERY_TABS,
+  ERROR_CREATE_TAB,
 } from "@services/WindowsService/Errors";
 
 describe("Unit Windows Service", () => {
@@ -344,6 +345,87 @@ describe("Unit Windows Service", () => {
       // Assert
       expect(chrome.windows.getAll).toHaveBeenCalled();
       expect(chrome.windows.remove).toHaveBeenCalled();
+    });
+  });
+  describe("createTab()", () => {
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it("createTab creates and returns a tab", async () => {
+      // Prepare
+      const windowId = 12;
+      const returnedTab: chrome.tabs.Tab = {
+        index: 1,
+        pinned: false,
+        highlighted: false,
+        windowId,
+        active: true,
+        incognito: false,
+        selected: false,
+        discarded: false,
+        autoDiscardable: true,
+        groupId: 123,
+      };
+      chrome.tabs.create.mockImplementation(
+        (
+          _createProperties: chrome.tabs.CreateProperties,
+          callback?: (tab: chrome.tabs.Tab) => void,
+        ) => {
+          callback?.(returnedTab);
+        },
+      );
+
+      // Execture
+      const result = await WindowsService.createTab({
+        url: "http://test.unit",
+      });
+
+      // Assert
+      const expectedResult = returnedTab;
+      expect(result).toBe(expectedResult);
+      expect(chrome.tabs.create).toHaveBeenCalled();
+    });
+
+    it("When a chrome error ocurrs, createTab rejects with the error", async () => {
+      // Prepare
+      const windowId = 12;
+      const returnedTab: chrome.tabs.Tab = {
+        index: 1,
+        pinned: false,
+        highlighted: false,
+        windowId,
+        active: true,
+        incognito: false,
+        selected: false,
+        discarded: false,
+        autoDiscardable: true,
+        groupId: 123,
+      };
+      const lastErrorMessage = "Chrome could not create tab";
+      const lastErrorGetter = jest.fn(() => lastErrorMessage);
+      const lastError = {
+        get message() {
+          return lastErrorGetter();
+        },
+      };
+      chrome.tabs.create.mockImplementation(
+        (
+          _createProperties: chrome.tabs.CreateProperties,
+          callback?: (tab: chrome.tabs.Tab) => void,
+        ) => {
+          chrome.runtime.lastError = lastError;
+          callback?.(returnedTab);
+          delete chrome.runtime.lastError;
+        },
+      );
+
+      // Execute and Assert
+      await expect(
+        WindowsService.createTab({
+          url: "http://test.unit",
+        }),
+      ).rejects.toThrow(ERROR_CREATE_TAB(lastError));
     });
   });
   describe("createPopup()", () => {

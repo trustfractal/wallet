@@ -31,6 +31,7 @@ export type LogoProps = {
 
 const Sizes = {
   [LogoSizes.SMALL]: {
+    name: IconNames.LOGO_SMALL,
     container: {
       width: "32px",
       height: "32px",
@@ -41,6 +42,7 @@ const Sizes = {
     },
   },
   [LogoSizes.MEDIUM]: {
+    name: IconNames.LOGO,
     container: {
       width: "80px",
       height: "80px",
@@ -59,11 +61,11 @@ Logo.defaultProps = {
 
 function Logo(props: LogoProps & React.HtmlHTMLAttributes<HTMLImageElement>) {
   const { size } = props;
-  const { logo, container } = Sizes[size];
+  const { name, logo, container } = Sizes[size];
 
   return (
     <Root {...container}>
-      <Icon name={IconNames.LOGO} {...logo} />
+      <Icon name={name} {...logo} />
     </Root>
   );
 }

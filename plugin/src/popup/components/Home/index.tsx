@@ -2,7 +2,8 @@ import { ICredential } from "@fractalwallet/types";
 
 import Text from "@popup/components/common/Text";
 import Title from "@popup/components/common/Title";
-import TopComponent from "@popup/components/TopComponent";
+import TopComponent from "@popup/components/common/TopComponent";
+import { withNavBar } from "@popup/components/common/NavBar";
 
 export type HomeProps = {
   account: string;
@@ -21,4 +22,4 @@ function Home(props: HomeProps) {
   );
 }
 
-export default Home;
+export default withNavBar(Home);

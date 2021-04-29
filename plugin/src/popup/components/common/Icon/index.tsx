@@ -6,8 +6,14 @@ const { default: Check } = require("@assets/check.svg");
 const { default: Eye } = require("@assets/eye.svg");
 const { default: EyeSlash } = require("@assets/eye-slash.svg");
 const { default: Logo } = require("@assets/logo.svg");
+const { default: LogoSmall } = require("@assets/logo-small.svg");
+const { default: Success } = require("@assets/success.svg");
+const { default: Connected } = require("@assets/connected.svg");
+const { default: Robot } = require("@assets/robot.svg");
 
-const Root = styled.div<{ clickable: boolean }>`
+const Root = styled.div<{
+  clickable: boolean;
+}>`
   ${(props) =>
     props.clickable &&
     css`
@@ -20,6 +26,10 @@ export enum IconNames {
   EYE = "eye",
   EYE_SLASH = "eye-slash",
   LOGO = "logo",
+  LOGO_SMALL = "logo-small",
+  SUCCESS = "success",
+  CONNECTED = "connected",
+  ROBOT = "robot",
 }
 
 const Icons: Record<string, any> = {
@@ -27,6 +37,10 @@ const Icons: Record<string, any> = {
   [IconNames.EYE]: Eye,
   [IconNames.EYE_SLASH]: EyeSlash,
   [IconNames.LOGO]: Logo,
+  [IconNames.LOGO_SMALL]: LogoSmall,
+  [IconNames.SUCCESS]: Success,
+  [IconNames.CONNECTED]: Connected,
+  [IconNames.ROBOT]: Robot,
 };
 
 export type IconProps = {

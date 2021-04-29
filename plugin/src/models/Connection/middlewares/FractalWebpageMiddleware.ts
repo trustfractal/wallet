@@ -39,6 +39,8 @@ export default class FractalWebpageMiddleware implements IMiddleware {
     const activePort = await ContentScriptConnection.getActiveConnectionPort();
 
     if (!activePort) {
+      WindowsService.openTab(`https://${env.FRACTAL_WEBSITE_HOSTNAME}`);
+
       throw ERROR_NO_ACTIVE_TAB();
     }
 

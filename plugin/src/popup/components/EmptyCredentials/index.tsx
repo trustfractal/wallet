@@ -4,8 +4,8 @@ import Button from "@popup/components/common/Button";
 import Text from "@popup/components/common/Text";
 import Title from "@popup/components/common/Title";
 import TopComponent from "@popup/components/common/TopComponent";
-import { withNavBar } from "@popup/components/common/NavBar";
 import Icon, { IconNames } from "@popup/components/common/Icon";
+import { withNavBar } from "@popup/components/common/NavBar";
 
 const IconContainer = styled.div`
   display: flex;
@@ -24,42 +24,33 @@ const ActionContainer = styled.div`
   padding: var(--s-24) 0;
 `;
 
-export type ConnectWalletRequestProps = {
-  loading: boolean;
+export type EmptyCredentialsProps = {
   onNext: () => void;
-  error: string;
 };
 
-ConnectWalletRequest.defaultProps = {
-  error: "",
-};
-
-function ConnectWalletRequest(props: ConnectWalletRequestProps) {
-  const { loading, onNext } = props;
+function EmptyCredentials(props: EmptyCredentialsProps) {
+  const { onNext } = props;
 
   return (
     <TopComponent>
       <IconContainer>
-        <Icon name={IconNames.CONNECTED} />
+        <Icon name={IconNames.ROBOT} />
       </IconContainer>
       <ContentContainer>
-        <Title>Connect to the wallet where you have your FCL tokens.</Title>
+        <Title>You haven’t issued a credential yet.</Title>
         <Text>
           <br />
         </Text>
         <Text>
-          You’ll be prompted to give Fractal{" "}
-          <strong>permission to access your wallet</strong>, which is required
-          to pay for your credentials, as well as access the staking program.
+          You can only issue a credential through your Fractal dashboard. The
+          button below will redirect you to Fractal.
         </Text>
       </ContentContainer>
       <ActionContainer>
-        <Button loading={loading} onClick={onNext}>
-          Connect my wallet
-        </Button>
+        <Button onClick={onNext}>Go to Fractal</Button>
       </ActionContainer>
     </TopComponent>
   );
 }
 
-export default withNavBar(ConnectWalletRequest);
+export default withNavBar(EmptyCredentials);

@@ -253,7 +253,7 @@ class EthereumProviderService implements IEthereumProviderService {
       const stakingMaxAmount = await stakingContract.maxAmount();
       const currentAPY = await stakingContract.currentAPY();
       const currentExpectedRewardRate = await stakingContract.calculateReward(
-        Date.now(),
+        Math.floor(Date.now() / 1000),
         stakingEndDate,
         100,
       );

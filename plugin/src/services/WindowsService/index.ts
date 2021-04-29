@@ -1,6 +1,7 @@
 import { POPUP } from "./Params";
 import {
   ERROR_CREATE_WINDOW,
+  ERROR_CREATE_TAB,
   ERROR_GET_CURRENT_WINDOW,
   ERROR_GET_WINDOW,
   ERROR_GET_ALL_WINDOWS,
@@ -157,6 +158,21 @@ class WindowsService {
     });
   }
 
+  createTab(
+    properties: chrome.tabs.CreateProperties,
+  ): Promise<chrome.tabs.Tab> {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.create(properties, (tab) => {
+        if (chrome.runtime.lastError !== undefined) {
+          console.error(chrome.runtime.lastError);
+          reject(ERROR_CREATE_TAB(chrome.runtime.lastError));
+        }
+
+        resolve(tab);
+      });
+    });
+  }
+
   updateTab(
     tabId: number,
     config: chrome.tabs.UpdateProperties,
@@ -213,6 +229,16 @@ class WindowsService {
         },
       );
     });
+  }
+
+  async openTab(url: string) {
+    const activeTab = await this.getActiveTab();
+
+    if (activeTab === undefined || activeTab.id === undefined) {
+      return this.createTab({ url });
+    }
+
+    return this.redirectTab(activeTab.id, url);
   }
 }
 
