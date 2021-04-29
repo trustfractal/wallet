@@ -9,6 +9,7 @@ export const global = css`
   :root {
     --c-white: #ffffff;
     --c-dark-blue: #132c53;
+    --c-red: rgba(239, 68, 68);
     --c-transparent: transparent;
     --c-orange: #ff671d;
     --s-5: 0.3125rem;
@@ -22,6 +23,8 @@ export const global = css`
     --s-20: 1.25rem;
     --s-23: 1.4375rem;
     --s-24: 1.5rem;
+    --s-26: 1.625rem;
+    --s-32: 2rem;
     --s-35: 2.1875rem;
     --s-48: 3rem;
   }
@@ -32,6 +35,8 @@ export const global = css`
 
     min-width: 400px;
     min-height: 460px;
+
+    font-size: 14px; // TODO: Remove this
   }
 
   html,

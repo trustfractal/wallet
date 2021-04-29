@@ -13,14 +13,14 @@ import TopComponent from "@popup/components/TopComponent";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 import Logo from "@popup/components/common/Logo";
 
+const RootContainer = styled.div`
+  padding: var(--s-24) 0px;
+`;
 const LogoContainer = styled.div`
   display: flex;
   justify-content: center;
 
   margin-bottom: var(--s-48);
-`;
-const RootContainer = styled.div`
-  padding: var(--s-24) 0px;
 `;
 const HeaderContainer = styled.div`
   margin-bottom: var(--s-24);
@@ -28,7 +28,16 @@ const HeaderContainer = styled.div`
 const InputsContainer = styled.div`
   margin-bottom: var(--s-8);
 `;
-const InputContainer = styled.div``;
+const InputContainer = styled.div`
+  height: calc(
+    ${TextHeights.SMALL} + var(--s-5) + ${TextHeights.MEDIUM} + var(--s-12) +
+      ${TextHeights.SMALL} + ${TextHeights.SMALL}
+  );
+  margin-bottom: var(--s-26);
+`;
+const CheckContainer = styled.div`
+  margin-top: var(--s-12);
+`;
 const ActionContainer = styled.div`
   display: flex;
   align-items: center;
@@ -92,25 +101,39 @@ function Register(props: RegisterProps) {
           <Text>Please start by creating your password</Text>
         </HeaderContainer>
         <InputsContainer>
-          <PasswordInput
-            id="new_password"
-            name="value"
-            label="Create a password"
-            hint={hint}
-            minLength={minLength}
-            value={newPassword}
-            onChange={onChangeNewPassword}
-          />
-          {isNewPasswordValid && <Icon name={IconNames.CHECK} />}
-          <PasswordInput
-            id="confirm_password"
-            name="value"
-            label="Confirm Password"
-            minLength={minLength}
-            value={confirmPassword}
-            onChange={onChangeConfirmPassword}
-          />
-          {arePasswordsValidAndEquals && <Icon name={IconNames.CHECK} />}
+          <InputContainer>
+            <PasswordInput
+              id="new_password"
+              name="value"
+              label="Create a password"
+              hint={hint}
+              minLength={minLength}
+              value={newPassword}
+              onChange={onChangeNewPassword}
+              defaultVisible
+            />
+            {isNewPasswordValid && (
+              <CheckContainer>
+                <Icon name={IconNames.CHECK} />
+              </CheckContainer>
+            )}
+          </InputContainer>
+          <InputContainer>
+            <PasswordInput
+              id="confirm_password"
+              name="value"
+              label="Confirm Password"
+              minLength={minLength}
+              value={confirmPassword}
+              onChange={onChangeConfirmPassword}
+              defaultVisible
+            />
+            {arePasswordsValidAndEquals && (
+              <CheckContainer>
+                <Icon name={IconNames.CHECK} />
+              </CheckContainer>
+            )}
+          </InputContainer>
         </InputsContainer>
         {arePasswordsValid && (
           <ActionContainer>

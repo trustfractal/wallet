@@ -2,13 +2,20 @@ import authActions, {
   authTypes,
 } from "@redux/stores/application/reducers/auth";
 import registerActions from "@redux/stores/application/reducers/register";
+import {
+  AppStoreError,
+  ErrorCode,
+  ERROR_STORE_PASSWORD_INCORRECT,
+} from "@redux/stores/application/Errors";
 
 import Store, { UserStore } from "@redux/stores/user";
 import { getRegisterPassword } from "@redux/stores/application/reducers/register/selectors";
 import { getHashedPassword } from "@redux/stores/application/reducers/auth/selectors";
 
+import { Action } from "redux-actions";
+
 export const signUp = () => {
-  return async (dispatch, getState) => {
+  return async (dispatch: (arg: Action<any>) => void, getState: () => any) => {
     dispatch(authActions.signUpPending());
 
     try {
@@ -37,8 +44,8 @@ export const signUp = () => {
   };
 };
 
-export const signIn = ({ payload: attemptedPassword }) => {
-  return async (dispatch, getState) => {
+export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
+  return async (dispatch: (arg: Action<any>) => void, getState: () => any) => {
     dispatch(authActions.signInPending());
 
     try {
@@ -52,21 +59,25 @@ export const signIn = ({ payload: attemptedPassword }) => {
       ).toString();
 
       // compare passwords hashes
-      if (hashedAttemptedPassword === hashedPassword) {
-        const isInitialized = await Store.isInitialized();
-
-        if (!isInitialized) {
-          // init the encrypted user store
-          await Store.init(attemptedPassword);
-        }
-
-        dispatch(authActions.signInSuccess());
-      } else {
-        dispatch(authActions.signInFailed("Password incorrect."));
+      if (hashedAttemptedPassword !== hashedPassword) {
+        throw ERROR_STORE_PASSWORD_INCORRECT();
       }
+
+      const isInitialized = await Store.isInitialized();
+
+      if (!isInitialized) {
+        // init the encrypted user store
+        await Store.init(attemptedPassword);
+      }
+
+      dispatch(authActions.signInSuccess());
     } catch (error) {
-      console.error(error);
-      dispatch(authActions.signInFailed(error.message));
+      if (error instanceof AppStoreError) {
+        if (error.errorCode === ErrorCode.ERROR_STORE_PASSWORD_INCORRECT) {
+          dispatch(authActions.signInFailed("Password is incorrect."));
+          return;
+        }
+      }
     }
   };
 };

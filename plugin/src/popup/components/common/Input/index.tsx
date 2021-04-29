@@ -17,13 +17,15 @@ const InputContainer = styled.input`
   padding: 0;
   padding-top: calc(var(--s-19) + var(--s-5));
 
+  width: 100%;
+
   ::placeholder {
     color: var(--c-white);
     opacity: 0.6;
   }
 `;
 
-const Label = styled.div<{ active: boolean }>`
+const LabelContainer = styled.div<{ active: boolean }>`
   position: absolute;
   pointer-events: none;
   opacity: 0.6;
@@ -41,23 +43,37 @@ const Label = styled.div<{ active: boolean }>`
     `}
 `;
 
-const Hint = styled.div`
+const HintContainer = styled.div`
   margin-top: var(--s-12);
 `;
 
-const Line = styled.hr<{ active: boolean }>`
+const ErrorContainer = styled.div`
+  margin-top: var(--s-12);
+  color: var(--c-red);
+`;
+
+const LineContainer = styled.hr<{ active: boolean; error: boolean }>`
   height: 1px;
   background: var(--c-white);
   margin-top: var(--s-12);
+  transition: opacity 0.2s ease-in-out;
 
   ${(props) =>
     props.active &&
     css`
       opacity: 0.2;
     `}
+
+  ${(props) =>
+    props.error &&
+    css`
+      background: var(--c-red);
+      opacity: 1;
+    `}
 `;
 
 export type InputProps = {
+  error?: string;
   label?: string;
   hint?: string;
 };
@@ -65,32 +81,43 @@ export type InputProps = {
 function Input(
   props: InputProps & React.InputHTMLAttributes<HTMLInputElement>,
 ) {
-  const { label, hint, children, value, ...otherProps } = props;
+  const { error, label, hint, children, value, ...otherProps } = props;
 
   const active = value !== undefined && value.toString().length > 0;
 
+  const hasError = error !== undefined && error.length > 0;
+  const hasLabel = label !== undefined && label.length > 0;
+  const hasHint = hint !== undefined && hint.length > 0;
+
   return (
     <Root>
-      {label && (
-        <Label active={active}>
+      {hasLabel && (
+        <LabelContainer active={active}>
           <Text
             size={active ? TextSizes.SMALL : TextSizes.MEDIUM}
             height={active ? TextHeights.SMALL : TextHeights.MEDIUM}
           >
             {label}
           </Text>
-        </Label>
+        </LabelContainer>
       )}
       <InputContainer value={value} {...otherProps}>
         {children}
       </InputContainer>
-      <Line active={active} />
-      {hint && hint.length > 0 && (
-        <Hint>
+      <LineContainer active={active} error={hasError} />
+      {hasError && (
+        <ErrorContainer>
+          <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+            {error}
+          </Text>
+        </ErrorContainer>
+      )}
+      {hasHint && (
+        <HintContainer>
           <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
             {hint}
           </Text>
-        </Hint>
+        </HintContainer>
       )}
     </Root>
   );

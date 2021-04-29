@@ -5,7 +5,6 @@ import styled, { css } from "styled-components";
 
 const Root = styled.button<{
   alternative: boolean;
-  outline: boolean;
   disabled: boolean;
 }>`
   color: var(--c-white);
@@ -24,20 +23,11 @@ const Root = styled.button<{
     props.disabled &&
     css`
       opacity: 0.6;
+      cursor: default;
     `}
 
   ${(props) =>
     props.alternative &&
-    css`
-      color: var(--c-orange);
-      background: var(--c-transparent);
-      text-decoration: underline;
-      text-transform: uppercase;
-      font-weight: normal;
-    `}
-
-  ${(props) =>
-    props.outline &&
     css`
       color: var(--c-orange);
       background: var(--c-transparent);
@@ -56,7 +46,6 @@ const RightIconContainer = styled.div`
 export type ButtonProps = {
   loading: boolean;
   alternative: boolean;
-  outline: boolean;
   leftIcon?: JSX.Element;
   rightIcon?: JSX.Element;
 };
@@ -64,7 +53,6 @@ export type ButtonProps = {
 Button.defaultProps = {
   loading: false,
   alternative: false,
-  outline: false,
 };
 
 function Button(
@@ -83,7 +71,7 @@ function Button(
     <Root disabled={disabled || loading} {...otherProps}>
       {loading && (
         <LeftIconContainer>
-          <Spinner alternative={otherProps.alternative || otherProps.outline} />
+          <Spinner alternative={otherProps.alternative} />
         </LeftIconContainer>
       )}
       {leftIcon !== undefined && (

@@ -16,13 +16,25 @@ const IconContainer = styled.div`
   cursor: pointer;
 `;
 
-function PasswordInput(
-  props: InputProps & React.InputHTMLAttributes<HTMLInputElement>,
-) {
-  const { children, ...otherProps } = props;
+export type PasswordInputProps = {
+  defaultVisible: boolean;
+};
 
-  const [type, setType] = useState("text");
-  const [icon, setIcon] = useState(IconNames.EYE);
+PasswordInput.defaultProps = {
+  defaultVisible: false,
+};
+
+function PasswordInput(
+  props: PasswordInputProps &
+    InputProps &
+    React.InputHTMLAttributes<HTMLInputElement>,
+) {
+  const { children, defaultVisible, ...otherProps } = props;
+
+  const [type, setType] = useState(defaultVisible ? "text" : "password");
+  const [icon, setIcon] = useState(
+    defaultVisible ? IconNames.EYE : IconNames.EYE_SLASH,
+  );
 
   const toggleVisibility = () => {
     if (type === "password") {
@@ -36,7 +48,7 @@ function PasswordInput(
 
   return (
     <Root>
-      <Input type={type} {...otherProps} />
+      <Input type={type} style={{ width: "80%" }} {...otherProps} />
       <IconContainer onClick={toggleVisibility}>
         <Icon name={icon} />
       </IconContainer>
