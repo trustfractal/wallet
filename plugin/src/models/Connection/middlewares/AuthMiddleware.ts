@@ -15,7 +15,14 @@ function loginFlow(): Promise<void> {
   return new Promise(async (resolve, reject) => {
     let unlisten = () => {};
 
-    // create normal popup to login
+    // check if the popup is open
+    const popups = await WindowsService.getAllPopups();
+
+    if (popups.length > 0) {
+      reject(ERROR_LOGIN_WINDOW_OPEN());
+      return;
+    }
+
     const window = await WindowsService.createPopup();
 
     if (!window) {
@@ -25,7 +32,7 @@ function loginFlow(): Promise<void> {
 
     // register a listener for on close window event
     chrome.windows.onRemoved.addListener((windowId) => {
-      if (windowId === window.id) {
+      if (windowId === window!.id) {
         unlisten();
         reject(ERROR_LOGIN_WINDOW_CLOSED());
       }
@@ -34,7 +41,7 @@ function loginFlow(): Promise<void> {
     // create callbacks
     const onLoginSuccess = async () => {
       // close login popup
-      await WindowsService.closeWindow(window.id);
+      await WindowsService.closeWindow(window!.id);
 
       // resolve promise
       resolve();
@@ -46,7 +53,7 @@ function loginFlow(): Promise<void> {
 
     const onTimeout = async () => {
       // close login popup
-      await WindowsService.closeWindow(window.id);
+      await WindowsService.closeWindow(window!.id);
 
       // resolve promise
       reject(ERROR_LOGIN_TIMEOUT());
