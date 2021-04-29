@@ -5,6 +5,7 @@ import ConnectionTypes from "@models/Connection/types";
 
 import ContentScriptConnection from "@background/connection";
 
+import AppStore from "@redux/stores/application";
 import UserStore from "@redux/stores/user";
 import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 
@@ -14,15 +15,25 @@ import { ERROR_CREDENTIAL_NOT_FOUND } from "@background/Errors";
 
 import EtherscanService from "@services/EtherscanService";
 import { BigNumber } from "ethers";
+import {
+  getTokensContractsAddresses,
+  getStakingContractsAddresses,
+} from "@redux/stores/application/reducers/app/selectors";
 
 export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
       const address = getAccount(UserStore.getStore().getState());
 
+      const tokenContractAddress = getTokensContractsAddresses(
+        AppStore.getStore().getState(),
+      )[token];
+      const stakingContractAddress = getStakingContractsAddresses(
+        AppStore.getStore().getState(),
+      )[token];
       const transaction = await ContentScriptConnection.invoke(
         ConnectionTypes.GET_STAKING_DETAILS_INPAGE,
-        [address, token],
+        [address, tokenContractAddress, stakingContractAddress],
         port,
       );
 
@@ -40,10 +51,16 @@ export const approveStake = (
   new Promise<void | string>(async (resolve, reject) => {
     try {
       const address = getAccount(UserStore.getStore().getState());
+      const tokenContractAddress = getTokensContractsAddresses(
+        AppStore.getStore().getState(),
+      )[token];
+      const stakingContractAddress = getStakingContractsAddresses(
+        AppStore.getStore().getState(),
+      )[token];
 
       const serializedTransactionDetails = await ContentScriptConnection.invoke(
         ConnectionTypes.APPROVE_STAKE_INPAGE,
-        [address, amount, token],
+        [address, amount, tokenContractAddress, stakingContractAddress],
         port,
       );
 
@@ -55,25 +72,37 @@ export const approveStake = (
   });
 
 export const stake = (
-  [amount, token, credentialId]: [string, TokenTypes, string],
+  [amount, token, level]: [string, TokenTypes, string],
   port: string,
 ) =>
   new Promise(async (resolve, reject) => {
     try {
       const address = getAccount(UserStore.getStore().getState());
       const credentials = getCredentials(UserStore.getStore().getState());
+      const tokenContractAddress = getTokensContractsAddresses(
+        AppStore.getStore().getState(),
+      )[token];
+      const stakingContractAddress = getStakingContractsAddresses(
+        AppStore.getStore().getState(),
+      )[token];
 
       // find credential
-      const credential = credentials.getByField("id", credentialId);
+      const credential = credentials.getByField("level", level);
 
       if (!credential) {
-        reject(ERROR_CREDENTIAL_NOT_FOUND(credentialId));
+        reject(ERROR_CREDENTIAL_NOT_FOUND(level));
         return;
       }
 
       const serializedTransactionDetails = await ContentScriptConnection.invoke(
         ConnectionTypes.STAKE_INPAGE,
-        [address, amount, token, credential.serialize()],
+        [
+          address,
+          amount,
+          credential.serialize(),
+          tokenContractAddress,
+          stakingContractAddress,
+        ],
         port,
       );
 
@@ -110,10 +139,16 @@ export const getAllowedAmount = ([token]: [TokenTypes], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
       const address = getAccount(UserStore.getStore().getState());
+      const tokenContractAddress = getTokensContractsAddresses(
+        AppStore.getStore().getState(),
+      )[token];
+      const stakingContractAddress = getStakingContractsAddresses(
+        AppStore.getStore().getState(),
+      )[token];
 
       const serializedAllowedAmount = await ContentScriptConnection.invoke(
         ConnectionTypes.GET_ALLOWED_AMOUNT_INPAGE,
-        [address, token],
+        [address, tokenContractAddress, stakingContractAddress],
         port,
       );
 
@@ -128,10 +163,13 @@ export const withdraw = ([token]: [TokenTypes], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
       const address = getAccount(UserStore.getStore().getState());
+      const stakingContractAddress = getStakingContractsAddresses(
+        AppStore.getStore().getState(),
+      )[token];
 
       const serializedTransactionDetails = await ContentScriptConnection.invoke(
         ConnectionTypes.WITHDRAW_INPAGE,
-        [address, token],
+        [address, stakingContractAddress],
         port,
       );
 

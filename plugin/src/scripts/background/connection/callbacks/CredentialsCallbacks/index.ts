@@ -1,6 +1,7 @@
 import Credential from "@models/Credential";
 
 import UserStore from "@redux/stores/user";
+import AppStore from "@redux/stores/application";
 
 import ContentScriptConnection from "@background/connection";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
@@ -14,6 +15,7 @@ import { getCredentials } from "@redux/stores/user/reducers/credentials/selector
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 import { ERROR_CREDENTIAL_NOT_FOUND } from "@background/Errors";
+import { getClaimsRegistryContractAddress } from "@redux/stores/application/reducers/app/selectors";
 
 export const credentialStore = (
   [serializedCredential]: [string],
@@ -22,11 +24,14 @@ export const credentialStore = (
   new Promise(async (resolve, reject) => {
     try {
       const address: string = getAccount(UserStore.getStore().getState());
+      const claimsRegistryContractAddress: string = getClaimsRegistryContractAddress(
+        AppStore.getStore().getState(),
+      );
 
       // redirect request to the inpage fractal provider
       const serializedTransactionDetails = await ContentScriptConnection.invoke(
         ConnectionTypes.CREDENTIAL_STORE_INPAGE,
-        [address, serializedCredential],
+        [address, serializedCredential, claimsRegistryContractAddress],
         port,
       );
 
@@ -112,10 +117,14 @@ export const isCredentialValid = ([id]: [string], port: string) =>
         return;
       }
 
+      const claimsRegistryContractAddress: string = getClaimsRegistryContractAddress(
+        AppStore.getStore().getState(),
+      );
+
       // redirect request to the inpage fractal provider
       const isValid = await ContentScriptConnection.invoke(
         ConnectionTypes.IS_CREDENTIAL_VALID_INPAGE,
-        [address, credential.serialize()],
+        [address, credential.serialize(), claimsRegistryContractAddress],
         port,
       );
 

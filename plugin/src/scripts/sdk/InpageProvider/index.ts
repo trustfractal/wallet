@@ -17,8 +17,8 @@ import ExtensionConnection from "@sdk/InpageProvider/connection";
 import TokenTypes from "@models/Token/types";
 
 import AttestationRequest from "@models/AttestationRequest";
-import StakingDetails from "@models/Staking/StakingDetails";
 import ConnectionStatus from "@models/Connection/ConnectionStatus";
+import StakingDetails from "@models/Staking/StakingDetails";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 export default class InpageProvider implements IFractalInpageProvider {
@@ -75,13 +75,13 @@ export default class InpageProvider implements IFractalInpageProvider {
   public async stake(
     amount: string,
     token: TokenTypes,
-    credentialId: string,
+    level: string,
   ): Promise<ITransactionDetails> {
     this.ensureFractalIsInitialized();
 
     const serializedTransactionDetails = await ExtensionConnection.invoke(
       ConnectionTypes.STAKE_BACKGROUND,
-      [amount, token, credentialId],
+      [amount, token, level],
     );
 
     return TransactionDetails.parse(serializedTransactionDetails);
@@ -129,7 +129,7 @@ export default class InpageProvider implements IFractalInpageProvider {
     return request;
   }
 
-  public async storeCredential(
+  public async credentialStore(
     credential: ICredential,
   ): Promise<ITransactionDetails> {
     this.ensureFractalIsInitialized();
