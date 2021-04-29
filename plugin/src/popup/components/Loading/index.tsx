@@ -1,7 +1,7 @@
-import "@popup/styles.css";
+import TopComponent from "@popup/components/TopComponent";
 
 function Loading() {
-  return <div className="Popup" />;
+  return <TopComponent />;
 }
 
 export default Loading;

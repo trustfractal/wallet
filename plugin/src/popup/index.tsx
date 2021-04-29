@@ -4,11 +4,16 @@ import App from "@popup/app";
 
 import { AppContextProvider } from "@redux/stores/application/context";
 
+import GlobalStyle from "./styles/GlobalStyle";
+
 function Popup() {
   return (
-    <AppContextProvider>
-      <App />
-    </AppContextProvider>
+    <>
+      <GlobalStyle />
+      <AppContextProvider>
+        <App />
+      </AppContextProvider>
+    </>
   );
 }
 

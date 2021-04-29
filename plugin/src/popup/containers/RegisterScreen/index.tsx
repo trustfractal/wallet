@@ -12,8 +12,6 @@ import {
 
 import Register from "@popup/components/Register";
 
-import "@popup/styles.css";
-
 function RegisterScreen() {
   const dispatch = useAppDispatch();
 

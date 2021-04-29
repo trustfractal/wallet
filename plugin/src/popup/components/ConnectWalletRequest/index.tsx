@@ -1,8 +1,9 @@
-import Button from "@popup/components/Button";
+import Button from "@popup/components/common/Button";
+import Text from "@popup/components/common/Text";
+import Title from "@popup/components/common/Title";
+import TopComponent from "@popup/components/TopComponent";
 
-import "@popup/styles.css";
-
-type ConnectWalletRequestProps = {
+export type ConnectWalletRequestProps = {
   loading: boolean;
   onNext: () => void;
   error: string;
@@ -18,21 +19,21 @@ function ConnectWalletRequest(props: ConnectWalletRequestProps) {
   const hasError = error.length > 0;
 
   return (
-    <div className="Popup">
-      <h2>Connect to the wallet where you have your FCL tokens.</h2>
+    <TopComponent>
+      <Title>Connect to the wallet where you have your FCL tokens.</Title>
       <div>
-        <p>
+        <Text>
           You’ll be prompted to give Fractal permission to access your wallet,
           which is required to pay for your credentials, as well as access the
           staking program.
-        </p>
+        </Text>
         <br />
-        {hasError && <p>{error}</p>}
+        {hasError && <Text>{error}</Text>}
       </div>
       <Button loading={loading} onClick={onNext}>
         Connect my wallet
       </Button>
-    </div>
+    </TopComponent>
   );
 }
 
