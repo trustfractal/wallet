@@ -78,7 +78,7 @@ function Login(props: LoginProps) {
           <PasswordInput
             id="password"
             name="value"
-            placeholder="Enter your password"
+            label="Enter your password"
             value={password}
             error={error}
             onChange={onChangePassword}

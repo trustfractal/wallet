@@ -53,6 +53,7 @@ const ErrorContainer = styled.div`
 `;
 
 const LineContainer = styled.hr<{ active: boolean; error: boolean }>`
+  border: 0;
   height: 1px;
   background: var(--c-white);
   margin-top: var(--s-12);

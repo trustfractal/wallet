@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
+import { SwitchTransition, CSSTransition } from "react-transition-group";
 
 import Button from "@popup/components/common/Button";
 import PasswordInput from "@popup/components/common/PasswordInput";
@@ -15,6 +16,23 @@ import Logo from "@popup/components/common/Logo";
 
 const RootContainer = styled.div`
   padding: var(--s-24) 0px;
+
+  .fade-enter {
+    opacity: 0;
+  }
+  .fade-exit {
+    opacity: 1;
+  }
+  .fade-enter-active {
+    opacity: 1;
+  }
+  .fade-exit-active {
+    opacity: 0;
+  }
+  .fade-enter-active,
+  .fade-exit-active {
+    transition: opacity 0.2s;
+  }
 `;
 const LogoContainer = styled.div`
   display: flex;
@@ -135,42 +153,54 @@ function Register(props: RegisterProps) {
             )}
           </InputContainer>
         </InputsContainer>
-        {arePasswordsValid && (
-          <ActionContainer>
-            <Button
-              onClick={onClick}
-              loading={loading}
-              disabled={!arePasswordsValidAndEquals}
-            >
-              Save my password
-            </Button>
-          </ActionContainer>
-        )}
-        {!arePasswordsValid && (
-          <>
-            <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-              Note
-            </Text>
+        <SwitchTransition>
+          <CSSTransition
+            key={arePasswordsValid ? "submit-button" : "password-note"}
+            addEndListener={(node, done) =>
+              node.addEventListener("transitionend", done, false)
+            }
+            classNames="fade"
+          >
+            <div>
+              {arePasswordsValid && (
+                <ActionContainer>
+                  <Button
+                    onClick={onClick}
+                    loading={loading}
+                    disabled={!arePasswordsValidAndEquals}
+                  >
+                    Save my password
+                  </Button>
+                </ActionContainer>
+              )}
+              {!arePasswordsValid && (
+                <>
+                  <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+                    Note
+                  </Text>
 
-            <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-              Your password is used to unlock your Fractal ID Wallet and we
-              don’t have access to it.
-            </Text>
+                  <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+                    Your password is used to unlock your Fractal ID Wallet and
+                    we don’t have access to it.
+                  </Text>
 
-            <Text size={TextSizes.SMALL}>
-              <br />
-            </Text>
+                  <Text size={TextSizes.SMALL}>
+                    <br />
+                  </Text>
 
-            <Text
-              size={TextSizes.SMALL}
-              height={TextHeights.SMALL}
-              weight={TextWeights.BOLD}
-            >
-              If you forget your password, you’ll lose the ability to use the
-              wallet.
-            </Text>
-          </>
-        )}
+                  <Text
+                    size={TextSizes.SMALL}
+                    height={TextHeights.SMALL}
+                    weight={TextWeights.BOLD}
+                  >
+                    If you forget your password, you’ll lose the ability to use
+                    the wallet.
+                  </Text>
+                </>
+              )}
+            </div>
+          </CSSTransition>
+        </SwitchTransition>
       </RootContainer>
     </TopComponent>
   );
