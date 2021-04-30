@@ -31,7 +31,7 @@ function loginFlow(): Promise<void> {
     }
 
     // register a listener for on close window event
-    chrome.windows.onRemoved.addListener(windowId => {
+    chrome.windows.onRemoved.addListener((windowId) => {
       if (windowId === window!.id) {
         unlisten();
         reject(ERROR_LOGIN_WINDOW_CLOSED());
@@ -82,7 +82,7 @@ function setupFlow(): Promise<void> {
     }
 
     // register a listener for on close window event
-    chrome.windows.onRemoved.addListener(windowId => {
+    chrome.windows.onRemoved.addListener((windowId) => {
       if (windowId === window.id) {
         unlisten();
         reject(ERROR_LOGIN_WINDOW_CLOSED());
