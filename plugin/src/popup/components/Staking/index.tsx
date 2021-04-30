@@ -1,25 +1,14 @@
-import { ICredential } from "@fractalwallet/types";
-
-import Text from "@popup/components/common/Text";
-import Title from "@popup/components/common/Title";
 import TopComponent from "@popup/components/common/TopComponent";
-import { withNavBar } from "@popup/components/common/NavBar";
+import Text from "@popup/components/common/Text";
 
-export type HomeProps = {
-  account: string;
-  credentials: ICredential[];
-};
+export type StakingProps = {};
 
-function Home(props: HomeProps) {
-  const { account, credentials } = props;
-
+function Staking(props: StakingProps) {
   return (
     <TopComponent>
-      <Title>Home</Title>
-      <Text>{`Account: ${account}`}</Text>
-      <Text>{`Credentials: ${credentials.length}`}</Text>
+      <Text>Staking</Text>
     </TopComponent>
   );
 }
 
-export default withNavBar(Home);
+export default Staking;
