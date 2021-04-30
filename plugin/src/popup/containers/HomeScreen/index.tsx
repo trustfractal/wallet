@@ -1,8 +1,4 @@
 import { useHistory } from "react-router";
-import { Credential as SDKCredential } from "@fractalwallet/sdk";
-
-import Credential from "@models/Credential";
-import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
 import Home from "@popup/components/Home";
 import EmptyCredentials from "@popup/components/EmptyCredentials";
@@ -17,50 +13,13 @@ import { getCredentials } from "@redux/stores/user/reducers/credentials/selector
 
 import WindowsService from "@services/WindowsService";
 import environment from "@environment/index";
-import { useMemo } from "react";
 
 function HomeScreen() {
   const history = useHistory();
 
   const account = useUserSelector(getAccount);
-  // const credentials = useUserSelector(getCredentials);
+  const credentials = useUserSelector(getCredentials);
   const setup = useAppSelector(isSetup);
-
-  const sdkCredential = new SDKCredential({
-    claim: {
-      claimTypeHash: "claimTypeHash",
-      owner: "owner",
-      properties: {
-        name: "Diogo",
-        age: 25,
-      },
-    },
-    rootHash: "rootHash",
-    attesterAddress: "attesterAddress",
-    attesterSignature: "attesterSignature",
-    credentialHash: "credentialHash",
-    credentialSignature: "credentialSignature",
-    claimerAddress: "claimerAddress",
-    claimerSignature: "claimerSignature",
-    claimTypeHash: {
-      hash: "hash",
-    },
-    claimHashTree: {
-      name: {
-        hash: "hash",
-      },
-      age: {
-        hash: "hash",
-      },
-    },
-  });
-
-  const credentials = useMemo(() => {
-    const credential = new Credential(sdkCredential, "dummy");
-    const credentials = new CredentialsCollection();
-    credentials.push(credential);
-    return credentials;
-  }, []);
 
   // redirect to wallet connect
   if (!setup) {

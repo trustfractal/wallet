@@ -11,25 +11,34 @@ export type HomeProps = {
   credentials: ICredential[];
 };
 
+enum TabsNames {
+  STAKING = "staking",
+  CREDENTIALS = "credentials",
+}
+
 function Home(props: HomeProps) {
   const { account, credentials } = props;
 
-  const tabs = [
-    {
+  const tabs = {
+    [TabsNames.CREDENTIALS]: {
       id: "credentials-tab",
       label: "Credentials",
     },
-    {
+    [TabsNames.STAKING]: {
       id: "staking-tab",
       label: "Staking",
     },
-  ];
+  };
 
-  const [selected, setSelected] = useState(tabs[0].id);
+  const [selected, setSelected] = useState(tabs[TabsNames.CREDENTIALS].id);
 
   return (
-    <Tabs tabs={tabs} selected={selected} setSelected={setSelected}>
-      {selected === "credentials-tab" ? (
+    <Tabs
+      tabs={Object.values(tabs)}
+      selected={selected}
+      setSelected={setSelected}
+    >
+      {selected === tabs[TabsNames.CREDENTIALS].id ? (
         <Credentials credentials={credentials} />
       ) : (
         <Staking />

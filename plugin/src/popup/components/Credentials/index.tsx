@@ -15,6 +15,8 @@ const RootContainer = styled.div`
   justify-content: space-between;
   align-items: center;
 
+  margin-bottom: var(--s-32);
+
   border-radius: var(--s-12);
   padding: var(--s-24) var(--s-12);
 
@@ -49,7 +51,6 @@ const LeftIconContainer = styled.div<{ levelIconName: IconNames }>`
     `}
 
   ${(props) =>
-    // @ts-ignore
     props.levelIconName === IconNames.ID_PLUS &&
     css`
       background: radial-gradient(
@@ -91,23 +92,23 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
 
   const { valid } = credential;
 
-  const level = "idbasic+liveness".split("+")[0];
+  const level = credential.level.split("+")[0];
   let levelName;
   let levelIconName;
   let statusName;
   let statusIconName;
 
-  if (level === "idbasic") {
+  if (level === "basic") {
     levelName = "ID Basic";
     levelIconName = IconNames.ID_BASIC;
   } else {
-    levelName = "ID Plus";
+    levelName = "plus";
     levelIconName = IconNames.ID_PLUS;
   }
 
   if (valid) {
     statusName = "Verified";
-    statusIconName = IconNames.ID_PLUS;
+    statusIconName = IconNames.VERIFIED;
   } else {
     statusName = "Pending";
     statusIconName = IconNames.PENDING;
@@ -141,7 +142,7 @@ function Credentials(props: CredentialsProps) {
   return (
     <TopComponent>
       {credentials.map((credential: ICredential) => (
-        <Credential key={credential.id} credential={credential} />
+        <Credential key={credential.level} credential={credential} />
       ))}
     </TopComponent>
   );
