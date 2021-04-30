@@ -10,13 +10,12 @@ import Text, {
   TextWeights,
 } from "@popup/components/common/Text";
 import Title from "@popup/components/common/Title";
-import TopComponent from "@popup/components/TopComponent";
+import TopComponent from "@popup/components/common/TopComponent";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 import Logo from "@popup/components/common/Logo";
 
 const RootContainer = styled.div`
   padding: var(--s-24) 0px;
-
   .fade-enter {
     opacity: 0;
   }
@@ -37,7 +36,6 @@ const RootContainer = styled.div`
 const LogoContainer = styled.div`
   display: flex;
   justify-content: center;
-
   margin-bottom: var(--s-48);
 `;
 const HeaderContainer = styled.div`

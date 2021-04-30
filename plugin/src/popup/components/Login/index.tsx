@@ -4,7 +4,7 @@ import styled from "styled-components";
 import Button from "@popup/components/common/Button";
 import PasswordInput from "@popup/components/common/PasswordInput";
 import Title from "@popup/components/common/Title";
-import TopComponent from "@popup/components/TopComponent";
+import TopComponent from "@popup/components/common/TopComponent";
 import Logo from "@popup/components/common/Logo";
 import Anchor from "@popup/components/common/Anchor";
 import { TextHeights } from "@popup/components/common/Text";

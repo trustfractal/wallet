@@ -1,4 +1,4 @@
-import TopComponent from "@popup/components/TopComponent";
+import TopComponent from "@popup/components/common/TopComponent";
 
 function Loading() {
   return <TopComponent />;

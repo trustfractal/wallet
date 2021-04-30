@@ -6,6 +6,7 @@ export enum ErrorCode {
   ERROR_CLOSE_WINDOW = 2004,
   ERROR_GET_TAB = 2005,
   ERROR_QUERY_TABS = 2006,
+  ERROR_CREATE_TAB = 2007,
 }
 
 export class WindowsServiceError extends Error {
@@ -30,6 +31,16 @@ export const ERROR_CREATE_WINDOW = (
     ErrorCode.ERROR_CREATE_WINDOW,
     errorChrome,
     "WindowsService: could not create window",
+  );
+};
+
+export const ERROR_CREATE_TAB = (
+  errorChrome: chrome.runtime.LastError,
+): WindowsServiceError => {
+  return new WindowsServiceError(
+    ErrorCode.ERROR_CREATE_WINDOW,
+    errorChrome,
+    "WindowsService: could not create tab",
   );
 };
 

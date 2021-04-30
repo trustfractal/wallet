@@ -5,11 +5,13 @@ import styled, { css } from "styled-components";
 export enum TextSizes {
   SMALL = "var(--s-12)",
   MEDIUM = "var(--s-16)",
+  LARGE = "var(--s-20)",
 }
 
 export enum TextHeights {
   SMALL = "var(--s-168)",
   MEDIUM = "var(--s-1875)",
+  LARGE = "var(--s-23)",
 }
 
 export enum TextWeights {

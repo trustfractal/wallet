@@ -14,6 +14,7 @@ export const global = css`
     --c-orange: #ff671d;
     --s-5: 0.3125rem;
     --s-8: 0.5rem;
+    --s-10: 0.625rem;
     --s-12: 0.75rem;
     --s-14: 0.875rem;
     --s-16: 1rem;
@@ -26,6 +27,7 @@ export const global = css`
     --s-26: 1.625rem;
     --s-32: 2rem;
     --s-35: 2.1875rem;
+    --s-35: 2.375rem;
     --s-48: 3rem;
   }
 

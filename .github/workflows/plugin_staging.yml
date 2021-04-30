@@ -18,15 +18,15 @@ jobs:
     runs-on: ubuntu-latest
     container: node:14.16.0
 
-    defaults:
-      run:
-        working-directory: plugin
-
     env:
       FORCE_COLOR: true
 
     steps:
       - uses: actions/checkout@v2
+
+      - uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.FRACTAL_PLUGIN_DEPLOY_KEY }}
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -44,18 +44,15 @@ jobs:
         run: yarn install
 
       - name: Run linter
+        working-directory: ${{ github.workspace }}/plugin
         run: yarn lint
-
-      - name: Build sdk
-        run: yarn sdk:build
-        working-directory: ${{ github.workspace }}
 
       - name: Build types
         run: yarn types:build
-        working-directory: ${{ github.workspace }}
 
       - name: Run tests
         run: yarn test
+        working-directory: ${{ github.workspace }}/plugin
 
   build-plugin:
     runs-on: ubuntu-latest
@@ -67,6 +64,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.FRACTAL_PLUGIN_DEPLOY_KEY }}
+
+      - name: Import staging environment variables
+        id: import-env
+        shell: bash
+        run: |
+          while read line; do
+            echo "$line" >> $GITHUB_ENV
+          done < .env.staging
+        working-directory: ${{ github.workspace }}/plugin
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -83,14 +93,8 @@ jobs:
       - name: Install node dependencies
         run: yarn install
 
-      - name: Build sdk
-        run: yarn sdk:build
-
       - name: Build types
         run: yarn types:build
-
-      - name: Setup staging environment
-        run: cp plugin/.env.staging plugin/.env
 
       - name: Build staging plugin extension
         run: yarn plugin:build
