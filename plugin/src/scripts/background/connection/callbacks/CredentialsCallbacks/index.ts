@@ -107,7 +107,7 @@ export const isCredentialValid = ([level]: [string], port: string) =>
       const credential = credentials.getByField("level", level);
 
       if (!credential) {
-        reject(ERROR_CREDENTIAL_NOT_FOUND(id));
+        reject(ERROR_CREDENTIAL_NOT_FOUND(level));
         return;
       }
 

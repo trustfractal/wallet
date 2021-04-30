@@ -169,7 +169,7 @@ class EthereumProviderService implements IEthereumProviderService {
       const verifyClaim = await claimsRegistryContract.verifyClaim(
         parsedCredential.claimerAddress,
         parsedCredential.attesterAddress as string,
-        parsedCredential.attesterSignature as string,
+        parsedCredential.credentialSignature as string,
       );
 
       return verifyClaim;
@@ -402,7 +402,7 @@ class EthereumProviderService implements IEthereumProviderService {
       // stake amount
       const stakingResult = await stakingContract.stake(
         etherAmount,
-        parsedCredential.attesterSignature as string,
+        parsedCredential.credentialSignature as string,
       );
 
       // create transaction details
