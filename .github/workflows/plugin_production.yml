@@ -12,10 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     container: node:14.16.0
 
-    defaults:
-      run:
-        working-directory: plugin
-
     env:
       FORCE_COLOR: true
 
@@ -42,18 +38,15 @@ jobs:
         run: yarn install
 
       - name: Run linter
+        working-directory: ${{ github.workspace }}/plugin
         run: yarn lint
-
-      - name: Build sdk
-        run: yarn sdk:build
-        working-directory: ${{ github.workspace }}
 
       - name: Build types
         run: yarn types:build
-        working-directory: ${{ github.workspace }}
 
       - name: Run tests
         run: yarn test
+        working-directory: ${{ github.workspace }}/plugin
 
   build-plugin:
     runs-on: ubuntu-latest
@@ -85,14 +78,12 @@ jobs:
       - name: Install node dependencies
         run: yarn install
 
-      - name: Build sdk
-        run: yarn sdk:build
-
       - name: Build types
         run: yarn types:build
 
-      - name: Setup production environment
-        run: cp plugin/.env.production plugin/.env
+      - name: Setup staging environment
+        run: cp .env.production .env
+        working-directory: ${{ github.workspace }}/plugin
 
       - name: Build production plugin extension
         run: yarn plugin:build
