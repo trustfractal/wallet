@@ -9,8 +9,8 @@ import AuthMiddleware from "@models/Connection/middlewares/AuthMiddleware";
 import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
 import ConnectionTypes from "@models/Connection/types";
 
-import credentialsActions from "@redux/stores/user/reducers/credentials";
 import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
+import credentialsActions from "@redux/stores/user/reducers/credentials";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 
@@ -48,7 +48,7 @@ export const credentialStore = (
 
       // store the credential
       await UserStore.getStore().dispatch(
-        credentialsActions.addCredential(parsedCredential),
+        credentialsActions.addCredential(parsedCredential.serialize()),
       );
 
       resolve(serializedTransactionDetails);
@@ -125,7 +125,7 @@ export const isCredentialValid = ([id]: [string], port: string) =>
       // update credential data
       credential.valid = isValid;
       await UserStore.getStore().dispatch(
-        credentialsActions.updateCredential(credential),
+        credentialsActions.updateCredential(credential.serialize()),
       );
 
       resolve(isValid);

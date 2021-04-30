@@ -3,12 +3,14 @@ import { createActions, handleActions } from "redux-actions";
 
 const types = mirrorCreator([
   "ADD_CREDENTIAL",
+  "UPDATE_CREDENTIAL",
   "REMOVE_CREDENTIAL",
   "SET_CREDENTIALS",
 ]);
 
 export const creators = createActions(
   types.ADD_CREDENTIAL,
+  types.UPDATE_CREDENTIAL,
   types.REMOVE_CREDENTIAL,
   types.SET_CREDENTIALS,
 );
