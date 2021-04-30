@@ -1,4 +1,5 @@
 import StakingStatus from "@models/Staking/status";
+import TokenTypes from "@models/Token/types";
 import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
@@ -31,7 +32,10 @@ export const initialState = {
   },
   staking: {
     details: "{}",
-    status: StakingStatus.START,
+    status: {
+      [TokenTypes.FCL]: StakingStatus.START,
+      [TokenTypes.FCL_ETH_LP]: StakingStatus.START,
+    },
   },
 };
 
@@ -86,12 +90,15 @@ export const reducer = handleActions(
           details: stakingDetails.serialize(),
         },
       }),
-    [types.SET_STAKING_STATUS]: (state, { payload: status }) =>
+    [types.SET_STAKING_STATUS]: (state, { payload: { status, token } }) =>
       Object.freeze({
         ...state,
         staking: {
           ...state.staking,
-          status,
+          status: {
+            ...state.staking.status,
+            [token]: status,
+          },
         },
       }),
   },

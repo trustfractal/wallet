@@ -31,17 +31,21 @@ import StakingStatus from "@models/Staking/status";
 
 async function updateStakingStatus(
   stakingDetails: StakingDetails,
+  token: TokenTypes,
 ): Promise<StakingStatus> {
   const previousStakingStatus = getStakingStatus(
     UserStore.getStore().getState(),
-  );
+  )[token];
 
   if (previousStakingStatus === StakingStatus.APPROVAL_PENDING) {
     // check if has been approved
     if (!stakingDetails.stakingAllowedAmount.isZero()) {
       // update wallet staking details
       await UserStore.getStore().dispatch(
-        walletActions.setStakingStatus(StakingStatus.APPROVED),
+        walletActions.setStakingStatus({
+          status: StakingStatus.APPROVED,
+          token,
+        }),
       );
 
       return StakingStatus.APPROVED;
@@ -53,7 +57,7 @@ async function updateStakingStatus(
     if (!stakingDetails.userStakedAmount.isZero()) {
       // update wallet staking details
       await UserStore.getStore().dispatch(
-        walletActions.setStakingStatus(StakingStatus.STAKED),
+        walletActions.setStakingStatus({ status: StakingStatus.STAKED, token }),
       );
 
       return StakingStatus.STAKED;
@@ -65,7 +69,7 @@ async function updateStakingStatus(
     if (stakingDetails.userStakedAmount.isZero()) {
       // update wallet staking details
       await UserStore.getStore().dispatch(
-        walletActions.setStakingStatus(StakingStatus.START),
+        walletActions.setStakingStatus({ status: StakingStatus.START, token }),
       );
 
       return StakingStatus.START;
@@ -102,7 +106,7 @@ export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
       );
 
       // update wallet staking status
-      const stakingStatus = await updateStakingStatus(stakingDetails);
+      const stakingStatus = await updateStakingStatus(stakingDetails, token);
       stakingDetails.status = stakingStatus;
 
       resolve(stakingDetails.serialize());
@@ -134,7 +138,10 @@ export const approveStake = (
 
       // set staking status
       await UserStore.getStore().dispatch(
-        walletActions.setStakingStatus(StakingStatus.APPROVAL_PENDING),
+        walletActions.setStakingStatus({
+          status: StakingStatus.APPROVAL_PENDING,
+          token,
+        }),
       );
 
       resolve(serializedTransactionDetails);
@@ -181,7 +188,10 @@ export const stake = (
 
       // set staking status
       await UserStore.getStore().dispatch(
-        walletActions.setStakingStatus(StakingStatus.STAKING_PENDING),
+        walletActions.setStakingStatus({
+          status: StakingStatus.STAKING_PENDING,
+          token,
+        }),
       );
 
       resolve(serializedTransactionDetails);
@@ -253,7 +263,10 @@ export const withdraw = ([token]: [TokenTypes], port: string) =>
 
       // set staking status
       await UserStore.getStore().dispatch(
-        walletActions.setStakingStatus(StakingStatus.WITHDRAW_PENDING),
+        walletActions.setStakingStatus({
+          status: StakingStatus.WITHDRAW_PENDING,
+          token,
+        }),
       );
 
       resolve(serializedTransactionDetails);
