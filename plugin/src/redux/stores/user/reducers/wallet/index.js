@@ -24,6 +24,7 @@ export const initialState = {
     loading: false,
     error: "",
   },
+  staking: "",
 };
 
 export const reducer = handleActions(

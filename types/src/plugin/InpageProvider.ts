@@ -33,8 +33,8 @@ export interface IFractalInpageProvider {
     credential: ICredential,
     level: string
   ): Promise<ITransactionDetails>;
-  hasCredential(id: string): Promise<boolean>;
-  isCredentialValid(id: string): Promise<boolean>;
+  hasCredential(level: string): Promise<boolean>;
+  isCredentialValid(level: string): Promise<boolean>;
   getStakingDetails(token: string): Promise<IStakingDetails>;
   setupPlugin(): Promise<IConnectionStatus>;
   verifyConnection(): Promise<IConnectionStatus>;

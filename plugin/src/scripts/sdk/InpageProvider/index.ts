@@ -150,21 +150,21 @@ export default class InpageProvider implements IFractalInpageProvider {
     return TransactionDetails.parse(serializedTransactionDetails);
   }
 
-  public hasCredential(id: string): Promise<boolean> {
+  public hasCredential(level: string): Promise<boolean> {
     this.ensureFractalIsInitialized();
 
     return ExtensionConnection.invoke(
       ConnectionTypes.HAS_CREDENTIAL_BACKGROUND,
-      [id],
+      [level],
     );
   }
 
-  public isCredentialValid(id: string): Promise<boolean> {
+  public isCredentialValid(level: string): Promise<boolean> {
     this.ensureFractalIsInitialized();
 
     return ExtensionConnection.invoke(
       ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND,
-      [id],
+      [level],
     );
   }
 
