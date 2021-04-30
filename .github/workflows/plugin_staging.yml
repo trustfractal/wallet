@@ -69,6 +69,15 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.FRACTAL_PLUGIN_DEPLOY_KEY }}
 
+      - name: Import staging environment variables
+        id: import-env
+        shell: bash
+        run: |
+          while read line; do
+            echo "$line" >> $GITHUB_ENV
+          done < .env.staging
+        working-directory: ${{ github.workspace }}/plugin
+
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -86,10 +95,6 @@ jobs:
 
       - name: Build types
         run: yarn types:build
-
-      - name: Setup staging environment
-        run: cp .env.staging .env
-        working-directory: ${{ github.workspace }}/plugin
 
       - name: Build staging plugin extension
         run: yarn plugin:build
