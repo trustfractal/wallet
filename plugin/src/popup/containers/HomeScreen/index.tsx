@@ -17,6 +17,7 @@ import { getCredentials } from "@redux/stores/user/reducers/credentials/selector
 
 import WindowsService from "@services/WindowsService";
 import environment from "@environment/index";
+import { useMemo } from "react";
 
 function HomeScreen() {
   const history = useHistory();
@@ -53,9 +54,13 @@ function HomeScreen() {
       },
     },
   });
-  const credential = new Credential(sdkCredential, "dummy");
-  const credentials = new CredentialsCollection();
-  credentials.push(credential);
+
+  const credentials = useMemo(() => {
+    const credential = new Credential(sdkCredential, "dummy");
+    const credentials = new CredentialsCollection();
+    credentials.push(credential);
+    return credentials;
+  }, []);
 
   // redirect to wallet connect
   if (!setup) {

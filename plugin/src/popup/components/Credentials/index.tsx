@@ -147,4 +147,8 @@ function Credentials(props: CredentialsProps) {
   );
 }
 
+Credentials.defaultProps = {
+  credentials: [],
+};
+
 export default Credentials;

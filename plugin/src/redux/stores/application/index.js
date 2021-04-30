@@ -64,12 +64,21 @@ export class AppStore {
 
   static connect() {
     return new Promise((resolve) => {
-      const interval = setInterval(async () => {
-        let store = new Store({ portName: AppStore.PORT_NAME });
-        await store.ready();
-        clearInterval(interval);
-        resolve(store);
-      }, 100);
+      let store;
+
+      const run = async () => {
+        store = new Store({ portName: AppStore.PORT_NAME });
+
+        try {
+          await store.ready();
+          resolve(store);
+        } catch (e) {
+          console.error(e);
+          setTimeout(run, 100);
+        }
+      };
+
+      setTimeout(run, 100);
     });
   }
 

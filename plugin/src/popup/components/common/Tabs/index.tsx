@@ -16,29 +16,20 @@ const TabContainer = styled.div``;
 type TabType = {
   id: string;
   label: string;
-  props: any;
-  component: (props: any) => JSX.Element;
 };
 
 export type TabsProps = {
   tabs: TabType[];
+  children: JSX.Element;
+  selected: string;
+  setSelected: (id: string) => any;
 };
 
 function Tabs(props: TabsProps & React.HTMLAttributes<HTMLDivElement>) {
-  const { tabs, ...otherProps } = props;
-
-  const [selected, setSelected] = useState(tabs[0].id);
-
-  const getSelectedTab = () => {
-    const { component: Component, props } = tabs.filter(
-      ({ id }) => id === selected,
-    )[0];
-
-    return <Component {...props} />;
-  };
+  const { tabs, selected, setSelected, children } = props;
 
   return (
-    <RootContainer {...otherProps}>
+    <RootContainer>
       <TabsButtonsContainer>
         {tabs.map(({ id, label }, index) => (
           <TabButton
@@ -46,12 +37,12 @@ function Tabs(props: TabsProps & React.HTMLAttributes<HTMLDivElement>) {
             index={index}
             total={tabs.length}
             onClick={() => setSelected(id)}
-            selected={id === selected}
+            selected={selected === id}
             label={label}
           />
         ))}
       </TabsButtonsContainer>
-      <TabContainer>{getSelectedTab()}</TabContainer>
+      <TabContainer>{children}</TabContainer>
     </RootContainer>
   );
 }

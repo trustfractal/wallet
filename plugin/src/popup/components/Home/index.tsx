@@ -2,8 +2,9 @@ import { ICredential } from "@fractalwallet/types";
 
 import Tabs from "@popup/components/common/Tabs";
 import { withNavBar } from "@popup/components/common/NavBar";
-import Staking from "@popup/components/Credentials";
+import Staking from "@popup/components/Staking";
 import Credentials from "@popup/components/Credentials";
+import { useState } from "react";
 
 export type HomeProps = {
   account: string;
@@ -17,18 +18,24 @@ function Home(props: HomeProps) {
     {
       id: "credentials-tab",
       label: "Credentials",
-      props: { credentials },
-      component: Credentials,
     },
     {
       id: "staking-tab",
       label: "Staking",
-      props: {},
-      component: Staking,
     },
   ];
 
-  return <Tabs tabs={tabs} />;
+  const [selected, setSelected] = useState(tabs[0].id);
+
+  return (
+    <Tabs tabs={tabs} selected={selected} setSelected={setSelected}>
+      {selected === "credentials-tab" ? (
+        <Credentials credentials={credentials} />
+      ) : (
+        <Staking />
+      )}
+    </Tabs>
+  );
 }
 
 export default withNavBar(Home);
