@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 import AuthMiddleware from "@models/Connection/middlewares/AuthMiddleware";
 import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
 
@@ -7,18 +9,71 @@ import ContentScriptConnection from "@background/connection";
 
 import AppStore from "@redux/stores/application";
 import UserStore from "@redux/stores/user";
-import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
+import {
+  getAccount,
+  getStakingStatus,
+} from "@redux/stores/user/reducers/wallet/selectors";
 
 import TokenTypes from "@models/Token/types";
+import walletActions from "@redux/stores/user/reducers/wallet";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+
 import { ERROR_CREDENTIAL_NOT_FOUND } from "@background/Errors";
 
-import EtherscanService from "@services/EtherscanService";
-import { BigNumber } from "ethers";
 import {
   getTokensContractsAddresses,
   getStakingContractsAddresses,
 } from "@redux/stores/application/reducers/app/selectors";
+import StakingDetails from "@models/Staking/StakingDetails";
+
+import EtherscanService from "@services/EtherscanService";
+import StakingStatus from "@models/Staking/status";
+
+async function updateStakingStatus(
+  stakingDetails: StakingDetails,
+): Promise<StakingStatus> {
+  const previousStakingStatus = getStakingStatus(
+    UserStore.getStore().getState(),
+  );
+
+  if (previousStakingStatus === StakingStatus.APPROVAL_PENDING) {
+    // check if has been approved
+    if (!stakingDetails.stakingAllowedAmount.isZero()) {
+      // update wallet staking details
+      await UserStore.getStore().dispatch(
+        walletActions.setStakingStatus(StakingStatus.APPROVED),
+      );
+
+      return StakingStatus.APPROVED;
+    }
+  }
+
+  if (previousStakingStatus === StakingStatus.STAKING_PENDING) {
+    // check if is pending
+    if (!stakingDetails.userStakedAmount.isZero()) {
+      // update wallet staking details
+      await UserStore.getStore().dispatch(
+        walletActions.setStakingStatus(StakingStatus.STAKED),
+      );
+
+      return StakingStatus.STAKED;
+    }
+  }
+
+  if (previousStakingStatus === StakingStatus.WITHDRAW_PENDING) {
+    // check if has withdraw
+    if (stakingDetails.userStakedAmount.isZero()) {
+      // update wallet staking details
+      await UserStore.getStore().dispatch(
+        walletActions.setStakingStatus(StakingStatus.START),
+      );
+
+      return StakingStatus.START;
+    }
+  }
+
+  return previousStakingStatus;
+}
 
 export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
   new Promise(async (resolve, reject) => {
@@ -31,13 +86,26 @@ export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
       const stakingContractAddress = getStakingContractsAddresses(
         AppStore.getStore().getState(),
       )[token];
-      const transaction = await ContentScriptConnection.invoke(
+
+      const serializedStakingDetails = await ContentScriptConnection.invoke(
         ConnectionTypes.GET_STAKING_DETAILS_INPAGE,
         [address, tokenContractAddress, stakingContractAddress],
         port,
       );
 
-      resolve(transaction);
+      // parse staking details
+      const stakingDetails = StakingDetails.parse(serializedStakingDetails);
+
+      // update wallet staking details
+      await UserStore.getStore().dispatch(
+        walletActions.setStakingDetails(stakingDetails),
+      );
+
+      // update wallet staking status
+      const stakingStatus = await updateStakingStatus(stakingDetails);
+      stakingDetails.status = stakingStatus;
+
+      resolve(stakingDetails.serialize());
     } catch (error) {
       console.error(error);
       reject(error);
@@ -62,6 +130,11 @@ export const approveStake = (
         ConnectionTypes.APPROVE_STAKE_INPAGE,
         [address, amount, tokenContractAddress, stakingContractAddress],
         port,
+      );
+
+      // set staking status
+      await UserStore.getStore().dispatch(
+        walletActions.setStakingStatus(StakingStatus.APPROVAL_PENDING),
       );
 
       resolve(serializedTransactionDetails);
@@ -104,6 +177,11 @@ export const stake = (
           stakingContractAddress,
         ],
         port,
+      );
+
+      // set staking status
+      await UserStore.getStore().dispatch(
+        walletActions.setStakingStatus(StakingStatus.STAKING_PENDING),
       );
 
       resolve(serializedTransactionDetails);
@@ -171,6 +249,11 @@ export const withdraw = ([token]: [TokenTypes], port: string) =>
         ConnectionTypes.WITHDRAW_INPAGE,
         [address, stakingContractAddress],
         port,
+      );
+
+      // set staking status
+      await UserStore.getStore().dispatch(
+        walletActions.setStakingStatus(StakingStatus.WITHDRAW_PENDING),
       );
 
       resolve(serializedTransactionDetails);

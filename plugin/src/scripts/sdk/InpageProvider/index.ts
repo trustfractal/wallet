@@ -171,12 +171,12 @@ export default class InpageProvider implements IFractalInpageProvider {
   public async getStakingDetails(token: string): Promise<IStakingDetails> {
     this.ensureFractalIsInitialized();
 
-    const detailsString = await ExtensionConnection.invoke(
+    const serializedStakingDetails = await ExtensionConnection.invoke(
       ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND,
       [token],
     );
 
-    return StakingDetails.parse(detailsString);
+    return StakingDetails.parse(serializedStakingDetails);
   }
 
   public async setupPlugin(): Promise<IConnectionStatus> {

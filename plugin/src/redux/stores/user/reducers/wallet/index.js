@@ -1,3 +1,4 @@
+import StakingStatus from "@models/Staking/status";
 import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
@@ -7,6 +8,8 @@ const types = mirrorCreator([
   "CONNECT_WALLET_FAILED",
   "CONNECT_WALLET_SUCCESS",
   "SET_ACCOUNT",
+  "SET_STAKING_DETAILS",
+  "SET_STAKING_STATUS",
 ]);
 
 export const creators = createActions(
@@ -15,6 +18,8 @@ export const creators = createActions(
   types.CONNECT_WALLET_FAILED,
   types.CONNECT_WALLET_SUCCESS,
   types.SET_ACCOUNT,
+  types.SET_STAKING_DETAILS,
+  types.SET_STAKING_STATUS,
 );
 
 export const initialState = {
@@ -24,16 +29,14 @@ export const initialState = {
     loading: false,
     error: "",
   },
-  staking: "",
+  staking: {
+    details: "{}",
+    status: StakingStatus.START,
+  },
 };
 
 export const reducer = handleActions(
   {
-    [types.SET_ACCOUNT]: (state, { payload: account }) =>
-      Object.freeze({
-        ...state,
-        account,
-      }),
     [types.CONNECT_WALLET_REQUEST]: (state) =>
       Object.freeze({
         ...state,
@@ -70,6 +73,27 @@ export const reducer = handleActions(
           error: "",
         },
       }),
+    [types.SET_ACCOUNT]: (state, { payload: account }) =>
+      Object.freeze({
+        ...state,
+        account,
+      }),
+    [types.SET_STAKING_DETAILS]: (state, { payload: stakingDetails }) =>
+      Object.freeze({
+        ...state,
+        staking: {
+          ...state.staking,
+          details: stakingDetails.serialize(),
+        },
+      }),
+    [types.SET_STAKING_STATUS]: (state, { payload: status }) =>
+      Object.freeze({
+        ...state,
+        staking: {
+          ...state.staking,
+          status,
+        },
+      }),
   },
   initialState,
 );
@@ -84,6 +108,7 @@ export async function restore(state = {}) {
 export async function store(state) {
   return {
     account: state.account,
+    staking: state.staking,
   };
 }
 

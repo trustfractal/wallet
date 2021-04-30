@@ -2,6 +2,8 @@ import { BigNumber } from "ethers";
 
 import { IStakingDetails, ISerializable } from "@fractalwallet/types";
 
+import StakingStatus from "./status";
+
 export default class StakingDetails implements IStakingDetails, ISerializable {
   public userBalance: BigNumber;
   public userStakedAmount: BigNumber;
@@ -16,6 +18,7 @@ export default class StakingDetails implements IStakingDetails, ISerializable {
   public stakingStartDate: BigNumber;
   public stakingAPY: BigNumber;
   public stakingCurrentExpectedRewardRate: BigNumber;
+  public status?: StakingStatus;
 
   public constructor(
     userBalance: BigNumber,
@@ -31,6 +34,7 @@ export default class StakingDetails implements IStakingDetails, ISerializable {
     stakingStartDate: BigNumber,
     stakingAPY: BigNumber,
     stakingCurrentExpectedRewardRate: BigNumber,
+    status?: StakingStatus,
   ) {
     this.userBalance = userBalance;
     this.userStakedAmount = userStakedAmount;
@@ -45,23 +49,25 @@ export default class StakingDetails implements IStakingDetails, ISerializable {
     this.stakingStartDate = stakingStartDate;
     this.stakingAPY = stakingAPY;
     this.stakingCurrentExpectedRewardRate = stakingCurrentExpectedRewardRate;
+    this.status = status;
   }
 
   public serialize(): string {
     return JSON.stringify({
-      userBalance: this.userBalance,
-      userStakedAmount: this.userStakedAmount,
-      userCurrentReward: this.userCurrentReward,
-      userMaxReward: this.userMaxReward,
-      poolAvailableTokens: this.poolAvailableTokens,
-      poolTotalTokens: this.poolTotalTokens,
-      stakingAllowedAmount: this.stakingAllowedAmount,
-      stakingMinimumStake: this.stakingMinimumStake,
-      stakingMaximumStake: this.stakingMaximumStake,
-      stakingEndDate: this.stakingEndDate,
-      stakingStartDate: this.stakingStartDate,
-      stakingAPY: this.stakingAPY,
-      stakingCurrentExpectedRewardRate: this.stakingCurrentExpectedRewardRate,
+      userBalance: this.userBalance.toJSON(),
+      userStakedAmount: this.userStakedAmount.toJSON(),
+      userCurrentReward: this.userCurrentReward.toJSON(),
+      userMaxReward: this.userMaxReward.toJSON(),
+      poolAvailableTokens: this.poolAvailableTokens.toJSON(),
+      poolTotalTokens: this.poolTotalTokens.toJSON(),
+      stakingAllowedAmount: this.stakingAllowedAmount.toJSON(),
+      stakingMinimumStake: this.stakingMinimumStake.toJSON(),
+      stakingMaximumStake: this.stakingMaximumStake.toJSON(),
+      stakingEndDate: this.stakingEndDate.toJSON(),
+      stakingStartDate: this.stakingStartDate.toJSON(),
+      stakingAPY: this.stakingAPY.toJSON(),
+      stakingCurrentExpectedRewardRate: this.stakingCurrentExpectedRewardRate.toJSON(),
+      status: this.status,
     });
   }
 
@@ -80,22 +86,24 @@ export default class StakingDetails implements IStakingDetails, ISerializable {
       stakingStartDate,
       stakingAPY,
       stakingCurrentExpectedRewardRate,
+      status,
     } = JSON.parse(str);
 
     return new StakingDetails(
-      userBalance,
-      userStakedAmount,
-      userCurrentReward,
-      userMaxReward,
-      poolAvailableTokens,
-      poolTotalTokens,
-      stakingAllowedAmount,
-      stakingMinimumStake,
-      stakingMaximumStake,
-      stakingEndDate,
-      stakingStartDate,
-      stakingAPY,
-      stakingCurrentExpectedRewardRate,
+      BigNumber.from(userBalance),
+      BigNumber.from(userStakedAmount),
+      BigNumber.from(userCurrentReward),
+      BigNumber.from(userMaxReward),
+      BigNumber.from(poolAvailableTokens),
+      BigNumber.from(poolTotalTokens),
+      BigNumber.from(stakingAllowedAmount),
+      BigNumber.from(stakingMinimumStake),
+      BigNumber.from(stakingMaximumStake),
+      BigNumber.from(stakingEndDate),
+      BigNumber.from(stakingStartDate),
+      BigNumber.from(stakingAPY),
+      BigNumber.from(stakingCurrentExpectedRewardRate),
+      status,
     );
   }
 }

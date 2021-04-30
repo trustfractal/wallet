@@ -1,8 +1,20 @@
 import { createSelector } from "reselect";
 
+import StakingDetails from "@models/Staking/StakingDetails";
+
 export const getAccount = createSelector(
   (state) => state.wallet,
   (wallet) => wallet.account,
+);
+
+export const getStakingDetails = createSelector(
+  (state) => state.wallet,
+  (wallet) => StakingDetails.parse(wallet.staking.details),
+);
+
+export const getStakingStatus = createSelector(
+  (state) => state.wallet,
+  (wallet) => wallet.staking.status,
 );
 
 export const isConnectWalletLoading = createSelector(

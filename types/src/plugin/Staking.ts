@@ -16,4 +16,5 @@ export interface IStakingDetails extends ISerializable {
   stakingStartDate: BigNumber;
   stakingAPY: BigNumber;
   stakingCurrentExpectedRewardRate: BigNumber;
+  status?: string;
 }
