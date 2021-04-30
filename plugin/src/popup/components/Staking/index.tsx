@@ -1,7 +1,14 @@
 import styled from "styled-components";
+import * as dayjs from "dayjs";
+import { utils as ethersUtils } from "ethers";
+
 import Text, { TextWeights } from "@popup/components/common/Text";
-import Button from "../common/Button";
-import Icon from "../common/Icon";
+import Button from "@popup/components/common/Button";
+import Icon, { IconNames } from "@popup/components/common/Icon";
+import StakingDetails from "@models/Staking/StakingDetails";
+import TokenTypes from "@models/Token/types";
+
+import StakingStatus from "@models/Staking/status";
 
 const Root = styled.div`
   padding: var(--s-24);
@@ -91,92 +98,227 @@ const Date = styled(Label)`
   margin-bottom: 20px;
 `;
 
-const Card = ({
-  state,
-  tokenName,
-  progress,
-  apy,
-  reward,
-}: {
+export type StakingProps = {
+  onClick: () => void;
+  stakingDetails: {
+    [TokenTypes.FCL]: StakingDetails;
+    [TokenTypes.FCL_ETH_LP]: StakingDetails;
+  };
+  stakingStatus: {
+    [TokenTypes.FCL]: StakingStatus;
+    [TokenTypes.FCL_ETH_LP]: StakingStatus;
+  };
+};
+
+export type CardProps = {
   id: number;
-  state: string;
-  tokenName: string;
-  progress: number;
+  startDate: string;
+  token: string;
   apy: string;
-  reward: string;
-}) => {
+  currentExpectedRewardRate: string;
+  availabelTokens: string;
+  totalTokens: string;
+  currentReward: string;
+  percentage: number;
+  state: StakingStatus;
+  icon: IconNames;
+  onClick: () => void;
+};
+
+function Stake(props: CardProps) {
+  const {
+    token,
+    apy,
+    currentExpectedRewardRate,
+    availabelTokens,
+    totalTokens,
+    percentage,
+    icon,
+    onClick,
+  } = props;
+
   return (
-    <CardRoot filled={state == "withdraw"}>
+    <CardRoot filled={false}>
       <CardHeader>
         <CardTitle>
           <IconWrapper>
-            <Icon name="check" />
+            <Icon name={icon} />
           </IconWrapper>
-          {tokenName}
+          {token}
         </CardTitle>
       </CardHeader>
       <CardBody>
         <ProgressInfo>
           <div>
-            <Label>current apy</Label>
+            <Label>Current APY</Label>
             <Text weight={TextWeights.BOLD}>{apy}</Text>
           </div>
           <div>
-            <Label>expected reward</Label>
-            <Text weight={TextWeights.BOLD}>{reward}</Text>
+            <Label>Expected Reward</Label>
+            <Text weight={TextWeights.BOLD}>{currentExpectedRewardRate}</Text>
           </div>
         </ProgressInfo>
         <Label>Liquidity</Label>
         <ProgressRoot>
-          <ProgressBar progress={progress} />
+          <ProgressBar progress={percentage} />
         </ProgressRoot>
         <ProgressInfo>
-          <Text weight={TextWeights.BOLD}>{progress * 100}%</Text>
-          <Label>10/1000 {tokenName}</Label>
+          <Text weight={TextWeights.BOLD}>{percentage * 100} %</Text>
+          <Label>
+            {availabelTokens}/{totalTokens} {token}
+          </Label>
         </ProgressInfo>
         <ButtonWrapper>
           <Button
-            alternative={state === "withdraw"}
+            onClick={onClick}
             leftIcon={
               <IconWrapper>
-                <Icon name="check" />
+                <Icon name={icon} />
               </IconWrapper>
             }
           >
-            Stake with FCL
+            Stake with {token}
           </Button>
         </ButtonWrapper>
       </CardBody>
     </CardRoot>
   );
-};
+}
 
-function Staking() {
+function Withdraw(props: CardProps) {
+  const {
+    token,
+    apy,
+    currentExpectedRewardRate,
+    availabelTokens,
+    totalTokens,
+    currentReward,
+    percentage,
+    icon,
+    onClick,
+  } = props;
+
+  return (
+    <CardRoot filled>
+      <CardHeader>
+        <CardTitle>
+          <IconWrapper>
+            <Icon name={icon} />
+          </IconWrapper>
+          {token}
+        </CardTitle>
+      </CardHeader>
+      <CardBody>
+        <ProgressInfo>
+          <div>
+            <Label>Current APY</Label>
+            <Text weight={TextWeights.BOLD}>{apy}</Text>
+          </div>
+          <div>
+            <Label>Expected Reward</Label>
+            <Text weight={TextWeights.BOLD}>{currentExpectedRewardRate}</Text>
+          </div>
+        </ProgressInfo>
+        <Label>Liquidity</Label>
+        <ProgressRoot>
+          <ProgressBar progress={percentage} />
+        </ProgressRoot>
+        <ProgressInfo>
+          <Text weight={TextWeights.BOLD}>{percentage * 100} %</Text>
+          <Label>
+            {availabelTokens}/{totalTokens} {token}
+          </Label>
+        </ProgressInfo>
+        <ButtonWrapper>
+          <Button onClick={onClick} alternative>
+            Withdraw {currentReward}
+          </Button>
+        </ButtonWrapper>
+      </CardBody>
+    </CardRoot>
+  );
+}
+
+function Card(props: CardProps) {
+  const { state, startDate } = props;
+
+  const isStaked = state === StakingStatus.STAKED;
+
+  if (isStaked) {
+    return (
+      <>
+        <RootLabel>Staking closes</RootLabel>
+        <Date>{startDate}</Date>
+        <Withdraw {...props} />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <RootLabel>Staking closes</RootLabel>
+      <Date>{startDate}</Date>
+      <Stake {...props} />
+    </>
+  );
+}
+
+function Staking(props: StakingProps) {
+  const { stakingDetails, stakingStatus, onClick } = props;
+
+  const fclDetails = stakingDetails[TokenTypes.FCL];
+  const fclEthLpDetails = stakingDetails[TokenTypes.FCL_ETH_LP];
+
+  const fclStatus = stakingStatus[TokenTypes.FCL];
+  const fclEthLpStatus = stakingStatus[TokenTypes.FCL_ETH_LP];
+
   const cards = [
     {
       id: 1,
-      tokenName: "FCL",
-      apy: "40%",
-      reward: "700%",
-      progress: 0.8,
-      state: "stake",
+      // @ts-ignore
+      startDate: dayjs(fclDetails.stakingStartDate.toNumber()).format(
+        "DD MMMM",
+      ),
+      token: "FCL",
+      apy: fclDetails.stakingAPY.toString() + "%",
+      currentExpectedRewardRate:
+        fclDetails.stakingCurrentExpectedRewardRate.toString() + "%",
+      availabelTokens: ethersUtils.formatUnits(fclDetails.poolAvailableTokens),
+      totalTokens: ethersUtils.formatUnits(fclDetails.poolTotalTokens),
+      currentReward: ethersUtils.formatUnits(fclDetails.userCurrentReward),
+      percentage: fclDetails.poolAvailableTokens
+        .div(fclDetails.poolTotalTokens)
+        .toNumber(),
+      state: fclStatus,
+      icon: IconNames.FRACTAL_TOKEN,
     },
     {
       id: 2,
-      tokenName: "FCL",
-      apy: "40%",
-      reward: "700%",
-      progress: 0.8,
-      state: "withdraw",
+      // @ts-ignore
+      startDate: dayjs(fclEthLpDetails.stakingStartDate.toNumber()).format(
+        "DD MMMM",
+      ),
+      token: "FCL/ETH",
+      apy: fclEthLpDetails.stakingAPY.toString() + "%",
+      currentExpectedRewardRate:
+        fclEthLpDetails.stakingCurrentExpectedRewardRate.toString() + "%",
+      availabelTokens: ethersUtils.formatUnits(
+        fclEthLpDetails.poolAvailableTokens,
+      ),
+      totalTokens: ethersUtils.formatUnits(fclEthLpDetails.poolTotalTokens),
+      currentReward: ethersUtils.formatUnits(fclEthLpDetails.userCurrentReward),
+      percentage: fclEthLpDetails.poolAvailableTokens
+        .div(fclEthLpDetails.poolTotalTokens)
+        .toNumber(),
+      state: fclEthLpStatus,
+      icon: IconNames.FRACTAL_ETH_TOKEN,
     },
   ];
 
   return (
     <Root>
-      <RootLabel>Staking closes</RootLabel>
-      <Date>24th July</Date>
       {cards.map((card) => (
-        <Card key={card.id} {...card} />
+        <Card key={card.id} {...card} onClick={onClick} />
       ))}
     </Root>
   );

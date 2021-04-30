@@ -15,6 +15,8 @@ const { default: IDBasic } = require("@assets/id-basic.svg");
 const { default: IDPlus } = require("@assets/id-plus.svg");
 const { default: Verified } = require("@assets/verified.svg");
 const { default: Pending } = require("@assets/pending.svg");
+const { default: FractalToken } = require("@assets/fractal-token.svg");
+const { default: FractalEthToken } = require("@assets/fractal-eth-token.svg");
 
 const Root = styled.div<{
   clickable: boolean;
@@ -40,6 +42,8 @@ export enum IconNames {
   ID_PLUS = "id-plus",
   VERIFIED = "verified",
   PENDING = "pending",
+  FRACTAL_TOKEN = "fractal-token",
+  FRACTAL_ETH_TOKEN = "fractal-eth-token",
 }
 
 const Icons: Record<string, any> = {
@@ -56,6 +60,8 @@ const Icons: Record<string, any> = {
   [IconNames.ID_PLUS]: IDPlus,
   [IconNames.VERIFIED]: Verified,
   [IconNames.PENDING]: Pending,
+  [IconNames.FRACTAL_TOKEN]: FractalToken,
+  [IconNames.FRACTAL_ETH_TOKEN]: FractalEthToken,
 };
 
 export type IconProps = {

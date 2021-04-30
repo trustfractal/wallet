@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 
-import Button from "@popup/components/common/Button";
-import Text from "@popup/components/common/Text";
 import TabButton from "@popup/components/common/TabButton";
 
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 const RootContainer = styled.div``;
 const TabsButtonsContainer = styled.div`

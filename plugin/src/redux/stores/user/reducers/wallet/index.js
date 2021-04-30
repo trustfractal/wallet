@@ -31,7 +31,10 @@ export const initialState = {
     error: "",
   },
   staking: {
-    details: "{}",
+    details: {
+      [TokenTypes.FCL]: "{}",
+      [TokenTypes.FCL_ETH_LP]: "{}",
+    },
     status: {
       [TokenTypes.FCL]: StakingStatus.START,
       [TokenTypes.FCL_ETH_LP]: StakingStatus.START,
@@ -82,12 +85,15 @@ export const reducer = handleActions(
         ...state,
         account,
       }),
-    [types.SET_STAKING_DETAILS]: (state, { payload: stakingDetails }) =>
+    [types.SET_STAKING_DETAILS]: (state, { payload: { details, token } }) =>
       Object.freeze({
         ...state,
         staking: {
           ...state.staking,
-          details: stakingDetails.serialize(),
+          details: {
+            ...state.staking.details,
+            [token]: details.serialize(),
+          },
         },
       }),
     [types.SET_STAKING_STATUS]: (state, { payload: { status, token } }) =>

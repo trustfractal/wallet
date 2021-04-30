@@ -37,10 +37,12 @@ const Root = styled.button<{
 
 const LeftIconContainer = styled.div`
   margin-right: var(--s-12);
+  display: flex;
 `;
 
 const RightIconContainer = styled.div`
   margin-left: var(--s-12);
+  display: flex;
 `;
 
 export type ButtonProps = {

@@ -10,6 +10,7 @@
     "bfj": "^7.0.2",
     "camelcase": "^6.1.0",
     "css-loader": "4.3.0",
+    "dayjs": "^1.10.4",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
     "ethers": "^5.1.3",
