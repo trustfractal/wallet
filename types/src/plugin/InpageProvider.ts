@@ -2,10 +2,10 @@ import { BigNumber } from "@ethersproject/bignumber";
 import {
   IClaimProperties,
   IAttestationRequest,
+  ICredential,
 } from "@fractalwallet/sdk/src/types";
 
 import { IConnectionStatus } from "./Connection";
-import { ICredential } from "./Credential";
 import { IStakingDetails } from "./Staking";
 import { ITransactionDetails } from "./Transaction";
 
@@ -29,7 +29,10 @@ export interface IFractalInpageProvider {
   getTransactionEstimationTime(
     gasPrice: BigNumber
   ): Promise<BigNumber | undefined>;
-  credentialStore(credential: ICredential): Promise<ITransactionDetails>;
+  credentialStore(
+    credential: ICredential,
+    level: string
+  ): Promise<ITransactionDetails>;
   hasCredential(id: string): Promise<boolean>;
   isCredentialValid(id: string): Promise<boolean>;
   getStakingDetails(token: string): Promise<IStakingDetails>;

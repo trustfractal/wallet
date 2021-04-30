@@ -2,7 +2,10 @@ import { BigNumber } from "ethers";
 
 import ConnectionTypes from "@models/Connection/types";
 import EthereumProviderService from "@services/EthereumProviderService";
+import Credential from "@models/Credential";
 import { ERROR_FRACTAL_NOT_INITIALIZED } from "@sdk/InpageProvider/Errors";
+
+import { Credential as SDKCredential } from "@fractalwallet/sdk";
 
 import {
   IFractalInpageProvider,
@@ -130,9 +133,14 @@ export default class InpageProvider implements IFractalInpageProvider {
   }
 
   public async credentialStore(
-    credential: ICredential,
+    credentialJSON: ICredential,
+    level: string,
   ): Promise<ITransactionDetails> {
     this.ensureFractalIsInitialized();
+
+    const sdkCredential = new SDKCredential(credentialJSON);
+
+    const credential = new Credential(sdkCredential, level);
 
     const serializedTransactionDetails = await ExtensionConnection.invoke(
       ConnectionTypes.CREDENTIAL_STORE_BACKGROUND,
