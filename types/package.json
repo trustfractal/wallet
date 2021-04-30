@@ -8,6 +8,7 @@
     "lib/**/*"
   ],
   "scripts": {
+    "postinstall": "yarn build",
     "clean": "rm -rf ./lib",
     "build": "yarn clean && yarn build:ts && yarn copy:contracts",
     "build:ts": "tsc --declaration -p tsconfig.json",

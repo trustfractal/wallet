@@ -43,18 +43,12 @@ export const credentialStore = (
       // parse the string credential
       const parsedCredential = Credential.parse(serializedCredential);
 
-      // get all credentials
-      const credentials = getCredentials(UserStore.getStore().getState());
-
       // update parsed credentials
       parsedCredential.transaction = parsedTransactionDetails;
 
-      // append new credential
-      credentials.push(parsedCredential);
-
       // store the credential
       await UserStore.getStore().dispatch(
-        credentialsActions.setCredentials(credentials),
+        credentialsActions.addCredential(parsedCredential),
       );
 
       resolve(serializedTransactionDetails);
@@ -130,12 +124,8 @@ export const isCredentialValid = ([id]: [string], port: string) =>
 
       // update credential data
       credential.valid = isValid;
-      credentials.removeByField("id", id);
-      credentials.push(credential);
-
-      // store the credential
       await UserStore.getStore().dispatch(
-        credentialsActions.setCredentials(credentials),
+        credentialsActions.updateCredential(credential),
       );
 
       resolve(isValid);

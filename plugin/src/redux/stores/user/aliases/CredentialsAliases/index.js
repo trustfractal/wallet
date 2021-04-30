@@ -40,15 +40,35 @@ export const addCredential = ({
   };
 };
 
-export const removeCredential = ({ payload: id }) => {
+export const updateCredential = ({ payload: updatedCredential }) => {
+  return async (dispatch, getState) => {
+    const credentials = getCredentials(getState());
+
+    // update credential
+    credentials.updateByField(
+      "level",
+      updatedCredential.level,
+      updatedCredential,
+    );
+
+    // update redux store
+    dispatch(credentialsActions.setCredentials(credentials));
+  };
+};
+
+export const removeCredential = ({ payload: level }) => {
   return async (dispatch, getState) => {
     const credentials = getCredentials(getState());
 
     // get request
-    const credential = credentials.getById(id);
+    const credential = credentials.getByField("level", level);
+
+    if (!credential) {
+      return;
+    }
 
     // remove credential
-    credentials.removeById(credential.id);
+    credentials.removeByField("level", credential.level);
 
     // update redux store
     dispatch(credentialsActions.setCredentials(credentials));

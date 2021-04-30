@@ -10,13 +10,13 @@ import TransactionDetails from "@models/Transaction/TransactionDetails";
 export default class Credential
   extends SDKCredential
   implements ICredential, ISerializable {
-  public level?: string;
+  public level: string;
   public transaction?: ITransactionDetails;
   public valid: boolean;
 
   public constructor(
     credential: SDKCredential,
-    level?: string,
+    level: string,
     transaction?: ITransactionDetails,
     valid: boolean = false,
   ) {

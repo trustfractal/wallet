@@ -4,7 +4,7 @@ import { ICredential as ISDKCredential } from "@fractalwallet/sdk/src/types/Cred
 import { ITransactionDetails } from "./Transaction";
 
 export interface ICredential extends ISDKCredential, ISerializable {
-  id?: string;
+  level: string;
   transaction?: ITransactionDetails;
   valid: boolean;
 }

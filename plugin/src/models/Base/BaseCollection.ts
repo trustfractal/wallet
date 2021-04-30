@@ -9,6 +9,32 @@ export default class BaseCollection<
     return JSON.stringify(this.map((element) => element.serialize()));
   }
 
+  public updateByField(
+    field: string,
+    value: any,
+    updatedElem: T,
+  ): T | undefined {
+    for (let index = 0; index < this.length; index++) {
+      const item = this[index];
+
+      if (item[field] === value) {
+        this[index] = updatedElem;
+
+        return updatedElem;
+      }
+    }
+  }
+
+  public getIndexByField(field: string, value: any): number | undefined {
+    for (let index = 0; index < this.length; index++) {
+      const item = this[index];
+
+      if (item[field] === value) {
+        return index;
+      }
+    }
+  }
+
   public getByField(field: string, value: any): T | undefined {
     return this.find((item) => item[field] === value);
   }
