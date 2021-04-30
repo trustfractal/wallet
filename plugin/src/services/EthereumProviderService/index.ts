@@ -124,7 +124,7 @@ class EthereumProviderService implements IEthereumProviderService {
         parsedCredential.claimerAddress,
         parsedCredential.attesterAddress as string,
         rootHashByteArray,
-        parsedCredential.attesterSignature as string,
+        parsedCredential.credentialSignature as string,
       );
 
       // create transaction details
