@@ -16,6 +16,7 @@ export enum TextHeights {
 
 export enum TextWeights {
   NORMAL = "normal",
+  SEMIBOLD = "500",
   BOLD = "bold",
 }
 

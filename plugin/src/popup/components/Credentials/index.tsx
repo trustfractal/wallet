@@ -18,7 +18,7 @@ const RootContainer = styled.div`
   margin-bottom: var(--s-32);
 
   border-radius: var(--s-12);
-  padding: var(--s-24) var(--s-12);
+  padding: var(--s-20) var(--s-12);
 
   background: var(--c-gray);
 
@@ -70,13 +70,11 @@ const RightContainer = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-
-  opacity: 0.6;
 `;
 
-const RightIconContainer = styled.div`
-  opacity: 1;
-  margin-left: var(--s-8);
+const RightTextContainer = styled.div`
+  margin-right: var(--s-8);
+  opacity: 0.6;
 `;
 
 export type CredentialsProps = {
@@ -125,12 +123,12 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
         </Text>
       </LeftContainer>
       <RightContainer>
-        <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-          {statusName}
-        </Text>
-        <RightIconContainer>
-          <Icon name={statusIconName} />
-        </RightIconContainer>
+        <RightTextContainer>
+          <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+            {statusName}
+          </Text>
+        </RightTextContainer>
+        <Icon name={statusIconName} />
       </RightContainer>
     </RootContainer>
   );

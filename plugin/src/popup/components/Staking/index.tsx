@@ -1,47 +1,153 @@
-import styled from "styled-components";
-import * as dayjs from "dayjs";
-import { utils as ethersUtils } from "ethers";
+import styled, { css } from "styled-components";
+import moment from "moment";
+import numeral from "numeral";
+import { BigNumber } from "ethers";
 
-import Text, { TextWeights } from "@popup/components/common/Text";
+import Text, {
+  TextSizes,
+  TextHeights,
+  TextWeights,
+} from "@popup/components/common/Text";
 import Button from "@popup/components/common/Button";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 import StakingDetails from "@models/Staking/StakingDetails";
 import TokenTypes from "@models/Token/types";
 
 import StakingStatus from "@models/Staking/status";
+import TopComponent from "../common/TopComponent";
 
-const Root = styled.div`
-  padding: var(--s-24);
+const DateLabelContainer = styled.div`
+  opacity: 0.6;
+  margin-bottom: var(--s-12);
+  text-transform: uppercase;
 `;
 
-const CardRoot = styled.div<{ filled: boolean }>`
-  background-color: ${({ filled }) => (filled ? "#FFF7F4" : "var(--c-white)")};
-  border-radius: var(--s-8);
+const DateContainer = styled.div`
+  margin-bottom: var(--s-20);
+`;
+
+const PoolRoot = styled.div`
   color: var(--c-dark-blue);
-  margin-bottom: 38px;
+
+  margin-bottom: var(--s-32);
+  background: var(--c-white);
+  border-radius: var(--s-12);
+
   box-shadow: 0px 8px 12px #061a3a;
-  overflow: hidden;
+  border: 1px solid rgba(19, 44, 83, 0.2);
 `;
 
-const CardHeader = styled.div`
+const PoolHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  border-top-right-radius: var(--s-12);
+  border-top-left-radius: var(--s-12);
+
+  padding: var(--s-16) var(--s-10);
   border-bottom: 1px solid var(--c-gray);
+
   background-color: white;
-  font-weight: bold;
-  padding: 16px 10px;
 `;
 
-const CardBody = styled.div`
-  padding: 16px 10px;
+const PoolTitle = styled.div`
+  display: flex;
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+`;
+
+const PoolBody = styled.div<{ filled?: boolean }>`
+  border-bottom-right-radius: var(--s-12);
+  border-bottom-left-radius: var(--s-12);
+
+  padding: var(--s-12) var(--s-10);
+
+  ${(props) =>
+    props.filled &&
+    css`
+      background: var(--c-lightest-orange);
+    `}
+`;
+
+const IconContainer = styled.div`
+  width: 40px;
+  margin-right: var(--s-10);
+`;
+
+const PoolInfoContainer = styled.div`
+  display: flex;
+  margin-bottom: var(--s-32);
+`;
+
+const PoolInfoPercentageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--s-32);
+`;
+
+const PoolLeftInfo = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+`;
+
+const PoolRightInfo = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+`;
+
+const InfoLabel = styled.div`
+  opacity: 0.6;
+  margin-bottom: var(--s-8);
+  text-transform: uppercase;
+`;
+
+const StakeLabel = styled.div`
+  color: var(--c-orange);
+  margin-bottom: var(--s-12);
+  text-transform: uppercase;
+`;
+
+const StakeAmountContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const StakeAmount = styled.div`
+  margin-right: var(--s-8);
+`;
+
+const RewardLabel = styled.div`
+  margin-bottom: var(--s-8);
+  text-transform: uppercase;
+`;
+
+const RewardAmountContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const RewardAmount = styled.div`
+  margin-right: var(--s-8);
 `;
 
 const ProgressRoot = styled.div`
   position: relative;
   overflow: hidden;
-  border-radius: 4px;
-  background-color: rgba(255, 103, 29, 0.2);
+  border-radius: var(--s-4);
+  background-color: var(--c-light-orange);
   height: var(--s-12);
   width: 100%;
-  margin-bottom: 4px;
+  margin-bottom: var(--s-4);
 `;
 
 const ProgressBar = styled.div<{ progress: number }>`
@@ -55,47 +161,10 @@ const ProgressBar = styled.div<{ progress: number }>`
   background-color: var(--c-orange);
 `;
 
-const Label = styled(Text)`
-  color: rgba(19, 44, 83, 0.6);
-  font-size: 12px;
-  line-height: 16px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-`;
-
-const ProgressInfo = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 32px;
-`;
-
-const ButtonWrapper = styled.div`
+const ActionContainer = styled.div`
   display: flex;
   justify-content: center;
-`;
-
-const IconWrapper = styled.div`
-  position: relative;
-  display: inline;
-  margin-right: 10px;
-`;
-
-const CardTitle = styled.div`
-  display: flex;
-`;
-
-const RootLabel = styled(Label)`
-  font-size: 12px;
-  color: white;
-  opacity: 0.6;
-  margin-bottom: 12px;
-`;
-
-const Date = styled(Label)`
-  color: white;
-  font-size: 16px;
-  margin-bottom: 20px;
+  align-items: center;
 `;
 
 export type StakingProps = {
@@ -110,22 +179,42 @@ export type StakingProps = {
   };
 };
 
-export type CardProps = {
+export type PoolProps = {
   id: number;
   startDate: string;
+  endDate: string;
   token: string;
   apy: string;
   currentExpectedRewardRate: string;
   availabelTokens: string;
   totalTokens: string;
   currentReward: string;
+  maxReward: string;
+  stakedAmount: string;
+  withdrawAmount: string;
   percentage: number;
   state: StakingStatus;
   icon: IconNames;
   onClick: () => void;
 };
 
-function Stake(props: CardProps) {
+function parseEther(number: BigNumber): number {
+  return Number.parseFloat(number.toString()) / Math.pow(10, 18);
+}
+
+function formatNumber(number: number): string {
+  return numeral(number).format("0,0");
+}
+
+function parseAndFormatEther(number: BigNumber): string {
+  return formatNumber(parseEther(number));
+}
+
+function getPercentage(available: number, total: number): number {
+  return Math.round((available / total) * 100);
+}
+
+function StakePool(props: PoolProps) {
   const {
     token,
     apy,
@@ -138,129 +227,222 @@ function Stake(props: CardProps) {
   } = props;
 
   return (
-    <CardRoot filled={false}>
-      <CardHeader>
-        <CardTitle>
-          <IconWrapper>
+    <PoolRoot>
+      <PoolHeader>
+        <PoolTitle>
+          <IconContainer>
             <Icon name={icon} />
-          </IconWrapper>
-          {token}
-        </CardTitle>
-      </CardHeader>
-      <CardBody>
-        <ProgressInfo>
-          <div>
-            <Label>Current APY</Label>
-            <Text weight={TextWeights.BOLD}>{apy}</Text>
-          </div>
-          <div>
-            <Label>Expected Reward</Label>
-            <Text weight={TextWeights.BOLD}>{currentExpectedRewardRate}</Text>
-          </div>
-        </ProgressInfo>
-        <Label>Liquidity</Label>
-        <ProgressRoot>
-          <ProgressBar progress={percentage} />
-        </ProgressRoot>
-        <ProgressInfo>
-          <Text weight={TextWeights.BOLD}>{percentage * 100} %</Text>
-          <Label>
-            {availabelTokens}/{totalTokens} {token}
-          </Label>
-        </ProgressInfo>
-        <ButtonWrapper>
-          <Button
-            onClick={onClick}
-            leftIcon={
-              <IconWrapper>
-                <Icon name={icon} />
-              </IconWrapper>
-            }
-          >
+          </IconContainer>
+          <Text weight={TextWeights.SEMIBOLD}>{token}</Text>
+        </PoolTitle>
+      </PoolHeader>
+      <PoolBody>
+        <PoolInfoContainer>
+          <PoolLeftInfo>
+            <InfoLabel>
+              <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+                Current APY
+              </Text>
+            </InfoLabel>
+            <Text
+              size={TextSizes.SMALL}
+              height={TextHeights.SMALL}
+              weight={TextWeights.SEMIBOLD}
+            >
+              {apy}
+            </Text>
+          </PoolLeftInfo>
+          <PoolRightInfo>
+            <InfoLabel>
+              <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+                Expected Reward
+              </Text>
+            </InfoLabel>
+            <Text
+              size={TextSizes.SMALL}
+              height={TextHeights.SMALL}
+              weight={TextWeights.SEMIBOLD}
+            >
+              {currentExpectedRewardRate}
+            </Text>
+          </PoolRightInfo>
+        </PoolInfoContainer>
+        <PoolInfoPercentageContainer>
+          <InfoLabel>
+            <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+              Liquidity
+            </Text>
+          </InfoLabel>
+          <ProgressRoot>
+            <ProgressBar progress={percentage / 100} />
+          </ProgressRoot>
+          <PoolInfoContainer>
+            <PoolLeftInfo>
+              <Text
+                size={TextSizes.SMALL}
+                height={TextHeights.SMALL}
+                weight={TextWeights.BOLD}
+              >
+                {percentage} %
+              </Text>
+            </PoolLeftInfo>
+            <PoolRightInfo>
+              <InfoLabel>
+                <Text
+                  size={TextSizes.SMALL}
+                  height={TextHeights.SMALL}
+                  weight={TextWeights.SEMIBOLD}
+                >
+                  {availabelTokens} / {totalTokens} {token}
+                </Text>
+              </InfoLabel>
+            </PoolRightInfo>
+          </PoolInfoContainer>
+        </PoolInfoPercentageContainer>
+        <ActionContainer>
+          <Button onClick={onClick} leftIcon={<Icon name={icon} />}>
             Stake with {token}
           </Button>
-        </ButtonWrapper>
-      </CardBody>
-    </CardRoot>
+        </ActionContainer>
+      </PoolBody>
+    </PoolRoot>
   );
 }
 
-function Withdraw(props: CardProps) {
+function WithdrawPool(props: PoolProps) {
   const {
     token,
-    apy,
-    currentExpectedRewardRate,
+    withdrawAmount,
     availabelTokens,
     totalTokens,
     currentReward,
+    maxReward,
+    stakedAmount,
     percentage,
     icon,
     onClick,
+    endDate,
   } = props;
 
   return (
-    <CardRoot filled>
-      <CardHeader>
-        <CardTitle>
-          <IconWrapper>
+    <PoolRoot>
+      <PoolHeader>
+        <PoolTitle>
+          <IconContainer>
             <Icon name={icon} />
-          </IconWrapper>
-          {token}
-        </CardTitle>
-      </CardHeader>
-      <CardBody>
-        <ProgressInfo>
-          <div>
-            <Label>Current APY</Label>
-            <Text weight={TextWeights.BOLD}>{apy}</Text>
-          </div>
-          <div>
-            <Label>Expected Reward</Label>
-            <Text weight={TextWeights.BOLD}>{currentExpectedRewardRate}</Text>
-          </div>
-        </ProgressInfo>
-        <Label>Liquidity</Label>
-        <ProgressRoot>
-          <ProgressBar progress={percentage} />
-        </ProgressRoot>
-        <ProgressInfo>
-          <Text weight={TextWeights.BOLD}>{percentage * 100} %</Text>
-          <Label>
-            {availabelTokens}/{totalTokens} {token}
-          </Label>
-        </ProgressInfo>
-        <ButtonWrapper>
+          </IconContainer>
+          <Text weight={TextWeights.SEMIBOLD}>{token}</Text>
+        </PoolTitle>
+      </PoolHeader>
+      <PoolBody filled>
+        <PoolInfoContainer>
+          <PoolLeftInfo>
+            <InfoLabel>
+              <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+                Expectec Reward At {endDate}
+              </Text>
+            </InfoLabel>
+            <Text
+              size={TextSizes.SMALL}
+              height={TextHeights.SMALL}
+              weight={TextWeights.SEMIBOLD}
+            >
+              {maxReward}
+            </Text>
+          </PoolLeftInfo>
+        </PoolInfoContainer>
+        <PoolInfoPercentageContainer>
+          <InfoLabel>
+            <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+              Liquidity
+            </Text>
+          </InfoLabel>
+          <ProgressRoot>
+            <ProgressBar progress={percentage / 100} />
+          </ProgressRoot>
+          <PoolInfoContainer>
+            <PoolLeftInfo>
+              <Text
+                size={TextSizes.SMALL}
+                height={TextHeights.SMALL}
+                weight={TextWeights.BOLD}
+              >
+                {percentage} %
+              </Text>
+            </PoolLeftInfo>
+            <PoolRightInfo>
+              <InfoLabel>
+                <Text
+                  size={TextSizes.SMALL}
+                  height={TextHeights.SMALL}
+                  weight={TextWeights.SEMIBOLD}
+                >
+                  {availabelTokens} / {totalTokens} {token}
+                </Text>
+              </InfoLabel>
+            </PoolRightInfo>
+          </PoolInfoContainer>
+        </PoolInfoPercentageContainer>
+        <PoolInfoContainer>
+          <PoolLeftInfo>
+            <StakeLabel>
+              <Text
+                size={TextSizes.SMALL}
+                height={TextHeights.SMALL}
+                weight={TextWeights.SEMIBOLD}
+              >
+                Your Stake
+              </Text>
+            </StakeLabel>
+            <StakeAmountContainer>
+              <StakeAmount>
+                <Text weight={TextWeights.BOLD}>{stakedAmount}</Text>
+              </StakeAmount>
+              <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+                {token}
+              </Text>
+            </StakeAmountContainer>
+          </PoolLeftInfo>
+          <PoolRightInfo>
+            <RewardLabel>
+              <Text
+                size={TextSizes.SMALL}
+                height={TextHeights.SMALL}
+                weight={TextWeights.SEMIBOLD}
+              >
+                Your Reward
+              </Text>
+            </RewardLabel>
+            <RewardAmountContainer>
+              <RewardAmount>
+                <Text weight={TextWeights.BOLD}>{currentReward}</Text>
+              </RewardAmount>
+              <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+                {token}
+              </Text>
+            </RewardAmountContainer>
+          </PoolRightInfo>
+        </PoolInfoContainer>
+        <ActionContainer>
           <Button onClick={onClick} alternative>
-            Withdraw {currentReward}
+            Withdraw {withdrawAmount} {token}
           </Button>
-        </ButtonWrapper>
-      </CardBody>
-    </CardRoot>
+        </ActionContainer>
+      </PoolBody>
+    </PoolRoot>
   );
 }
 
-function Card(props: CardProps) {
-  const { state, startDate } = props;
+function Pool(props: PoolProps) {
+  const { state } = props;
 
-  const isStaked = state === StakingStatus.STAKED;
+  const hasStake = state === StakingStatus.STAKED;
 
-  if (isStaked) {
-    return (
-      <>
-        <RootLabel>Staking closes</RootLabel>
-        <Date>{startDate}</Date>
-        <Withdraw {...props} />
-      </>
-    );
+  if (hasStake) {
+    return <WithdrawPool {...props} />;
   }
 
-  return (
-    <>
-      <RootLabel>Staking closes</RootLabel>
-      <Date>{startDate}</Date>
-      <Stake {...props} />
-    </>
-  );
+  return <StakePool {...props} />;
 }
 
 function Staking(props: StakingProps) {
@@ -272,55 +454,86 @@ function Staking(props: StakingProps) {
   const fclStatus = stakingStatus[TokenTypes.FCL];
   const fclEthLpStatus = stakingStatus[TokenTypes.FCL_ETH_LP];
 
-  const cards = [
+  const pools = [
     {
       id: 1,
-      // @ts-ignore
-      startDate: dayjs(fclDetails.stakingStartDate.toNumber()).format(
-        "DD MMMM",
+      startDate: moment(fclDetails.stakingStartDate.toNumber(), "X").format(
+        "Do MMMM",
+      ),
+      endDate: moment(fclDetails.stakingEndDate.toNumber(), "X").format(
+        "Do MMMM",
       ),
       token: "FCL",
       apy: fclDetails.stakingAPY.toString() + "%",
       currentExpectedRewardRate:
         fclDetails.stakingCurrentExpectedRewardRate.toString() + "%",
-      availabelTokens: ethersUtils.formatUnits(fclDetails.poolAvailableTokens),
-      totalTokens: ethersUtils.formatUnits(fclDetails.poolTotalTokens),
-      currentReward: ethersUtils.formatUnits(fclDetails.userCurrentReward),
-      percentage: fclDetails.poolAvailableTokens
-        .div(fclDetails.poolTotalTokens)
-        .toNumber(),
+      availabelTokens: parseAndFormatEther(fclDetails.poolAvailableTokens),
+      totalTokens: parseAndFormatEther(fclDetails.poolTotalTokens),
+      currentReward: parseAndFormatEther(fclDetails.userCurrentReward),
+      maxReward: parseAndFormatEther(fclDetails.userMaxReward),
+      stakedAmount: parseAndFormatEther(fclDetails.userStakedAmount),
+      withdrawAmount: parseAndFormatEther(
+        fclDetails.userStakedAmount.add(fclDetails.userCurrentReward),
+      ),
+      percentage: getPercentage(
+        parseEther(
+          fclDetails.poolTotalTokens.sub(fclDetails.poolAvailableTokens),
+        ),
+        parseEther(fclDetails.poolTotalTokens),
+      ),
       state: fclStatus,
       icon: IconNames.FRACTAL_TOKEN,
     },
     {
       id: 2,
-      // @ts-ignore
-      startDate: dayjs(fclEthLpDetails.stakingStartDate.toNumber()).format(
-        "DD MMMM",
+      startDate: moment(
+        fclEthLpDetails.stakingStartDate.toNumber(),
+        "X",
+      ).format("Do MMMM"),
+      endDate: moment(fclEthLpDetails.stakingEndDate.toNumber(), "X").format(
+        "Do MMMM",
       ),
       token: "FCL/ETH",
       apy: fclEthLpDetails.stakingAPY.toString() + "%",
       currentExpectedRewardRate:
         fclEthLpDetails.stakingCurrentExpectedRewardRate.toString() + "%",
-      availabelTokens: ethersUtils.formatUnits(
-        fclEthLpDetails.poolAvailableTokens,
+      availabelTokens: parseAndFormatEther(fclEthLpDetails.poolAvailableTokens),
+      totalTokens: parseAndFormatEther(fclEthLpDetails.poolTotalTokens),
+      currentReward: parseAndFormatEther(fclEthLpDetails.userCurrentReward),
+      maxReward: parseAndFormatEther(fclEthLpDetails.userMaxReward),
+      stakedAmount: parseAndFormatEther(fclEthLpDetails.userStakedAmount),
+      withdrawAmount: parseAndFormatEther(
+        fclEthLpDetails.userStakedAmount.add(fclEthLpDetails.userCurrentReward),
       ),
-      totalTokens: ethersUtils.formatUnits(fclEthLpDetails.poolTotalTokens),
-      currentReward: ethersUtils.formatUnits(fclEthLpDetails.userCurrentReward),
-      percentage: fclEthLpDetails.poolAvailableTokens
-        .div(fclEthLpDetails.poolTotalTokens)
-        .toNumber(),
+      percentage: getPercentage(
+        parseEther(
+          fclEthLpDetails.poolTotalTokens.sub(
+            fclEthLpDetails.poolAvailableTokens,
+          ),
+        ),
+        parseEther(fclEthLpDetails.poolTotalTokens),
+      ),
       state: fclEthLpStatus,
       icon: IconNames.FRACTAL_ETH_TOKEN,
     },
   ];
 
   return (
-    <Root>
-      {cards.map((card) => (
-        <Card key={card.id} {...card} onClick={onClick} />
+    <TopComponent paddingTop="var(--s-12)">
+      {pools.map((pool) => (
+        <div key={pool.id}>
+          <DateLabelContainer>
+            <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+              Staking closes
+            </Text>
+          </DateLabelContainer>
+          <DateContainer>
+            <Text>{pool.startDate}</Text>
+          </DateContainer>
+          <Pool {...pool} onClick={onClick} />
+        </div>
       ))}
-    </Root>
+    </TopComponent>
   );
 }
 

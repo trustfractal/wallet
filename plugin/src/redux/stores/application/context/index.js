@@ -19,9 +19,7 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     if (!isReady) {
       const setupStore = async () => {
-        const store = await AppStore.connect();
-        await store.ready();
-        setStore(store);
+        setStore(await AppStore.connect());
         setIsReady(true);
       };
 

@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { ICredential } from "@fractalwallet/types";
 
 import { useUserSelector } from "@redux/stores/user/context";
@@ -18,47 +16,28 @@ export type HomeProps = {
   onClick: () => void;
 };
 
-enum TabsNames {
-  STAKING = "staking",
-  CREDENTIALS = "credentials",
-}
-
 function Home(props: HomeProps) {
   const { credentials, onClick } = props;
 
   const stakingDetails: any = useUserSelector(getStakingDetails);
   const stakingStatus: any = useUserSelector(getStakingStatus);
 
-  const tabs = {
-    [TabsNames.CREDENTIALS]: {
+  const tabs = [
+    {
       id: "credentials-tab",
       label: "Credentials",
+      props: { credentials },
+      component: Credentials,
     },
-    [TabsNames.STAKING]: {
+    {
       id: "staking-tab",
       label: "Staking",
+      props: { stakingDetails, stakingStatus, onClick },
+      component: Staking,
     },
-  };
+  ];
 
-  const [selected, setSelected] = useState(tabs[TabsNames.CREDENTIALS].id);
-
-  return (
-    <Tabs
-      tabs={Object.values(tabs)}
-      selected={selected}
-      setSelected={setSelected}
-    >
-      {selected === tabs[TabsNames.CREDENTIALS].id ? (
-        <Credentials credentials={credentials} />
-      ) : (
-        <Staking
-          stakingDetails={stakingDetails}
-          stakingStatus={stakingStatus}
-          onClick={onClick}
-        />
-      )}
-    </Tabs>
-  );
+  return <Tabs tabs={tabs} />;
 }
 
 export default withNavBar(Home);

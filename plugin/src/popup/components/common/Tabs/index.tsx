@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import TabButton from "@popup/components/common/TabButton";
 
@@ -14,20 +14,29 @@ const TabContainer = styled.div``;
 type TabType = {
   id: string;
   label: string;
+  props: any;
+  component: (props: any) => JSX.Element;
 };
 
 export type TabsProps = {
   tabs: TabType[];
-  children: JSX.Element;
-  selected: string;
-  setSelected: (id: string) => any;
 };
 
 function Tabs(props: TabsProps & React.HTMLAttributes<HTMLDivElement>) {
-  const { tabs, selected, setSelected, children } = props;
+  const { tabs, ...otherProps } = props;
+
+  const [selected, setSelected] = useState(tabs[0].id);
+
+  const getSelectedTab = () => {
+    const { component: Component, props } = tabs.filter(
+      ({ id }) => id === selected,
+    )[0];
+
+    return <Component {...props} />;
+  };
 
   return (
-    <RootContainer>
+    <RootContainer {...otherProps}>
       <TabsButtonsContainer>
         {tabs.map(({ id, label }, index) => (
           <TabButton
@@ -35,12 +44,12 @@ function Tabs(props: TabsProps & React.HTMLAttributes<HTMLDivElement>) {
             index={index}
             total={tabs.length}
             onClick={() => setSelected(id)}
-            selected={selected === id}
+            selected={id === selected}
             label={label}
           />
         ))}
       </TabsButtonsContainer>
-      <TabContainer>{children}</TabContainer>
+      <TabContainer>{getSelectedTab()}</TabContainer>
     </RootContainer>
   );
 }

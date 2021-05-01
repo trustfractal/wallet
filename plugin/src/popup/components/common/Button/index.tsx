@@ -12,6 +12,7 @@ const Root = styled.button<{
   border-radius: var(--s-12);
   padding: var(--s-14) var(--s-35);
   font-weight: bold;
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
 
   display: flex;
   flex-direction: row;
@@ -27,11 +28,29 @@ const Root = styled.button<{
     `}
 
   ${(props) =>
+    !props.disabled &&
+    css`
+      :hover {
+        background: var(--c-dark-orange);
+      }
+    `}
+
+  ${(props) =>
     props.alternative &&
     css`
       color: var(--c-orange);
       background: var(--c-transparent);
       border: 1px solid var(--c-orange);
+    `}
+
+    ${(props) =>
+    props.alternative &&
+    !props.disabled &&
+    css`
+      :hover {
+        background: var(--c-orange);
+        color: var(--c-white);
+      }
     `}
 `;
 
