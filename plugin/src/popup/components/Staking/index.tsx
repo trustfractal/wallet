@@ -1,7 +1,5 @@
 import styled, { css } from "styled-components";
 import moment from "moment";
-import numeral from "numeral";
-import { BigNumber } from "ethers";
 
 import Text, {
   TextSizes,
@@ -10,11 +8,17 @@ import Text, {
 } from "@popup/components/common/Text";
 import Button from "@popup/components/common/Button";
 import Icon, { IconNames } from "@popup/components/common/Icon";
+import TopComponent from "@popup/components/common/TopComponent";
+
 import StakingDetails from "@models/Staking/StakingDetails";
 import TokenTypes from "@models/Token/types";
 
 import StakingStatus from "@models/Staking/status";
-import TopComponent from "../common/TopComponent";
+import {
+  getPercentage,
+  parseAndFormatEther,
+  parseEther,
+} from "@utils/FormatUtils";
 
 const DateLabelContainer = styled.div`
   opacity: 0.6;
@@ -186,7 +190,7 @@ export type PoolProps = {
   token: string;
   apy: string;
   currentExpectedRewardRate: string;
-  availabelTokens: string;
+  usedTokens: string;
   totalTokens: string;
   currentReward: string;
   maxReward: string;
@@ -198,28 +202,12 @@ export type PoolProps = {
   onClick: () => void;
 };
 
-function parseEther(number: BigNumber): number {
-  return Number.parseFloat(number.toString()) / Math.pow(10, 18);
-}
-
-function formatNumber(number: number): string {
-  return numeral(number).format("0,0");
-}
-
-function parseAndFormatEther(number: BigNumber): string {
-  return formatNumber(parseEther(number));
-}
-
-function getPercentage(available: number, total: number): number {
-  return Math.round((available / total) * 100);
-}
-
 function StakePool(props: PoolProps) {
   const {
     token,
     apy,
     currentExpectedRewardRate,
-    availabelTokens,
+    usedTokens,
     totalTokens,
     percentage,
     icon,
@@ -293,7 +281,7 @@ function StakePool(props: PoolProps) {
                   height={TextHeights.SMALL}
                   weight={TextWeights.SEMIBOLD}
                 >
-                  {availabelTokens} / {totalTokens} {token}
+                  {usedTokens} / {totalTokens} {token}
                 </Text>
               </InfoLabel>
             </PoolRightInfo>
@@ -313,7 +301,7 @@ function WithdrawPool(props: PoolProps) {
   const {
     token,
     withdrawAmount,
-    availabelTokens,
+    usedTokens,
     totalTokens,
     currentReward,
     maxReward,
@@ -377,7 +365,7 @@ function WithdrawPool(props: PoolProps) {
                   height={TextHeights.SMALL}
                   weight={TextWeights.SEMIBOLD}
                 >
-                  {availabelTokens} / {totalTokens} {token}
+                  {usedTokens} / {totalTokens} {token}
                 </Text>
               </InfoLabel>
             </PoolRightInfo>
@@ -467,7 +455,9 @@ function Staking(props: StakingProps) {
       apy: fclDetails.stakingAPY.toString() + "%",
       currentExpectedRewardRate:
         fclDetails.stakingCurrentExpectedRewardRate.toString() + "%",
-      availabelTokens: parseAndFormatEther(fclDetails.poolAvailableTokens),
+      usedTokens: parseAndFormatEther(
+        fclDetails.poolTotalTokens.sub(fclDetails.poolAvailableTokens),
+      ),
       totalTokens: parseAndFormatEther(fclDetails.poolTotalTokens),
       currentReward: parseAndFormatEther(fclDetails.userCurrentReward),
       maxReward: parseAndFormatEther(fclDetails.userMaxReward),
@@ -497,7 +487,11 @@ function Staking(props: StakingProps) {
       apy: fclEthLpDetails.stakingAPY.toString() + "%",
       currentExpectedRewardRate:
         fclEthLpDetails.stakingCurrentExpectedRewardRate.toString() + "%",
-      availabelTokens: parseAndFormatEther(fclEthLpDetails.poolAvailableTokens),
+      usedTokens: parseAndFormatEther(
+        fclEthLpDetails.poolTotalTokens.sub(
+          fclEthLpDetails.poolAvailableTokens,
+        ),
+      ),
       totalTokens: parseAndFormatEther(fclEthLpDetails.poolTotalTokens),
       currentReward: parseAndFormatEther(fclEthLpDetails.userCurrentReward),
       maxReward: parseAndFormatEther(fclEthLpDetails.userMaxReward),
