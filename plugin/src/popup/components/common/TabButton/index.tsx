@@ -49,7 +49,7 @@ const RootContainer = styled.button<{
   ${(props) =>
     props.index === props.total - 1 &&
     css`
-      border-right-left: 0px;
+      border-right-width: 0px;
     `}
 `;
 
