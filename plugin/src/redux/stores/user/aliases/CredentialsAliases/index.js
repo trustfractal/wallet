@@ -46,7 +46,7 @@ export const removeCredential = ({ payload: level }) => {
   return async (dispatch, getState) => {
     const credentials = getCredentials(getState());
 
-    // get request
+    // get credential
     const credential = credentials.getByField("level", level);
 
     if (!credential) {
@@ -61,10 +61,34 @@ export const removeCredential = ({ payload: level }) => {
   };
 };
 
+export const setCredentialValidity = ({ payload: { level, valid } }) => {
+  return async (dispatch, getState) => {
+    const credentials = getCredentials(getState());
+
+    const credential = credentials.getByField("level", level);
+
+    // update credential
+    credential.valid = valid;
+    const updatedCredential = credentials.updateByField(
+      "level",
+      credential.level,
+      credential,
+    );
+
+    if (!updatedCredential) {
+      return;
+    }
+
+    // update redux store
+    dispatch(credentialsActions.setCredentials(credentials));
+  };
+};
+
 const Aliases = {
   [credentialsTypes.ADD_CREDENTIAL]: addCredential,
   [credentialsTypes.UPDATE_CREDENTIAL]: updateCredential,
   [credentialsTypes.REMOVE_CREDENTIAL]: removeCredential,
+  [credentialsTypes.SET_CREDENTIAL_VALIDITY]: setCredentialValidity,
 };
 
 export default Aliases;

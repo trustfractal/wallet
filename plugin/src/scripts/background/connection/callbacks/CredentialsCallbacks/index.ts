@@ -16,6 +16,7 @@ import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 import { ERROR_CREDENTIAL_NOT_FOUND } from "@background/Errors";
 import { getClaimsRegistryContractAddress } from "@redux/stores/application/reducers/app/selectors";
+import RPCProviderService from "@services/EthereumProviderService/RPCProviderService";
 
 export const credentialStore = (
   [serializedCredential]: [string],
@@ -38,6 +39,19 @@ export const credentialStore = (
       // parse transaction details
       const parsedTransactionDetails = TransactionDetails.parse(
         serializedTransactionDetails,
+      );
+
+      // setup a callback to when the transaction is confirmed
+      RPCProviderService.waitForTransaction(
+        parsedTransactionDetails.hash,
+        async (success: boolean) =>
+          success &&
+          UserStore.getStore().dispatch(
+            credentialsActions.setCredentialValidity({
+              level: parsedCredential.level,
+              valid: true,
+            }),
+          ),
       );
 
       // parse the string credential

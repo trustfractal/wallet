@@ -1,5 +1,5 @@
 import ConnectionTypes from "@models/Connection/types";
-import EthereumProviderService from "@services/EthereumProviderService";
+import EthereumProviderService from "@services/EthereumProviderService/Web3ProviderService";
 
 export const credentialStore = ([
   address,

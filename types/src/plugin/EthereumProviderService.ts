@@ -1,4 +1,6 @@
-export interface IEthereumProviderService {
+import { Callback } from "./Common";
+
+export interface IWeb3ProviderService {
   isAvailable(): boolean;
   getAccountAddress(): Promise<string | undefined>;
   credentialStore(
@@ -43,4 +45,12 @@ export interface IEthereumProviderService {
     address: string,
     stakingTokenContractAddress: string
   ): Promise<string>;
+}
+
+export interface IRPCProviderService {
+  isAvailable(): boolean;
+  waitForTransaction(
+    transactionHash: string,
+    callback: Callback
+  ): Promise<void>;
 }

@@ -1,9 +1,13 @@
+import environment from "@environment/index";
+
 import appActions, { appTypes } from "@redux/stores/application/reducers/app";
 
 import GoldfishService from "@services/GoldfishService";
+import RPCProviderService from "@services/EthereumProviderService/RPCProviderService";
 
 export const startup = () => {
   return async (dispatch) => {
+    // setup addresses
     const {
       fclContract,
       fclUniswapContract,
@@ -29,6 +33,13 @@ export const startup = () => {
         issuerAddress,
       }),
     );
+
+    // setup rpc provider
+    await RPCProviderService.init(
+      environment.ETHEREUM_RPC_URL,
+      ethereumNetwork,
+    );
+
     dispatch(appActions.setLaunched(true));
   };
 };

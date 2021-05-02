@@ -11,7 +11,7 @@ import {
   Erc20 as IERC20,
   Staking as IStaking,
   ClaimsRegistry as IClaimsRegistry,
-  IEthereumProviderService,
+  IWeb3ProviderService,
 } from "@fractalwallet/types";
 import { Claim } from "@fractalwallet/sdk";
 import { IClaimProperties } from "@fractalwallet/sdk/src/types";
@@ -35,16 +35,16 @@ import Staking from "@contracts/Staking.json";
 import ERC20 from "@contracts/ERC20.json";
 import MetamaskErrors from "./MetamaskErrors";
 
-class EthereumProviderService implements IEthereumProviderService {
-  private static instance: EthereumProviderService;
+class Web3ProviderService implements IWeb3ProviderService {
+  private static instance: Web3ProviderService;
   private web3Provider?: ethersProviders.Web3Provider;
 
-  public static getInstance(): EthereumProviderService {
-    if (!EthereumProviderService.instance) {
-      EthereumProviderService.instance = new EthereumProviderService();
+  public static getInstance(): Web3ProviderService {
+    if (!Web3ProviderService.instance) {
+      Web3ProviderService.instance = new Web3ProviderService();
     }
 
-    return EthereumProviderService.instance;
+    return Web3ProviderService.instance;
   }
 
   public async init(): Promise<ethersProviders.Web3Provider> {
@@ -127,8 +127,11 @@ class EthereumProviderService implements IEthereumProviderService {
         parsedCredential.credentialSignature as string,
       );
 
+      console.log(storingResult);
+
       // create transaction details
       const transactionDetails = new TransactionDetails(
+        storingResult.hash,
         storingResult.chainId,
         storingResult.data,
         storingResult.from,
@@ -314,6 +317,7 @@ class EthereumProviderService implements IEthereumProviderService {
 
         // create transaction details
         const transactionDetails = new TransactionDetails(
+          approveResult.hash,
           approveResult.chainId,
           approveResult.data,
           approveResult.from,
@@ -407,6 +411,7 @@ class EthereumProviderService implements IEthereumProviderService {
 
       // create transaction details
       const transactionDetails = new TransactionDetails(
+        stakingResult.hash,
         stakingResult.chainId,
         stakingResult.data,
         stakingResult.from,
@@ -446,6 +451,7 @@ class EthereumProviderService implements IEthereumProviderService {
 
       // create transaction details
       const transactionDetails = new TransactionDetails(
+        withdrawResult.hash,
         withdrawResult.chainId,
         withdrawResult.data,
         withdrawResult.from,
@@ -466,6 +472,6 @@ class EthereumProviderService implements IEthereumProviderService {
   }
 }
 
-const ethereumProvider: EthereumProviderService = EthereumProviderService.getInstance();
+const ethereumProvider: Web3ProviderService = Web3ProviderService.getInstance();
 
 export default ethereumProvider;
