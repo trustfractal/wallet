@@ -57,9 +57,9 @@ export default class TransactionDetails
       chainId,
       data,
       from,
-      BigNumber.from(gasLimit),
-      BigNumber.from(gasPrice),
-      BigNumber.from(value),
+      gasLimit ? BigNumber.from(gasLimit) : BigNumber.from(0),
+      gasPrice ? BigNumber.from(gasPrice) : BigNumber.from(0),
+      value ? BigNumber.from(value) : BigNumber.from(0),
       estimatedTime ? BigNumber.from(estimatedTime) : undefined,
     );
   }

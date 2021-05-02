@@ -90,19 +90,29 @@ export default class StakingDetails implements IStakingDetails, ISerializable {
     } = JSON.parse(str);
 
     return new StakingDetails(
-      BigNumber.from(userBalance),
-      BigNumber.from(userStakedAmount),
-      BigNumber.from(userCurrentReward),
-      BigNumber.from(userMaxReward),
-      BigNumber.from(poolAvailableTokens),
-      BigNumber.from(poolTotalTokens),
-      BigNumber.from(stakingAllowedAmount),
-      BigNumber.from(stakingMinimumStake),
-      BigNumber.from(stakingMaximumStake),
-      BigNumber.from(stakingEndDate),
-      BigNumber.from(stakingStartDate),
-      BigNumber.from(stakingAPY),
-      BigNumber.from(stakingCurrentExpectedRewardRate),
+      userBalance ? BigNumber.from(userBalance) : BigNumber.from(0),
+      userStakedAmount ? BigNumber.from(userStakedAmount) : BigNumber.from(0),
+      userCurrentReward ? BigNumber.from(userCurrentReward) : BigNumber.from(0),
+      userMaxReward ? BigNumber.from(userMaxReward) : BigNumber.from(0),
+      poolAvailableTokens
+        ? BigNumber.from(poolAvailableTokens)
+        : BigNumber.from(0),
+      poolTotalTokens ? BigNumber.from(poolTotalTokens) : BigNumber.from(0),
+      stakingAllowedAmount
+        ? BigNumber.from(stakingAllowedAmount)
+        : BigNumber.from(0),
+      stakingMinimumStake
+        ? BigNumber.from(stakingMinimumStake)
+        : BigNumber.from(0),
+      stakingMaximumStake
+        ? BigNumber.from(stakingMaximumStake)
+        : BigNumber.from(0),
+      stakingEndDate ? BigNumber.from(stakingEndDate) : BigNumber.from(0),
+      stakingStartDate ? BigNumber.from(stakingStartDate) : BigNumber.from(0),
+      stakingAPY ? BigNumber.from(stakingAPY) : BigNumber.from(0),
+      stakingCurrentExpectedRewardRate
+        ? BigNumber.from(stakingCurrentExpectedRewardRate)
+        : BigNumber.from(0),
       status,
     );
   }
