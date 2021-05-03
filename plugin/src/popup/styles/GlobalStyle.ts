@@ -10,8 +10,13 @@ export const global = css`
     --c-white: #ffffff;
     --c-dark-blue: #132c53;
     --c-red: rgba(239, 68, 68);
+    --c-gray: #edeff2;
     --c-transparent: transparent;
+    --c-dark-orange: #dc5919;
     --c-orange: #ff671d;
+    --c-light-orange: rgba(255, 103, 29, 0.2);
+    --c-lightest-orange: rgba(255, 103, 29, 0.05);
+    --s-4: 0.25rem;
     --s-5: 0.3125rem;
     --s-8: 0.5rem;
     --s-10: 0.625rem;
@@ -25,9 +30,11 @@ export const global = css`
     --s-23: 1.4375rem;
     --s-24: 1.5rem;
     --s-26: 1.625rem;
+    --s-29: 1, 8125rem;
     --s-32: 2rem;
     --s-35: 2.1875rem;
-    --s-35: 2.375rem;
+    --s-36: 2.25rem;
+    --s-38: 2.375rem;
     --s-48: 3rem;
   }
 

@@ -1,25 +1,43 @@
 import { ICredential } from "@fractalwallet/types";
 
-import Text from "@popup/components/common/Text";
-import Title from "@popup/components/common/Title";
-import TopComponent from "@popup/components/common/TopComponent";
+import { useUserSelector } from "@redux/stores/user/context";
+import {
+  getStakingDetails,
+  getStakingStatus,
+} from "@redux/stores/user/reducers/wallet/selectors";
+
+import Tabs from "@popup/components/common/Tabs";
+import Staking from "@popup/components/Staking";
+import Credentials from "@popup/components/Credentials";
 import { withNavBar } from "@popup/components/common/NavBar";
 
 export type HomeProps = {
-  account: string;
   credentials: ICredential[];
+  onClick: () => void;
 };
 
 function Home(props: HomeProps) {
-  const { account, credentials } = props;
+  const { credentials, onClick } = props;
 
-  return (
-    <TopComponent>
-      <Title>Home</Title>
-      <Text>{`Account: ${account}`}</Text>
-      <Text>{`Credentials: ${credentials.length}`}</Text>
-    </TopComponent>
-  );
+  const stakingDetails: any = useUserSelector(getStakingDetails);
+  const stakingStatus: any = useUserSelector(getStakingStatus);
+
+  const tabs = [
+    {
+      id: "credentials-tab",
+      label: "Credentials",
+      props: { credentials },
+      component: Credentials,
+    },
+    {
+      id: "staking-tab",
+      label: "Staking",
+      props: { stakingDetails, stakingStatus, onClick },
+      component: Staking,
+    },
+  ];
+
+  return <Tabs tabs={tabs} />;
 }
 
 export default withNavBar(Home);

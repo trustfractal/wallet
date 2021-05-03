@@ -9,7 +9,14 @@ export const getAccount = createSelector(
 
 export const getStakingDetails = createSelector(
   (state) => state.wallet,
-  (wallet) => StakingDetails.parse(wallet.staking.details),
+  (wallet) =>
+    Object.keys(wallet.staking.details).reduce(
+      (memo, token) => ({
+        ...memo,
+        [token]: StakingDetails.parse(wallet.staking.details[token]),
+      }),
+      {},
+    ),
 );
 
 export const getStakingStatus = createSelector(
