@@ -51,7 +51,13 @@ function Login(props: LoginProps) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(propError);
 
-  const onClick = () => onNext(password);
+  const onClick = () => {
+    if (loading || isPasswordEmpty || hasError) {
+      return;
+    }
+
+    onNext(password);
+  };
 
   const hasError = error.length > 0;
   const isPasswordEmpty = password.length === 0;
@@ -82,6 +88,7 @@ function Login(props: LoginProps) {
             value={password}
             error={error}
             onChange={onChangePassword}
+            onEnter={onClick}
           />
         </InputContainer>
         <ActionsContainer>

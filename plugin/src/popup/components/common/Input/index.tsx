@@ -74,21 +74,45 @@ const LineContainer = styled.hr<{ active: boolean; error: boolean }>`
 `;
 
 export type InputProps = {
+  onEnter?: () => void;
   error?: string;
   label?: string;
   hint?: string;
 };
 
+Input.defaultProps = {
+  onEnter: () => {},
+};
+
 function Input(
   props: InputProps & React.InputHTMLAttributes<HTMLInputElement>,
 ) {
-  const { error, label, hint, children, value, ...otherProps } = props;
+  const {
+    error,
+    disabled,
+    label,
+    hint,
+    children,
+    value,
+    onEnter,
+    ...otherProps
+  } = props;
 
   const active = value !== undefined && value.toString().length > 0;
 
   const hasError = error !== undefined && error.length > 0;
   const hasLabel = label !== undefined && label.length > 0;
   const hasHint = hint !== undefined && hint.length > 0;
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      if (disabled || onEnter === undefined) {
+        return;
+      }
+
+      onEnter();
+    }
+  };
 
   return (
     <Root>
@@ -102,7 +126,12 @@ function Input(
           </Text>
         </LabelContainer>
       )}
-      <InputContainer value={value} {...otherProps}>
+      <InputContainer
+        value={value}
+        disabled={disabled}
+        onKeyDown={handleKeyDown}
+        {...otherProps}
+      >
         {children}
       </InputContainer>
       <LineContainer active={active} error={hasError} />

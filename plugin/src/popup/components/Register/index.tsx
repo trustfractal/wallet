@@ -74,7 +74,11 @@ function Register(props: RegisterProps) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [hint, setHint] = useState(`Minimum of ${minLength} chars`);
 
-  const onClick = () => onNext(newPassword);
+  const onClick = () => {
+    if (arePasswordsValidAndEquals && !loading) {
+      onNext(newPassword);
+    }
+  };
 
   const isNewPasswordEmpty = newPassword.length === 0;
   const isConfirmPasswordEmpty = confirmPassword.length === 0;
@@ -126,6 +130,7 @@ function Register(props: RegisterProps) {
               minLength={minLength}
               value={newPassword}
               onChange={onChangeNewPassword}
+              onEnter={onClick}
               defaultVisible
             />
             {isNewPasswordValid && (
@@ -142,6 +147,7 @@ function Register(props: RegisterProps) {
               minLength={minLength}
               value={confirmPassword}
               onChange={onChangeConfirmPassword}
+              onEnter={onClick}
               defaultVisible
             />
             {arePasswordsValidAndEquals && (
