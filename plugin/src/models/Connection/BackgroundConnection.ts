@@ -26,9 +26,18 @@ export default class BackgroundConnection
   }
 
   public postMessage(message: IResponse | IInvokation): void {
-    this.port.postMessage({
-      type: message.getMessageType(),
-      message: message.serialize(),
-    });
+    try {
+      this.port.postMessage({
+        type: message.getMessageType(),
+        message: message.serialize(),
+      });
+    } catch (error) {
+      // check if the error has losted connected to background script
+      if (error.message === "Extension context invalidated.") {
+        window.location.reload();
+      } else {
+        throw error;
+      }
+    }
   }
 }
