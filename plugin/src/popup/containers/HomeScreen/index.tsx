@@ -24,17 +24,25 @@ function HomeScreen() {
     history.push(RoutesPaths.CONNECT_WALLET);
   }
 
+  // check if has credentials
+  if (credentials.length === 0) {
+    return (
+      <EmptyCredentials
+        onNext={() =>
+          WindowsService.openTab(
+            `https://${environment.FRACTAL_WEBSITE_HOSTNAME}/credentials`,
+          )
+        }
+      />
+    );
+  }
+
   return (
     <Home
       credentials={credentials}
-      onClickPool={() =>
+      onClick={() =>
         WindowsService.openTab(
           `https://${environment.FRACTAL_WEBSITE_HOSTNAME}/staking`,
-        )
-      }
-      onClickEmpty={() =>
-        WindowsService.openTab(
-          `https://${environment.FRACTAL_WEBSITE_HOSTNAME}/credentials`,
         )
       }
     />
