@@ -55,7 +55,7 @@ export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
 
       // update wallet staking details
       await UserStore.getStore().dispatch(
-        walletActions.setStakingDetails({ details: stakingDetails, token }),
+        walletActions.updateStakingDetails({ details: stakingDetails, token }),
       );
 
       // add staking status

@@ -1,8 +1,18 @@
-import { providers as ethersProviders } from "ethers";
+import { Contract, providers as ethersProviders } from "ethers";
 
-import { IRPCProviderService, Callback } from "@fractalwallet/types";
+import {
+  Erc20 as IERC20,
+  Staking as IStaking,
+  Callback,
+  IRPCProviderService,
+} from "@fractalwallet/types";
 
 import { ERROR_PROVIDER_NOT_INITIALIZED } from "@services/EthereumProviderService/Errors";
+
+import StakingDetails from "@models/Staking/StakingDetails";
+
+import Staking from "@contracts/Staking.json";
+import ERC20 from "@contracts/ERC20.json";
 
 class RPCProviderService implements IRPCProviderService {
   private static instance: RPCProviderService;
@@ -51,6 +61,73 @@ class RPCProviderService implements IRPCProviderService {
 
       // resolve with transaction status
       callback(receipt.status === undefined || receipt.status === 1);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  public async fetchStakingDetails(
+    address: string,
+    tokenContractAddress: string,
+    stakingTokenContractAddress: string,
+  ): Promise<StakingDetails> {
+    try {
+      // init smart contract
+      const tokenContract = new Contract(
+        tokenContractAddress,
+        ERC20.abi,
+        this.rpcProvider!,
+      ) as IERC20;
+      const stakingContract = new Contract(
+        stakingTokenContractAddress,
+        Staking.abi,
+        this.rpcProvider!,
+      ) as IStaking;
+
+      // get user balance, current stake, current rewards and expected rewards
+      const balance = await tokenContract.balanceOf(address);
+      const stakedAmount = await stakingContract.getStakedAmount(address);
+      const currentReward = await stakingContract.getCurrentReward(address);
+      const maxReward = await stakingContract.getMaxStakeReward(address);
+
+      // get liquidity pool details
+      const poolTotalTokens = await stakingContract.totalPool();
+      const poolAvailableTokens = await stakingContract.availablePool();
+
+      // get staking details
+      const stakingAllowedAmount = await tokenContract.allowance(
+        address,
+        stakingTokenContractAddress,
+      );
+      const stakingStartDate = await stakingContract.startDate();
+      const stakingEndDate = await stakingContract.endDate();
+      const stakingMinAmount = await stakingContract.minAmount();
+      const stakingMaxAmount = await stakingContract.maxAmount();
+      const currentAPY = await stakingContract.currentAPY();
+      const currentExpectedRewardRate = await stakingContract.calculateReward(
+        Math.floor(Date.now() / 1000),
+        stakingEndDate,
+        100,
+      );
+
+      const details = new StakingDetails(
+        balance,
+        stakedAmount,
+        currentReward,
+        maxReward,
+        poolAvailableTokens,
+        poolTotalTokens,
+        stakingAllowedAmount,
+        stakingMinAmount,
+        stakingMaxAmount,
+        stakingStartDate,
+        stakingEndDate,
+        currentAPY,
+        currentExpectedRewardRate,
+      );
+
+      return details;
     } catch (error) {
       console.error(error);
       throw error;

@@ -1,4 +1,5 @@
 import { Callback } from "./Common";
+import { IStakingDetails } from "./Staking";
 
 export interface IWeb3ProviderService {
   isAvailable(): boolean;
@@ -53,4 +54,9 @@ export interface IRPCProviderService {
     transactionHash: string,
     callback: Callback
   ): Promise<void>;
+  getStakingDetails(
+    address: string,
+    tokenContractAddress: string,
+    stakingTokenContractAddress: string
+  ): Promise<IStakingDetails>;
 }
