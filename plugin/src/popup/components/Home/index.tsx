@@ -13,11 +13,12 @@ import { withNavBar } from "@popup/components/common/NavBar";
 
 export type HomeProps = {
   credentials: ICredential[];
-  onClick: () => void;
+  onClickPool: () => void;
+  onClickEmpty: () => void;
 };
 
 function Home(props: HomeProps) {
-  const { credentials, onClick } = props;
+  const { credentials, onClickPool, onClickEmpty } = props;
 
   const stakingDetails: any = useUserSelector(getStakingDetails);
   const stakingStatus: any = useUserSelector(getStakingStatus);
@@ -26,13 +27,13 @@ function Home(props: HomeProps) {
     {
       id: "credentials-tab",
       label: "Credentials",
-      props: { credentials },
+      props: { credentials, onClickEmpty },
       component: Credentials,
     },
     {
       id: "staking-tab",
       label: "Staking",
-      props: { stakingDetails, stakingStatus, onClick },
+      props: { stakingDetails, stakingStatus, onClickPool },
       component: Staking,
     },
   ];

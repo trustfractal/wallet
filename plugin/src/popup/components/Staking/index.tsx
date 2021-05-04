@@ -172,7 +172,7 @@ const ActionContainer = styled.div`
 `;
 
 export type StakingProps = {
-  onClick: () => void;
+  onClickPool: () => void;
   stakingDetails: {
     [TokenTypes.FCL]: StakingDetails;
     [TokenTypes.FCL_ETH_LP]: StakingDetails;
@@ -434,7 +434,7 @@ function Pool(props: PoolProps) {
 }
 
 function Staking(props: StakingProps) {
-  const { stakingDetails, stakingStatus, onClick } = props;
+  const { stakingDetails, stakingStatus, onClickPool } = props;
 
   const fclDetails = stakingDetails[TokenTypes.FCL];
   const fclEthLpDetails = stakingDetails[TokenTypes.FCL_ETH_LP];
@@ -524,7 +524,7 @@ function Staking(props: StakingProps) {
           <DateContainer>
             <Text>{pool.startDate}</Text>
           </DateContainer>
-          <Pool {...pool} onClick={onClick} />
+          <Pool {...pool} onClick={onClickPool} />
         </div>
       ))}
     </TopComponent>

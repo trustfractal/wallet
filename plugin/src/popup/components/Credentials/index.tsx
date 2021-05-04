@@ -3,6 +3,8 @@ import styled, { css } from "styled-components";
 import { ICredential } from "@fractalwallet/types";
 
 import TopComponent from "@popup/components/common/TopComponent";
+import Title from "@popup/components/common/Title";
+import Button from "@popup/components/common/Button";
 import Text, {
   TextHeights,
   TextSizes,
@@ -77,12 +79,34 @@ const RightTextContainer = styled.div`
   opacity: 0.6;
 `;
 
+const IconContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: var(--s-24);
+  padding-bottom: var(--s-48);
+`;
+const ContentContainer = styled.div`
+  margin-bottom: var(--s-10);
+`;
+const ActionContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-24) 0;
+`;
+
 export type CredentialsProps = {
   credentials: ICredential[];
+  onClickEmpty: () => void;
 };
 
 export type CredentialProps = {
   credential: ICredential;
+};
+
+export type EmptyCredentialsProps = {
+  onClick: () => void;
 };
 
 function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
@@ -134,8 +158,37 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
   );
 }
 
+function EmptyCredentials(props: EmptyCredentialsProps) {
+  const { onClick } = props;
+
+  return (
+    <TopComponent>
+      <IconContainer>
+        <Icon name={IconNames.ROBOT} />
+      </IconContainer>
+      <ContentContainer>
+        <Title>You haven’t issued a credential yet.</Title>
+        <Text>
+          <br />
+        </Text>
+        <Text>
+          You can only issue a credential through your Fractal dashboard. The
+          button below will redirect you to Fractal.
+        </Text>
+      </ContentContainer>
+      <ActionContainer>
+        <Button onClick={onClick}>Go to Fractal</Button>
+      </ActionContainer>
+    </TopComponent>
+  );
+}
+
 function Credentials(props: CredentialsProps) {
-  const { credentials } = props;
+  const { credentials, onClickEmpty } = props;
+
+  if (credentials.length === 0) {
+    return <EmptyCredentials onClick={onClickEmpty} />;
+  }
 
   return (
     <TopComponent>
