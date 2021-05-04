@@ -3,6 +3,7 @@ import { Contract, providers as ethersProviders } from "ethers";
 import {
   Erc20 as IERC20,
   Staking as IStaking,
+  ClaimsRegistry as IClaimsRegistry,
   Callback,
   IRPCProviderService,
 } from "@fractalwallet/types";
@@ -10,7 +11,9 @@ import {
 import { ERROR_PROVIDER_NOT_INITIALIZED } from "@services/EthereumProviderService/Errors";
 
 import StakingDetails from "@models/Staking/StakingDetails";
+import Credential from "@models/Credential";
 
+import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
 import Staking from "@contracts/Staking.json";
 import ERC20 from "@contracts/ERC20.json";
 
@@ -128,6 +131,35 @@ class RPCProviderService implements IRPCProviderService {
       );
 
       return details;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  public async fetchCredentialValidity(
+    serializedCredential: string,
+    claimsRegistryContractAddress: string,
+  ): Promise<boolean> {
+    try {
+      // prepare data
+      const parsedCredential = Credential.parse(serializedCredential);
+
+      // init smart contract
+      const claimsRegistryContract = new Contract(
+        claimsRegistryContractAddress,
+        ClaimsRegistry.abi,
+        this.rpcProvider!,
+      ) as IClaimsRegistry;
+
+      // verify claim
+      const verifyClaim = await claimsRegistryContract.verifyClaim(
+        parsedCredential.claimerAddress,
+        parsedCredential.attesterAddress as string,
+        parsedCredential.credentialSignature as string,
+      );
+
+      return verifyClaim;
     } catch (error) {
       console.error(error);
       throw error;

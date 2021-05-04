@@ -424,9 +424,11 @@ function WithdrawPool(props: PoolProps) {
 function Pool(props: PoolProps) {
   const { state } = props;
 
-  const hasStake = state === StakingStatus.STAKED;
+  const hasStaked = state === StakingStatus.STAKED;
 
-  if (hasStake) {
+  console.log("state", state);
+
+  if (hasStaked) {
     return <WithdrawPool {...props} />;
   }
 
@@ -435,6 +437,8 @@ function Pool(props: PoolProps) {
 
 function Staking(props: StakingProps) {
   const { stakingDetails, stakingStatus, onClick } = props;
+
+  console.log(stakingStatus);
 
   const fclDetails = stakingDetails[TokenTypes.FCL];
   const fclEthLpDetails = stakingDetails[TokenTypes.FCL_ETH_LP];

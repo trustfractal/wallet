@@ -54,9 +54,13 @@ export interface IRPCProviderService {
     transactionHash: string,
     callback: Callback
   ): Promise<void>;
-  getStakingDetails(
+  fetchStakingDetails(
     address: string,
     tokenContractAddress: string,
     stakingTokenContractAddress: string
   ): Promise<IStakingDetails>;
+  fetchCredentialValidity(
+    serializedCredential: string,
+    claimsRegistryContractAddress: string
+  ): Promise<boolean>;
 }
