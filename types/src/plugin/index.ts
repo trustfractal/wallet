@@ -3,7 +3,7 @@ export * from "./Credential";
 export * from "./Connection";
 export * from "./Crypto";
 export * from "./Environment";
-export * from "./Ethereum";
+export * from "./EthereumProviderService";
 export * from "./EtherscanService";
 export * from "./InpageProvider";
 export * from "./Staking";

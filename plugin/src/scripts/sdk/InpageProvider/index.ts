@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 
 import ConnectionTypes from "@models/Connection/types";
-import EthereumProviderService from "@services/EthereumProviderService";
+import EthereumProviderService from "@services/EthereumProviderService/Web3ProviderService";
 import Credential from "@models/Credential";
 import { ERROR_FRACTAL_NOT_INITIALIZED } from "@sdk/InpageProvider/Errors";
 

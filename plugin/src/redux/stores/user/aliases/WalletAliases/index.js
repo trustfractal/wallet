@@ -1,11 +1,16 @@
 import ContentScriptConnection from "@background/connection";
 import ConnectionTypes from "@models/Connection/types";
 import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
+import StakingStatus from "@models/Staking/status";
+
+import {
+  getAccount,
+  getStakingStatus,
+} from "@redux/stores/user/reducers/wallet/selectors";
+import walletActions, { walletTypes } from "@redux/stores/user/reducers/wallet";
 
 import AppStore from "@redux/stores/application";
-import UserStore from "@redux/stores/user";
 import appActions from "@redux/stores/application/reducers/app";
-import walletActions, { walletTypes } from "@redux/stores/user/reducers/wallet";
 import {
   getTokensContractsAddresses,
   getStakingContractsAddresses,
@@ -16,7 +21,8 @@ import {
   ERROR_NO_ACCOUNT,
 } from "@models/Connection/Errors";
 import TokenTypes from "@models/Token/types";
-import StakingDetails from "@models/Staking/StakingDetails";
+
+import RPCProviderService from "@services/EthereumProviderService/RPCProviderService";
 
 export const connectWallet = () => {
   return async (dispatch) => {
@@ -47,53 +53,8 @@ export const connectWallet = () => {
       dispatch(walletActions.setAccount(account));
       dispatch(walletActions.connectWalletSuccess());
 
-      const fclTokenContractAddress = getTokensContractsAddresses(
-        AppStore.getStore().getState(),
-      )[TokenTypes.FCL];
-      const fclStakingContractAddress = getStakingContractsAddresses(
-        AppStore.getStore().getState(),
-      )[TokenTypes.FCL];
-
-      const fclEthTokenContractAddress = getTokensContractsAddresses(
-        AppStore.getStore().getState(),
-      )[TokenTypes.FCL_ETH_LP];
-      const fclEthStakingContractAddress = getStakingContractsAddresses(
-        AppStore.getStore().getState(),
-      )[TokenTypes.FCL_ETH_LP];
-
-      // update staking details
-      const serializedfclStakingDetails = await ContentScriptConnection.invoke(
-        ConnectionTypes.GET_STAKING_DETAILS_INPAGE,
-        [account, fclTokenContractAddress, fclStakingContractAddress],
-        activePort.id,
-      );
-      const serializedfclEthStakingDetails = await ContentScriptConnection.invoke(
-        ConnectionTypes.GET_STAKING_DETAILS_INPAGE,
-        [account, fclEthTokenContractAddress, fclEthStakingContractAddress],
-        activePort.id,
-      );
-
-      // parse staking details
-      const fclStakingDetails = StakingDetails.parse(
-        serializedfclStakingDetails,
-      );
-      const fclEthStakingDetails = StakingDetails.parse(
-        serializedfclEthStakingDetails,
-      );
-
-      // update wallet staking details
-      await UserStore.getStore().dispatch(
-        walletActions.setStakingDetails({
-          details: fclStakingDetails,
-          token: TokenTypes.FCL,
-        }),
-      );
-      await UserStore.getStore().dispatch(
-        walletActions.setStakingDetails({
-          details: fclEthStakingDetails,
-          token: TokenTypes.FCL_ETH_LP,
-        }),
-      );
+      dispatch(walletActions.fetchStakingDetails(TokenTypes.FCL));
+      dispatch(walletActions.fetchStakingDetails(TokenTypes.FCL_ETH_LP));
     } catch (error) {
       console.error(error);
       dispatch(walletActions.connectWalletFailed(error.message));
@@ -101,8 +62,95 @@ export const connectWallet = () => {
   };
 };
 
+function getNextStakingStatus(previousStakingStatus, details) {
+  if (details.userStakedAmount.isZero()) {
+    if (previousStakingStatus === StakingStatus.STAKING_PENDING) {
+      return StakingStatus.STAKING_PENDING;
+    }
+
+    if (previousStakingStatus === StakingStatus.APPROVAL_PENDING) {
+      if (!details.stakingAllowedAmount.isZero()) {
+        return StakingStatus.APPROVED;
+      }
+
+      return StakingStatus.APPROVAL_PENDING;
+    }
+
+    if (previousStakingStatus === StakingStatus.APPROVED) {
+      return StakingStatus.APPROVED;
+    }
+
+    return StakingStatus.START;
+  }
+
+  if (previousStakingStatus === StakingStatus.WITHDRAW_PENDING) {
+    return StakingStatus.WITHDRAW_PENDING;
+  }
+
+  return StakingStatus.STAKED;
+}
+
+export const fetchStakingDetails = ({ payload: token }) => {
+  return async (dispatch, getState) => {
+    const account = getAccount(getState());
+
+    // get staking contracts
+    const tokenContractAddress = getTokensContractsAddresses(
+      AppStore.getStore().getState(),
+    )[token];
+    const stakingContractAddress = getStakingContractsAddresses(
+      AppStore.getStore().getState(),
+    )[token];
+
+    // update staking details
+    const stakingDetails = await RPCProviderService.fetchStakingDetails(
+      account,
+      tokenContractAddress,
+      stakingContractAddress,
+    );
+
+    // update wallet staking details
+    await dispatch(
+      walletActions.updateStakingDetails({
+        details: stakingDetails,
+        token: token,
+      }),
+    );
+  };
+};
+
+export const updateStakingDetails = ({ payload: { details, token } }) => {
+  return async (dispatch, getState) => {
+    // update wallet staking details
+    await dispatch(
+      walletActions.setStakingDetails({
+        details: details,
+        token: token,
+      }),
+    );
+
+    // update staking status
+    const previousStakingStatus = getStakingStatus(getState())[token];
+    const nextStakingStatus = getNextStakingStatus(
+      previousStakingStatus,
+      details,
+    );
+
+    await dispatch(
+      walletActions.setStakingStatus({
+        status: nextStakingStatus,
+        token: token,
+      }),
+    );
+
+    await dispatch(walletActions.setStakingLastUpdated(new Date().getTime()));
+  };
+};
+
 const Aliases = {
   [walletTypes.CONNECT_WALLET_REQUEST]: connectWallet,
+  [walletTypes.FETCH_STAKING_DETAILS]: fetchStakingDetails,
+  [walletTypes.UPDATE_STAKING_DETAILS]: updateStakingDetails,
 };
 
 export default Aliases;

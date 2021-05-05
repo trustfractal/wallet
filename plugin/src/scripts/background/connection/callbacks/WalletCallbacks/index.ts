@@ -29,56 +29,6 @@ import StakingDetails from "@models/Staking/StakingDetails";
 import EtherscanService from "@services/EtherscanService";
 import StakingStatus from "@models/Staking/status";
 
-async function updateStakingStatus(
-  stakingDetails: StakingDetails,
-  token: TokenTypes,
-): Promise<StakingStatus> {
-  const previousStakingStatus = getStakingStatus(
-    UserStore.getStore().getState(),
-  )[token];
-
-  if (previousStakingStatus === StakingStatus.APPROVAL_PENDING) {
-    // check if has been approved
-    if (!stakingDetails.stakingAllowedAmount.isZero()) {
-      // update wallet staking details
-      await UserStore.getStore().dispatch(
-        walletActions.setStakingStatus({
-          status: StakingStatus.APPROVED,
-          token,
-        }),
-      );
-
-      return StakingStatus.APPROVED;
-    }
-  }
-
-  if (previousStakingStatus === StakingStatus.STAKING_PENDING) {
-    // check if is pending
-    if (!stakingDetails.userStakedAmount.isZero()) {
-      // update wallet staking details
-      await UserStore.getStore().dispatch(
-        walletActions.setStakingStatus({ status: StakingStatus.STAKED, token }),
-      );
-
-      return StakingStatus.STAKED;
-    }
-  }
-
-  if (previousStakingStatus === StakingStatus.WITHDRAW_PENDING) {
-    // check if has withdraw
-    if (stakingDetails.userStakedAmount.isZero()) {
-      // update wallet staking details
-      await UserStore.getStore().dispatch(
-        walletActions.setStakingStatus({ status: StakingStatus.START, token }),
-      );
-
-      return StakingStatus.START;
-    }
-  }
-
-  return previousStakingStatus;
-}
-
 export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
@@ -102,12 +52,12 @@ export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
 
       // update wallet staking details
       await UserStore.getStore().dispatch(
-        walletActions.setStakingDetails({ details: stakingDetails, token }),
+        walletActions.updateStakingDetails({ details: stakingDetails, token }),
       );
 
-      // update wallet staking status
-      const stakingStatus = await updateStakingStatus(stakingDetails, token);
-      stakingDetails.status = stakingStatus;
+      // add staking status
+      const stakingStatus = getStakingStatus(UserStore.getStore().getState());
+      stakingDetails.status = stakingStatus[token];
 
       resolve(stakingDetails.serialize());
     } catch (error) {
@@ -136,7 +86,7 @@ export const approveStake = (
         port,
       );
 
-      // set staking status
+      // set staking status to approval pending
       await UserStore.getStore().dispatch(
         walletActions.setStakingStatus({
           status: StakingStatus.APPROVAL_PENDING,
@@ -186,7 +136,7 @@ export const stake = (
         port,
       );
 
-      // set staking status
+      // set staking status to staking pending
       await UserStore.getStore().dispatch(
         walletActions.setStakingStatus({
           status: StakingStatus.STAKING_PENDING,
@@ -261,7 +211,7 @@ export const withdraw = ([token]: [TokenTypes], port: string) =>
         port,
       );
 
-      // set staking status
+      // set staking status to withdraw pending
       await UserStore.getStore().dispatch(
         walletActions.setStakingStatus({
           status: StakingStatus.WITHDRAW_PENDING,

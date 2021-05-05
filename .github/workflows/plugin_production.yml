@@ -64,13 +64,7 @@ jobs:
           ssh-private-key: ${{ secrets.FRACTAL_PLUGIN_DEPLOY_KEY }}
 
       - name: Import production environment variables
-        id: import-env
-        shell: bash
-        run: |
-          while read line; do
-            echo "$line" >> $GITHUB_ENV
-          done < .env.production
-        working-directory: ${{ github.workspace }}/plugin
+        run: echo "${{secrets.ENV_PRODUCTION}}" > plugin/.env
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path

@@ -4,6 +4,7 @@ import { ITransactionDetails, ISerializable } from "@fractalwallet/types";
 
 export default class TransactionDetails
   implements ITransactionDetails, ISerializable {
+  public hash: string;
   public chainId: number;
   public data: string;
   public from: string;
@@ -13,6 +14,7 @@ export default class TransactionDetails
   public estimatedTime?: BigNumber;
 
   public constructor(
+    hash: string,
     chainId: number,
     data: string,
     from: string,
@@ -21,6 +23,7 @@ export default class TransactionDetails
     value: BigNumber,
     estimatedTime?: BigNumber,
   ) {
+    this.hash = hash;
     this.chainId = chainId;
     this.data = data;
     this.from = from;
@@ -32,6 +35,7 @@ export default class TransactionDetails
 
   public serialize(): string {
     return JSON.stringify({
+      hash: this.hash,
       chainId: this.chainId,
       data: this.data,
       from: this.from,
@@ -44,6 +48,7 @@ export default class TransactionDetails
 
   public static parse(str: string): TransactionDetails {
     const {
+      hash,
       chainId,
       data,
       from,
@@ -54,6 +59,7 @@ export default class TransactionDetails
     } = JSON.parse(str);
 
     return new TransactionDetails(
+      hash,
       chainId,
       data,
       from,

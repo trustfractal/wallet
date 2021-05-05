@@ -424,9 +424,9 @@ function WithdrawPool(props: PoolProps) {
 function Pool(props: PoolProps) {
   const { state } = props;
 
-  const hasStake = state === StakingStatus.STAKED;
+  const hasStaked = state === StakingStatus.STAKED;
 
-  if (hasStake) {
+  if (hasStaked) {
     return <WithdrawPool {...props} />;
   }
 

@@ -1,4 +1,4 @@
-import EthereumProviderService from "@services/EthereumProviderService";
+import EthereumProviderService from "@services/EthereumProviderService/Web3ProviderService";
 
 import ConnectionTypes from "@models/Connection/types";
 
