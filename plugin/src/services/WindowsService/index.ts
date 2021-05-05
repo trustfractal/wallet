@@ -1,4 +1,3 @@
-import { POPUP } from "./Params";
 import {
   ERROR_CREATE_WINDOW,
   ERROR_CREATE_TAB,
@@ -164,15 +163,17 @@ class WindowsService {
     let left = 0;
     let top = 0;
 
-    const { screenX, screenY, outerWidth } = window;
     const lastFocused = await this.getLastFocusedWindow();
     if (lastFocused.top === undefined) {
+      const { screenY } = window;
+
       top = Math.max(screenY, 0);
     } else {
       top = lastFocused.top;
     }
 
     if (lastFocused.left === undefined || lastFocused.width === undefined) {
+      const { screenX, outerWidth } = window;
       left = Math.max(screenX + (outerWidth - POPUP_WIDTH), 0);
     } else {
       left = lastFocused.left + (lastFocused.width - POPUP_WIDTH);
