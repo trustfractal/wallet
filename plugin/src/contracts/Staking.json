@@ -16,7 +16,7 @@
         },
         {
           "internalType": "address",
-          "name": "_issuer",
+          "name": "_attester",
           "type": "address"
         },
         {
@@ -180,7 +180,7 @@
     },
     {
       "inputs": [],
-      "name": "claimIssuer",
+      "name": "claimAttester",
       "outputs": [
         {
           "internalType": "address",

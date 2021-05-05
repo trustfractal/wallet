@@ -5,7 +5,10 @@ import EthereumProviderService from "@services/EthereumProviderService/Web3Provi
 import Credential from "@models/Credential";
 import { ERROR_FRACTAL_NOT_INITIALIZED } from "@sdk/InpageProvider/Errors";
 
-import { Credential as SDKCredential } from "@fractalwallet/sdk";
+import {
+  IClaimProperties,
+  AttestedClaim as SDKAttestedClaim,
+} from "@fractalwallet/sdk";
 
 import {
   IFractalInpageProvider,
@@ -14,7 +17,6 @@ import {
   ITransactionDetails,
   IConnectionStatus,
 } from "@fractalwallet/types";
-import { IClaimProperties } from "@fractalwallet/sdk/src/types";
 
 import ExtensionConnection from "@sdk/InpageProvider/connection";
 import TokenTypes from "@models/Token/types";
@@ -138,7 +140,7 @@ export default class InpageProvider implements IFractalInpageProvider {
   ): Promise<ITransactionDetails> {
     this.ensureFractalIsInitialized();
 
-    const sdkCredential = new SDKCredential(credentialJSON);
+    const sdkCredential = new SDKAttestedClaim(credentialJSON);
 
     const credential = new Credential(sdkCredential, level);
 

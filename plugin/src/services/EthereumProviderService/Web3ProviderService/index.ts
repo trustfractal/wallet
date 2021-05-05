@@ -13,8 +13,7 @@ import {
   ClaimsRegistry as IClaimsRegistry,
   IWeb3ProviderService,
 } from "@fractalwallet/types";
-import { Claim } from "@fractalwallet/sdk";
-import { IClaimProperties } from "@fractalwallet/sdk/src/types";
+import { Claim, IClaimProperties } from "@fractalwallet/sdk";
 
 import StakingDetails from "@models/Staking/StakingDetails";
 import Credential from "@models/Credential";
@@ -124,7 +123,7 @@ class Web3ProviderService implements IWeb3ProviderService {
         parsedCredential.claimerAddress,
         parsedCredential.attesterAddress as string,
         rootHashByteArray,
-        parsedCredential.credentialSignature as string,
+        parsedCredential.attestedClaimHash as string,
       );
 
       // create transaction details
@@ -170,7 +169,7 @@ class Web3ProviderService implements IWeb3ProviderService {
       const verifyClaim = await claimsRegistryContract.verifyClaim(
         parsedCredential.claimerAddress,
         parsedCredential.attesterAddress as string,
-        parsedCredential.credentialSignature as string,
+        parsedCredential.attestedClaimHash as string,
       );
 
       return verifyClaim;
@@ -404,7 +403,7 @@ class Web3ProviderService implements IWeb3ProviderService {
       // stake amount
       const stakingResult = await stakingContract.stake(
         etherAmount,
-        parsedCredential.credentialSignature as string,
+        parsedCredential.attestedClaimHash as string,
       );
 
       // create transaction details

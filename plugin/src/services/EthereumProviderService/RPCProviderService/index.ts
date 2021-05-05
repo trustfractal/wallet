@@ -156,7 +156,7 @@ class RPCProviderService implements IRPCProviderService {
       const verifyClaim = await claimsRegistryContract.verifyClaim(
         parsedCredential.claimerAddress,
         parsedCredential.attesterAddress as string,
-        parsedCredential.credentialSignature as string,
+        parsedCredential.attestedClaimSignature as string,
       );
 
       return verifyClaim;

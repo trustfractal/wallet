@@ -1,9 +1,9 @@
 import { ISerializable } from "./Common";
 
-import { ICredential as ISDKCredential } from "@fractalwallet/sdk/src/types/Credential";
+import { IAttestedClaim as ISDKAttestedClaim } from "@fractalwallet/sdk";
 import { ITransactionDetails } from "./Transaction";
 
-export interface ICredential extends ISDKCredential, ISerializable {
+export interface ICredential extends ISDKAttestedClaim, ISerializable {
   level: string;
   transaction?: ITransactionDetails;
   valid: boolean;

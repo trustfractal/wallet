@@ -24,12 +24,10 @@ interface ClaimsRegistryInterface extends ethers.utils.Interface {
   functions: {
     "computeSignableKey(address,bytes32)": FunctionFragment;
     "getClaim(address,bytes)": FunctionFragment;
-    "recover(bytes32,bytes)": FunctionFragment;
     "recoverWithPrefix(bytes32,bytes)": FunctionFragment;
     "registry(bytes32)": FunctionFragment;
     "revokeClaim(bytes)": FunctionFragment;
     "setClaimWithSignature(address,address,bytes32,bytes)": FunctionFragment;
-    "verify(bytes32,bytes,address)": FunctionFragment;
     "verifyClaim(address,address,bytes)": FunctionFragment;
     "verifyWithPrefix(bytes32,bytes,address)": FunctionFragment;
   };
@@ -41,10 +39,6 @@ interface ClaimsRegistryInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "getClaim",
     values: [string, BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "recover",
-    values: [BytesLike, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "recoverWithPrefix",
@@ -60,10 +54,6 @@ interface ClaimsRegistryInterface extends ethers.utils.Interface {
     values: [string, string, BytesLike, BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "verify",
-    values: [BytesLike, BytesLike, string]
-  ): string;
-  encodeFunctionData(
     functionFragment: "verifyClaim",
     values: [string, string, BytesLike]
   ): string;
@@ -77,7 +67,6 @@ interface ClaimsRegistryInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getClaim", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "recover", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "recoverWithPrefix",
     data: BytesLike
@@ -91,7 +80,6 @@ interface ClaimsRegistryInterface extends ethers.utils.Interface {
     functionFragment: "setClaimWithSignature",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "verify", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "verifyClaim",
     data: BytesLike
@@ -141,7 +129,7 @@ export class ClaimsRegistry extends Contract {
     }>;
 
     getClaim(
-      issuer: string,
+      attester: string,
       sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<{
@@ -149,24 +137,8 @@ export class ClaimsRegistry extends Contract {
     }>;
 
     "getClaim(address,bytes)"(
-      issuer: string,
+      attester: string,
       sig: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    recover(
-      hash: BytesLike,
-      _sig: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "recover(bytes32,bytes)"(
-      hash: BytesLike,
-      _sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<{
       0: string;
@@ -174,7 +146,7 @@ export class ClaimsRegistry extends Contract {
 
     recoverWithPrefix(
       hash: BytesLike,
-      _sig: BytesLike,
+      sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<{
       0: string;
@@ -182,7 +154,7 @@ export class ClaimsRegistry extends Contract {
 
     "recoverWithPrefix(bytes32,bytes)"(
       hash: BytesLike,
-      _sig: BytesLike,
+      sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<{
       0: string;
@@ -220,7 +192,7 @@ export class ClaimsRegistry extends Contract {
 
     setClaimWithSignature(
       subject: string,
-      issuer: string,
+      attester: string,
       claimHash: BytesLike,
       sig: BytesLike,
       overrides?: Overrides
@@ -228,33 +200,15 @@ export class ClaimsRegistry extends Contract {
 
     "setClaimWithSignature(address,address,bytes32,bytes)"(
       subject: string,
-      issuer: string,
+      attester: string,
       claimHash: BytesLike,
       sig: BytesLike,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    verify(
-      hash: BytesLike,
-      sig: BytesLike,
-      signer: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
-
-    "verify(bytes32,bytes,address)"(
-      hash: BytesLike,
-      sig: BytesLike,
-      signer: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
-
     verifyClaim(
       subject: string,
-      issuer: string,
+      attester: string,
       sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<{
@@ -263,7 +217,7 @@ export class ClaimsRegistry extends Contract {
 
     "verifyClaim(address,address,bytes)"(
       subject: string,
-      issuer: string,
+      attester: string,
       sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<{
@@ -302,38 +256,26 @@ export class ClaimsRegistry extends Contract {
   ): Promise<string>;
 
   getClaim(
-    issuer: string,
+    attester: string,
     sig: BytesLike,
     overrides?: CallOverrides
   ): Promise<string>;
 
   "getClaim(address,bytes)"(
-    issuer: string,
+    attester: string,
     sig: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
-  recover(
-    hash: BytesLike,
-    _sig: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
-  "recover(bytes32,bytes)"(
-    hash: BytesLike,
-    _sig: BytesLike,
     overrides?: CallOverrides
   ): Promise<string>;
 
   recoverWithPrefix(
     hash: BytesLike,
-    _sig: BytesLike,
+    sig: BytesLike,
     overrides?: CallOverrides
   ): Promise<string>;
 
   "recoverWithPrefix(bytes32,bytes)"(
     hash: BytesLike,
-    _sig: BytesLike,
+    sig: BytesLike,
     overrides?: CallOverrides
   ): Promise<string>;
 
@@ -369,7 +311,7 @@ export class ClaimsRegistry extends Contract {
 
   setClaimWithSignature(
     subject: string,
-    issuer: string,
+    attester: string,
     claimHash: BytesLike,
     sig: BytesLike,
     overrides?: Overrides
@@ -377,36 +319,22 @@ export class ClaimsRegistry extends Contract {
 
   "setClaimWithSignature(address,address,bytes32,bytes)"(
     subject: string,
-    issuer: string,
+    attester: string,
     claimHash: BytesLike,
     sig: BytesLike,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  verify(
-    hash: BytesLike,
-    sig: BytesLike,
-    signer: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  "verify(bytes32,bytes,address)"(
-    hash: BytesLike,
-    sig: BytesLike,
-    signer: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
   verifyClaim(
     subject: string,
-    issuer: string,
+    attester: string,
     sig: BytesLike,
     overrides?: CallOverrides
   ): Promise<boolean>;
 
   "verifyClaim(address,address,bytes)"(
     subject: string,
-    issuer: string,
+    attester: string,
     sig: BytesLike,
     overrides?: CallOverrides
   ): Promise<boolean>;
@@ -439,38 +367,26 @@ export class ClaimsRegistry extends Contract {
     ): Promise<string>;
 
     getClaim(
-      issuer: string,
+      attester: string,
       sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<string>;
 
     "getClaim(address,bytes)"(
-      issuer: string,
+      attester: string,
       sig: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    recover(
-      hash: BytesLike,
-      _sig: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    "recover(bytes32,bytes)"(
-      hash: BytesLike,
-      _sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<string>;
 
     recoverWithPrefix(
       hash: BytesLike,
-      _sig: BytesLike,
+      sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<string>;
 
     "recoverWithPrefix(bytes32,bytes)"(
       hash: BytesLike,
-      _sig: BytesLike,
+      sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<string>;
 
@@ -503,7 +419,7 @@ export class ClaimsRegistry extends Contract {
 
     setClaimWithSignature(
       subject: string,
-      issuer: string,
+      attester: string,
       claimHash: BytesLike,
       sig: BytesLike,
       overrides?: CallOverrides
@@ -511,36 +427,22 @@ export class ClaimsRegistry extends Contract {
 
     "setClaimWithSignature(address,address,bytes32,bytes)"(
       subject: string,
-      issuer: string,
+      attester: string,
       claimHash: BytesLike,
       sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    verify(
-      hash: BytesLike,
-      sig: BytesLike,
-      signer: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    "verify(bytes32,bytes,address)"(
-      hash: BytesLike,
-      sig: BytesLike,
-      signer: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     verifyClaim(
       subject: string,
-      issuer: string,
+      attester: string,
       sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
     "verifyClaim(address,address,bytes)"(
       subject: string,
-      issuer: string,
+      attester: string,
       sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
@@ -580,38 +482,26 @@ export class ClaimsRegistry extends Contract {
     ): Promise<BigNumber>;
 
     getClaim(
-      issuer: string,
+      attester: string,
       sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "getClaim(address,bytes)"(
-      issuer: string,
+      attester: string,
       sig: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    recover(
-      hash: BytesLike,
-      _sig: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "recover(bytes32,bytes)"(
-      hash: BytesLike,
-      _sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     recoverWithPrefix(
       hash: BytesLike,
-      _sig: BytesLike,
+      sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "recoverWithPrefix(bytes32,bytes)"(
       hash: BytesLike,
-      _sig: BytesLike,
+      sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -631,7 +521,7 @@ export class ClaimsRegistry extends Contract {
 
     setClaimWithSignature(
       subject: string,
-      issuer: string,
+      attester: string,
       claimHash: BytesLike,
       sig: BytesLike,
       overrides?: Overrides
@@ -639,36 +529,22 @@ export class ClaimsRegistry extends Contract {
 
     "setClaimWithSignature(address,address,bytes32,bytes)"(
       subject: string,
-      issuer: string,
+      attester: string,
       claimHash: BytesLike,
       sig: BytesLike,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    verify(
-      hash: BytesLike,
-      sig: BytesLike,
-      signer: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "verify(bytes32,bytes,address)"(
-      hash: BytesLike,
-      sig: BytesLike,
-      signer: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     verifyClaim(
       subject: string,
-      issuer: string,
+      attester: string,
       sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "verifyClaim(address,address,bytes)"(
       subject: string,
-      issuer: string,
+      attester: string,
       sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -702,38 +578,26 @@ export class ClaimsRegistry extends Contract {
     ): Promise<PopulatedTransaction>;
 
     getClaim(
-      issuer: string,
+      attester: string,
       sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "getClaim(address,bytes)"(
-      issuer: string,
+      attester: string,
       sig: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    recover(
-      hash: BytesLike,
-      _sig: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "recover(bytes32,bytes)"(
-      hash: BytesLike,
-      _sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     recoverWithPrefix(
       hash: BytesLike,
-      _sig: BytesLike,
+      sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "recoverWithPrefix(bytes32,bytes)"(
       hash: BytesLike,
-      _sig: BytesLike,
+      sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -759,7 +623,7 @@ export class ClaimsRegistry extends Contract {
 
     setClaimWithSignature(
       subject: string,
-      issuer: string,
+      attester: string,
       claimHash: BytesLike,
       sig: BytesLike,
       overrides?: Overrides
@@ -767,36 +631,22 @@ export class ClaimsRegistry extends Contract {
 
     "setClaimWithSignature(address,address,bytes32,bytes)"(
       subject: string,
-      issuer: string,
+      attester: string,
       claimHash: BytesLike,
       sig: BytesLike,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    verify(
-      hash: BytesLike,
-      sig: BytesLike,
-      signer: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "verify(bytes32,bytes,address)"(
-      hash: BytesLike,
-      sig: BytesLike,
-      signer: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     verifyClaim(
       subject: string,
-      issuer: string,
+      attester: string,
       sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "verifyClaim(address,address,bytes)"(
       subject: string,
-      issuer: string,
+      attester: string,
       sig: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
