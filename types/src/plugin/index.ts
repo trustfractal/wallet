@@ -10,4 +10,3 @@ export * from "./Staking";
 export * from "./Transaction";
 export * from "./Watcher";
 export * from "./Window";
-export * from "./WindowsService";

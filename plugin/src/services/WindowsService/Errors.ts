@@ -7,6 +7,9 @@ export enum ErrorCode {
   ERROR_GET_TAB = 2005,
   ERROR_QUERY_TABS = 2006,
   ERROR_CREATE_TAB = 2007,
+  ERROR_FOCUS_WINDOW = 2008,
+  ERROR_GET_LAST_FOCUSED_WINDOW = 2009,
+  ERROR_UPDATE_WINDOW_POSITION = 2010,
 }
 
 export class WindowsServiceError extends Error {
@@ -114,5 +117,35 @@ export const ERROR_QUERY_TABS = (
     ErrorCode.ERROR_GET_TAB,
     errorChrome,
     "WindowsService: could not get query the tabs",
+  );
+};
+
+export const ERROR_FOCUS_WINDOW = (
+  errorChrome: chrome.runtime.LastError,
+): WindowsServiceError => {
+  return new WindowsServiceError(
+    ErrorCode.ERROR_FOCUS_WINDOW,
+    errorChrome,
+    "WindowsService: could not focus the window",
+  );
+};
+
+export const ERROR_GET_LAST_FOCUSED_WINDOW = (
+  errorChrome: chrome.runtime.LastError,
+): WindowsServiceError => {
+  return new WindowsServiceError(
+    ErrorCode.ERROR_GET_LAST_FOCUSED_WINDOW,
+    errorChrome,
+    "WindowsService: could not get last focused the window",
+  );
+};
+
+export const ERROR_UPDATE_WINDOW_POSITION = (
+  errorChrome: chrome.runtime.LastError,
+): WindowsServiceError => {
+  return new WindowsServiceError(
+    ErrorCode.ERROR_UPDATE_WINDOW_POSITION,
+    errorChrome,
+    "WindowsService: could not updated window position",
   );
 };
