@@ -9,7 +9,7 @@ import environment from "@environment/index";
 export default class FractalWebpageMiddleware implements IMiddleware {
   public async apply(_invokation: IInvokation): Promise<void> {
     // get active connected chrome port
-    const fractalTab = await ContentScriptConnection.getFractalConnectionPort();
+    const fractalTab = await ContentScriptConnection.getActiveConnectionPort();
 
     if (!fractalTab) {
       if (environment.IS_DEV) {
