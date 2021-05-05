@@ -47,6 +47,26 @@ class Connection {
     return this.connection!.ports;
   }
 
+  public async getFractalConnectionPort(): Promise<IPort | undefined> {
+    this.ensureConnectionIsInitialized();
+
+    // get current active tab
+    const fractalTab = await WindowsService.getFractalTab();
+
+    if (!fractalTab) return;
+
+    // get connection ports
+    const connectionPorts = this.getConnectionPorts();
+
+    // query ports to get the active one
+    for (const portId in connectionPorts) {
+      const connectedPort = connectionPorts[portId];
+
+      if (connectedPort.port?.sender?.tab?.id === fractalTab.id)
+        return connectedPort;
+    }
+  }
+
   public async getActiveConnectionPort(): Promise<IPort | undefined> {
     this.ensureConnectionIsInitialized();
 

@@ -11,6 +11,8 @@ import {
   ERROR_QUERY_TABS,
 } from "./Errors";
 
+import environment from "@environment/index";
+
 class WindowsService {
   private static instance: WindowsService;
 
@@ -229,6 +231,15 @@ class WindowsService {
         },
       );
     });
+  }
+
+  async getFractalTab(): Promise<chrome.tabs.Tab | undefined> {
+    // get fractal tab
+    const tabs = await this.queryTabs({
+      url: `*://${environment.FRACTAL_WEBSITE_HOSTNAME}/*`,
+    });
+
+    return tabs[0];
   }
 
   async openTab(url: string) {
