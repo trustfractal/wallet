@@ -25,7 +25,7 @@ interface StakingInterface extends ethers.utils.Interface {
     "availablePool()": FunctionFragment;
     "calculateReward(uint256,uint256,uint256)": FunctionFragment;
     "cap()": FunctionFragment;
-    "claimIssuer()": FunctionFragment;
+    "claimAttester()": FunctionFragment;
     "currentAPY()": FunctionFragment;
     "distributedReward()": FunctionFragment;
     "endDate()": FunctionFragment;
@@ -59,7 +59,7 @@ interface StakingInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "cap", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "claimIssuer",
+    functionFragment: "claimAttester",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -130,7 +130,7 @@ interface StakingInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "cap", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "claimIssuer",
+    functionFragment: "claimAttester",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "currentAPY", data: BytesLike): Result;
@@ -252,13 +252,13 @@ export class Staking extends Contract {
       0: BigNumber;
     }>;
 
-    claimIssuer(
+    claimAttester(
       overrides?: CallOverrides
     ): Promise<{
       0: string;
     }>;
 
-    "claimIssuer()"(
+    "claimAttester()"(
       overrides?: CallOverrides
     ): Promise<{
       0: string;
@@ -547,9 +547,9 @@ export class Staking extends Contract {
 
   "cap()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-  claimIssuer(overrides?: CallOverrides): Promise<string>;
+  claimAttester(overrides?: CallOverrides): Promise<string>;
 
-  "claimIssuer()"(overrides?: CallOverrides): Promise<string>;
+  "claimAttester()"(overrides?: CallOverrides): Promise<string>;
 
   currentAPY(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -726,9 +726,9 @@ export class Staking extends Contract {
 
     "cap()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    claimIssuer(overrides?: CallOverrides): Promise<string>;
+    claimAttester(overrides?: CallOverrides): Promise<string>;
 
-    "claimIssuer()"(overrides?: CallOverrides): Promise<string>;
+    "claimAttester()"(overrides?: CallOverrides): Promise<string>;
 
     currentAPY(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -922,9 +922,9 @@ export class Staking extends Contract {
 
     "cap()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    claimIssuer(overrides?: CallOverrides): Promise<BigNumber>;
+    claimAttester(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "claimIssuer()"(overrides?: CallOverrides): Promise<BigNumber>;
+    "claimAttester()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     currentAPY(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1069,9 +1069,9 @@ export class Staking extends Contract {
 
     "cap()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    claimIssuer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    claimAttester(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "claimIssuer()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "claimAttester()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     currentAPY(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

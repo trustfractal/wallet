@@ -56,7 +56,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "issuer",
+          "name": "attester",
           "type": "address"
         },
         {
@@ -85,31 +85,7 @@
         },
         {
           "internalType": "bytes",
-          "name": "_sig",
-          "type": "bytes"
-        }
-      ],
-      "name": "recover",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "pure",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "hash",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "bytes",
-          "name": "_sig",
+          "name": "sig",
           "type": "bytes"
         }
       ],
@@ -170,7 +146,7 @@
         },
         {
           "internalType": "address",
-          "name": "issuer",
+          "name": "attester",
           "type": "address"
         },
         {
@@ -192,42 +168,13 @@
     {
       "inputs": [
         {
-          "internalType": "bytes32",
-          "name": "hash",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "bytes",
-          "name": "sig",
-          "type": "bytes"
-        },
-        {
-          "internalType": "address",
-          "name": "signer",
-          "type": "address"
-        }
-      ],
-      "name": "verify",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "pure",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "address",
           "name": "subject",
           "type": "address"
         },
         {
           "internalType": "address",
-          "name": "issuer",
+          "name": "attester",
           "type": "address"
         },
         {

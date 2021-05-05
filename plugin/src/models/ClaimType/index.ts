@@ -1,5 +1,7 @@
-import { ClaimType as SDKClaimType } from "@fractalwallet/sdk";
-import { IClaimPseudoSchema } from "@fractalwallet/sdk/src/types";
+import {
+  IClaimPseudoSchema,
+  ClaimType as SDKClaimType,
+} from "@fractalwallet/sdk";
 
 import ClaimTypes from "./types";
 
