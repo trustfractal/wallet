@@ -64,22 +64,30 @@ export const connectWallet = () => {
 
 function getNextStakingStatus(previousStakingStatus, details) {
   if (details.userStakedAmount.isZero()) {
-    if (details.stakingAllowedAmount.isZero()) {
-      return StakingStatus.START;
+    if (previousStakingStatus === StakingStatus.STAKING_PENDING) {
+      return StakingStatus.STAKING_PENDING;
     }
 
-    if (previousStakingStatus !== StakingStatus.APPROVAL_PENDING) {
+    if (previousStakingStatus === StakingStatus.APPROVAL_PENDING) {
+      if (!details.stakingAllowedAmount.isZero()) {
+        return StakingStatus.APPROVED;
+      }
+
+      return StakingStatus.APPROVAL_PENDING;
+    }
+
+    if (previousStakingStatus === StakingStatus.APPROVED) {
       return StakingStatus.APPROVED;
     }
 
-    return StakingStatus.APPROVAL_PENDING;
+    return StakingStatus.START;
   }
 
-  if (previousStakingStatus !== StakingStatus.WITHDRAW_PENDING) {
-    return StakingStatus.STAKED;
+  if (previousStakingStatus === StakingStatus.WITHDRAW_PENDING) {
+    return StakingStatus.WITHDRAW_PENDING;
   }
 
-  return StakingStatus.WITHDRAW_PENDING;
+  return StakingStatus.STAKED;
 }
 
 export const fetchStakingDetails = ({ payload: token }) => {
@@ -127,10 +135,6 @@ export const updateStakingDetails = ({ payload: { details, token } }) => {
       previousStakingStatus,
       details,
     );
-
-    console.log("details", details);
-    console.log("previousStakingStatus", previousStakingStatus);
-    console.log("nextStakingStatus", nextStakingStatus);
 
     await dispatch(
       walletActions.setStakingStatus({

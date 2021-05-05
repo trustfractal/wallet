@@ -17,18 +17,10 @@ export default class StakingDetailsPolling {
     intervalTime: number = DEFAULT_STAKING_DETAILS_POLLING_INTERVAL_IN_MILLIS,
   ) {
     this.interval = setInterval(async () => {
-      console.log("staking details start");
-
-      console.log("initialized", await UserStore.isInitialized());
-
       // check if the user store is available
       if (!(await UserStore.isInitialized())) {
         return;
       }
-
-      console.log("state", UserStore.getStore().getState());
-      console.log("wallet", UserStore.getStore().getState()?.wallet);
-      console.log("account", UserStore.getStore().getState()?.wallet?.account);
 
       // check if the user is connected
       const account = getAccount(UserStore.getStore().getState());
@@ -47,7 +39,6 @@ export default class StakingDetailsPolling {
           DEFAULT_STAKING_DETAILS_POLLING_INTERVAL_IN_MILLIS >
         currentTimeInMillis
       ) {
-        console.log("no need for update");
         return;
       }
 
@@ -58,7 +49,6 @@ export default class StakingDetailsPolling {
       UserStore.getStore().dispatch(
         walletActions.fetchStakingDetails(TokenTypes.FCL_ETH_LP),
       );
-      console.log("staking details end");
     }, intervalTime);
   }
 

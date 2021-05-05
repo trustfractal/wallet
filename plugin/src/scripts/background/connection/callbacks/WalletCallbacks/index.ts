@@ -55,13 +55,9 @@ export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
         walletActions.updateStakingDetails({ details: stakingDetails, token }),
       );
 
-      // wait for staking status to be updated
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
       // add staking status
       const stakingStatus = getStakingStatus(UserStore.getStore().getState());
-      console.log("stakingStatus", stakingStatus);
-      stakingDetails.status = stakingStatus;
+      stakingDetails.status = stakingStatus[token];
 
       resolve(stakingDetails.serialize());
     } catch (error) {

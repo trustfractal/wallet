@@ -11,7 +11,6 @@ import CredentialsValidityPolling from "@models/Polling/CredentialsValidityPolli
 export const startup = () => {
   return async (dispatch) => {
     // setup addresses
-    console.log("before");
     const {
       fclContract,
       fclUniswapContract,
@@ -21,7 +20,6 @@ export const startup = () => {
       ethereumNetwork,
       issuerAddress,
     } = await GoldfishService.getAddresses();
-    console.log("after");
 
     dispatch(
       appActions.setAddresses({
@@ -39,7 +37,6 @@ export const startup = () => {
       }),
     );
 
-    console.log("before");
     // setup rpc provider
     await RPCProviderService.init(
       environment.ETHEREUM_RPC_URL,
@@ -51,8 +48,6 @@ export const startup = () => {
 
     // start credentials validity polling
     new CredentialsValidityPolling().start();
-
-    console.log("after");
 
     dispatch(appActions.setLaunched(true));
   };

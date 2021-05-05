@@ -16,7 +16,6 @@ import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 import { ERROR_CREDENTIAL_NOT_FOUND } from "@background/Errors";
 import { getClaimsRegistryContractAddress } from "@redux/stores/application/reducers/app/selectors";
-import RPCProviderService from "@services/EthereumProviderService/RPCProviderService";
 
 export const credentialStore = (
   [serializedCredential]: [string],

@@ -127,8 +127,6 @@ class Web3ProviderService implements IWeb3ProviderService {
         parsedCredential.credentialSignature as string,
       );
 
-      console.log(storingResult);
-
       // create transaction details
       const transactionDetails = new TransactionDetails(
         storingResult.hash,

@@ -14,16 +14,10 @@ export default class CredentialsValidityPolling {
     intervalTime: number = DEFAULT_CREDENTIALSS_VALIDITY_POLLING_INTERVAL,
   ) {
     this.interval = setInterval(async () => {
-      console.log("credentials details start");
-
-      console.log("initialized", await UserStore.isInitialized());
-
       // check if the user store is available
       if (!(await UserStore.isInitialized())) {
         return;
       }
-
-      console.log("state", UserStore.getStore().getState());
 
       // check if the user is connected
       const credentials: CredentialsCollection = getCredentials(
@@ -40,8 +34,6 @@ export default class CredentialsValidityPolling {
           credentialsActions.fetchCredentialValidity(credential.level),
         );
       }
-
-      console.log("credentials details end");
     }, intervalTime);
   }
 
