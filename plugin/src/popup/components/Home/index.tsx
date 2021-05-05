@@ -32,7 +32,7 @@ function Home(props: HomeProps) {
     {
       id: "staking-tab",
       label: "Staking",
-      props: { stakingDetails, stakingStatus, onClick },
+      props: { stakingDetails, stakingStatus, onClick, disabled: true },
       component: Staking,
     },
   ];
