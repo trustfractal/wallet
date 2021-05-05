@@ -13,6 +13,7 @@ import Title from "@popup/components/common/Title";
 import TopComponent from "@popup/components/common/TopComponent";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 import Logo from "@popup/components/common/Logo";
+import Link from "@popup/components/common/Link";
 
 const RootContainer = styled.div`
   padding: var(--s-24) 0px;
@@ -63,11 +64,13 @@ const ActionContainer = styled.div`
 export type RegisterProps = {
   loading: boolean;
   onNext: (password: string) => void;
+  onClickTerms: () => void;
+  onClickPrivacyPolicy: () => void;
   error: string;
 };
 
 function Register(props: RegisterProps) {
-  const { loading, onNext } = props;
+  const { loading, onNext, onClickTerms, onClickPrivacyPolicy } = props;
 
   const minLength = 8;
   const [newPassword, setNewPassword] = useState("");
@@ -184,8 +187,16 @@ function Register(props: RegisterProps) {
                   </Text>
 
                   <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-                    Your password is used to unlock your Fractal ID Wallet and
-                    we don’t have access to it.
+                    Your password is used to unlock{" "}
+                    <Text
+                      size={TextSizes.SMALL}
+                      height={TextHeights.SMALL}
+                      weight={TextWeights.BOLD}
+                      span
+                    >
+                      your Fractal ID Wallet
+                    </Text>{" "}
+                    and we don’t have access to it.
                   </Text>
 
                   <Text size={TextSizes.SMALL}>
@@ -199,6 +210,34 @@ function Register(props: RegisterProps) {
                   >
                     If you forget your password, you’ll lose the ability to use
                     the wallet.
+                  </Text>
+
+                  <Text size={TextSizes.SMALL}>
+                    <br />
+                  </Text>
+
+                  <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+                    By creating a wallet, you agree to our{" "}
+                    <Link
+                      size={TextSizes.SMALL}
+                      height={TextHeights.SMALL}
+                      weight={TextWeights.NORMAL}
+                      onClick={onClickTerms}
+                      span
+                    >
+                      Terms
+                    </Link>{" "}
+                    and{" "}
+                    <Link
+                      size={TextSizes.SMALL}
+                      height={TextHeights.SMALL}
+                      weight={TextWeights.NORMAL}
+                      span
+                      onClick={onClickPrivacyPolicy}
+                    >
+                      Privacy Policy
+                    </Link>
+                    .
                   </Text>
                 </>
               )}

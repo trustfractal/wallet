@@ -20,7 +20,16 @@ export enum TextWeights {
   BOLD = "bold",
 }
 
-const Root = styled.p<TextProps>`
+const RootParagraph = styled.p<TextProps>`
+  ${(props) =>
+    css`
+      font-size: ${props.size};
+      line-height: ${props.height};
+      font-weight: ${props.weight};
+    `}
+`;
+
+const RootSpan = styled.span<TextProps>`
   ${(props) =>
     css`
       font-size: ${props.size};
@@ -33,18 +42,24 @@ export type TextProps = {
   size: TextSizes;
   height: TextHeights;
   weight: TextWeights;
+  span?: boolean;
 };
 
 Text.defaultProps = {
   size: TextSizes.MEDIUM,
   height: TextHeights.MEDIUM,
   weight: TextWeights.NORMAL,
+  span: false,
 };
 
 function Text(props: TextProps & React.HTMLAttributes<HTMLParagraphElement>) {
-  const { children, ...otherProps } = props;
+  const { children, span, ...otherProps } = props;
 
-  return <Root {...otherProps}>{children}</Root>;
+  if (span) {
+    return <RootSpan {...otherProps}>{children}</RootSpan>;
+  }
+
+  return <RootParagraph {...otherProps}>{children}</RootParagraph>;
 }
 
 export default Text;
