@@ -18,6 +18,7 @@ const RootContainer = styled.button<{
   border-left: 1px solid var(--c-orange);
 
   padding: var(--s-14) var(--s-35);
+  height: 49px;
 
   display: flex;
   flex-direction: row;
@@ -28,8 +29,21 @@ const RootContainer = styled.button<{
   ${(props) =>
     props.disabled &&
     css`
-      opacity: 0.6;
+      display: flex;
+      flex-direction: column;
       cursor: default;
+
+      > span:first-child {
+        opacity: 0.5;
+        line-height: 24px;
+      }
+
+      > span:last-child {
+        font-size: 12px;
+        line-height: 16px;
+        font-variant: all-small-caps;
+        color: var(--c-white);
+      }
     `}
 
   ${(props) =>
@@ -78,7 +92,8 @@ function TabButton(
       selected={selected}
       {...otherProps}
     >
-      {label}
+      <span>{label}</span>
+      {disabled && <span>Coming soon</span>}
     </RootContainer>
   );
 }
