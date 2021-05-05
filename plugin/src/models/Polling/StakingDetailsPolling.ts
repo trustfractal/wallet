@@ -8,7 +8,7 @@ import {
 } from "@redux/stores/user/reducers/wallet/selectors";
 import TokenTypes from "@models/Token/types";
 
-const DEFAULT_STAKING_DETAILS_POLLING_INTERVAL_IN_MILLIS = 10 * 1000; // 30 seconds
+const DEFAULT_STAKING_DETAILS_POLLING_INTERVAL_IN_MILLIS = 30 * 1000; // 30 seconds
 
 export default class StakingDetailsPolling {
   private interval: NodeJS.Timeout | undefined;
