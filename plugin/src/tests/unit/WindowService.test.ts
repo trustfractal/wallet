@@ -428,41 +428,6 @@ describe("Unit Windows Service", () => {
       ).rejects.toThrow(ERROR_CREATE_TAB(lastError));
     });
   });
-  describe("createPopup()", () => {
-    afterEach(() => {
-      jest.resetAllMocks();
-    });
-
-    it("Given an url, createPopup creates a popup window with the given url", async () => {
-      const url = "popup.html";
-      const returnedWindow: chrome.windows.Window = {
-        top: 0,
-        height: 400,
-        width: 600,
-        state: "normal",
-        focused: true,
-        alwaysOnTop: false,
-        incognito: false,
-        type: "normal",
-        id: 12,
-        left: 0,
-        sessionId: "11bf5b37-e0b8-42e0-8dcf-dc8c4aefc000",
-      };
-      chrome.windows.create.mockImplementation(
-        (_, callback?: (window?: chrome.windows.Window) => void) => {
-          callback?.(returnedWindow);
-        },
-      );
-
-      // Execture
-      const result = await WindowsService.createPopup(url);
-
-      // Assert
-      const expectedResult = returnedWindow;
-      expect(result).toBe(expectedResult);
-      expect(chrome.windows.create).toHaveBeenCalled();
-    });
-  });
   describe("getAllPopups()", () => {
     afterEach(() => {
       jest.resetAllMocks();

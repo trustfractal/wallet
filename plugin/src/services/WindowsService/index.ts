@@ -1,10 +1,12 @@
-import { POPUP } from "./Params";
 import {
   ERROR_CREATE_WINDOW,
   ERROR_CREATE_TAB,
   ERROR_GET_CURRENT_WINDOW,
   ERROR_GET_WINDOW,
   ERROR_GET_ALL_WINDOWS,
+  ERROR_FOCUS_WINDOW,
+  ERROR_GET_LAST_FOCUSED_WINDOW,
+  ERROR_UPDATE_WINDOW_POSITION,
   ERROR_CLOSE_WINDOW,
   ERROR_GET_TAB,
   ERROR_UPDATE_TAB,
@@ -13,10 +15,12 @@ import {
 
 import environment from "@environment/index";
 
+const POPUP_WIDTH = 400;
+const POPUP_HEIGHT = 460;
+
 class WindowsService {
   private static instance: WindowsService;
-
-  private constructor() {}
+  private popupId?: number;
 
   public static getInstance(): WindowsService {
     if (!WindowsService.instance) {
@@ -56,6 +60,19 @@ class WindowsService {
     });
   }
 
+  getLastFocusedWindow(): Promise<chrome.windows.Window> {
+    return new Promise((resolve, reject) => {
+      chrome.windows.getLastFocused((window) => {
+        if (chrome.runtime.lastError !== undefined) {
+          console.error(chrome.runtime.lastError);
+          reject(ERROR_GET_LAST_FOCUSED_WINDOW(chrome.runtime.lastError));
+        }
+
+        resolve(window);
+      });
+    });
+  }
+
   getAllWindows(
     config: chrome.windows.GetInfo = {},
   ): Promise<Array<chrome.windows.Window>> {
@@ -67,6 +84,36 @@ class WindowsService {
         }
 
         resolve(windows);
+      });
+    });
+  }
+
+  focusWindow(windowId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      chrome.windows.update(windowId, { focused: true }, () => {
+        if (chrome.runtime.lastError !== undefined) {
+          console.error(chrome.runtime.lastError);
+          reject(ERROR_FOCUS_WINDOW(chrome.runtime.lastError));
+        }
+
+        resolve();
+      });
+    });
+  }
+
+  updateWindowPosition(
+    windowId: number,
+    left: number,
+    top: number,
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      chrome.windows.update(windowId, { left, top }, () => {
+        if (chrome.runtime.lastError !== undefined) {
+          console.error(chrome.runtime.lastError);
+          reject(ERROR_UPDATE_WINDOW_POSITION(chrome.runtime.lastError));
+        }
+
+        resolve();
       });
     });
   }
@@ -104,13 +151,63 @@ class WindowsService {
     return windows;
   }
 
-  createPopup(
-    url: string = "popup.html",
-  ): Promise<chrome.windows.Window | undefined> {
-    return this.createWindow({
-      ...POPUP,
-      url,
+  async createPopup(): Promise<chrome.windows.Window | undefined> {
+    const popup = await this.getPopup();
+
+    if (popup) {
+      // bring focus to existing chrome popup
+      await this.focusWindow(popup.id);
+      return;
+    }
+
+    let left = 0;
+    let top = 0;
+
+    const lastFocused = await this.getLastFocusedWindow();
+    if (lastFocused.top === undefined) {
+      const { screenY } = window;
+
+      top = Math.max(screenY, 0);
+    } else {
+      top = lastFocused.top;
+    }
+
+    if (lastFocused.left === undefined || lastFocused.width === undefined) {
+      const { screenX, outerWidth } = window;
+      left = Math.max(screenX + (outerWidth - POPUP_WIDTH), 0);
+    } else {
+      left = lastFocused.left + (lastFocused.width - POPUP_WIDTH);
+    }
+
+    // create new notification popup
+    const popupWindow = await this.createWindow({
+      url: "popup.html",
+      type: "popup",
+      width: POPUP_WIDTH,
+      height: POPUP_HEIGHT,
+      left,
+      top,
     });
+
+    if (popupWindow !== undefined) {
+      if (popupWindow.left !== left && popupWindow.state !== "fullscreen") {
+        await this.updateWindowPosition(popupWindow.id, left, top);
+      }
+
+      this.popupId = popupWindow.id;
+    }
+  }
+
+  private async getPopup() {
+    const windows = await this.getAllWindows();
+
+    if (windows === undefined || windows.length === 0) {
+      return;
+    }
+
+    return windows.find(
+      (win) => win && win.type === "popup" && win.id === this.popupId,
+    );
   }
 
   async getAllPopups(): Promise<Array<chrome.windows.Window>> {

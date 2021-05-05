@@ -33,7 +33,10 @@ export default class BackgroundConnection
       });
     } catch (error) {
       // check if the error has losted connected to background script
-      if (error.message === "Extension context invalidated.") {
+      if (
+        error.message === "Extension context invalidated." ||
+        error.message === "Attempting to use a disconnected port object"
+      ) {
         window.location.reload();
       } else {
         throw error;

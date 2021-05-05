@@ -17,8 +17,8 @@ import {
 } from "@redux/stores/application/reducers/app/selectors";
 
 import {
-  ERROR_NO_ACTIVE_TAB,
   ERROR_NO_ACCOUNT,
+  ERROR_NOT_ON_FRACTAL,
 } from "@models/Connection/Errors";
 import TokenTypes from "@models/Token/types";
 
@@ -33,15 +33,15 @@ export const connectWallet = () => {
       await new FractalWebpageMiddleware().apply();
 
       // get active connected chrome port
-      const activePort = await ContentScriptConnection.getActiveConnectionPort();
+      const fractalPort = await ContentScriptConnection.getFractalConnectionPort();
 
-      if (!activePort) throw ERROR_NO_ACTIVE_TAB();
+      if (!fractalPort) throw ERROR_NOT_ON_FRACTAL();
 
       // get ethereumm wallet account address
       const account = await ContentScriptConnection.invoke(
         ConnectionTypes.GET_ACCOUNT_ADDRESS_INPAGE,
         [],
-        activePort.id,
+        fractalPort.id,
       );
 
       if (!account) throw ERROR_NO_ACCOUNT();
