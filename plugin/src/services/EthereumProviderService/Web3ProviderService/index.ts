@@ -123,7 +123,7 @@ class Web3ProviderService implements IWeb3ProviderService {
         parsedCredential.claimerAddress,
         parsedCredential.attesterAddress as string,
         rootHashByteArray,
-        parsedCredential.attestedClaimHash as string,
+        parsedCredential.attestedClaimSignature as string,
       );
 
       // create transaction details
@@ -169,7 +169,7 @@ class Web3ProviderService implements IWeb3ProviderService {
       const verifyClaim = await claimsRegistryContract.verifyClaim(
         parsedCredential.claimerAddress,
         parsedCredential.attesterAddress as string,
-        parsedCredential.attestedClaimHash as string,
+        parsedCredential.attestedClaimSignature as string,
       );
 
       return verifyClaim;
@@ -403,7 +403,7 @@ class Web3ProviderService implements IWeb3ProviderService {
       // stake amount
       const stakingResult = await stakingContract.stake(
         etherAmount,
-        parsedCredential.attestedClaimHash as string,
+        parsedCredential.attestedClaimSignature as string,
       );
 
       // create transaction details
