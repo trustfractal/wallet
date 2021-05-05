@@ -90,17 +90,21 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
 
   const { valid } = credential;
 
-  const level = credential.level.split("+")[0];
+  const [level, ...addons] = credential.level.split("+");
   let levelName;
   let levelIconName;
   let statusName;
   let statusIconName;
 
+  const addonsStr = addons
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(" + ");
+
   if (level === "basic") {
-    levelName = "ID Basic";
+    levelName = `ID Basic (${addonsStr})`;
     levelIconName = IconNames.ID_BASIC;
   } else {
-    levelName = "plus";
+    levelName = `ID Plus (${addonsStr})`;
     levelIconName = IconNames.ID_PLUS;
   }
 
