@@ -17,7 +17,6 @@ import {
 import TokenTypes from "@models/Token/types";
 import walletActions from "@redux/stores/user/reducers/wallet";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
-import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 import { ERROR_CREDENTIAL_NOT_FOUND } from "@background/Errors";
 
@@ -29,8 +28,6 @@ import StakingDetails from "@models/Staking/StakingDetails";
 
 import EtherscanService from "@services/EtherscanService";
 import StakingStatus from "@models/Staking/status";
-
-import RPCProviderService from "@services/EthereumProviderService/RPCProviderService";
 
 export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
   new Promise(async (resolve, reject) => {
@@ -58,8 +55,12 @@ export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
         walletActions.updateStakingDetails({ details: stakingDetails, token }),
       );
 
+      // wait for staking status to be updated
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       // add staking status
       const stakingStatus = getStakingStatus(UserStore.getStore().getState());
+      console.log("stakingStatus", stakingStatus);
       stakingDetails.status = stakingStatus;
 
       resolve(stakingDetails.serialize());
@@ -89,35 +90,12 @@ export const approveStake = (
         port,
       );
 
-      // parse transaction details
-      const parsedTransactionDetails = TransactionDetails.parse(
-        serializedTransactionDetails,
-      );
-
       // set staking status to approval pending
       await UserStore.getStore().dispatch(
         walletActions.setStakingStatus({
           status: StakingStatus.APPROVAL_PENDING,
           token,
         }),
-      );
-
-      // setup a callback to when the transaction is confirmed
-      RPCProviderService.waitForTransaction(
-        parsedTransactionDetails.hash,
-        async (success: boolean) => {
-          let status = StakingStatus.STAKED;
-          if (!success) {
-            status = StakingStatus.APPROVED;
-          }
-
-          UserStore.getStore().dispatch(
-            walletActions.setStakingStatus({
-              status,
-              token,
-            }),
-          );
-        },
       );
 
       resolve(serializedTransactionDetails);
@@ -162,35 +140,12 @@ export const stake = (
         port,
       );
 
-      // parse transaction details
-      const parsedTransactionDetails = TransactionDetails.parse(
-        serializedTransactionDetails,
-      );
-
       // set staking status to staking pending
       await UserStore.getStore().dispatch(
         walletActions.setStakingStatus({
           status: StakingStatus.STAKING_PENDING,
           token,
         }),
-      );
-
-      // setup a callback to when the transaction is confirmed
-      RPCProviderService.waitForTransaction(
-        parsedTransactionDetails.hash,
-        async (success: boolean) => {
-          let status = StakingStatus.STAKED;
-          if (!success) {
-            status = StakingStatus.APPROVED;
-          }
-
-          UserStore.getStore().dispatch(
-            walletActions.setStakingStatus({
-              status,
-              token,
-            }),
-          );
-        },
       );
 
       resolve(serializedTransactionDetails);
@@ -260,35 +215,12 @@ export const withdraw = ([token]: [TokenTypes], port: string) =>
         port,
       );
 
-      // parse transaction details
-      const parsedTransactionDetails = TransactionDetails.parse(
-        serializedTransactionDetails,
-      );
-
       // set staking status to withdraw pending
       await UserStore.getStore().dispatch(
         walletActions.setStakingStatus({
           status: StakingStatus.WITHDRAW_PENDING,
           token,
         }),
-      );
-
-      // setup a callback to when the transaction is confirmed
-      RPCProviderService.waitForTransaction(
-        parsedTransactionDetails.hash,
-        async (success: boolean) => {
-          let status = StakingStatus.START;
-          if (!success) {
-            status = StakingStatus.STAKED;
-          }
-
-          UserStore.getStore().dispatch(
-            walletActions.setStakingStatus({
-              status,
-              token,
-            }),
-          );
-        },
       );
 
       resolve(serializedTransactionDetails);

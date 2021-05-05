@@ -138,6 +138,8 @@ export const updateStakingDetails = ({ payload: { details, token } }) => {
         token: token,
       }),
     );
+
+    await dispatch(walletActions.setStakingLastUpdated(new Date().getTime()));
   };
 };
 

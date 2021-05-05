@@ -41,19 +41,6 @@ export const credentialStore = (
         serializedTransactionDetails,
       );
 
-      // setup a callback to when the transaction is confirmed
-      RPCProviderService.waitForTransaction(
-        parsedTransactionDetails.hash,
-        async (success: boolean) =>
-          success &&
-          UserStore.getStore().dispatch(
-            credentialsActions.setCredentialValidity({
-              level: parsedCredential.level,
-              valid: true,
-            }),
-          ),
-      );
-
       // parse the string credential
       const parsedCredential = Credential.parse(serializedCredential);
 

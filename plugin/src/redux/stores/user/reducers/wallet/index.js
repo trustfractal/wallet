@@ -13,6 +13,7 @@ const types = mirrorCreator([
   "SET_ACCOUNT",
   "SET_STAKING_DETAILS",
   "SET_STAKING_STATUS",
+  "SET_STAKING_LAST_UPDATED",
 ]);
 
 export const creators = createActions(
@@ -25,6 +26,7 @@ export const creators = createActions(
   types.SET_ACCOUNT,
   types.SET_STAKING_DETAILS,
   types.SET_STAKING_STATUS,
+  types.SET_STAKING_LAST_UPDATED,
 );
 
 export const initialState = {
@@ -43,6 +45,7 @@ export const initialState = {
       [TokenTypes.FCL]: StakingStatus.START,
       [TokenTypes.FCL_ETH_LP]: StakingStatus.START,
     },
+    lastUpdated: new Date().getTime(),
   },
 };
 
@@ -109,6 +112,14 @@ export const reducer = handleActions(
             ...state.staking.status,
             [token]: status,
           },
+        },
+      }),
+    [types.SET_STAKING_LAST_UPDATED]: (state, { payload: lastUpdated }) =>
+      Object.freeze({
+        ...state,
+        staking: {
+          ...state.staking,
+          lastUpdated,
         },
       }),
   },
