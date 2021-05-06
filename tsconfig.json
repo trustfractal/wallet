@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": "./",
+    "paths": {
+      "@assets/*": ["src/assets/*"],
+      "@models/*": ["src/models/*"],
+      "@background/*": ["src/scripts/background/*"],
+      "@contentScript/*": ["src/scripts/contentScript/*"],
+      "@sdk/*": ["src/scripts/sdk/*"],
+      "@popup/*": ["src/popup/*"],
+      "@redux/*": ["src/redux/*"],
+      "@services/*": ["src/services/*"],
+      "@environment/*": ["src/environment/*"],
+      "@contracts/*": ["src/contracts/*"],
+      "@utils/*": ["src/utils/*"],
+      "@pluginTypes/*": ["src/types/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["build", "dev", "node_modules"]
+}
