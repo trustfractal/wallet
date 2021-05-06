@@ -7,9 +7,7 @@ import styled from "styled-components";
 const Root = styled.span`
   cursor: pointer;
   color: var(--c-orange);
-  background: var(--c-transparent);
   text-decoration: underline;
-  text-transform: uppercase;
 `;
 
 export type LinkProps = {

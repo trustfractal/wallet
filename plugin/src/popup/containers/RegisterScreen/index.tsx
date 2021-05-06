@@ -21,13 +21,9 @@ function RegisterScreen() {
   const signUpError = useAppSelector(getSignUpError);
 
   const onClickTerms = () =>
-    WindowsService.openTab(
-      "https://staging.sandbox.fractal.id/documents/2a087b14d7480181512ee1ab926a34eb/credentials-user-agreement.pdf",
-    );
+    WindowsService.openTab("https://fractal.id/documents/end-user-agreement");
   const onClickPrivacyPolicy = () =>
-    WindowsService.openTab(
-      "https://staging.sandbox.fractal.id/documents/2a087b14d7480181512ee1ab926a34eb/credentials-user-agreement.pdf",
-    );
+    WindowsService.openTab("https://fractal.id/documents/privacy-policy");
 
   const onNext = (password: string) => {
     dispatch(registerActions.setRegisterPassword(password));
