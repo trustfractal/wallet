@@ -218,43 +218,62 @@ class Web3ProviderService implements IWeb3ProviderService {
       // prepare data
       const signer = this.web3Provider!.getSigner(address);
 
-      // init smart contract
       const tokenContract = new Contract(
         tokenContractAddress,
         ERC20.abi,
         signer,
       ) as IERC20;
-      const stakingContract = new Contract(
-        stakingTokenContractAddress,
-        Staking.abi,
-        signer,
-      ) as IStaking;
 
-      // get user balance, current stake, current rewards and expected rewards
-      const balance = await tokenContract.balanceOf(address);
-      const stakedAmount = await stakingContract.getStakedAmount(address);
-      const currentReward = await stakingContract.getCurrentReward(address);
-      const maxReward = await stakingContract.getMaxStakeReward(address);
+      let balance = await tokenContract.balanceOf(address);
 
-      // get liquidity pool details
-      const poolTotalTokens = await stakingContract.totalPool();
-      const poolAvailableTokens = await stakingContract.availablePool();
+      let stakedAmount = BigNumber.from(0);
+      let currentReward = BigNumber.from(0);
+      let maxReward = BigNumber.from(0);
 
-      // get staking details
-      const stakingAllowedAmount = await tokenContract.allowance(
-        address,
-        stakingTokenContractAddress,
-      );
-      const stakingStartDate = await stakingContract.startDate();
-      const stakingEndDate = await stakingContract.endDate();
-      const stakingMinAmount = await stakingContract.minAmount();
-      const stakingMaxAmount = await stakingContract.maxAmount();
-      const currentAPY = await stakingContract.currentAPY();
-      const currentExpectedRewardRate = await stakingContract.calculateReward(
-        Math.floor(Date.now() / 1000),
-        stakingEndDate,
-        100,
-      );
+      let poolTotalTokens = BigNumber.from(0);
+      let poolAvailableTokens = BigNumber.from(0);
+
+      let stakingAllowedAmount = BigNumber.from(0);
+      let stakingStartDate = BigNumber.from(0);
+      let stakingEndDate = BigNumber.from(0);
+      let stakingMinAmount = BigNumber.from(0);
+      let stakingMaxAmount = BigNumber.from(0);
+      let currentAPY = BigNumber.from(0);
+      let currentExpectedRewardRate = BigNumber.from(0);
+
+      if (stakingTokenContractAddress !== "0x0") {
+        // init staking smart contract
+        const stakingContract = new Contract(
+          stakingTokenContractAddress,
+          Staking.abi,
+          signer,
+        ) as IStaking;
+
+        // get user balance, current stake, current rewards and expected rewards
+        stakedAmount = await stakingContract.getStakedAmount(address);
+        currentReward = await stakingContract.getCurrentReward(address);
+        maxReward = await stakingContract.getMaxStakeReward(address);
+
+        // get liquidity pool details
+        poolTotalTokens = await stakingContract.totalPool();
+        poolAvailableTokens = await stakingContract.availablePool();
+
+        // get staking details
+        stakingAllowedAmount = await tokenContract.allowance(
+          address,
+          stakingTokenContractAddress,
+        );
+        stakingStartDate = await stakingContract.startDate();
+        stakingEndDate = await stakingContract.endDate();
+        stakingMinAmount = await stakingContract.minAmount();
+        stakingMaxAmount = await stakingContract.maxAmount();
+        currentAPY = await stakingContract.currentAPY();
+        currentExpectedRewardRate = await stakingContract.calculateReward(
+          Math.floor(Date.now() / 1000),
+          stakingEndDate,
+          100,
+        );
+      }
 
       const details = new StakingDetails(
         balance,

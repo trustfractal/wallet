@@ -51,9 +51,9 @@ class Connection {
     this.ensureConnectionIsInitialized();
 
     // get current active tab
-    const fractalTab = await WindowsService.getFractalTab();
+    const fractalTabs = await WindowsService.getFractalTabs();
 
-    if (!fractalTab) return;
+    if (fractalTabs.length === 0) return;
 
     // get connection ports
     const connectionPorts = this.getConnectionPorts();
@@ -62,8 +62,10 @@ class Connection {
     for (const portId in connectionPorts) {
       const connectedPort = connectionPorts[portId];
 
-      if (connectedPort.port?.sender?.tab?.id === fractalTab.id)
-        return connectedPort;
+      for (const fractalTab of fractalTabs) {
+        if (connectedPort.port?.sender?.tab?.id === fractalTab.id)
+          return connectedPort;
+      }
     }
   }
 

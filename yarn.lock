@@ -2140,10 +2140,10 @@
   dependencies:
     "@babel/runtime" "^7.12.5"
 
-"@trustfractal/sdk@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@trustfractal/sdk/-/sdk-0.1.0.tgz#d1e2eecb7e96b9d9c60add4abea573e69499bf41"
-  integrity sha512-3M091wmtQ0wspPtT3Z7WOSBEcoHgfcipar8BCbxYO+xIrurTutqIfwvYqqztf57N6q/iPLpAL1auhQkoeVNfyw==
+"@trustfractal/sdk@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@trustfractal/sdk/-/sdk-0.2.0.tgz#55e070bb41ea81ffaf421e4a7d84d88cfeea5088"
+  integrity sha512-H/gPju8Vmxmna6olXyHhH5g+qUWf87vJ4tEXFRAV6Lu4jXwV8aZxyyzaRa5wZWm9sS+8YmPGMZtHygeT30WPBg==
   dependencies:
     "@types/uuid" "^8.3.0"
     ethers "^5.1.3"

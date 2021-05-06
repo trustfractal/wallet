@@ -332,13 +332,13 @@ class WindowsService {
     });
   }
 
-  async getFractalTab(): Promise<chrome.tabs.Tab | undefined> {
+  async getFractalTabs(): Promise<chrome.tabs.Tab[]> {
     // get fractal tab
     const tabs = await this.queryTabs({
       url: `*://*.${environment.FRACTAL_WEBSITE_HOSTNAME}/*`,
     });
 
-    return tabs[0];
+    return tabs;
   }
 
   async openTab(url: string) {
