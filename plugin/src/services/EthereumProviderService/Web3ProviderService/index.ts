@@ -13,12 +13,11 @@ import {
   ClaimsRegistry as IClaimsRegistry,
   IWeb3ProviderService,
 } from "@fractalwallet/types";
-import { Claim, IClaimProperties } from "@fractalwallet/sdk";
+import { Claim, ClaimType, IClaimProperties } from "@fractalwallet/sdk";
 
 import StakingDetails from "@models/Staking/StakingDetails";
 import Credential from "@models/Credential";
 import AttestationRequest from "@models/AttestationRequest";
-import ClaimType from "@models/ClaimType";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 import {
@@ -190,8 +189,7 @@ class Web3ProviderService implements IWeb3ProviderService {
       const signer = this.web3Provider!.getSigner(address);
 
       // Generate the claim type
-      const pseudoSchema = ClaimType.buildSchemaFromLevel(level);
-      const claimType = ClaimType.fromSchema(pseudoSchema, signer._address);
+      const claimType = ClaimType.build(level);
 
       // Create a claim with our data
       const claim = new Claim(claimType, properties, signer._address);
