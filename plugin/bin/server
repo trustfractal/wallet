@@ -1,6 +1,0 @@
-#!/bin/sh
-
-source ./bin/functions
-
-pp_info "wallet" "starting development server..."
-yarn start
