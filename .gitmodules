@@ -8,5 +8,5 @@
 	path = backend
     url = git@github.com:trustfractal/goldfish.git
 [submodule "plugin"]
-     path = plugin
-     url = git@github.com:trustfractal/wallet.git
+	path = plugin
+	url = git@github.com:trustfractal/wallet.git
