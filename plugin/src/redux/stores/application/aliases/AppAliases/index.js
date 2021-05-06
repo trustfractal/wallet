@@ -1,9 +1,6 @@
-import environment from "@environment/index";
-
 import appActions, { appTypes } from "@redux/stores/application/reducers/app";
 
 import GoldfishService from "@services/GoldfishService";
-import RPCProviderService from "@services/EthereumProviderService/RPCProviderService";
 
 import StakingDetailsPolling from "@models/Polling/StakingDetailsPolling";
 import CredentialsValidityPolling from "@models/Polling/CredentialsValidityPolling";
@@ -35,12 +32,6 @@ export const startup = () => {
         ethereumNetwork,
         issuerAddress,
       }),
-    );
-
-    // setup rpc provider
-    await RPCProviderService.init(
-      environment.ETHEREUM_RPC_URL,
-      ethereumNetwork,
     );
 
     // start staking details polling

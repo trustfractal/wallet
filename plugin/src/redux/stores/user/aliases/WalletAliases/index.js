@@ -2,6 +2,7 @@ import ContentScriptConnection from "@background/connection";
 import ConnectionTypes from "@models/Connection/types";
 import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
 import StakingStatus from "@models/Staking/status";
+import StakingDetails from "@models/Staking/StakingDetails";
 
 import {
   getAccount,
@@ -21,8 +22,6 @@ import {
   ERROR_NOT_ON_FRACTAL,
 } from "@models/Connection/Errors";
 import TokenTypes from "@models/Token/types";
-
-import RPCProviderService from "@services/EthereumProviderService/RPCProviderService";
 
 export const connectWallet = () => {
   return async (dispatch) => {
@@ -102,12 +101,20 @@ export const fetchStakingDetails = ({ payload: token }) => {
       AppStore.getStore().getState(),
     )[token];
 
-    // update staking details
-    const stakingDetails = await RPCProviderService.fetchStakingDetails(
-      account,
-      tokenContractAddress,
-      stakingContractAddress,
+    const activeTab = await ContentScriptConnection.getActiveConnectionPort();
+    if (activeTab === undefined) {
+      return;
+    }
+
+    // fetch staking details
+    const serializedStakingDetails = await ContentScriptConnection.invoke(
+      ConnectionTypes.GET_STAKING_DETAILS_INPAGE,
+      [account, tokenContractAddress, stakingContractAddress],
+      activeTab.id,
     );
+
+    // parse staking details
+    const stakingDetails = StakingDetails.parse(serializedStakingDetails);
 
     // update wallet staking details
     await dispatch(

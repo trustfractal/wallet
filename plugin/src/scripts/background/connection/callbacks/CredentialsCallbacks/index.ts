@@ -116,19 +116,18 @@ export const isCredentialValid = ([level]: [string], port: string) =>
       );
 
       // redirect request to the inpage fractal provider
-      const isValid = await ContentScriptConnection.invoke(
+      const valid = await ContentScriptConnection.invoke(
         ConnectionTypes.IS_CREDENTIAL_VALID_INPAGE,
         [address, credential.serialize(), claimsRegistryContractAddress],
         port,
       );
 
       // update credential data
-      credential.valid = isValid;
       await UserStore.getStore().dispatch(
-        credentialsActions.updateCredential(credential.serialize()),
+        credentialsActions.setCredentialValidity({ level, valid }),
       );
 
-      resolve(isValid);
+      resolve(valid);
     } catch (error) {
       console.error(error);
       reject(error);

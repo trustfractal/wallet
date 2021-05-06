@@ -1,13 +1,16 @@
 import AppStore from "@redux/stores/application";
 
+import ContentScriptConnection from "@background/connection";
+import ConnectionTypes from "@models/Connection/types";
+
 import credentialsActions, {
   credentialsTypes,
 } from "@redux/stores/user/reducers/credentials";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 
 import Credential from "@models/Credential";
-import RPCProviderService from "@services/EthereumProviderService/RPCProviderService";
 import { getClaimsRegistryContractAddress } from "@redux/stores/application/reducers/app/selectors";
+import { getAccount } from "../../reducers/wallet/selectors";
 
 export const addCredential = ({ payload: serializedCredential }) => {
   return async (dispatch, getState) => {
@@ -67,6 +70,7 @@ export const removeCredential = ({ payload: level }) => {
 
 export const fetchCredentialValidity = ({ payload: level }) => {
   return async (dispatch, getState) => {
+    const address = getAccount(getState());
     const credentials = getCredentials(getState());
 
     const credential = credentials.getByField("level", level);
@@ -74,10 +78,16 @@ export const fetchCredentialValidity = ({ payload: level }) => {
       AppStore.getStore().getState(),
     );
 
+    const activeTab = await ContentScriptConnection.getActiveConnectionPort();
+    if (activeTab === undefined) {
+      return;
+    }
+
     // fetch credential validity
-    const valid = await RPCProviderService.fetchCredentialValidity(
-      credential.serialize(),
-      claimsRegistryContractAddress,
+    const valid = await ContentScriptConnection.invoke(
+      ConnectionTypes.IS_CREDENTIAL_VALID_INPAGE,
+      [address, credential.serialize(), claimsRegistryContractAddress],
+      activeTab.id,
     );
 
     // update redux store
