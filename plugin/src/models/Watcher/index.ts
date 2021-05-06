@@ -6,7 +6,7 @@ import {
   SubscribedAction,
   SubscribedActions,
   WatcherAction,
-} from "@fractalwallet/types";
+} from "@pluginTypes/index";
 
 import Listener from "./Listener";
 import ListenersCollection from "./ListenersCollection";

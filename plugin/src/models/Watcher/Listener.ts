@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 
-import { IListener } from "@fractalwallet/types";
+import { IListener } from "@pluginTypes/index";
 
 export default class Listener implements IListener {
   public id: IListener["id"];

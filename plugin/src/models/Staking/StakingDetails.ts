@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 
-import { IStakingDetails, ISerializable } from "@fractalwallet/types";
+import { IStakingDetails, ISerializable } from "@pluginTypes/index";
 
 import StakingStatus from "./status";
 

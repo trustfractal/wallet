@@ -1,4 +1,4 @@
-import { ICredential } from "@fractalwallet/types";
+import { ICredential } from "@pluginTypes/index";
 
 import { useAppSelector } from "@redux/stores/application/context";
 import { useUserSelector } from "@redux/stores/user/context";

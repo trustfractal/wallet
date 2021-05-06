@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import MessageTypes from "@models/Message/types";
 
-import { IResponse } from "@fractalwallet/types";
+import { IResponse } from "@pluginTypes/index";
 
 export default class Response implements IResponse {
   public static readonly NAME = MessageTypes.RESPONSE;

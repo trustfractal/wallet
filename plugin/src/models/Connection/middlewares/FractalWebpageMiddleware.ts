@@ -1,4 +1,4 @@
-import { IMiddleware, IInvokation } from "@fractalwallet/types";
+import { IMiddleware, IInvokation } from "@pluginTypes/index";
 import ContentScriptConnection from "@background/connection";
 import WindowsService from "@services/WindowsService";
 

@@ -8,7 +8,7 @@ import {
   IInvokation,
   IExtensionConnection,
   DuplexConnectionParams,
-} from "@fractalwallet/types";
+} from "@pluginTypes/index";
 
 export default class ExtensionConnection
   extends BaseConnection

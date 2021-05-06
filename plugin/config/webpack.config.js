@@ -295,6 +295,7 @@ module.exports = function (webpackEnv) {
         "@environment": path.resolve(__dirname, "../src/environment/"),
         "@contracts": path.resolve(__dirname, "../src/contracts/"),
         "@utils": path.resolve(__dirname, "../src/utils/"),
+        "@pluginTypes": path.resolve(__dirname, "../src/types/"),
         ...(modules.webpackAliases || {}),
       },
       plugins: [

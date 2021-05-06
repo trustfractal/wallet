@@ -8,7 +8,7 @@ import {
   IInvokation,
   IInpageConnection,
   DuplexConnectionParams,
-} from "@fractalwallet/types";
+} from "@pluginTypes/index";
 
 export default class InpageConnection
   extends BaseConnection

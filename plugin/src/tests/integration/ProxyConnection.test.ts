@@ -1,4 +1,4 @@
-import { IResponse, IInvokation, Message } from "@fractalwallet/types";
+import { IResponse, IInvokation, Message } from "@pluginTypes/index";
 import BaseConnection from "@models/Base/BaseConnection";
 import ConnectionNames from "@models/Connection/names";
 import Invokation from "@models/Message/Invokation";

@@ -16,7 +16,7 @@ import {
   IStakingDetails,
   ITransactionDetails,
   IConnectionStatus,
-} from "@fractalwallet/types";
+} from "@pluginTypes/index";
 
 import ExtensionConnection from "@sdk/InpageProvider/connection";
 import TokenTypes from "@models/Token/types";

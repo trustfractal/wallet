@@ -13,7 +13,7 @@ import {
   CryptoInput,
   EncryptedSymmetric,
   EncryptedSymmetricString,
-} from "@fractalwallet/types";
+} from "@pluginTypes/index";
 
 import { scrypt } from "scrypt-js";
 import nacl from "tweetnacl";

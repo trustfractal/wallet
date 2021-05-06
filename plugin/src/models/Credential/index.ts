@@ -2,7 +2,7 @@ import {
   ICredential,
   ITransactionDetails,
   ISerializable,
-} from "@fractalwallet/types";
+} from "@pluginTypes/index";
 
 import { AttestedClaim as SDKAttestedClaim } from "@fractalwallet/sdk";
 import TransactionDetails from "@models/Transaction/TransactionDetails";

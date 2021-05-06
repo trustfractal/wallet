@@ -3,7 +3,7 @@ name: Plugin Production Build Workflow
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - "*"
 

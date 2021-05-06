@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 
-import { ITransactionDetails, ISerializable } from "@fractalwallet/types";
+import { ITransactionDetails, ISerializable } from "@pluginTypes/index";
 
 export default class TransactionDetails
   implements ITransactionDetails, ISerializable {

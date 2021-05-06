@@ -8,7 +8,7 @@
 
 import ConnectionNames from "@models/Connection/names";
 
-import { DuplexConnectionParams } from "@fractalwallet/types";
+import { DuplexConnectionParams } from "@pluginTypes/index";
 
 export const inpage: DuplexConnectionParams = {
   name: ConnectionNames.CONTENT_SCRIPT,

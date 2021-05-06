@@ -5,7 +5,7 @@ import ConnectionTypes from "@models/Connection/types";
 
 import { ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED } from "@background/Errors";
 
-import { IConnectionPorts, IPort } from "@fractalwallet/types";
+import { IConnectionPorts, IPort } from "@pluginTypes/index";
 
 import WindowsService from "@services/WindowsService";
 

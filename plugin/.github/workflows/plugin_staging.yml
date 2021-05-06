@@ -3,7 +3,7 @@ name: Plugin Staging Build Workflow
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - "*"
 
@@ -47,9 +47,6 @@ jobs:
         working-directory: ${{ github.workspace }}/plugin
         run: yarn lint
 
-      - name: Build types
-        run: yarn types:build
-
       - name: Run tests
         run: yarn test
         working-directory: ${{ github.workspace }}/plugin
@@ -86,9 +83,6 @@ jobs:
 
       - name: Install node dependencies
         run: yarn install
-
-      - name: Build types
-        run: yarn types:build
 
       - name: Build staging plugin extension
         run: yarn plugin:build

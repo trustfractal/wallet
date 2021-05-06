@@ -6,7 +6,7 @@ import {
   IAuthWatcher,
   SubscribedActions,
   WatcherInvokation,
-} from "@fractalwallet/types";
+} from "@pluginTypes/index";
 
 import { authTypes } from "@redux/stores/application/reducers/auth";
 

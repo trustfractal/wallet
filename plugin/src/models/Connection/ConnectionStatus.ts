@@ -1,4 +1,4 @@
-import { IConnectionStatus, ISerializable } from "@fractalwallet/types";
+import { IConnectionStatus, ISerializable } from "@pluginTypes/index";
 
 export default class ConnectionStatus
   implements IConnectionStatus, ISerializable {

@@ -6,4 +6,7 @@
 	url = git@github.com:trustfractal/fractal-sdk.git
 [submodule "backend"]
 	path = backend
-	url = git@github.com:trustfractal/goldfish.git
+    url = git@github.com:trustfractal/goldfish.git
+[submodule "plugin"]
+     path = plugin
+     url = git@github.com:trustfractal/wallet.git

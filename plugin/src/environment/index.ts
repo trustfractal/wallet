@@ -1,4 +1,4 @@
-import { Environment } from "@fractalwallet/types";
+import { Environment } from "@pluginTypes/index";
 
 const {
   REACT_APP_GOLDFISH_URL: GOLDFISH_URL = "",

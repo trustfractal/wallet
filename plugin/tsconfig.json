@@ -27,7 +27,8 @@
       "@services/*": ["src/services/*"],
       "@environment/*": ["src/environment/*"],
       "@contracts/*": ["src/contracts/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@pluginTypes/*": ["src/types/*"]
     }
   },
   "include": ["src"],

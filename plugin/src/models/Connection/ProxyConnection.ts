@@ -5,7 +5,7 @@ import {
   IInvokation,
   IResponse,
   IProxyConnection,
-} from "@fractalwallet/types";
+} from "@pluginTypes/index";
 
 import ConnectionNames from "@models/Connection/names";
 

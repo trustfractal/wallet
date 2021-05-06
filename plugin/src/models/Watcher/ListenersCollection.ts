@@ -1,4 +1,4 @@
-import { IListener } from "@fractalwallet/types";
+import { IListener } from "@pluginTypes/index";
 
 import Collection from "@models/Base/BaseCollection";
 

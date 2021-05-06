@@ -1,4 +1,4 @@
-import { ICredential } from "@fractalwallet/types";
+import { ICredential } from "@pluginTypes/index";
 
 import Collection from "@models/Base/BaseCollection";
 import Credential from "@models/Credential";

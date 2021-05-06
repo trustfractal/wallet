@@ -34,6 +34,7 @@ module.exports = {
     "^\\@environment(.*)$": "<rootDir>/src/environment/$1",
     "^\\@contracts(.*)$": "<rootDir>/src/contracts/$1",
     "^\\@utils(.*)$": "<rootDir>/src/utils/$1",
+    "^\\@pluginTypes(.*)$": "<rootDir>/src/types/$1",
   },
   moduleFileExtensions: [
     "web.js",

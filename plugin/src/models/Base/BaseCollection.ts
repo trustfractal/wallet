@@ -1,4 +1,4 @@
-import { ISerializable, ICollection } from "@fractalwallet/types";
+import { ISerializable, ICollection } from "@pluginTypes/index";
 
 export default class BaseCollection<
     T extends ISerializable & Record<string, any>

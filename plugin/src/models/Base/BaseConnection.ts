@@ -8,7 +8,7 @@ import {
   IMiddleware,
   AsyncCallback,
   Message,
-} from "@fractalwallet/types";
+} from "@pluginTypes/index";
 
 import ConnectionNames from "@models/Connection/names";
 import {

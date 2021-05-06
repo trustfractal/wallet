@@ -1,5 +1,5 @@
 import { AttestationRequest as SDKAttestationRequest } from "@fractalwallet/sdk";
-import { ISerializable } from "@fractalwallet/types";
+import { ISerializable } from "@pluginTypes/index";
 
 export default class AttestationRequest
   extends SDKAttestationRequest

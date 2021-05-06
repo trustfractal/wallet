@@ -1,4 +1,4 @@
-import { WatcherInvokation } from "@fractalwallet/types";
+import { WatcherInvokation } from "@pluginTypes/index";
 
 import Watcher from "@models/Watcher";
 import AuthWatcher from "@models/Watcher/AuthWatcher";

@@ -12,7 +12,7 @@ import {
   Staking as IStaking,
   ClaimsRegistry as IClaimsRegistry,
   IWeb3ProviderService,
-} from "@fractalwallet/types";
+} from "@pluginTypes/index";
 import { Claim, ClaimType, IClaimProperties } from "@fractalwallet/sdk";
 
 import StakingDetails from "@models/Staking/StakingDetails";

@@ -7,7 +7,7 @@ import {
   IResponse,
   IInvokation,
   IBackgroundConnection,
-} from "@fractalwallet/types";
+} from "@pluginTypes/index";
 
 export default class BackgroundConnection
   extends BaseConnection

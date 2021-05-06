@@ -9,7 +9,7 @@ import {
   IResponse,
   IInvokation,
   IContentScriptConnection,
-} from "@fractalwallet/types";
+} from "@pluginTypes/index";
 
 import { background } from "@models/Connection/params";
 

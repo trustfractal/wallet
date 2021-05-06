@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { EtherscanApiResponse } from "@fractalwallet/types";
+import { EtherscanApiResponse } from "@pluginTypes/index";
 
 import EtherscanApiStatus from "./status";
 

@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import MessageTypes from "@models/Message/types";
 
-import { IInvokation } from "@fractalwallet/types";
+import { IInvokation } from "@pluginTypes/index";
 
 export default class Invokation implements IInvokation {
   public static readonly NAME = MessageTypes.INVOKATION;

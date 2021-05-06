@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 
-import { ICredential } from "@fractalwallet/types";
+import { ICredential } from "@pluginTypes/index";
 
 import TopComponent from "@popup/components/common/TopComponent";
 import Text, {

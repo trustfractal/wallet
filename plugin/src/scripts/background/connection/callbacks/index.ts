@@ -1,4 +1,4 @@
-import { ConnectionCallbacks } from "@fractalwallet/types";
+import { ConnectionCallbacks } from "@pluginTypes/index";
 
 import AppCallbacks from "./AppCallbacks";
 import CredentialsCallbacks from "./CredentialsCallbacks";

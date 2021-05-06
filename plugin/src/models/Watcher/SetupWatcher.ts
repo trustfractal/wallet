@@ -6,7 +6,7 @@ import {
   ISetupWatcher,
   SubscribedActions,
   WatcherInvokation,
-} from "@fractalwallet/types";
+} from "@pluginTypes/index";
 
 import { walletTypes } from "@redux/stores/user/reducers/wallet";
 
