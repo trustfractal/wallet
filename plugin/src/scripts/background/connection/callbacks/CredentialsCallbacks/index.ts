@@ -80,14 +80,14 @@ export const getAttestationRequest = (
     }
   });
 
-export const hasCredential = ([level]: [string]) =>
+export const hasCredential = ([id]: [string]) =>
   new Promise((resolve, reject) => {
     try {
       const credentials: CredentialsCollection = getCredentials(
         UserStore.getStore().getState(),
       );
 
-      const credential = credentials.getByField("level", level);
+      const credential = credentials.getByField("id", id);
 
       resolve(credential !== undefined);
     } catch (error) {
@@ -96,7 +96,7 @@ export const hasCredential = ([level]: [string]) =>
     }
   });
 
-export const isCredentialValid = ([level]: [string], port: string) =>
+export const isCredentialValid = ([id]: [string], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
       const address: string = getAccount(UserStore.getStore().getState());
@@ -104,10 +104,10 @@ export const isCredentialValid = ([level]: [string], port: string) =>
         UserStore.getStore().getState(),
       );
 
-      const credential = credentials.getByField("level", level);
+      const credential = credentials.getByField("id", id);
 
       if (!credential) {
-        reject(ERROR_CREDENTIAL_NOT_FOUND(level));
+        reject(ERROR_CREDENTIAL_NOT_FOUND(id));
         return;
       }
 
@@ -124,7 +124,7 @@ export const isCredentialValid = ([level]: [string], port: string) =>
 
       // update credential data
       await UserStore.getStore().dispatch(
-        credentialsActions.setCredentialValidity({ level, valid }),
+        credentialsActions.setCredentialValidity({ id, valid }),
       );
 
       resolve(valid);

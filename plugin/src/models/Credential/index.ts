@@ -10,12 +10,14 @@ import TransactionDetails from "@models/Transaction/TransactionDetails";
 export default class Credential
   extends SDKAttestedClaim
   implements ICredential, ISerializable {
+  public id: string;
   public level: string;
   public transaction?: ITransactionDetails;
   public valid: boolean;
 
   public constructor(
     credential: SDKAttestedClaim,
+    id: string,
     level: string,
     transaction?: ITransactionDetails,
     valid: boolean = false,
@@ -32,6 +34,7 @@ export default class Credential
       claimTypeHash: credential.claimTypeHash,
       claimHashTree: credential.claimHashTree,
     });
+    this.id = id;
     this.level = level;
     this.transaction = transaction;
     this.valid = valid;
@@ -49,6 +52,7 @@ export default class Credential
       claimerSignature: this.claimerSignature,
       claimTypeHash: this.claimTypeHash,
       claimHashTree: this.claimHashTree,
+      id: this.id,
       level: this.level,
       transaction: this.transaction?.serialize(),
       valid: this.valid,
@@ -67,6 +71,7 @@ export default class Credential
       claimerSignature,
       claimTypeHash,
       claimHashTree,
+      id,
       level,
       transaction,
       valid,
@@ -91,6 +96,6 @@ export default class Credential
       transactionInstance = TransactionDetails.parse(transaction);
     }
 
-    return new Credential(attestedCLaim, level, transactionInstance, valid);
+    return new Credential(attestedCLaim, id, level, transactionInstance, valid);
   }
 }

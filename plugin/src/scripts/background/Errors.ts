@@ -20,10 +20,10 @@ export const ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED = (): BackgroundScr
 };
 
 export const ERROR_CREDENTIAL_NOT_FOUND = (
-  level: string,
+  id: string,
 ): BackgroundScriptError => {
   return new BackgroundScriptError(
     ErrorCode.ERROR_CREDENTIAL_NOT_FOUND,
-    `BackgroundScript: Credential with level ${level} not found`,
+    `BackgroundScript: Credential with id ${id} not found`,
   );
 };

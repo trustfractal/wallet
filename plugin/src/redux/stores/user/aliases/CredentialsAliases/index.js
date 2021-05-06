@@ -35,8 +35,8 @@ export const updateCredential = ({ payload: serializedUpdatedCredential }) => {
 
     // update credential
     const updatedCredential = credentials.updateByField(
-      "level",
-      credential.level,
+      "id",
+      credential.id,
       credential,
     );
 
@@ -49,31 +49,31 @@ export const updateCredential = ({ payload: serializedUpdatedCredential }) => {
   };
 };
 
-export const removeCredential = ({ payload: level }) => {
+export const removeCredential = ({ payload: id }) => {
   return async (dispatch, getState) => {
     const credentials = getCredentials(getState());
 
     // get credential
-    const credential = credentials.getByField("level", level);
+    const credential = credentials.getByField("id", id);
 
     if (!credential) {
       return;
     }
 
     // remove credential
-    credentials.removeByField("level", credential.level);
+    credentials.removeByField("id", credential.id);
 
     // update redux store
     dispatch(credentialsActions.setCredentials(credentials));
   };
 };
 
-export const fetchCredentialValidity = ({ payload: level }) => {
+export const fetchCredentialValidity = ({ payload: id }) => {
   return async (dispatch, getState) => {
     const address = getAccount(getState());
     const credentials = getCredentials(getState());
 
-    const credential = credentials.getByField("level", level);
+    const credential = credentials.getByField("id", id);
     const claimsRegistryContractAddress = getClaimsRegistryContractAddress(
       AppStore.getStore().getState(),
     );
@@ -91,21 +91,21 @@ export const fetchCredentialValidity = ({ payload: level }) => {
     );
 
     // update redux store
-    dispatch(credentialsActions.setCredentialValidity({ level, valid }));
+    dispatch(credentialsActions.setCredentialValidity({ id, valid }));
   };
 };
 
-export const setCredentialValidity = ({ payload: { level, valid } }) => {
+export const setCredentialValidity = ({ payload: { id, valid } }) => {
   return async (dispatch, getState) => {
     const credentials = getCredentials(getState());
 
-    const credential = credentials.getByField("level", level);
+    const credential = credentials.getByField("id", id);
 
     // update credential
     credential.valid = valid;
     const updatedCredential = credentials.updateByField(
-      "level",
-      credential.level,
+      "id",
+      credential.id,
       credential,
     );
 

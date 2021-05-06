@@ -26,7 +26,7 @@ export default class CredentialsValidityPolling {
       // fetch credential validity
       for (const credential of credentials) {
         UserStore.getStore().dispatch(
-          credentialsActions.fetchCredentialValidity(credential.level),
+          credentialsActions.fetchCredentialValidity(credential.id),
         );
       }
     }, intervalTime);

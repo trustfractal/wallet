@@ -18,6 +18,7 @@ export interface IFractalInpageProvider {
   stake(
     amount: string,
     token: string,
+    id: string,
     level: string
   ): Promise<ITransactionDetails>;
   withdraw(token: string): Promise<ITransactionDetails>;
@@ -31,10 +32,11 @@ export interface IFractalInpageProvider {
   ): Promise<BigNumber | undefined>;
   credentialStore(
     credential: IAttestedClaim,
+    id: string,
     level: string
   ): Promise<ITransactionDetails>;
-  hasCredential(level: string): Promise<boolean>;
-  isCredentialValid(level: string): Promise<boolean>;
+  hasCredential(id: string, level: string): Promise<boolean>;
+  isCredentialValid(id: string, level: string): Promise<boolean>;
   getStakingDetails(token: string): Promise<IStakingDetails>;
   setupPlugin(): Promise<IConnectionStatus>;
   verifyConnection(): Promise<IConnectionStatus>;

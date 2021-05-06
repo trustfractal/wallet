@@ -80,13 +80,14 @@ export default class InpageProvider implements IFractalInpageProvider {
   public async stake(
     amount: string,
     token: TokenTypes,
+    id: string,
     level: string,
   ): Promise<ITransactionDetails> {
     this.ensureFractalIsInitialized();
 
     const serializedTransactionDetails = await ExtensionConnection.invoke(
       ConnectionTypes.STAKE_BACKGROUND,
-      [amount, token, level],
+      [amount, token, `${id}:${level}`],
     );
 
     return TransactionDetails.parse(serializedTransactionDetails);
@@ -136,13 +137,14 @@ export default class InpageProvider implements IFractalInpageProvider {
 
   public async credentialStore(
     credentialJSON: ICredential,
+    id: string,
     level: string,
   ): Promise<ITransactionDetails> {
     this.ensureFractalIsInitialized();
 
     const sdkCredential = new SDKAttestedClaim(credentialJSON);
 
-    const credential = new Credential(sdkCredential, level);
+    const credential = new Credential(sdkCredential, `${id}:${level}`, level);
 
     const serializedTransactionDetails = await ExtensionConnection.invoke(
       ConnectionTypes.CREDENTIAL_STORE_BACKGROUND,
@@ -152,21 +154,21 @@ export default class InpageProvider implements IFractalInpageProvider {
     return TransactionDetails.parse(serializedTransactionDetails);
   }
 
-  public hasCredential(level: string): Promise<boolean> {
+  public hasCredential(id: string, level: string): Promise<boolean> {
     this.ensureFractalIsInitialized();
 
     return ExtensionConnection.invoke(
       ConnectionTypes.HAS_CREDENTIAL_BACKGROUND,
-      [level],
+      [`${id}:${level}`],
     );
   }
 
-  public isCredentialValid(level: string): Promise<boolean> {
+  public isCredentialValid(id: string, level: string): Promise<boolean> {
     this.ensureFractalIsInitialized();
 
     return ExtensionConnection.invoke(
       ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND,
-      [level],
+      [`${id}:${level}`],
     );
   }
 

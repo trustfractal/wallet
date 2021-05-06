@@ -102,7 +102,7 @@ export const approveStake = (
   });
 
 export const stake = (
-  [amount, token, level]: [string, TokenTypes, string],
+  [amount, token, id]: [string, TokenTypes, string],
   port: string,
 ) =>
   new Promise(async (resolve, reject) => {
@@ -117,10 +117,10 @@ export const stake = (
       )[token];
 
       // find credential
-      const credential = credentials.getByField("level", level);
+      const credential = credentials.getByField("id", id);
 
       if (!credential) {
-        reject(ERROR_CREDENTIAL_NOT_FOUND(level));
+        reject(ERROR_CREDENTIAL_NOT_FOUND(id));
         return;
       }
 
