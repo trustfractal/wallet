@@ -9,6 +9,7 @@ export const startup = () => {
   return async (dispatch) => {
     // setup addresses
     const {
+      stakingEnabled,
       fclContract,
       fclUniswapContract,
       stackingFclContract,
@@ -23,6 +24,7 @@ export const startup = () => {
         staking: {
           FCL: fclContract,
           FCL_ETH_LP: fclUniswapContract,
+          enabled: stakingEnabled === "1",
         },
         erc20: {
           FCL: stackingFclContract,

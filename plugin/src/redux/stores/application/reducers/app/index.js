@@ -24,6 +24,7 @@ export const initialState = {
     staking: {
       FCL: "",
       FCL_ETH_LP: "",
+      enabled: false,
     },
     erc20: {
       FCL: "",

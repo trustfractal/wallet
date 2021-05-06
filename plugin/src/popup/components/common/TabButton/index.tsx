@@ -2,6 +2,8 @@ import React from "react";
 
 import styled, { css } from "styled-components";
 
+import Text, { TextHeights, TextSizes } from "@popup/components/common/Text";
+
 const RootContainer = styled.button<{
   index: number;
   total: number;
@@ -10,6 +12,9 @@ const RootContainer = styled.button<{
 }>`
   display: flex;
   flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
   color: var(--c-orange);
   background: var(--c-transparent);
@@ -18,12 +23,6 @@ const RootContainer = styled.button<{
   border-left: 1px solid var(--c-orange);
 
   padding: var(--s-14) var(--s-35);
-
-  display: flex;
-  flex-direction: row;
-
-  align-items: center;
-  justify-content: center;
 
   ${(props) =>
     props.disabled &&
@@ -53,6 +52,10 @@ const RootContainer = styled.button<{
     `}
 `;
 
+const ComingSoonContainer = styled.span`
+  color: var(--c-white);
+`;
+
 export type TabButtonProps = {
   disabled: boolean;
   selected: boolean;
@@ -79,6 +82,13 @@ function TabButton(
       {...otherProps}
     >
       {label}
+      {disabled && (
+        <ComingSoonContainer>
+          <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+            Coming Soon
+          </Text>
+        </ComingSoonContainer>
+      )}
     </RootContainer>
   );
 }

@@ -34,3 +34,8 @@ export const getAttesterAdddress = createSelector(
   (state) => state.app,
   (app) => app.addresses.issuerAddress,
 );
+
+export const isStakingEnabled = createSelector(
+  (state) => state.app,
+  (app) => app.addresses.staking.enabled,
+);

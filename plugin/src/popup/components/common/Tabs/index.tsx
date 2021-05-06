@@ -16,6 +16,7 @@ type TabType = {
   label: string;
   props: any;
   component: (props: any) => JSX.Element;
+  disabled?: boolean;
 };
 
 export type TabsProps = {
@@ -38,7 +39,7 @@ function Tabs(props: TabsProps & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <RootContainer {...otherProps}>
       <TabsButtonsContainer>
-        {tabs.map(({ id, label }, index) => (
+        {tabs.map(({ id, label, disabled }, index) => (
           <TabButton
             key={id}
             index={index}
@@ -46,6 +47,7 @@ function Tabs(props: TabsProps & React.HTMLAttributes<HTMLDivElement>) {
             onClick={() => setSelected(id)}
             selected={id === selected}
             label={label}
+            disabled={disabled}
           />
         ))}
       </TabsButtonsContainer>
