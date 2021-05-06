@@ -1,4 +1,12 @@
 import reportWebVitals from "./reportWebVitals";
+import environment from "@environment/index";
+
+// remove logs on prod
+if (!environment.IS_DEV) {
+  console.log = () => {};
+  console.warn = () => {};
+  console.error = () => {};
+}
 
 require("./popup");
 

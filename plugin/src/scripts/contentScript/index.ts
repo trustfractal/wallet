@@ -10,6 +10,15 @@ import ConnectionTypes from "@models/Connection/types";
 import { injectScript } from "./injector";
 import ConnectionNames from "@models/Connection/names";
 
+import environment from "@environment/index";
+
+// remove logs on prod
+if (!environment.IS_DEV) {
+  console.log = () => {};
+  console.warn = () => {};
+  console.error = () => {};
+}
+
 const sdk = chrome.runtime.getURL("sdk.bundle.js");
 injectScript(sdk);
 
