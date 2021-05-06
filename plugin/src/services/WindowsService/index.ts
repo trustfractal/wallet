@@ -196,6 +196,8 @@ class WindowsService {
 
       this.popupId = popupWindow.id;
     }
+
+    return popupWindow;
   }
 
   private async getPopup() {
@@ -333,7 +335,7 @@ class WindowsService {
   async getFractalTab(): Promise<chrome.tabs.Tab | undefined> {
     // get fractal tab
     const tabs = await this.queryTabs({
-      url: `*://${environment.FRACTAL_WEBSITE_HOSTNAME}/*`,
+      url: `*://*.${environment.FRACTAL_WEBSITE_HOSTNAME}/*`,
     });
 
     return tabs[0];

@@ -15,17 +15,9 @@ function loginFlow(): Promise<void> {
   return new Promise(async (resolve, reject) => {
     let unlisten = () => {};
 
-    // check if the popup is open
-    const popups = await WindowsService.getAllPopups();
-
-    if (popups.length > 0) {
-      reject(ERROR_LOGIN_WINDOW_OPEN());
-      return;
-    }
-
     const window = await WindowsService.createPopup();
 
-    if (!window) {
+    if (window === undefined) {
       reject(ERROR_LOGIN_WINDOW_OPEN());
       return;
     }

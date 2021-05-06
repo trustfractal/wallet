@@ -12,15 +12,7 @@ export default class FractalWebpageMiddleware implements IMiddleware {
     const fractalTab = await ContentScriptConnection.getFractalConnectionPort();
 
     if (!fractalTab) {
-      if (environment.IS_DEV) {
-        WindowsService.openTab(
-          `http://${environment.FRACTAL_WEBSITE_HOSTNAME}`,
-        );
-      } else {
-        WindowsService.openTab(
-          `https://${environment.FRACTAL_WEBSITE_HOSTNAME}`,
-        );
-      }
+      WindowsService.openTab(`https://${environment.FRACTAL_WEBSITE_HOSTNAME}`);
 
       throw ERROR_NOT_ON_FRACTAL();
     }
