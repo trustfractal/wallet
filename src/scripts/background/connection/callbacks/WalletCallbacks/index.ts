@@ -1,3 +1,5 @@
+import { utils as ethersUtils } from "ethers";
+
 import AuthMiddleware from "@models/Connection/middlewares/AuthMiddleware";
 import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
 
@@ -84,6 +86,9 @@ export const approveStake = (
       );
 
       // set staking status to approval pending
+      await UserStore.getStore().dispatch(
+        walletActions.setStakingAllowedAmount(ethersUtils.parseEther(amount)),
+      );
       await UserStore.getStore().dispatch(
         walletActions.setStakingStatus({
           status: StakingStatus.APPROVAL_PENDING,

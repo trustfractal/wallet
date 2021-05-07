@@ -385,7 +385,11 @@ class Web3ProviderService implements IWeb3ProviderService {
 
       if (allowanceValue.lt(etherAmount)) {
         // pre-approve stake for the address
-        await tokenContract.approve(stakingTokenContractAddress, etherAmount);
+        const result = await tokenContract.approve(
+          stakingTokenContractAddress,
+          etherAmount,
+        );
+        await result.wait();
       }
 
       // stake amount
