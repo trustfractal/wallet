@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 import ConnectionTypes from "@models/Connection/types";
 import EthereumProviderService from "@services/EthereumProviderService/Web3ProviderService";
 import Credential from "@models/Credential";
@@ -47,15 +49,24 @@ export default class InpageProvider implements IFractalInpageProvider {
     }
   }
 
+  public async resetStaking(token: TokenTypes): Promise<void> {
+    this.ensureFractalIsInitialized();
+
+    return ExtensionConnection.invoke(
+      ConnectionTypes.RESET_STAKING_BACKGROUND,
+      [token],
+    );
+  }
+
   public async approveStake(
-    amount: string,
+    amount: string | BigNumber,
     token: TokenTypes,
   ): Promise<ITransactionDetails | undefined> {
     this.ensureFractalIsInitialized();
 
     const serializedTransactionDetails = await ExtensionConnection.invoke(
       ConnectionTypes.APPROVE_STAKE_BACKGROUND,
-      [amount, token],
+      [BigNumber.from(amount).toJSON(), token],
     );
 
     if (serializedTransactionDetails)
@@ -63,7 +74,7 @@ export default class InpageProvider implements IFractalInpageProvider {
   }
 
   public async stake(
-    amount: string,
+    amount: string | BigNumber,
     token: TokenTypes,
     id: string,
     level: string,
@@ -72,7 +83,7 @@ export default class InpageProvider implements IFractalInpageProvider {
 
     const serializedTransactionDetails = await ExtensionConnection.invoke(
       ConnectionTypes.STAKE_BACKGROUND,
-      [amount, token, `${id}:${level}`],
+      [BigNumber.from(amount).toJSON(), token, `${id}:${level}`],
     );
 
     return TransactionDetails.parse(serializedTransactionDetails);

@@ -522,7 +522,7 @@ function Staking(props: StakingProps) {
             </Text>
           </DateLabelContainer>
           <DateContainer>
-            <Text>{pool.startDate}</Text>
+            <Text>{pool.endDate}</Text>
           </DateContainer>
           <Pool {...pool} onClick={onClick} />
         </div>

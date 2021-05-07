@@ -40,6 +40,7 @@ proxyConnection
   .proxy(ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND)
   .proxy(ConnectionTypes.SETUP_PLUGIN_BACKGROUND)
   .proxy(ConnectionTypes.STAKE_BACKGROUND)
+  .proxy(ConnectionTypes.RESET_STAKING_BACKGROUND)
   .proxy(ConnectionTypes.VERIFY_CONNECTION_BACKGROUND)
   .proxy(ConnectionTypes.WITHDRAW_BACKGROUND)
 
