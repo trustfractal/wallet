@@ -826,12 +826,12 @@ describe("Unit Windows Service", () => {
     });
   });
 
-  describe("getActiveTab()", () => {
+  describe("getActiveTabs()", () => {
     afterEach(() => {
       jest.resetAllMocks();
     });
 
-    it("getActiveTab gets the active tab", async () => {
+    it("getActiveTabs gets the active tabs", async () => {
       // Prepare
       const windowId = 12;
       const returnedTabs: chrome.tabs.Tab[] = [
@@ -879,15 +879,15 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      const result = await WindowsService.getActiveTab();
+      const result = await WindowsService.getActiveTabs();
 
       // Assert
-      const expectedResult = returnedTabs[0];
+      const expectedResult = returnedTabs;
       expect(result).toBe(expectedResult);
       expect(chrome.tabs.query).toHaveBeenCalled();
     });
 
-    it("When there is no active tabs, getActiveTab return undefined", async () => {
+    it("When there is no active tabs, getActiveTabs return empty", async () => {
       // Prepare
       const returnedWindow: chrome.windows.Window = {
         top: 0,
@@ -920,11 +920,10 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      const result = await WindowsService.getActiveTab();
+      const result = await WindowsService.getActiveTabs();
 
       // Assert
-      const expectedResult = undefined;
-      expect(result).toBe(expectedResult);
+      expect(result).toHaveLength(0);
       expect(chrome.tabs.query).toHaveBeenCalled();
     });
   });
