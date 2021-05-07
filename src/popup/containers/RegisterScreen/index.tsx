@@ -14,6 +14,8 @@ import Register from "@popup/components/Register";
 
 import WindowsService from "@services/WindowsService";
 
+import environment from "@environment/index";
+
 function RegisterScreen() {
   const dispatch = useAppDispatch();
 
@@ -22,11 +24,11 @@ function RegisterScreen() {
 
   const onClickTerms = () =>
     WindowsService.createTab({
-      url: "https://fractal.id/documents/end-user-agreement",
+      url: `${environment.FRACTAL_WEBSITE_URL}/documents/end-user-agreement`,
     });
   const onClickPrivacyPolicy = () =>
     WindowsService.createTab({
-      url: "https://fractal.id/documents/privacy-policy",
+      url: `${environment.FRACTAL_WEBSITE_URL}/documents/privacy-policy`,
     });
 
   const onNext = (password: string) => {

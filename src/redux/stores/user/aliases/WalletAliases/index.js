@@ -32,7 +32,7 @@ export const connectWallet = () => {
       await new FractalWebpageMiddleware().apply();
 
       // get active connected chrome port
-      const fractalPort = await ContentScriptConnection.getFractalConnectionPort();
+      const fractalPort = await ContentScriptConnection.getConnectedPort();
 
       if (!fractalPort) throw ERROR_NOT_ON_FRACTAL();
 

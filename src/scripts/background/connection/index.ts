@@ -8,6 +8,7 @@ import { ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED } from "@background/Err
 import { IConnectionPorts, IPort } from "@pluginTypes/index";
 
 import WindowsService from "@services/WindowsService";
+import environment from "@environment/index";
 
 class Connection {
   private static instance?: Connection;
@@ -42,9 +43,17 @@ class Connection {
   }
 
   public getConnectionPorts(): IConnectionPorts {
+    return this.connection!.ports;
+  }
+
+  public getConnectedPort(): Promise<IPort | undefined> {
     this.ensureConnectionIsInitialized();
 
-    return this.connection!.ports;
+    if (environment.IS_DEV) {
+      return this.getActiveConnectionPort();
+    }
+
+    return this.getFractalConnectionPort();
   }
 
   public async getFractalConnectionPort(): Promise<IPort | undefined> {
@@ -73,9 +82,9 @@ class Connection {
     this.ensureConnectionIsInitialized();
 
     // get current active tab
-    const activeTab = await WindowsService.getActiveTab();
+    const activeTabs = await WindowsService.getActiveTabs();
 
-    if (!activeTab) return;
+    if (activeTabs.length === 0) return;
 
     // get connection ports
     const connectionPorts = this.getConnectionPorts();
@@ -84,8 +93,10 @@ class Connection {
     for (const portId in connectionPorts) {
       const connectedPort = connectionPorts[portId];
 
-      if (connectedPort.port?.sender?.tab?.id === activeTab.id)
-        return connectedPort;
+      for (const activeTab of activeTabs) {
+        if (connectedPort.port?.sender?.tab?.id === activeTab.id)
+          return connectedPort;
+      }
     }
   }
 
