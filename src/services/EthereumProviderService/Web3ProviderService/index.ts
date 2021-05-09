@@ -352,35 +352,6 @@ class Web3ProviderService implements IWeb3ProviderService {
     }
   }
 
-  public async getAllowedAmount(
-    address: string,
-    tokenContractAddress: string,
-    stakingTokenContractAddress: string,
-  ): Promise<string> {
-    try {
-      // prepare data
-      const signer = this.web3Provider!.getSigner(address);
-
-      // init smart contract
-      const tokenContract = new Contract(
-        tokenContractAddress,
-        ERC20.abi,
-        signer,
-      ) as IERC20;
-
-      // get allowance value
-      const allowanceValue = await tokenContract.allowance(
-        address,
-        stakingTokenContractAddress,
-      );
-
-      return allowanceValue.toJSON();
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-
   public async stake(
     address: string,
     amount: string,

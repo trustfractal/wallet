@@ -1,5 +1,3 @@
-import { BigNumber } from "ethers";
-
 import ConnectionTypes from "@models/Connection/types";
 import EthereumProviderService from "@services/EthereumProviderService/Web3ProviderService";
 import Credential from "@models/Credential";
@@ -49,19 +47,6 @@ export default class InpageProvider implements IFractalInpageProvider {
     }
   }
 
-  public async getTransactionEstimationTime(
-    gasPrice: BigNumber,
-  ): Promise<BigNumber | undefined> {
-    this.ensureFractalIsInitialized();
-
-    const serializedEstimatedTime = await ExtensionConnection.invoke(
-      ConnectionTypes.GET_TRANSACTION_ESTIMATION_TIME_BACKGROUND,
-      [gasPrice.toJSON()],
-    );
-
-    if (serializedEstimatedTime) return BigNumber.from(serializedEstimatedTime);
-  }
-
   public async approveStake(
     amount: string,
     token: TokenTypes,
@@ -91,17 +76,6 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
 
     return TransactionDetails.parse(serializedTransactionDetails);
-  }
-
-  public async getAllowedAmount(token: string): Promise<BigNumber> {
-    this.ensureFractalIsInitialized();
-
-    const serializedAllowedAmount = await ExtensionConnection.invoke(
-      ConnectionTypes.GET_ALLOWED_AMOUNT_BACKGROUND,
-      [token],
-    );
-
-    return BigNumber.from(serializedAllowedAmount);
   }
 
   public async withdraw(token: TokenTypes): Promise<ITransactionDetails> {

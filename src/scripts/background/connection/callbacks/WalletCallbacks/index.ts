@@ -1,5 +1,3 @@
-import { BigNumber } from "ethers";
-
 import AuthMiddleware from "@models/Connection/middlewares/AuthMiddleware";
 import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
 
@@ -26,7 +24,6 @@ import {
 } from "@redux/stores/application/reducers/app/selectors";
 import StakingDetails from "@models/Staking/StakingDetails";
 
-import EtherscanService from "@services/EtherscanService";
 import StakingStatus from "@models/Staking/status";
 
 export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
@@ -151,52 +148,6 @@ export const stake = (
     }
   });
 
-export const getTransactionEstimationTime = ([serializedGasPrice]: [string]) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      // parse gas fee
-      const gasPrice = BigNumber.from(serializedGasPrice);
-
-      // calculate estimated confirmation time
-      const estimatedTime = await EtherscanService.getEstimationOfConfirmationTime(
-        gasPrice,
-      );
-
-      if (estimatedTime) {
-        resolve(estimatedTime.toJSON());
-      }
-
-      resolve(estimatedTime);
-    } catch (error) {
-      console.error(error);
-      reject(error);
-    }
-  });
-
-export const getAllowedAmount = ([token]: [TokenTypes], port: string) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const address = getAccount(UserStore.getStore().getState());
-      const tokenContractAddress = getTokensContractsAddresses(
-        AppStore.getStore().getState(),
-      )[token];
-      const stakingContractAddress = getStakingContractsAddresses(
-        AppStore.getStore().getState(),
-      )[token];
-
-      const serializedAllowedAmount = await ContentScriptConnection.invoke(
-        ConnectionTypes.GET_ALLOWED_AMOUNT_INPAGE,
-        [address, tokenContractAddress, stakingContractAddress],
-        port,
-      );
-
-      resolve(serializedAllowedAmount);
-    } catch (error) {
-      console.error(error);
-      reject(error);
-    }
-  });
-
 export const withdraw = ([token]: [TokenTypes], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
@@ -231,16 +182,8 @@ const Callbacks = {
     callback: approveStake,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
-  [ConnectionTypes.GET_ALLOWED_AMOUNT_BACKGROUND]: {
-    callback: getAllowedAmount,
-    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
-  },
   [ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND]: {
     callback: getStakingDetails,
-    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
-  },
-  [ConnectionTypes.GET_TRANSACTION_ESTIMATION_TIME_BACKGROUND]: {
-    callback: getTransactionEstimationTime,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
   [ConnectionTypes.STAKE_BACKGROUND]: {
