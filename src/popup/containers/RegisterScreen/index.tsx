@@ -16,6 +16,8 @@ import WindowsService from "@services/WindowsService";
 
 import environment from "@environment/index";
 
+import { importFile } from "@utils/FileUtils";
+
 function RegisterScreen() {
   const dispatch = useAppDispatch();
 
@@ -36,11 +38,16 @@ function RegisterScreen() {
     dispatch(authActions.signUpRequest());
   };
 
+  const onImport = () => {
+    importFile();
+  };
+
   return (
     <Register
       onNext={onNext}
       onClickTerms={onClickTerms}
       onClickPrivacyPolicy={onClickPrivacyPolicy}
+      onImport={onImport}
       loading={isLoading}
       error={signUpError}
     />

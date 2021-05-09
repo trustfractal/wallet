@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 
-import {
-  useAppSelector,
-  useAppDispatch,
-} from "@redux/stores/application/context";
 import { AppStore } from "@redux/stores/application";
-import { UserStore } from "@redux/stores/user";
-// import appActions from "@redux/stores/application/reducers/app";
+import { useAppSelector, useAppStore } from "@redux/stores/application/context";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
+
+import { UserStore } from "@redux/stores/user";
+import { useUserSelector, useUserStore } from "@redux/stores/user/context";
+import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
 
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
 import Text, {
@@ -16,11 +15,12 @@ import Text, {
   TextSizes,
   TextWeights,
 } from "@popup/components/common/Text";
-import Icon, { IconNames } from "@popup/components/common/Icon";
+import { IconNames } from "@popup/components/common/Icon";
+import Menu from "@popup/components/common/Menu";
 import TokenTypes from "@models/Token/types";
-import { useUserSelector } from "@redux/stores/user/context";
-import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
+
 import { parseAndFormatEther } from "@utils/FormatUtils";
+import { exportFile } from "@utils/FileUtils";
 
 const LogoNavbarContainer = styled.div`
   display: flex;
@@ -51,14 +51,19 @@ const LogoContainer = styled.div`
   margin-right: var(--s-24);
 `;
 
-const BalanceAmount = styled.div`
+const BalanceAmountContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
 
   margin-bottom: var(--s-4);
 `;
-const BalanceAmountContainer = styled.div``;
+
+const BalanceAmount = styled.div`
+  width: 60px;
+`;
+
+const BalanceAmountsContainer = styled.div``;
 
 const BalanceContainer = styled.div`
   flex: 1;
@@ -77,84 +82,26 @@ const BalanceToken = styled.div`
   margin-left: var(--s-12);
 `;
 
-const MenuButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  cursor: pointer;
-  background: ${(props) => (props.active ? "#ff671d" : "transparent")};
-  transition-color: background 0.3s ease-in-out;
-`;
-
-const Menu = styled.div`
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  padding: 0 26px;
-  width: 292px;
-  right: 8px;
-  top: 100%;
-  border-radius: 12px;
-  background: #ff671d;
-  transform: ${(props) =>
-    props.active ? "translateX(0)" : "translateX(calc(100% + 8px))"};
-  transition: transform 0.3s ease-in-out;
-  z-index: 1;
-`;
-
-const MenuOverlay = styled.div`
-  position: absolute;
-  width: 292px;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: #132c53;
-  opacity: ${(props) => (props.active ? "0.2" : "0")};
-  transition: opacity 0.3s ease-in-out;
-  z-index: 0;
-  pointer-events: none;
-`;
-
-const MenuLink = styled.button`
-  display: flex;
-  align-items: center;
-  padding: 24px 0;
-  background: none;
-  color: white;
-  cursor: pointer;
-`;
-
-const IconContainer = styled.div`
-  margin-right: 12px;
-`;
-
 function BalanceNavbar() {
-  const dispatch = useAppDispatch();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [encodedFile, setEncodedFile] = useState(false);
+  const appStore = useAppStore();
+  const userStore = useUserStore();
+
   const stakingDetails: any = useUserSelector(getStakingDetails);
 
   const exportBackup = async () => {
-    const appState = await AppStore.getStoredState();
-    const userState = await UserStore.getStoredState();
+    const app = await AppStore.serialize(appStore.getState());
+    const user = await UserStore.serialize(userStore.getState());
 
-    const encodedState = btoa(JSON.stringify({ appState, userState }));
-
-    const blob = new Blob([encodedState], { type: "text/plain" });
-    const href = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = href;
-    link.download = "fractal_wallet.backup";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    exportFile(JSON.stringify({ app, user }), "fractal_wallet.backup");
   };
 
-  const reconnect = () => {};
+  const menuItems = [
+    {
+      label: "Export your data",
+      icon: IconNames.EXPORT,
+      onClick: exportBackup,
+    },
+  ];
 
   return (
     <BalanceNavbaContainer>
@@ -171,49 +118,38 @@ function BalanceNavbar() {
             Balance
           </Text>
         </BalanceLabel>
-        <BalanceAmountContainer>
-          <BalanceAmount>
-            <Text weight={TextWeights.BOLD}>
-              {parseAndFormatEther(stakingDetails[TokenTypes.FCL].userBalance)}
-            </Text>
+        <BalanceAmountsContainer>
+          <BalanceAmountContainer>
+            <BalanceAmount>
+              <Text weight={TextWeights.BOLD}>
+                {parseAndFormatEther(
+                  stakingDetails[TokenTypes.FCL].userBalance,
+                )}
+              </Text>
+            </BalanceAmount>
             <BalanceToken>
               <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
                 FCL
               </Text>
             </BalanceToken>
-          </BalanceAmount>
-          <BalanceAmount>
-            <Text weight={TextWeights.BOLD}>
-              {parseAndFormatEther(
-                stakingDetails[TokenTypes.FCL_ETH_LP].userBalance,
-              )}
-            </Text>
+          </BalanceAmountContainer>
+          <BalanceAmountContainer>
+            <BalanceAmount>
+              <Text weight={TextWeights.BOLD}>
+                {parseAndFormatEther(
+                  stakingDetails[TokenTypes.FCL_ETH_LP].userBalance,
+                )}
+              </Text>
+            </BalanceAmount>
             <BalanceToken>
               <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
                 FCL/ETH
               </Text>
             </BalanceToken>
-          </BalanceAmount>
-        </BalanceAmountContainer>
+          </BalanceAmountContainer>
+        </BalanceAmountsContainer>
       </BalanceContainer>
-      <MenuButton active={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
-        <Icon name={IconNames.MENU} width="6px" height="26px" />
-      </MenuButton>
-      <Menu active={menuOpen}>
-        <MenuLink onClick={exportBackup}>
-          <IconContainer>
-            <Icon name={IconNames.EXPORT} />
-          </IconContainer>
-          Export your data
-        </MenuLink>
-        <MenuLink onClick={reconnect}>
-          <IconContainer>
-            <Icon name={IconNames.RECONNECT} />
-          </IconContainer>
-          Reconnect to crypto wallet
-        </MenuLink>
-      </Menu>
-      <MenuOverlay active={menuOpen} />
+      <Menu items={menuItems} />
     </BalanceNavbaContainer>
   );
 }

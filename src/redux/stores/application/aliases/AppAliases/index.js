@@ -1,31 +1,9 @@
 import appActions, { appTypes } from "@redux/stores/application/reducers/app";
-import { AppStore } from "@redux/stores/application";
-import { UserStore } from "@redux/stores/user";
 
 import GoldfishService from "@services/GoldfishService";
 
 import StakingDetailsPolling from "@models/Polling/StakingDetailsPolling";
 import CredentialsValidityPolling from "@models/Polling/CredentialsValidityPolling";
-
-export const importBackup = () => {
-  return async (file) => {
-    const decodedState = atob(file);
-
-    console.log(decodedState);
-  };
-};
-
-export const exportBackup = () => {
-  console.log("here");
-  return async (dispatch) => {
-    const appState = await AppStore.getStoredState();
-    const userState = await UserStore.getStoredState();
-
-    const state = btoa(JSON.stringify({ appState, userState }));
-
-    console.log(state);
-  };
-};
 
 export const startup = () => {
   return async (dispatch) => {
@@ -70,8 +48,6 @@ export const startup = () => {
 
 const Aliases = {
   [appTypes.STARTUP]: startup,
-  [appTypes.IMPORT_BACKUP]: importBackup,
-  [appTypes.EXPORT_BACKUP]: exportBackup,
 };
 
 export default Aliases;

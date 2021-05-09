@@ -7,8 +7,6 @@ const types = mirrorCreator([
   "SET_LAUNCHED",
   "SET_SETUP",
   "SET_STATUS",
-  "EXPORT_BACKUP",
-  "IMPORT_BACKUP",
 ]);
 
 export const creators = createActions(
@@ -17,8 +15,6 @@ export const creators = createActions(
   types.SET_LAUNCHED,
   types.SET_SETUP,
   types.SET_STATUS,
-  types.EXPORT_BACKUP,
-  types.IMPORT_BACKUP,
 );
 
 export const initialState = {

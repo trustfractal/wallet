@@ -11,6 +11,7 @@ import {
 } from "@redux/stores/application/reducers/auth/selectors";
 
 import Login from "@popup/components/Login";
+import { importFile } from "@utils/FileUtils";
 
 function LoginScreen() {
   const dispatch = useAppDispatch();
@@ -21,7 +22,18 @@ function LoginScreen() {
   const onNext = (password: string) =>
     dispatch(authActions.signInRequest(password));
 
-  return <Login loading={isLoading} error={error} onNext={onNext} />;
+  const onImport = () => {
+    importFile();
+  };
+
+  return (
+    <Login
+      loading={isLoading}
+      error={error}
+      onNext={onNext}
+      onImport={onImport}
+    />
+  );
 }
 
 export default LoginScreen;

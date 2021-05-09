@@ -17,9 +17,10 @@ const { default: Verified } = require("@assets/verified.svg");
 const { default: Pending } = require("@assets/pending.svg");
 const { default: FractalToken } = require("@assets/fractal-token.svg");
 const { default: FractalEthToken } = require("@assets/fractal-eth-token.svg");
-const { default: Menu } = require("@assets/menu.svg");
+const { default: MenuActive } = require("@assets/menu-active.svg");
+const { default: MenuInactive } = require("@assets/menu-inactive.svg");
 const { default: Export } = require("@assets/export.svg");
-const { default: Reconnect } = require("@assets/reconnect.svg");
+const { default: Import } = require("@assets/import.svg");
 
 const Root = styled.div<{
   clickable: boolean;
@@ -47,9 +48,10 @@ export enum IconNames {
   PENDING = "pending",
   FRACTAL_TOKEN = "fractal-token",
   FRACTAL_ETH_TOKEN = "fractal-eth-token",
-  MENU = "menu",
+  MENU_ACTIVE = "menu-active",
+  MENU_INACTIVE = "menu-inactive",
   EXPORT = "export",
-  RECONNECT = "reconnect",
+  IMPORT = "import",
 }
 
 const Icons: Record<string, any> = {
@@ -68,9 +70,10 @@ const Icons: Record<string, any> = {
   [IconNames.PENDING]: Pending,
   [IconNames.FRACTAL_TOKEN]: FractalToken,
   [IconNames.FRACTAL_ETH_TOKEN]: FractalEthToken,
-  [IconNames.MENU]: Menu,
+  [IconNames.MENU_ACTIVE]: MenuActive,
+  [IconNames.MENU_INACTIVE]: MenuInactive,
   [IconNames.EXPORT]: Export,
-  [IconNames.RECONNECT]: Reconnect,
+  [IconNames.IMPORT]: Import,
 };
 
 export type IconProps = {

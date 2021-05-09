@@ -13,6 +13,7 @@ import Title from "@popup/components/common/Title";
 import TopComponent from "@popup/components/common/TopComponent";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 import Logo from "@popup/components/common/Logo";
+import Menu from "@popup/components/common/Menu";
 import Link from "@popup/components/common/Link";
 
 const RootContainer = styled.div`
@@ -66,11 +67,18 @@ export type RegisterProps = {
   onNext: (password: string) => void;
   onClickTerms: () => void;
   onClickPrivacyPolicy: () => void;
+  onImport: () => void;
   error: string;
 };
 
 function Register(props: RegisterProps) {
-  const { loading, onNext, onClickTerms, onClickPrivacyPolicy } = props;
+  const {
+    loading,
+    onNext,
+    onImport,
+    onClickTerms,
+    onClickPrivacyPolicy,
+  } = props;
 
   const minLength = 8;
   const [newPassword, setNewPassword] = useState("");
@@ -82,6 +90,14 @@ function Register(props: RegisterProps) {
       onNext(newPassword);
     }
   };
+
+  const menuItems = [
+    {
+      label: "Import your data",
+      icon: IconNames.IMPORT,
+      onClick: onImport,
+    },
+  ];
 
   const isNewPasswordEmpty = newPassword.length === 0;
   const isConfirmPasswordEmpty = confirmPassword.length === 0;
@@ -245,6 +261,7 @@ function Register(props: RegisterProps) {
           </CSSTransition>
         </SwitchTransition>
       </RootContainer>
+      <Menu items={menuItems} />
     </TopComponent>
   );
 }

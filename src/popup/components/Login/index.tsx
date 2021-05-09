@@ -7,7 +7,9 @@ import Title from "@popup/components/common/Title";
 import TopComponent from "@popup/components/common/TopComponent";
 import Logo from "@popup/components/common/Logo";
 import Anchor from "@popup/components/common/Anchor";
-import { TextHeights } from "@popup/components/common/Text";
+import Menu from "@popup/components/common/Menu";
+import Text, { TextSizes, TextHeights } from "@popup/components/common/Text";
+import { IconNames } from "../common/Icon";
 
 const RootContainer = styled.div`
   padding-top: var(--s-24);
@@ -27,11 +29,11 @@ const ActionsContainer = styled.div`
   justify-content: center;
   flex-direction: column;
 
-  margin-top: var(--s-48);
+  margin: var(--s-32) 0px;
 `;
-const SubmitButtonContainer = styled.div`
-  margin-bottom: var(--s-32);
-`;
+
+const FooterContainer = styled.div``;
+
 const InputContainer = styled.div`
   height: calc(
     ${TextHeights.SMALL} + var(--s-5) + ${TextHeights.MEDIUM} + var(--s-12)
@@ -42,11 +44,12 @@ const InputContainer = styled.div`
 export type LoginProps = {
   loading: boolean;
   onNext: (password: string) => void;
+  onImport: () => void;
   error: string;
 };
 
 function Login(props: LoginProps) {
-  const { loading, onNext, error: propError } = props;
+  const { loading, onNext, onImport, error: propError } = props;
 
   const [password, setPassword] = useState("");
   const [error, setError] = useState(propError);
@@ -68,6 +71,14 @@ function Login(props: LoginProps) {
     setError("");
     setPassword(value);
   };
+
+  const menuItems = [
+    {
+      label: "Import your data",
+      icon: IconNames.IMPORT,
+      onClick: onImport,
+    },
+  ];
 
   useEffect(() => setError(propError), [propError]);
 
@@ -92,18 +103,24 @@ function Login(props: LoginProps) {
           />
         </InputContainer>
         <ActionsContainer>
-          <SubmitButtonContainer>
-            <Button
-              onClick={onClick}
-              loading={loading}
-              disabled={isPasswordEmpty || hasError}
-            >
-              Unlock my wallet
-            </Button>
-          </SubmitButtonContainer>
-          <Anchor link="mailto:support@fractal.id">Contact Support</Anchor>
+          <Button
+            onClick={onClick}
+            loading={loading}
+            disabled={isPasswordEmpty || hasError}
+          >
+            Unlock my wallet
+          </Button>
         </ActionsContainer>
+        <FooterContainer>
+          <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+            If you need help on anything related to Fractal ID Wallet, please
+            contact us at{" "}
+            <Anchor link="mailto:support@fractal.id">support@fractal.id</Anchor>
+            .
+          </Text>
+        </FooterContainer>
       </RootContainer>
+      <Menu items={menuItems} />
     </TopComponent>
   );
 }
