@@ -8,6 +8,7 @@ import aliases from "@redux/stores/application/aliases";
 import watchers from "@redux/middlewares/watchers";
 
 import {
+  appTypes,
   reducer as appReducer,
   restore as appRestore,
   store as appStore,
@@ -74,11 +75,24 @@ export class AppStore {
   }
 
   static getCombinedReducers() {
-    return combineReducers({
+    const rootReducer = combineReducers({
       app: appReducer,
       auth: authReducer,
       register: registerReducer,
     });
+
+    return (state, action) => {
+      const { type, payload } = action;
+
+      if (type === appTypes.RESET) {
+        console.log("type", type);
+        console.log("payload", payload);
+        console.log("state", state);
+        return rootReducer(payload, action);
+      }
+
+      return rootReducer(state, action);
+    };
   }
 
   static getMiddleware() {

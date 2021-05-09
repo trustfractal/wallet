@@ -25,6 +25,8 @@ import {
   ERROR_STORE_NOT_INITIALIZED,
 } from "./Errors";
 
+import { appTypes } from "@redux/stores/application/reducers/app";
+
 export class UserStore {
   static instance = undefined;
 
@@ -96,10 +98,23 @@ export class UserStore {
   }
 
   static getCombinedReducers() {
-    return combineReducers({
+    const rootReducer = combineReducers({
       credentials: credentialsReducer,
       wallet: walletReducer,
     });
+
+    return (state, action) => {
+      const { type, payload } = action;
+
+      if (type === appTypes.RESET) {
+        console.log("type", type);
+        console.log("payload", payload);
+        console.log("state", state);
+        return rootReducer(payload, action);
+      }
+
+      return rootReducer(state, action);
+    };
   }
 
   static getMiddleware() {
