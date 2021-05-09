@@ -29,11 +29,11 @@ const LeftContainer = styled.div`
   display: flex;
   flex: 1;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start;
 `;
 
-const LeftIconContainer = styled.div<{ levelIconName: IconNames }>`
+const LevelIconContainer = styled.div<{ levelIconName: IconNames }>`
   margin-right: var(--s-8);
   border-radius: 100%;
 
@@ -64,6 +64,12 @@ const LeftIconContainer = styled.div<{ levelIconName: IconNames }>`
     `}
 `;
 
+const LevelContentContainer = styled.div``;
+
+const LevelName = styled.div`
+  opacity: 0.6;
+`;
+
 const RightContainer = styled.div`
   display: flex;
   flex: 1;
@@ -88,7 +94,17 @@ export type CredentialProps = {
 function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
   const { credential } = props;
 
-  const { valid } = credential;
+  const {
+    valid,
+    claim: {
+      properties: { full_name: name },
+    },
+  } = credential;
+
+  let hasName = true;
+  if (name === undefined || (name as String).length === 0) {
+    hasName = false;
+  }
 
   const [level, ...addons] = credential.level.split("+");
   let levelName;
@@ -96,15 +112,13 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
   let statusName;
   let statusIconName;
 
-  const addonsStr = addons
-    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-    .join(" + ");
+  const addonsStr = addons.join(" + ");
 
   if (level === "basic") {
-    levelName = `ID Basic (${addonsStr})`;
+    levelName = `ID Basic + ${addonsStr}`;
     levelIconName = IconNames.ID_BASIC;
   } else {
-    levelName = `ID Plus (${addonsStr})`;
+    levelName = `ID Plus + ${addonsStr}`;
     levelIconName = IconNames.ID_PLUS;
   }
 
@@ -119,12 +133,21 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
   return (
     <RootContainer>
       <LeftContainer>
-        <LeftIconContainer levelIconName={levelIconName}>
+        <LevelIconContainer levelIconName={levelIconName}>
           <Icon name={levelIconName} />
-        </LeftIconContainer>
-        <Text height={TextHeights.LARGE} weight={TextWeights.BOLD}>
-          {levelName}
-        </Text>
+        </LevelIconContainer>
+        <LevelContentContainer>
+          <Text height={TextHeights.LARGE} weight={TextWeights.BOLD}>
+            {levelName}
+          </Text>
+          {hasName && (
+            <LevelName>
+              <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+                {name}
+              </Text>
+            </LevelName>
+          )}
+        </LevelContentContainer>
       </LeftContainer>
       <RightContainer>
         <RightTextContainer>
