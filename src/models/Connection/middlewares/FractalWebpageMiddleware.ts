@@ -9,10 +9,10 @@ import environment from "@environment/index";
 export default class FractalWebpageMiddleware implements IMiddleware {
   public async apply(_invokation: IInvokation): Promise<void> {
     // get active connected chrome port
-    const fractalTab = await ContentScriptConnection.getFractalConnectionPort();
+    const fractalTab = await ContentScriptConnection.getConnectedPort();
 
     if (!fractalTab) {
-      WindowsService.openTab(`https://${environment.FRACTAL_WEBSITE_HOSTNAME}`);
+      WindowsService.openTab(environment.FRACTAL_WEBSITE_URL);
 
       throw ERROR_NOT_ON_FRACTAL();
     }

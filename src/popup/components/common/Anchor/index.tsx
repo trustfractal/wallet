@@ -6,7 +6,6 @@ const Root = styled.a`
   color: var(--c-orange);
   background: var(--c-transparent);
   text-decoration: underline;
-  text-transform: uppercase;
   font-weight: normal;
 `;
 

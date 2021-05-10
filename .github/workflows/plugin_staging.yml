@@ -3,9 +3,7 @@ name: Plugin Staging Build Workflow
 on:
   push:
     branches:
-      - main
-    tags:
-      - "*"
+      - dev
 
   pull_request:
     types: [opened, synchronize]

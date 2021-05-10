@@ -49,28 +49,24 @@ export default class InpageProvider implements IFractalInpageProvider {
     }
   }
 
-  public async getTransactionEstimationTime(
-    gasPrice: BigNumber,
-  ): Promise<BigNumber | undefined> {
+  public async resetStaking(token: TokenTypes): Promise<void> {
     this.ensureFractalIsInitialized();
 
-    const serializedEstimatedTime = await ExtensionConnection.invoke(
-      ConnectionTypes.GET_TRANSACTION_ESTIMATION_TIME_BACKGROUND,
-      [gasPrice.toJSON()],
+    return ExtensionConnection.invoke(
+      ConnectionTypes.RESET_STAKING_BACKGROUND,
+      [token],
     );
-
-    if (serializedEstimatedTime) return BigNumber.from(serializedEstimatedTime);
   }
 
   public async approveStake(
-    amount: string,
+    amount: string | BigNumber,
     token: TokenTypes,
   ): Promise<ITransactionDetails | undefined> {
     this.ensureFractalIsInitialized();
 
     const serializedTransactionDetails = await ExtensionConnection.invoke(
       ConnectionTypes.APPROVE_STAKE_BACKGROUND,
-      [amount, token],
+      [BigNumber.from(amount).toJSON(), token],
     );
 
     if (serializedTransactionDetails)
@@ -78,7 +74,7 @@ export default class InpageProvider implements IFractalInpageProvider {
   }
 
   public async stake(
-    amount: string,
+    amount: string | BigNumber,
     token: TokenTypes,
     id: string,
     level: string,
@@ -87,21 +83,10 @@ export default class InpageProvider implements IFractalInpageProvider {
 
     const serializedTransactionDetails = await ExtensionConnection.invoke(
       ConnectionTypes.STAKE_BACKGROUND,
-      [amount, token, `${id}:${level}`],
+      [BigNumber.from(amount).toJSON(), token, `${id}:${level}`],
     );
 
     return TransactionDetails.parse(serializedTransactionDetails);
-  }
-
-  public async getAllowedAmount(token: string): Promise<BigNumber> {
-    this.ensureFractalIsInitialized();
-
-    const serializedAllowedAmount = await ExtensionConnection.invoke(
-      ConnectionTypes.GET_ALLOWED_AMOUNT_BACKGROUND,
-      [token],
-    );
-
-    return BigNumber.from(serializedAllowedAmount);
   }
 
   public async withdraw(token: TokenTypes): Promise<ITransactionDetails> {

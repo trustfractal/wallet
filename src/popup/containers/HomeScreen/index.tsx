@@ -30,7 +30,7 @@ function HomeScreen() {
       <EmptyCredentials
         onNext={() =>
           WindowsService.openTab(
-            `https://${environment.FRACTAL_WEBSITE_HOSTNAME}/credentials`,
+            `${environment.FRACTAL_WEBSITE_URL}/credentials`,
           )
         }
       />
@@ -41,9 +41,7 @@ function HomeScreen() {
     <Home
       credentials={credentials}
       onClick={() =>
-        WindowsService.openTab(
-          `https://${environment.FRACTAL_WEBSITE_HOSTNAME}/staking`,
-        )
+        WindowsService.openTab(`${environment.FRACTAL_WEBSITE_URL}/staking`)
       }
     />
   );

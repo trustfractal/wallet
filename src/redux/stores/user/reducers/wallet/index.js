@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 import StakingStatus from "@models/Staking/status";
 import TokenTypes from "@models/Token/types";
 import mirrorCreator from "mirror-creator";
@@ -13,6 +15,7 @@ const types = mirrorCreator([
   "SET_ACCOUNT",
   "SET_STAKING_DETAILS",
   "SET_STAKING_STATUS",
+  "SET_STAKING_ALLOWED_AMOUNT",
   "SET_STAKING_LAST_UPDATED",
 ]);
 
@@ -26,6 +29,7 @@ export const creators = createActions(
   types.SET_ACCOUNT,
   types.SET_STAKING_DETAILS,
   types.SET_STAKING_STATUS,
+  types.SET_STAKING_ALLOWED_AMOUNT,
   types.SET_STAKING_LAST_UPDATED,
 );
 
@@ -45,6 +49,7 @@ export const initialState = {
       [TokenTypes.FCL]: StakingStatus.START,
       [TokenTypes.FCL_ETH_LP]: StakingStatus.START,
     },
+    allowedAmount: BigNumber.from(0),
     lastUpdated: new Date().getTime(),
   },
 };
@@ -120,6 +125,14 @@ export const reducer = handleActions(
         staking: {
           ...state.staking,
           lastUpdated,
+        },
+      }),
+    [types.SET_STAKING_ALLOWED_AMOUNT]: (state, { payload: allowedAmount }) =>
+      Object.freeze({
+        ...state,
+        staking: {
+          ...state.staking,
+          allowedAmount,
         },
       }),
   },

@@ -307,8 +307,8 @@ class WindowsService {
     return this.updateTab(id, { url });
   }
 
-  async getActiveTab(): Promise<chrome.tabs.Tab | undefined> {
-    return new Promise<chrome.tabs.Tab | undefined>((resolve) => {
+  async getActiveTabs(): Promise<chrome.tabs.Tab[]> {
+    return new Promise<chrome.tabs.Tab[]>((resolve) => {
       // get last normal window focused
       chrome.windows.getLastFocused(
         {
@@ -322,29 +322,37 @@ class WindowsService {
             active: true,
           });
 
-          if (tabs.length === 0) {
-            resolve(undefined);
-          }
-
-          resolve(tabs[0]);
+          resolve(tabs);
         },
       );
     });
   }
 
   async getFractalTabs(): Promise<chrome.tabs.Tab[]> {
+    const { hostname } = new URL(environment.FRACTAL_WEBSITE_URL);
+
+    const senderHostname = hostname.startsWith("www.")
+      ? hostname.substr(4)
+      : hostname;
+
     // get fractal tab
     const tabs = await this.queryTabs({
-      url: `*://*.${environment.FRACTAL_WEBSITE_HOSTNAME}/*`,
+      url: `*://*.${senderHostname}/*`,
     });
 
     return tabs;
   }
 
   async openTab(url: string) {
-    const activeTab = await this.getActiveTab();
+    const activeTabs = await this.getActiveTabs();
 
-    if (activeTab === undefined || activeTab.id === undefined) {
+    if (activeTabs.length === 0) {
+      return this.createTab({ url });
+    }
+
+    const [activeTab] = activeTabs;
+
+    if (activeTab.id === undefined) {
       return this.createTab({ url });
     }
 

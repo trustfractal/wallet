@@ -30,11 +30,6 @@ export interface IWeb3ProviderService {
     tokenContractAddress: string,
     stakingTokenContractAddress: string,
   ): Promise<string | undefined>;
-  getAllowedAmount(
-    address: string,
-    tokenContractAddress: string,
-    stakingTokenContractAddress: string,
-  ): Promise<string>;
   stake(
     address: string,
     amount: string,

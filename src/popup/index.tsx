@@ -16,5 +16,6 @@ function Popup() {
     </>
   );
 }
-
-ReactDOM.render(<Popup />, document.getElementById("popup"));
+if (document.getElementById("popup")) {
+  ReactDOM.render(<Popup />, document.getElementById("popup"));
+}

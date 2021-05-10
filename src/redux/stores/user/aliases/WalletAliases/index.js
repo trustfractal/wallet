@@ -4,8 +4,10 @@ import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebp
 import StakingStatus from "@models/Staking/status";
 import StakingDetails from "@models/Staking/StakingDetails";
 
+import UserStore from "@redux/stores/user";
 import {
   getAccount,
+  getStakingAllowedAmount,
   getStakingStatus,
 } from "@redux/stores/user/reducers/wallet/selectors";
 import walletActions, { walletTypes } from "@redux/stores/user/reducers/wallet";
@@ -22,7 +24,6 @@ import {
   ERROR_NOT_ON_FRACTAL,
 } from "@models/Connection/Errors";
 import TokenTypes from "@models/Token/types";
-
 export const connectWallet = () => {
   return async (dispatch) => {
     dispatch(walletActions.connectWalletPending());
@@ -32,7 +33,7 @@ export const connectWallet = () => {
       await new FractalWebpageMiddleware().apply();
 
       // get active connected chrome port
-      const fractalPort = await ContentScriptConnection.getFractalConnectionPort();
+      const fractalPort = await ContentScriptConnection.getConnectedPort();
 
       if (!fractalPort) throw ERROR_NOT_ON_FRACTAL();
 
@@ -68,7 +69,11 @@ function getNextStakingStatus(previousStakingStatus, details) {
     }
 
     if (previousStakingStatus === StakingStatus.APPROVAL_PENDING) {
-      if (!details.stakingAllowedAmount.isZero()) {
+      const allowedAmount = getStakingAllowedAmount(
+        UserStore.getStore().getState(),
+      );
+
+      if (details.stakingAllowedAmount.gte(allowedAmount)) {
         return StakingStatus.APPROVED;
       }
 
