@@ -1,8 +1,7 @@
 import { useState } from "react";
 
-import { useUserDispatch, useUserSelector } from "@redux/stores/user/context";
+import { useUserDispatch } from "@redux/stores/user/context";
 import credentialsActions from "@redux/stores/user/reducers/credentials";
-import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
@@ -18,41 +17,24 @@ function UploadScreen() {
   const [newCredentials, setNewCredentials] = useState<ICredential[]>([]);
   const [uploaded, setUploaded] = useState(false);
   const [error, setError] = useState("");
-  const credentials = useUserSelector(getCredentials);
 
   const onUpload = async (file: Blob) => {
     try {
       const serializedCredentials = await importFile(file);
 
-      console.log(serializedCredentials);
-
       const importedCredentials = CredentialsCollection.parse(
         serializedCredentials,
       );
 
-      // filter credentials
-      const filteredCredentials = importedCredentials.reduce<ICredential[]>(
-        (memo, currentValue) => {
-          if (credentials.hasByField("id", currentValue.id)) {
-            return memo;
-          }
-
-          currentValue.valid = false;
-
-          return [...memo, currentValue];
-        },
-        [],
-      );
-
       // add new credentials
-      filteredCredentials.forEach((importedCredential) =>
+      importedCredentials.forEach((importedCredential) =>
         dispatch(
           credentialsActions.addCredential(importedCredential.serialize()),
         ),
       );
 
       setUploaded(true);
-      setNewCredentials(filteredCredentials);
+      setNewCredentials(importedCredentials);
     } catch (error) {
       console.error(error);
       setError("Invalid backup file.");

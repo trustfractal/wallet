@@ -4,11 +4,9 @@ import styled from "styled-components";
 import { useAppSelector } from "@redux/stores/application/context";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
-import { useUserDispatch, useUserSelector } from "@redux/stores/user/context";
+import { useUserSelector } from "@redux/stores/user/context";
 import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
-
-import credentialsActions from "@redux/stores/user/reducers/credentials";
 
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
 import Text, {
@@ -21,8 +19,8 @@ import Menu from "@popup/components/common/Menu";
 import TokenTypes from "@models/Token/types";
 
 import { parseAndFormatEther } from "@utils/FormatUtils";
-import { exportFile, importFile } from "@utils/FileUtils";
-import CredentialsCollection from "@models/Credential/CredentialsCollection";
+import { exportFile } from "@utils/FileUtils";
+
 import windows from "@services/WindowsService";
 
 const LogoNavbarContainer = styled.div`
@@ -86,8 +84,6 @@ const BalanceToken = styled.div`
 `;
 
 function BalanceNavbar() {
-  const dispatch = useUserDispatch();
-
   const stakingDetails: any = useUserSelector(getStakingDetails);
   const credentials = useUserSelector(getCredentials);
 
@@ -95,36 +91,6 @@ function BalanceNavbar() {
     exportFile(credentials.serialize(), "fractal_wallet.backup");
 
   const importBackup = () => windows.openTab("upload.html");
-
-  // const importBackup = async () => {
-  //   try {
-  //     const serializedCredentials = importFile();
-
-  //     console.log("serializedCredentials", serializedCredentials);
-
-  //     const importedCredentials = CredentialsCollection.parse(
-  //       serializedCredentials,
-  //     );
-
-  //     console.log("importedCredentials", importedCredentials);
-
-  //     // add new credentials
-  //     importedCredentials.forEach((importedCredential) => {
-  //       if (credentials.hasByField("id", importedCredential.id)) {
-  //         return;
-  //       }
-
-  //       dispatch(
-  //         credentialsActions.addCredential(importedCredential.serialize()),
-  //       );
-
-  //       console.log("new credential added", importedCredential);
-  //     });
-  //   } catch (error) {
-  //     // ignore bad backups
-  //     console.error(error);
-  //   }
-  // };
 
   const menuItems = [
     {

@@ -25,8 +25,6 @@ import {
   ERROR_STORE_NOT_INITIALIZED,
 } from "./Errors";
 
-import { appTypes } from "@redux/stores/application/reducers/app";
-
 export class UserStore {
   static instance = undefined;
 

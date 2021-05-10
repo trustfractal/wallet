@@ -1,65 +1,17 @@
 import React from "react";
 
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
-export enum TextSizes {
-  SMALL = "var(--s-12)",
-  MEDIUM = "var(--s-16)",
-  LARGE = "var(--s-20)",
-}
-
-export enum TextHeights {
-  SMALL = "var(--s-168)",
-  MEDIUM = "var(--s-1875)",
-  LARGE = "var(--s-23)",
-}
-
-export enum TextWeights {
-  NORMAL = "normal",
-  SEMIBOLD = "500",
-  BOLD = "bold",
-}
-
-const RootParagraph = styled.p<TextProps>`
-  ${(props) =>
-    css`
-      font-size: ${props.size};
-      line-height: ${props.height};
-      font-weight: ${props.weight};
-    `}
+const Root = styled.p`
+  font-size: var(--s-20);
+  line-height: var(--s-32);
+  font-weight: normal;
 `;
 
-const RootSpan = styled.span<TextProps>`
-  ${(props) =>
-    css`
-      font-size: ${props.size};
-      line-height: ${props.height};
-      font-weight: ${props.weight};
-    `}
-`;
+function Text(props: React.HTMLAttributes<HTMLParagraphElement>) {
+  const { children, ...otherProps } = props;
 
-export type TextProps = {
-  size: TextSizes;
-  height: TextHeights;
-  weight: TextWeights;
-  span?: boolean;
-};
-
-Text.defaultProps = {
-  size: TextSizes.MEDIUM,
-  height: TextHeights.MEDIUM,
-  weight: TextWeights.NORMAL,
-  span: false,
-};
-
-function Text(props: TextProps & React.HTMLAttributes<HTMLParagraphElement>) {
-  const { children, span, ...otherProps } = props;
-
-  if (span) {
-    return <RootSpan {...otherProps}>{children}</RootSpan>;
-  }
-
-  return <RootParagraph {...otherProps}>{children}</RootParagraph>;
+  return <Root {...otherProps}>{children}</Root>;
 }
 
 export default Text;

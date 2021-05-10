@@ -8,7 +8,6 @@ import aliases from "@redux/stores/application/aliases";
 import watchers from "@redux/middlewares/watchers";
 
 import {
-  appTypes,
   reducer as appReducer,
   restore as appRestore,
   store as appStore,
