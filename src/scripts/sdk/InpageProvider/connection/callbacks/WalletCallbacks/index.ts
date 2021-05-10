@@ -44,17 +44,6 @@ export const stake = ([
     stakingTokenContractAddress,
   );
 
-export const getAllowedAmount = ([
-  address,
-  tokenContractAddress,
-  stakingTokenContractAddress,
-]: [string, string, string]) =>
-  EthereumProviderService.getAllowedAmount(
-    address,
-    tokenContractAddress,
-    stakingTokenContractAddress,
-  );
-
 export const withdraw = ([address, stakingTokenContractAddress]: [
   string,
   string,
@@ -62,7 +51,6 @@ export const withdraw = ([address, stakingTokenContractAddress]: [
 
 const Callbacks = {
   [ConnectionTypes.GET_ACCOUNT_ADDRESS_INPAGE]: { callback: getAccountAddress },
-  [ConnectionTypes.GET_ALLOWED_AMOUNT_INPAGE]: { callback: getAllowedAmount },
   [ConnectionTypes.GET_STAKING_DETAILS_INPAGE]: { callback: getStakingDetails },
   [ConnectionTypes.APPROVE_STAKE_INPAGE]: { callback: approveStake },
   [ConnectionTypes.STAKE_INPAGE]: { callback: stake },

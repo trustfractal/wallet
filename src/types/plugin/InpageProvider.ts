@@ -22,14 +22,10 @@ export interface IFractalInpageProvider {
     level: string,
   ): Promise<ITransactionDetails>;
   withdraw(token: string): Promise<ITransactionDetails>;
-  getAllowedAmount(token: string): Promise<BigNumber>;
   getAttestationRequest(
     level: string,
     properties: IClaimProperties,
   ): Promise<IAttestationRequest>;
-  getTransactionEstimationTime(
-    gasPrice: BigNumber,
-  ): Promise<BigNumber | undefined>;
   credentialStore(
     credential: IAttestedClaim,
     id: string,

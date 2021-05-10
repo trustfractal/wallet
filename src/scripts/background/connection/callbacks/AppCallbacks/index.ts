@@ -1,5 +1,4 @@
 import AuthMiddleware from "@models/Connection/middlewares/AuthMiddleware";
-import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
 import ConnectionTypes from "@models/Connection/types";
 
 import AppStore from "@redux/stores/application";
@@ -38,7 +37,7 @@ export const verifyConnection = () =>
 const Callbacks = {
   [ConnectionTypes.SETUP_PLUGIN_BACKGROUND]: {
     callback: verifyConnection,
-    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
+    middlewares: [new AuthMiddleware()],
   },
   [ConnectionTypes.VERIFY_CONNECTION_BACKGROUND]: {
     callback: verifyConnection,

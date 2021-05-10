@@ -145,11 +145,11 @@ const Callbacks = {
   },
   [ConnectionTypes.HAS_CREDENTIAL_BACKGROUND]: {
     callback: hasCredential,
-    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
+    middlewares: [new AuthMiddleware()],
   },
   [ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND]: {
     callback: isCredentialValid,
-    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
+    middlewares: [new AuthMiddleware()],
   },
 };
 
