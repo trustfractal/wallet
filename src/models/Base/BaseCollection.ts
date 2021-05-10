@@ -39,6 +39,10 @@ export default class BaseCollection<
     return this.find((item) => item[field] === value);
   }
 
+  public hasByField(field: string, value: any): boolean {
+    return this.getByField(field, value) !== undefined;
+  }
+
   public filterByField(field: string, value: any): T[] {
     return this.filter((item) => item[field] === value);
   }

@@ -1,13 +1,14 @@
 import React from "react";
 import styled from "styled-components";
 
-import { AppStore } from "@redux/stores/application";
-import { useAppSelector, useAppStore } from "@redux/stores/application/context";
+import { useAppSelector } from "@redux/stores/application/context";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
-import { UserStore } from "@redux/stores/user";
-import { useUserSelector, useUserStore } from "@redux/stores/user/context";
+import { useUserDispatch, useUserSelector } from "@redux/stores/user/context";
 import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
+import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+
+import credentialsActions from "@redux/stores/user/reducers/credentials";
 
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
 import Text, {
@@ -20,7 +21,8 @@ import Menu from "@popup/components/common/Menu";
 import TokenTypes from "@models/Token/types";
 
 import { parseAndFormatEther } from "@utils/FormatUtils";
-import { exportFile } from "@utils/FileUtils";
+import { exportFile, importFile } from "@utils/FileUtils";
+import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
 const LogoNavbarContainer = styled.div`
   display: flex;
@@ -83,16 +85,42 @@ const BalanceToken = styled.div`
 `;
 
 function BalanceNavbar() {
-  const appStore = useAppStore();
-  const userStore = useUserStore();
+  const dispatch = useUserDispatch();
 
   const stakingDetails: any = useUserSelector(getStakingDetails);
+  const credentials = useUserSelector(getCredentials);
 
-  const exportBackup = async () => {
-    const app = await AppStore.serialize(appStore.getState());
-    const user = await UserStore.serialize(userStore.getState());
+  const exportBackup = async () =>
+    exportFile(credentials.serialize(), "fractal_wallet.backup");
 
-    exportFile(JSON.stringify({ app, user }), "fractal_wallet.backup");
+  const importBackup = async () => {
+    try {
+      const serializedCredentials = importFile();
+
+      console.log("serializedCredentials", serializedCredentials);
+
+      const importedCredentials = CredentialsCollection.parse(
+        serializedCredentials,
+      );
+
+      console.log("importedCredentials", importedCredentials);
+
+      // add new credentials
+      importedCredentials.forEach((importedCredential) => {
+        if (credentials.hasByField("id", importedCredential.id)) {
+          return;
+        }
+
+        dispatch(
+          credentialsActions.addCredential(importedCredential.serialize()),
+        );
+
+        console.log("new credential added", importedCredential);
+      });
+    } catch (error) {
+      // ignore bad backups
+      console.error(error);
+    }
   };
 
   const menuItems = [
@@ -100,6 +128,12 @@ function BalanceNavbar() {
       label: "Export your data",
       icon: IconNames.EXPORT,
       onClick: exportBackup,
+      disabled: credentials.length === 0,
+    },
+    {
+      label: "Import your data",
+      icon: IconNames.IMPORT,
+      onClick: importBackup,
     },
   ];
 

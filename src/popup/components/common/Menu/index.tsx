@@ -1,6 +1,7 @@
+import { useOutsideAlerter } from "@popup/hooks/useOutsideAlerter";
 import React, { useState } from "react";
 
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import Icon, { IconNames } from "../Icon";
 
 const MenuButton = styled.button<{ active: boolean }>`
@@ -45,13 +46,24 @@ const MenuOverlay = styled.div<{ active: boolean }>`
   pointer-events: none;
 `;
 
-const MenuLink = styled.button`
+const MenuLink = styled.button<{ disabled?: boolean }>`
   display: flex;
   align-items: center;
   padding: var(--s-24) var(--s-20);
   background: none;
   color: var(--c-white);
   cursor: pointer;
+
+  :not(:first-child)  {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  ${(props) =>
+    props.disabled &&
+    css`
+      opacity: 0.6;
+      cursor: default;
+    `}
 `;
 
 const IconContainer = styled.div`
@@ -62,6 +74,7 @@ export type MenuItem = {
   label: string;
   icon: string;
   onClick: () => void;
+  disabled?: boolean;
 };
 
 export type MenuProps = {
@@ -75,15 +88,26 @@ function Menu(
 
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const closeMenu = () => setMenuOpen(false);
+  const menuRef = React.createRef<HTMLDivElement>();
+  useOutsideAlerter(menuRef, closeMenu);
+
   return (
     <>
       <MenuButton active={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
         {menuOpen && <Icon name={IconNames.MENU_ACTIVE} />}
         {!menuOpen && <Icon name={IconNames.MENU_INACTIVE} />}
       </MenuButton>
-      <MenuContainer active={menuOpen}>
-        {items.map(({ label, icon, onClick }) => (
-          <MenuLink key={label} onClick={onClick}>
+      <MenuContainer active={menuOpen} ref={menuRef}>
+        {items.map(({ label, icon, onClick, disabled }) => (
+          <MenuLink
+            key={label}
+            onClick={() => {
+              closeMenu();
+              onClick();
+            }}
+            disabled={disabled}
+          >
             <IconContainer>
               <Icon name={icon} />
             </IconContainer>

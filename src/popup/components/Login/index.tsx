@@ -7,9 +7,7 @@ import Title from "@popup/components/common/Title";
 import TopComponent from "@popup/components/common/TopComponent";
 import Logo from "@popup/components/common/Logo";
 import Anchor from "@popup/components/common/Anchor";
-import Menu from "@popup/components/common/Menu";
 import Text, { TextSizes, TextHeights } from "@popup/components/common/Text";
-import { IconNames } from "../common/Icon";
 
 const RootContainer = styled.div`
   padding-top: var(--s-24);
@@ -44,12 +42,11 @@ const InputContainer = styled.div`
 export type LoginProps = {
   loading: boolean;
   onNext: (password: string) => void;
-  onImport: () => void;
   error: string;
 };
 
 function Login(props: LoginProps) {
-  const { loading, onNext, onImport, error: propError } = props;
+  const { loading, onNext, error: propError } = props;
 
   const [password, setPassword] = useState("");
   const [error, setError] = useState(propError);
@@ -71,14 +68,6 @@ function Login(props: LoginProps) {
     setError("");
     setPassword(value);
   };
-
-  const menuItems = [
-    {
-      label: "Import your data",
-      icon: IconNames.IMPORT,
-      onClick: onImport,
-    },
-  ];
 
   useEffect(() => setError(propError), [propError]);
 
@@ -120,7 +109,6 @@ function Login(props: LoginProps) {
           </Text>
         </FooterContainer>
       </RootContainer>
-      <Menu items={menuItems} />
     </TopComponent>
   );
 }
