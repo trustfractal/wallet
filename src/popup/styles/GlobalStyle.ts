@@ -11,6 +11,7 @@ export const global = css`
     --c-dark-blue: #132c53;
     --c-red: rgba(239, 68, 68);
     --c-gray: #edeff2;
+    --c-dark-gray: #f2f4f8;
     --c-transparent: transparent;
     --c-dark-orange: #dc5919;
     --c-orange: #ff671d;
@@ -36,6 +37,8 @@ export const global = css`
     --s-36: 2.25rem;
     --s-38: 2.375rem;
     --s-48: 3rem;
+    --s-64: 4rem;
+    --s-80: 5rem;
   }
 
   html {

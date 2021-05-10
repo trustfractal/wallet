@@ -13,13 +13,13 @@ import {
 import Login from "@popup/components/Login";
 
 function LoginScreen() {
-  const dispatch = useAppDispatch();
+  const appDispatch = useAppDispatch();
 
   const isLoading = useAppSelector(isSignInLoading);
   const error = useAppSelector(getSignInError);
 
   const onNext = (password: string) =>
-    dispatch(authActions.signInRequest(password));
+    appDispatch(authActions.signInRequest(password));
 
   return <Login loading={isLoading} error={error} onNext={onNext} />;
 }

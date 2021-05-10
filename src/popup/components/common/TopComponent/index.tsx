@@ -7,6 +7,8 @@ const Root = styled.div<{
   paddingLeft: string;
   paddingRight: string;
 }>`
+  position: relative;
+
   ${(props) => css`
     padding-top: ${props.paddingTop};
     padding-bottom: ${props.paddingBottom};

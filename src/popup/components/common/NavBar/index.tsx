@@ -4,16 +4,24 @@ import styled from "styled-components";
 import { useAppSelector } from "@redux/stores/application/context";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
+import { useUserSelector } from "@redux/stores/user/context";
+import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
+import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
 import Text, {
   TextHeights,
   TextSizes,
   TextWeights,
 } from "@popup/components/common/Text";
+import { IconNames } from "@popup/components/common/Icon";
+import Menu from "@popup/components/common/Menu";
 import TokenTypes from "@models/Token/types";
-import { useUserSelector } from "@redux/stores/user/context";
-import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
+
 import { parseAndFormatEther } from "@utils/FormatUtils";
+import { exportFile } from "@utils/FileUtils";
+
+import windows from "@services/WindowsService";
 
 const LogoNavbarContainer = styled.div`
   display: flex;
@@ -26,6 +34,7 @@ const LogoNavbarContainer = styled.div`
 `;
 
 const BalanceNavbaContainer = styled.div`
+  position: relative;
   display: flex;
   flex-direction: row;
 
@@ -43,20 +52,24 @@ const LogoContainer = styled.div`
   margin-right: var(--s-24);
 `;
 
-const BalanceAmount = styled.div`
+const BalanceAmountContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-end;
 
   margin-bottom: var(--s-4);
 `;
-const BalanceAmountContainer = styled.div``;
+
+const BalanceAmount = styled.div`
+  width: 60px;
+`;
+
+const BalanceAmountsContainer = styled.div``;
 
 const BalanceContainer = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
 `;
 
 const BalanceLabel = styled.div`
@@ -72,6 +85,26 @@ const BalanceToken = styled.div`
 
 function BalanceNavbar() {
   const stakingDetails: any = useUserSelector(getStakingDetails);
+  const credentials = useUserSelector(getCredentials);
+
+  const exportBackup = async () =>
+    exportFile(credentials.serialize(), "fractal_wallet.backup");
+
+  const importBackup = () => windows.openTab("upload.html");
+
+  const menuItems = [
+    {
+      label: "Export your data",
+      icon: IconNames.EXPORT,
+      onClick: exportBackup,
+      disabled: credentials.length === 0,
+    },
+    {
+      label: "Import your data",
+      icon: IconNames.IMPORT,
+      onClick: importBackup,
+    },
+  ];
 
   return (
     <BalanceNavbaContainer>
@@ -88,31 +121,38 @@ function BalanceNavbar() {
             Balance
           </Text>
         </BalanceLabel>
-        <BalanceAmountContainer>
-          <BalanceAmount>
-            <Text weight={TextWeights.BOLD}>
-              {parseAndFormatEther(stakingDetails[TokenTypes.FCL].userBalance)}
-            </Text>
+        <BalanceAmountsContainer>
+          <BalanceAmountContainer>
+            <BalanceAmount>
+              <Text weight={TextWeights.BOLD}>
+                {parseAndFormatEther(
+                  stakingDetails[TokenTypes.FCL].userBalance,
+                )}
+              </Text>
+            </BalanceAmount>
             <BalanceToken>
               <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
                 FCL
               </Text>
             </BalanceToken>
-          </BalanceAmount>
-          <BalanceAmount>
-            <Text weight={TextWeights.BOLD}>
-              {parseAndFormatEther(
-                stakingDetails[TokenTypes.FCL_ETH_LP].userBalance,
-              )}
-            </Text>
+          </BalanceAmountContainer>
+          <BalanceAmountContainer>
+            <BalanceAmount>
+              <Text weight={TextWeights.BOLD}>
+                {parseAndFormatEther(
+                  stakingDetails[TokenTypes.FCL_ETH_LP].userBalance,
+                )}
+              </Text>
+            </BalanceAmount>
             <BalanceToken>
               <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
                 FCL/ETH
               </Text>
             </BalanceToken>
-          </BalanceAmount>
-        </BalanceAmountContainer>
+          </BalanceAmountContainer>
+        </BalanceAmountsContainer>
       </BalanceContainer>
+      <Menu items={menuItems} />
     </BalanceNavbaContainer>
   );
 }
