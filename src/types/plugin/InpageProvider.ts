@@ -22,6 +22,7 @@ export interface IFractalInpageProvider {
     level: string,
   ): Promise<ITransactionDetails>;
   withdraw(token: string): Promise<ITransactionDetails>;
+  resetStaking(token: string): Promise<void>;
   getAttestationRequest(
     level: string,
     properties: IClaimProperties,

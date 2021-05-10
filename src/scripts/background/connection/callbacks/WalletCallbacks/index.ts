@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 import AuthMiddleware from "@models/Connection/middlewares/AuthMiddleware";
 import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
 
@@ -85,6 +87,9 @@ export const approveStake = (
 
       // set staking status to approval pending
       await UserStore.getStore().dispatch(
+        walletActions.setStakingAllowedAmount(BigNumber.from(amount)),
+      );
+      await UserStore.getStore().dispatch(
         walletActions.setStakingStatus({
           status: StakingStatus.APPROVAL_PENDING,
           token,
@@ -148,6 +153,20 @@ export const stake = (
     }
   });
 
+export const resetStaking = ([token]: [TokenTypes]) => {
+  try {
+    UserStore.getStore().dispatch(
+      walletActions.setStakingStatus({
+        status: StakingStatus.START,
+        token,
+      }),
+    );
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 export const withdraw = ([token]: [TokenTypes], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
@@ -188,6 +207,10 @@ const Callbacks = {
   },
   [ConnectionTypes.STAKE_BACKGROUND]: {
     callback: stake,
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
+  },
+  [ConnectionTypes.RESET_STAKING_BACKGROUND]: {
+    callback: resetStaking,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
   [ConnectionTypes.WITHDRAW_BACKGROUND]: {

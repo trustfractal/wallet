@@ -285,8 +285,8 @@ class Web3ProviderService implements IWeb3ProviderService {
         stakingAllowedAmount,
         stakingMinAmount,
         stakingMaxAmount,
-        stakingStartDate,
         stakingEndDate,
+        stakingStartDate,
         currentAPY,
         currentExpectedRewardRate,
       );
@@ -307,7 +307,7 @@ class Web3ProviderService implements IWeb3ProviderService {
     try {
       // prepare data
       const signer = this.web3Provider!.getSigner(address);
-      const etherAmount = ethersUtils.parseEther(amount) as BigNumberish;
+      const etherAmount = BigNumber.from(amount) as BigNumberish;
 
       // init smart contract
       const tokenContract = new Contract(
@@ -363,7 +363,7 @@ class Web3ProviderService implements IWeb3ProviderService {
       // prepare data
       const parsedCredential = Credential.parse(serializedCredential);
       const signer = this.web3Provider!.getSigner(address);
-      const etherAmount = ethersUtils.parseEther(amount) as BigNumberish;
+      const etherAmount = BigNumber.from(amount) as BigNumberish;
 
       // init smart contract
       const tokenContract = new Contract(
@@ -385,7 +385,11 @@ class Web3ProviderService implements IWeb3ProviderService {
 
       if (allowanceValue.lt(etherAmount)) {
         // pre-approve stake for the address
-        await tokenContract.approve(stakingTokenContractAddress, etherAmount);
+        const result = await tokenContract.approve(
+          stakingTokenContractAddress,
+          etherAmount,
+        );
+        await result.wait();
       }
 
       // stake amount

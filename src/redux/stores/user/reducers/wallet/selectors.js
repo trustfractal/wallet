@@ -24,6 +24,11 @@ export const getStakingStatus = createSelector(
   (wallet) => wallet.staking.status,
 );
 
+export const getStakingAllowedAmount = createSelector(
+  (state) => state.wallet,
+  (wallet) => wallet.staking.allowedAmount,
+);
+
 export const getStakingLastUpdated = createSelector(
   (state) => state.wallet,
   (wallet) => wallet.staking.lastUpdated,
