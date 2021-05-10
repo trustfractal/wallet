@@ -19,3 +19,7 @@ export function parseAndFormatEther(
 export function getPercentage(available: number, total: number): number {
   return Math.round((available / total) * 100);
 }
+
+export function capitalize(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
