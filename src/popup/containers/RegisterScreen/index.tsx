@@ -18,7 +18,7 @@ import WindowsService from "@services/WindowsService";
 import environment from "@environment/index";
 
 function RegisterScreen() {
-  const appDispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   const isLoading = useAppSelector(isSignUpLoading);
   const signUpError = useAppSelector(getSignUpError);
@@ -33,8 +33,8 @@ function RegisterScreen() {
     });
 
   const onNext = (password: string) => {
-    appDispatch(registerActions.setRegisterPassword(password));
-    appDispatch(authActions.signUpRequest());
+    dispatch(registerActions.setRegisterPassword(password));
+    dispatch(authActions.signUpRequest());
   };
 
   return (
