@@ -42,6 +42,7 @@ module.exports = {
   appPublic: resolveApp("public"),
   manifestJson: resolveApp("public/manifest.json"),
   appPopupHtml: resolveApp("public/popup.html"),
+  appUploadHtml: resolveApp("public/upload.html"),
   appIndexJs: resolveModule(resolveApp, "src/index"),
   appBackgroundJs: resolveModule(resolveApp, "src/scripts/background/index"),
   appContentScriptJs: resolveModule(

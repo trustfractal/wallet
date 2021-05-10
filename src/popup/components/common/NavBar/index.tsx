@@ -23,6 +23,7 @@ import TokenTypes from "@models/Token/types";
 import { parseAndFormatEther } from "@utils/FormatUtils";
 import { exportFile, importFile } from "@utils/FileUtils";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
+import windows from "@services/WindowsService";
 
 const LogoNavbarContainer = styled.div`
   display: flex;
@@ -93,35 +94,37 @@ function BalanceNavbar() {
   const exportBackup = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
 
-  const importBackup = async () => {
-    try {
-      const serializedCredentials = importFile();
+  const importBackup = () => windows.openTab("upload.html");
 
-      console.log("serializedCredentials", serializedCredentials);
+  // const importBackup = async () => {
+  //   try {
+  //     const serializedCredentials = importFile();
 
-      const importedCredentials = CredentialsCollection.parse(
-        serializedCredentials,
-      );
+  //     console.log("serializedCredentials", serializedCredentials);
 
-      console.log("importedCredentials", importedCredentials);
+  //     const importedCredentials = CredentialsCollection.parse(
+  //       serializedCredentials,
+  //     );
 
-      // add new credentials
-      importedCredentials.forEach((importedCredential) => {
-        if (credentials.hasByField("id", importedCredential.id)) {
-          return;
-        }
+  //     console.log("importedCredentials", importedCredentials);
 
-        dispatch(
-          credentialsActions.addCredential(importedCredential.serialize()),
-        );
+  //     // add new credentials
+  //     importedCredentials.forEach((importedCredential) => {
+  //       if (credentials.hasByField("id", importedCredential.id)) {
+  //         return;
+  //       }
 
-        console.log("new credential added", importedCredential);
-      });
-    } catch (error) {
-      // ignore bad backups
-      console.error(error);
-    }
-  };
+  //       dispatch(
+  //         credentialsActions.addCredential(importedCredential.serialize()),
+  //       );
+
+  //       console.log("new credential added", importedCredential);
+  //     });
+  //   } catch (error) {
+  //     // ignore bad backups
+  //     console.error(error);
+  //   }
+  // };
 
   const menuItems = [
     {
