@@ -16,6 +16,7 @@
     "file-loader": "6.1.1",
     "fs-extra": "^9.0.1",
     "identity-obj-proxy": "3.0.0",
+    "js-base64": "^3.6.0",
     "mini-css-extract-plugin": "0.11.3",
     "mirror-creator": "^1.1.0",
     "moment": "^2.29.1",

@@ -1,7 +1,7 @@
-export const exportFile = (value: string, filename = "file.txt"): void => {
-  console.log(value);
+import { encode, decode } from "js-base64";
 
-  const blob = new Blob([btoa(value)], { type: "text/plain" });
+export const exportFile = (value: string, filename = "file.txt"): void => {
+  const blob = new Blob([encode(value)], { type: "text/plain" });
   const href = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = href;
@@ -24,7 +24,7 @@ export const importFile = (file: Blob): Promise<string> => {
 
           const value = event.target.result as string;
 
-          resolve(atob(value));
+          resolve(decode(value));
         } catch (error) {
           reject(error);
         }
