@@ -24,12 +24,13 @@ import ExtensionConnection from "@sdk/InpageProvider/connection";
 
 import TokenTypes from "@models/Token/types";
 import Requester from "@models/Request/Requester";
-
 import AttestationRequest from "@models/AttestationRequest";
 import ConnectionStatus from "@models/Connection/ConnectionStatus";
 import StakingDetails from "@models/Staking/StakingDetails";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 import VerificationRequest from "@models/VerificationRequest";
+import CredentialStatus from "@models/Credential/status";
+
 import { getRandomBytes } from "@utils/CryptoUtils";
 
 export default class InpageProvider implements IFractalInpageProvider {
@@ -170,7 +171,12 @@ export default class InpageProvider implements IFractalInpageProvider {
 
     const sdkCredential = new SDKAttestedClaim(credentialJSON);
 
-    const credential = new Credential(sdkCredential, `${id}:${level}`, level);
+    const credential = new Credential(
+      sdkCredential,
+      `${id}:${level}`,
+      level,
+      CredentialStatus.PENDING,
+    );
 
     const serializedTransactionDetails = await ExtensionConnection.invoke(
       ConnectionTypes.CREDENTIAL_STORE_BACKGROUND,
@@ -189,13 +195,15 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
   }
 
-  public isCredentialValid(id: string, level: string): Promise<boolean> {
+  public async isCredentialValid(id: string, level: string): Promise<boolean> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(
-      ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND,
+    const status = await ExtensionConnection.invoke(
+      ConnectionTypes.GET_CREDENTIAL_STATUS_BACKGROUND,
       [`${id}:${level}`],
     );
+
+    return status === CredentialStatus.VALID;
   }
 
   public async getStakingDetails(token: string): Promise<IStakingDetails> {

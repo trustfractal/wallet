@@ -113,7 +113,7 @@ export const hasCredential = ([id]: [string]) =>
     }
   });
 
-export const isCredentialValid = ([id]: [string], port: string) =>
+export const getCredentialStatus = ([id]: [string], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
       const address: string = getAccount(UserStore.getStore().getState());
@@ -133,18 +133,18 @@ export const isCredentialValid = ([id]: [string], port: string) =>
       );
 
       // redirect request to the inpage fractal provider
-      const valid = await ContentScriptConnection.invoke(
-        ConnectionTypes.IS_CREDENTIAL_VALID_INPAGE,
+      const status = await ContentScriptConnection.invoke(
+        ConnectionTypes.GET_CREDENTIAL_STATUS_INPAGE,
         [address, credential.serialize(), claimsRegistryContractAddress],
         port,
       );
 
       // update credential data
       await UserStore.getStore().dispatch(
-        credentialsActions.setCredentialValidity({ id, valid }),
+        credentialsActions.setCredentialStatus({ id, status }),
       );
 
-      resolve(valid);
+      resolve(status);
     } catch (error) {
       console.error(error);
       reject(error);
@@ -234,8 +234,8 @@ const Callbacks = {
     callback: hasCredential,
     middlewares: [new AuthMiddleware()],
   },
-  [ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND]: {
-    callback: isCredentialValid,
+  [ConnectionTypes.GET_CREDENTIAL_STATUS_BACKGROUND]: {
+    callback: getCredentialStatus,
     middlewares: [new AuthMiddleware()],
   },
   [ConnectionTypes.GET_VERIFICATION_REQUEST_BACKGROUND]: {

@@ -32,6 +32,7 @@ import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
 import Staking from "@contracts/Staking.json";
 import ERC20 from "@contracts/ERC20.json";
 import MetamaskErrors from "./MetamaskErrors";
+import CredentialStatus from "@models/Credential/status";
 
 class Web3ProviderService implements IWeb3ProviderService {
   private static instance: Web3ProviderService;
@@ -163,11 +164,11 @@ class Web3ProviderService implements IWeb3ProviderService {
     }
   }
 
-  public async isCredentialValid(
+  public async getCredentialStatus(
     address: string,
     serializedCredential: string,
     claimsRegistryContractAddress: string,
-  ): Promise<boolean> {
+  ): Promise<CredentialStatus> {
     try {
       // prepare data
       const parsedCredential = Credential.parse(serializedCredential);
@@ -180,6 +181,18 @@ class Web3ProviderService implements IWeb3ProviderService {
         signer,
       ) as IClaimsRegistry;
 
+      // check if the credential transaction was mined
+      const transactionReceipt = await this.web3Provider!.getTransactionReceipt(
+        parsedCredential.transaction!.hash,
+      );
+
+      if (
+        transactionReceipt === undefined ||
+        transactionReceipt.blockNumber === undefined
+      ) {
+        return CredentialStatus.PENDING;
+      }
+
       // verify claim
       const verifyClaim = await claimsRegistryContract.verifyClaim(
         parsedCredential.claimerAddress,
@@ -187,7 +200,11 @@ class Web3ProviderService implements IWeb3ProviderService {
         parsedCredential.attestedClaimSignature as string,
       );
 
-      return verifyClaim;
+      if (verifyClaim) {
+        return CredentialStatus.VALID;
+      } else {
+        return CredentialStatus.INVALID;
+      }
     } catch (error) {
       console.error(error);
       throw error;

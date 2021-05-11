@@ -7,7 +7,7 @@ import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
 const DEFAULT_CREDENTIALSS_VALIDITY_POLLING_INTERVAL_IN_MILLIS = 30 * 1000; // 30 seconds
 
-export default class CredentialsValidityPolling {
+export default class CredentialsStatusPolling {
   private interval: NodeJS.Timeout | undefined;
 
   public start(
@@ -26,7 +26,7 @@ export default class CredentialsValidityPolling {
       // fetch credential validity
       for (const credential of credentials) {
         UserStore.getStore().dispatch(
-          credentialsActions.fetchCredentialValidity(credential.id),
+          credentialsActions.fetchCredentialStatus(credential.id),
         );
       }
     }, intervalTime);

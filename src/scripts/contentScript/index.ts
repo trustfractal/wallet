@@ -35,7 +35,7 @@ proxyConnection
   .proxy(ConnectionTypes.APPROVE_STAKE_BACKGROUND)
   .proxy(ConnectionTypes.CREDENTIAL_STORE_BACKGROUND)
   .proxy(ConnectionTypes.HAS_CREDENTIAL_BACKGROUND)
-  .proxy(ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND)
+  .proxy(ConnectionTypes.GET_CREDENTIAL_STATUS_BACKGROUND)
   .proxy(ConnectionTypes.GET_ATTESTATION_REQUEST_BACKGROUND)
   .proxy(ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND)
   .proxy(ConnectionTypes.GET_SIGNED_NONCE_BACKGROUND)
@@ -52,6 +52,6 @@ proxyConnection
   .reversedProxy(ConnectionTypes.GET_ATTESTATION_REQUEST_INPAGE)
   .reversedProxy(ConnectionTypes.GET_STAKING_DETAILS_INPAGE)
   .reversedProxy(ConnectionTypes.GET_SIGNED_NONCE_INPAGE)
-  .reversedProxy(ConnectionTypes.IS_CREDENTIAL_VALID_INPAGE)
+  .reversedProxy(ConnectionTypes.GET_CREDENTIAL_STATUS_INPAGE)
   .reversedProxy(ConnectionTypes.STAKE_INPAGE)
   .reversedProxy(ConnectionTypes.WITHDRAW_INPAGE);
