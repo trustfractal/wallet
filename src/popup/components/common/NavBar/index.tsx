@@ -52,20 +52,6 @@ const LogoContainer = styled.div`
   margin-right: var(--s-24);
 `;
 
-const BalanceAmountContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-
-  margin-bottom: var(--s-4);
-`;
-
-const BalanceAmount = styled.div`
-  width: 60px;
-`;
-
-const BalanceAmountsContainer = styled.div``;
-
 const BalanceContainer = styled.div`
   flex: 1;
   display: flex;
@@ -75,13 +61,23 @@ const BalanceContainer = styled.div`
 const BalanceLabel = styled.div`
   color: var(--c-orange);
   margin-bottom: var(--s-8);
-  width: 45px;
 `;
 
-const BalanceToken = styled.div`
-  width: 45px;
-  margin-left: var(--s-12);
+const BalanceAmountContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;
+
+const BalanceAmounts = styled.div`
+  align-items: flex-end;
+  justify-content: flex-end;
+  display: flex;
+  flex-direction: column;
+  margin-right: var(--s-12);
+`;
+
+const BalanceTokens = styled.div``;
 
 function BalanceNavbar() {
   const stakingDetails: any = useUserSelector(getStakingDetails);
@@ -121,36 +117,26 @@ function BalanceNavbar() {
             Balance
           </Text>
         </BalanceLabel>
-        <BalanceAmountsContainer>
-          <BalanceAmountContainer>
-            <BalanceAmount>
-              <Text weight={TextWeights.BOLD}>
-                {parseAndFormatEther(
-                  stakingDetails[TokenTypes.FCL].userBalance,
-                )}
-              </Text>
-            </BalanceAmount>
-            <BalanceToken>
-              <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-                FCL
-              </Text>
-            </BalanceToken>
-          </BalanceAmountContainer>
-          <BalanceAmountContainer>
-            <BalanceAmount>
-              <Text weight={TextWeights.BOLD}>
-                {parseAndFormatEther(
-                  stakingDetails[TokenTypes.FCL_ETH_LP].userBalance,
-                )}
-              </Text>
-            </BalanceAmount>
-            <BalanceToken>
-              <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-                FCL/ETH
-              </Text>
-            </BalanceToken>
-          </BalanceAmountContainer>
-        </BalanceAmountsContainer>
+        <BalanceAmountContainer>
+          <BalanceAmounts>
+            <Text weight={TextWeights.BOLD}>
+              {parseAndFormatEther(stakingDetails[TokenTypes.FCL].userBalance)}
+            </Text>
+            <Text weight={TextWeights.BOLD}>
+              {parseAndFormatEther(
+                stakingDetails[TokenTypes.FCL_ETH_LP].userBalance,
+              )}
+            </Text>
+          </BalanceAmounts>
+          <BalanceTokens>
+            <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+              FCL
+            </Text>
+            <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+              FCL/ETH
+            </Text>
+          </BalanceTokens>
+        </BalanceAmountContainer>
       </BalanceContainer>
       <Menu items={menuItems} />
     </BalanceNavbaContainer>
