@@ -16,15 +16,19 @@ import {
   IStakingDetails,
   ITransactionDetails,
   IConnectionStatus,
+  IVerificationRequest,
 } from "@pluginTypes/index";
 
 import ExtensionConnection from "@sdk/InpageProvider/connection";
+
 import TokenTypes from "@models/Token/types";
+import Requester from "@models/Request/Requester";
 
 import AttestationRequest from "@models/AttestationRequest";
 import ConnectionStatus from "@models/Connection/ConnectionStatus";
 import StakingDetails from "@models/Staking/StakingDetails";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
+import VerificationRequest from "@models/VerificationRequest";
 
 export default class InpageProvider implements IFractalInpageProvider {
   private initialized: boolean = false;
@@ -71,6 +75,31 @@ export default class InpageProvider implements IFractalInpageProvider {
 
     if (serializedTransactionDetails)
       return TransactionDetails.parse(serializedTransactionDetails);
+  }
+
+  public async getVerificationRequest(
+    level: string,
+    requester: { name: string; url: string; icon: string },
+  ): Promise<IVerificationRequest> {
+    this.ensureFractalIsInitialized();
+
+    const parsedRequester = new Requester(
+      requester.name,
+      requester.url,
+      requester.icon,
+    );
+
+    const serializedRequest = await ExtensionConnection.invoke(
+      ConnectionTypes.GET_VERIFICATION_REQUEST_BACKGROUND,
+      [level, parsedRequester.serialize()],
+    );
+
+    // parse request
+    const request: VerificationRequest = VerificationRequest.parse(
+      serializedRequest,
+    );
+
+    return request;
   }
 
   public async stake(

@@ -40,7 +40,7 @@ export function passwordHashing(
   return scrypt(coToUInt8(password), coToUInt8(salt), N, r, p, dkLen);
 }
 
-export function getRandomBytes(length = 24) {
+export function getRandomBytes(length = 24): string {
   return u8aToHex(nacl.randomBytes(length));
 }
 

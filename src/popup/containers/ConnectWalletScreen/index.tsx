@@ -25,7 +25,7 @@ function ConnectWalletScreen() {
   const account = useUserSelector(getAccount);
   const setup = useAppSelector(isSetup);
 
-  const onDone = () => history.replace(RoutesPaths.HOME);
+  const onDone = () => history.replace(RoutesPaths.WALLET);
   const onConnect = () => dispatch(walletActions.connectWalletRequest());
 
   if (setup) {

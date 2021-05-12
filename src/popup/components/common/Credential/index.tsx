@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { ICredential } from "@pluginTypes/index";
 
@@ -8,13 +8,12 @@ import Text, {
   TextWeights,
 } from "@popup/components/common/Text";
 import Icon, { IconNames } from "@popup/components/common/Icon";
+import LevelIcon from "@popup/components/common/LevelIcon";
 
 const RootContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  margin-bottom: var(--s-32);
 
   border-radius: var(--s-12);
   padding: var(--s-20) var(--s-12);
@@ -34,35 +33,8 @@ const LeftContainer = styled.div`
   justify-content: flex-start;
 `;
 
-const LevelIconContainer = styled.div<{ levelIconName: IconNames }>`
+const LevelIconContainer = styled.div`
   margin-right: var(--s-8);
-  border-radius: 100%;
-
-  ${(props) =>
-    props.levelIconName === IconNames.ID_BASIC &&
-    css`
-      background: radial-gradient(
-        57.81% 68.75% at 23.44% 15.62%,
-        #a5c8ff 5.21%,
-        #4073c2 44.35%,
-        #132c53 87.5%,
-        #00122f 100%
-      );
-      box-shadow: 0px 8px 12px #aabdda;
-    `}
-
-  ${(props) =>
-    props.levelIconName === IconNames.ID_PLUS &&
-    css`
-      background: radial-gradient(
-        57.81% 68.75% at 23.44% 15.62%,
-        #ffeadf 10.04%,
-        #ffc6aa 44.35%,
-        #ff671d 87.5%,
-        #e14a00 100%
-      );
-      box-shadow: 0px 8px 12px #ffc4a8;
-    `}
 `;
 
 const LevelContentContainer = styled.div``;
@@ -106,7 +78,6 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
 
   const [level, ...addons] = credential.level.split("+");
   let levelName;
-  let levelIconName;
   let statusName;
   let statusIconName;
 
@@ -114,10 +85,8 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
 
   if (level === "basic") {
     levelName = `ID Basic + ${addonsStr}`;
-    levelIconName = IconNames.ID_BASIC;
   } else {
     levelName = `ID Plus + ${addonsStr}`;
-    levelIconName = IconNames.ID_PLUS;
   }
 
   if (valid) {
@@ -131,8 +100,8 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
   return (
     <RootContainer>
       <LeftContainer>
-        <LevelIconContainer levelIconName={levelIconName}>
-          <Icon name={levelIconName} />
+        <LevelIconContainer>
+          <LevelIcon level={level} />
         </LevelIconContainer>
         <LevelContentContainer>
           <Text height={TextHeights.LARGE} weight={TextWeights.BOLD}>

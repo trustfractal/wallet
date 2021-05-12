@@ -1,50 +1,55 @@
-import { useHistory } from "react-router";
-
-import Home from "@popup/components/Home";
-import EmptyCredentials from "@popup/components/EmptyCredentials";
-
-import { useUserSelector } from "@redux/stores/user/context";
-
-import RoutesPaths from "@popup/routes/paths";
 import { useAppSelector } from "@redux/stores/application/context";
-import { isSetup } from "@redux/stores/application/reducers/app/selectors";
+import { useUserSelector } from "@redux/stores/user/context";
+import {
+  getStakingDetails,
+  getStakingStatus,
+} from "@redux/stores/user/reducers/wallet/selectors";
+
+import { isStakingEnabled } from "@redux/stores/application/reducers/app/selectors";
+
+import Tabs from "@popup/components/common/Tabs";
+import Staking from "@popup/components/Staking";
+import Credentials from "@popup/components/Credentials";
+import { withNavBar } from "@popup/components/common/NavBar";
+
+import environment from "@environment/index";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+import { getRequests } from "@redux/stores/user/reducers/requests/selectors";
 
 import WindowsService from "@services/WindowsService";
-import environment from "@environment/index";
 
-function HomeScreen() {
-  const history = useHistory();
+function Home() {
+  const onClick = () =>
+    WindowsService.openTab(`${environment.FRACTAL_WEBSITE_URL}/staking`);
 
+  const requests = useUserSelector(getRequests);
   const credentials = useUserSelector(getCredentials);
-  const setup = useAppSelector(isSetup);
+  const stakingDetails: any = useUserSelector(getStakingDetails);
+  const stakingStatus: any = useUserSelector(getStakingStatus);
+  const stakingEnabled: boolean = useAppSelector(isStakingEnabled);
 
-  // redirect to wallet connect
-  if (!setup) {
-    history.push(RoutesPaths.CONNECT_WALLET);
-  }
+  const tabs = [
+    {
+      id: "credentials-tab",
+      label: "Credentials",
+      props: { credentials, requests },
+      component: Credentials,
+    },
+    {
+      id: "staking-tab",
+      label: "Staking",
+      disabled: !stakingEnabled,
+      props: {
+        stakingDetails,
+        stakingStatus,
+        onClick,
+        disabled: !stakingEnabled,
+      },
+      component: Staking,
+    },
+  ];
 
-  // check if has credentials
-  if (credentials.length === 0) {
-    return (
-      <EmptyCredentials
-        onNext={() =>
-          WindowsService.openTab(
-            `${environment.FRACTAL_WEBSITE_URL}/credentials`,
-          )
-        }
-      />
-    );
-  }
-
-  return (
-    <Home
-      credentials={credentials}
-      onClick={() =>
-        WindowsService.openTab(`${environment.FRACTAL_WEBSITE_URL}/staking`)
-      }
-    />
-  );
+  return <Tabs tabs={tabs} />;
 }
 
-export default HomeScreen;
+export default withNavBar(Home);

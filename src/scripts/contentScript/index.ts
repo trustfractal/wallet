@@ -38,6 +38,7 @@ proxyConnection
   .proxy(ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND)
   .proxy(ConnectionTypes.GET_ATTESTATION_REQUEST_BACKGROUND)
   .proxy(ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND)
+  .proxy(ConnectionTypes.GET_VERIFICATION_REQUEST_BACKGROUND)
   .proxy(ConnectionTypes.SETUP_PLUGIN_BACKGROUND)
   .proxy(ConnectionTypes.STAKE_BACKGROUND)
   .proxy(ConnectionTypes.RESET_STAKING_BACKGROUND)

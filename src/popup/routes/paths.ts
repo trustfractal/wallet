@@ -1,6 +1,6 @@
 enum RoutesPaths {
   CONNECT_WALLET = "/connect-wallet",
-  HOME = "/",
+  WALLET = "/",
 }
 
 export default RoutesPaths;

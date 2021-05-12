@@ -1,9 +1,9 @@
 import { AttestationRequest as SDKAttestationRequest } from "@trustfractal/sdk";
-import { ISerializable } from "@pluginTypes/index";
+import { IAttestationRequest } from "@pluginTypes/index";
 
 export default class AttestationRequest
   extends SDKAttestationRequest
-  implements ISerializable {
+  implements IAttestationRequest {
   constructor(attestationRequest: SDKAttestationRequest) {
     super({
       claim: attestationRequest.claim,

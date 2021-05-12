@@ -23,3 +23,7 @@ export function getPercentage(available: number, total: number): number {
 export function capitalize(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
+
+export function fromSnackCase(value: string): string {
+  return capitalize(value.replaceAll("_", " "));
+}

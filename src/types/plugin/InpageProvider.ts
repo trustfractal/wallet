@@ -1,4 +1,3 @@
-import { BigNumber } from "@ethersproject/bignumber";
 import {
   IClaimProperties,
   IAttestationRequest,
@@ -8,6 +7,7 @@ import {
 import { IConnectionStatus } from "./Connection";
 import { IStakingDetails } from "./Staking";
 import { ITransactionDetails } from "./Transaction";
+import { IVerificationRequest, IRequester } from "./Request";
 
 export interface IFractalInpageProvider {
   init: () => Promise<void>;
@@ -34,6 +34,10 @@ export interface IFractalInpageProvider {
   ): Promise<ITransactionDetails>;
   hasCredential(id: string, level: string): Promise<boolean>;
   isCredentialValid(id: string, level: string): Promise<boolean>;
+  getVerificationRequest(
+    level: string,
+    requester: { name: string; url: string; icon: string },
+  ): Promise<IVerificationRequest>;
   getStakingDetails(token: string): Promise<IStakingDetails>;
   setupPlugin(): Promise<IConnectionStatus>;
   verifyConnection(): Promise<IConnectionStatus>;

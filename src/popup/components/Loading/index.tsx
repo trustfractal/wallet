@@ -6,8 +6,8 @@ import Text, { TextHeights, TextSizes } from "../common/Text";
 import Logo from "../common/Logo";
 
 const RootContainer = styled.div`
-  min-width: 400px;
-  min-height: 460px;
+  min-width: 352px;
+  min-height: 412px;
 
   display: flex;
   flex-direction: column;

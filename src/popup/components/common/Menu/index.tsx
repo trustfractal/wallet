@@ -29,7 +29,7 @@ const MenuContainer = styled.div<{ active: boolean }>`
   transform: ${(props) =>
     props.active ? "translateX(0)" : "translateX(calc(100% + var(--s-12)))"};
   transition: transform 0.3s ease-in-out;
-  z-index: 1;
+  z-index: 2;
 `;
 
 const MenuOverlay = styled.div<{ active: boolean }>`
@@ -42,7 +42,7 @@ const MenuOverlay = styled.div<{ active: boolean }>`
   background: var(--c-dark-blue);
   opacity: ${(props) => (props.active ? "0.2" : "0")};
   transition: opacity 0.3s ease-in-out;
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
 `;
 

@@ -5,7 +5,7 @@ import {
   Redirect,
 } from "react-router-dom";
 
-import HomeScreen from "@popup/containers/HomeScreen";
+import WalletScreen from "@popup/containers/WalletScreen";
 
 import ConnectWalletScreen from "@popup/containers/ConnectWalletScreen";
 import RoutesPaths from "./paths";
@@ -17,8 +17,8 @@ const Routes = () => (
         path={RoutesPaths.CONNECT_WALLET}
         component={ConnectWalletScreen}
       />
-      <Route path={RoutesPaths.HOME} component={HomeScreen} />
-      <Redirect to={RoutesPaths.HOME} />
+      <Route path={RoutesPaths.WALLET} component={WalletScreen} />
+      <Redirect to={RoutesPaths.WALLET} />
     </Switch>
   </Router>
 );
