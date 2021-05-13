@@ -1,6 +1,6 @@
 {
   "name": "@trustfractal/plugin",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "dependencies": {
     "@metamask/detect-provider": "^1.2.0",
