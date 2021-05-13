@@ -49,12 +49,11 @@ jobs:
 
     env:
       FORCE_COLOR: true
+      REACT_APP_GOLDFISH_URL: ${{secrets.GOLDFISH_STAGING_URL}}
+      REACT_APP_FRACTAL_WEBSITE_URL: ${{secrets.FRACTAL_WEBSITE_STAGING_URL}}
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Import staging environment variables
-        run: echo "${{secrets.ENV_STAGING}}" > .env
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
