@@ -133,7 +133,7 @@ function BalanceNavbar() {
               FCL
             </Text>
             <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-              FCL/ETH
+              FCL/ETH LP
             </Text>
           </BalanceTokens>
         </BalanceAmountContainer>

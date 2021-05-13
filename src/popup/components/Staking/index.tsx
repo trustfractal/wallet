@@ -483,7 +483,7 @@ function Staking(props: StakingProps) {
       endDate: moment(fclEthLpDetails.stakingEndDate.toNumber(), "X").format(
         "Do MMMM",
       ),
-      token: "FCL/ETH",
+      token: "FCL/ETH LP",
       apy: fclEthLpDetails.stakingAPY.toString() + "%",
       currentExpectedRewardRate:
         fclEthLpDetails.stakingCurrentExpectedRewardRate.toString() + "%",
