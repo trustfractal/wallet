@@ -2,6 +2,8 @@ import styled from "styled-components";
 
 import { ICredential } from "@pluginTypes/index";
 
+import CredentialStatus from "@models/Credential/status";
+
 import Text, {
   TextHeights,
   TextSizes,
@@ -65,7 +67,7 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
   const { credential } = props;
 
   const {
-    valid,
+    status,
     claim: {
       properties: { full_name: name },
     },
@@ -89,9 +91,12 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
     levelName = `ID Plus + ${addonsStr}`;
   }
 
-  if (valid) {
-    statusName = "Verified";
-    statusIconName = IconNames.VERIFIED;
+  if (status === CredentialStatus.VALID) {
+    statusName = "Valid";
+    statusIconName = IconNames.VALID;
+  } else if (status === CredentialStatus.INVALID) {
+    statusName = "Invalid";
+    statusIconName = IconNames.INVALID;
   } else {
     statusName = "Pending";
     statusIconName = IconNames.PENDING;

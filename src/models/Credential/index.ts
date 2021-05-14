@@ -1,11 +1,13 @@
+import { AttestedClaim as SDKAttestedClaim } from "@trustfractal/sdk";
 import {
   ICredential,
   ITransactionDetails,
   ISerializable,
 } from "@pluginTypes/index";
 
-import { AttestedClaim as SDKAttestedClaim } from "@trustfractal/sdk";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
+
+import CredentialStatus from "./status";
 
 export default class Credential
   extends SDKAttestedClaim
@@ -14,11 +16,13 @@ export default class Credential
   public level: string;
   public transaction?: ITransactionDetails;
   public valid: boolean;
+  public status: CredentialStatus;
 
   public constructor(
     credential: SDKAttestedClaim,
     id: string,
     level: string,
+    status?: CredentialStatus,
     transaction?: ITransactionDetails,
     valid: boolean = false,
   ) {
@@ -38,6 +42,16 @@ export default class Credential
     this.level = level;
     this.transaction = transaction;
     this.valid = valid;
+
+    if (status !== undefined) {
+      this.status = status;
+    } else {
+      if (this.valid) {
+        this.status = CredentialStatus.VALID;
+      } else {
+        this.status = CredentialStatus.INVALID;
+      }
+    }
   }
 
   public serialize(): string {
@@ -56,6 +70,7 @@ export default class Credential
       level: this.level,
       transaction: this.transaction?.serialize(),
       valid: this.valid,
+      status: this.status,
     });
   }
 
@@ -75,6 +90,7 @@ export default class Credential
       level,
       transaction,
       valid,
+      status,
     } = JSON.parse(str);
 
     const attestedCLaim = new SDKAttestedClaim({
@@ -96,6 +112,13 @@ export default class Credential
       transactionInstance = TransactionDetails.parse(transaction);
     }
 
-    return new Credential(attestedCLaim, id, level, transactionInstance, valid);
+    return new Credential(
+      attestedCLaim,
+      id,
+      level,
+      status,
+      transactionInstance,
+      valid,
+    );
   }
 }

@@ -3,7 +3,7 @@ import appActions, { appTypes } from "@redux/stores/application/reducers/app";
 import GoldfishService from "@services/GoldfishService";
 
 import StakingDetailsPolling from "@models/Polling/StakingDetailsPolling";
-import CredentialsValidityPolling from "@models/Polling/CredentialsValidityPolling";
+import CredentialsStatusPolling from "@models/Polling/CredentialsStatusPolling";
 
 export const startup = () => {
   return async (dispatch) => {
@@ -39,8 +39,8 @@ export const startup = () => {
     // start staking details polling
     new StakingDetailsPolling().start();
 
-    // start credentials validity polling
-    new CredentialsValidityPolling().start();
+    // start credentials status polling
+    new CredentialsStatusPolling().start();
 
     dispatch(appActions.setLaunched(true));
   };

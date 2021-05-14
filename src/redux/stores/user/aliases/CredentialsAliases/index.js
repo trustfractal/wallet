@@ -7,10 +7,10 @@ import credentialsActions, {
   credentialsTypes,
 } from "@redux/stores/user/reducers/credentials";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 
 import Credential from "@models/Credential";
 import { getClaimsRegistryContractAddress } from "@redux/stores/application/reducers/app/selectors";
-import { getAccount } from "../../reducers/wallet/selectors";
 
 export const addCredential = ({ payload: serializedCredential }) => {
   return async (dispatch, getState) => {
@@ -68,7 +68,7 @@ export const removeCredential = ({ payload: id }) => {
   };
 };
 
-export const fetchCredentialValidity = ({ payload: id }) => {
+export const fetchCredentialStatus = ({ payload: id }) => {
   return async (dispatch, getState) => {
     const address = getAccount(getState());
     const credentials = getCredentials(getState());
@@ -84,25 +84,26 @@ export const fetchCredentialValidity = ({ payload: id }) => {
     }
 
     // fetch credential validity
-    const valid = await ContentScriptConnection.invoke(
-      ConnectionTypes.IS_CREDENTIAL_VALID_INPAGE,
+    const status = await ContentScriptConnection.invoke(
+      ConnectionTypes.GET_CREDENTIAL_STATUS_INPAGE,
       [address, credential.serialize(), claimsRegistryContractAddress],
       activeTab.id,
     );
 
     // update redux store
-    dispatch(credentialsActions.setCredentialValidity({ id, valid }));
+    dispatch(credentialsActions.setCredentialStatus({ id, status }));
   };
 };
 
-export const setCredentialValidity = ({ payload: { id, valid } }) => {
+export const setCredentialStatus = ({ payload: { id, status } }) => {
   return async (dispatch, getState) => {
     const credentials = getCredentials(getState());
 
     const credential = credentials.getByField("id", id);
 
     // update credential
-    credential.valid = valid;
+    credential.status = status;
+
     const updatedCredential = credentials.updateByField(
       "id",
       credential.id,
@@ -122,8 +123,8 @@ const Aliases = {
   [credentialsTypes.ADD_CREDENTIAL]: addCredential,
   [credentialsTypes.UPDATE_CREDENTIAL]: updateCredential,
   [credentialsTypes.REMOVE_CREDENTIAL]: removeCredential,
-  [credentialsTypes.FETCH_CREDENTIAL_VALIDITY]: fetchCredentialValidity,
-  [credentialsTypes.SET_CREDENTIAL_VALIDITY]: setCredentialValidity,
+  [credentialsTypes.FETCH_CREDENTIAL_STATUS]: fetchCredentialStatus,
+  [credentialsTypes.SET_CREDENTIAL_STATUS]: setCredentialStatus,
 };
 
 export default Aliases;
