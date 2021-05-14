@@ -52,3 +52,13 @@ export interface ISetupWatcher extends IWatcher {
     timeOutTime?: number,
   ) => void;
 }
+
+export interface IRequestsWatcher extends IWatcher {
+  listenForRequest: (
+    id: string,
+    onAccepted: Callback,
+    onDeclined: Callback,
+    onTimeout: Callback,
+    timeOutTime?: number,
+  ) => void;
+}

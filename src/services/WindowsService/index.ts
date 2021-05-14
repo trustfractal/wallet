@@ -15,8 +15,26 @@ import {
 
 import environment from "@environment/index";
 
-const POPUP_WIDTH = 400;
-const POPUP_HEIGHT = 460;
+export enum PopupSizes {
+  SMALL = "small",
+  MEDIUM = "medium",
+  LARGE = "large",
+}
+
+const Sizes = {
+  [PopupSizes.SMALL]: {
+    width: 400,
+    height: 460,
+  },
+  [PopupSizes.MEDIUM]: {
+    width: 400,
+    height: 600,
+  },
+  [PopupSizes.LARGE]: {
+    width: 400,
+    height: 740,
+  },
+};
 
 class WindowsService {
   private static instance: WindowsService;
@@ -151,8 +169,11 @@ class WindowsService {
     return windows;
   }
 
-  async createPopup(): Promise<chrome.windows.Window | undefined> {
+  async createPopup(
+    size: PopupSizes = PopupSizes.SMALL,
+  ): Promise<chrome.windows.Window | undefined> {
     const popup = await this.getPopup();
+    const popupSize = Sizes[size];
 
     if (popup) {
       // bring focus to existing chrome popup
@@ -174,17 +195,17 @@ class WindowsService {
 
     if (lastFocused.left === undefined || lastFocused.width === undefined) {
       const { screenX, outerWidth } = window;
-      left = Math.max(screenX + (outerWidth - POPUP_WIDTH), 0);
+      left = Math.max(screenX + (outerWidth - popupSize.width), 0);
     } else {
-      left = lastFocused.left + (lastFocused.width - POPUP_WIDTH);
+      left = lastFocused.left + (lastFocused.width - popupSize.width);
     }
 
     // create new notification popup
     const popupWindow = await this.createWindow({
       url: "popup.html",
       type: "popup",
-      width: POPUP_WIDTH,
-      height: POPUP_HEIGHT,
+      width: popupSize.width,
+      height: popupSize.height,
       left,
       top,
     });

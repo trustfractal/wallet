@@ -16,6 +16,9 @@ export const getStakingDetails = ([
     stakingTokenContractAddress,
   );
 
+export const getSignedNonce = ([nonce, address]: [string, string]) =>
+  EthereumProviderService.getSignedNonce(nonce, address);
+
 export const approveStake = ([
   address,
   amount,
@@ -52,6 +55,7 @@ export const withdraw = ([address, stakingTokenContractAddress]: [
 const Callbacks = {
   [ConnectionTypes.GET_ACCOUNT_ADDRESS_INPAGE]: { callback: getAccountAddress },
   [ConnectionTypes.GET_STAKING_DETAILS_INPAGE]: { callback: getStakingDetails },
+  [ConnectionTypes.GET_SIGNED_NONCE_INPAGE]: { callback: getSignedNonce },
   [ConnectionTypes.APPROVE_STAKE_INPAGE]: { callback: approveStake },
   [ConnectionTypes.STAKE_INPAGE]: { callback: stake },
   [ConnectionTypes.WITHDRAW_INPAGE]: { callback: withdraw },

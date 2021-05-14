@@ -53,12 +53,6 @@ export default class ProxyConnection implements IProxyConnection {
       return new Promise((resolve, reject) => {
         const invokation = new Invokation(method, args, invoker);
 
-        // TODO: Remove debug console.log
-        console.log(
-          `proxy: ${this.sourceName} -> ${this.destinationName}`,
-          invokation,
-        );
-
         // forward message to destination
         this.forwardDestination(invokation);
 
@@ -78,12 +72,6 @@ export default class ProxyConnection implements IProxyConnection {
     this.destinationConnection.on(method, (args: any[], invoker: string) => {
       return new Promise((resolve, reject) => {
         const invokation = new Invokation(method, args, invoker);
-
-        // TODO: Remove debug console.log
-        console.log(
-          `proxy: ${this.destinationName} -> ${this.sourceName}`,
-          invokation,
-        );
 
         // forward message to source
         this.forwardSource(invokation);

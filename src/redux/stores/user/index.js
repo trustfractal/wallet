@@ -19,6 +19,11 @@ import {
   store as walletStore,
 } from "@redux/stores/user/reducers/wallet";
 import {
+  reducer as requestsReducer,
+  restore as requestsRestore,
+  store as requestsStore,
+} from "@redux/stores/user/reducers/requests";
+import {
   ERROR_DECRYPT_FAILED,
   ERROR_LOCAL_STATE_NOT_FOUND,
   ERROR_SALT_NOT_FOUND,
@@ -99,6 +104,7 @@ export class UserStore {
     return combineReducers({
       credentials: credentialsReducer,
       wallet: walletReducer,
+      requests: requestsReducer,
     });
   }
 
@@ -172,6 +178,7 @@ export class UserStore {
     return {
       credentials: await credentialsRestore(deserializedState.credentials),
       wallet: await walletRestore(deserializedState.wallet),
+      requests: await requestsRestore(deserializedState.requests),
     };
   }
 
@@ -179,12 +186,12 @@ export class UserStore {
     return JSON.stringify({
       credentials: await credentialsStore(state.credentials),
       wallet: await walletStore(state.wallet),
+      requests: await requestsStore(state.requests),
     });
   }
 
   static async clearStorage() {
     await UserStore.setStoredSalt(null);
-    await UserStore.setStoredState(null);
   }
 
   static reset() {

@@ -7,6 +7,7 @@ export * from "./EthereumProviderService";
 export * from "./EtherscanService";
 export * from "./InpageProvider";
 export * from "./Staking";
+export * from "./Request";
 export * from "./Transaction";
 export * from "./Watcher";
 export * from "./Window";

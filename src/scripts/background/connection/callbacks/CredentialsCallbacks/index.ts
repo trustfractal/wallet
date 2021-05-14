@@ -1,4 +1,7 @@
+import { v4 as uuidv4 } from "uuid";
+
 import Credential from "@models/Credential";
+import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 import UserStore from "@redux/stores/user";
 import AppStore from "@redux/stores/application";
@@ -12,10 +15,24 @@ import ConnectionTypes from "@models/Connection/types";
 import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 import credentialsActions from "@redux/stores/user/reducers/credentials";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
-import TransactionDetails from "@models/Transaction/TransactionDetails";
+import requestsActions from "@redux/stores/user/reducers/requests";
 
-import { ERROR_CREDENTIAL_NOT_FOUND } from "@background/Errors";
+import {
+  ERROR_CREDENTIAL_NOT_FOUND,
+  ERROR_CREDENTIALS_NOT_FOUND,
+} from "@background/Errors";
 import { getClaimsRegistryContractAddress } from "@redux/stores/application/reducers/app/selectors";
+import { requestsWatcher } from "@redux/middlewares/watchers";
+
+import {
+  ERROR_VERIFICATION_REQUEST_TIME_OUT,
+  ERROR_VERIFICATION_REQUEST_DECLINED,
+  ERROR_VERIFICATION_REQUEST_WINDOW_OPEN,
+} from "@background/Errors";
+
+import WindowsService, { PopupSizes } from "@services/WindowsService";
+
+import { IVerificationRequest } from "@pluginTypes/plugin";
 
 export const credentialStore = (
   [serializedCredential]: [string],
@@ -134,6 +151,76 @@ export const isCredentialValid = ([id]: [string], port: string) =>
     }
   });
 
+export const getVerificationRequest = ([level, requester]: [string, string]) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      // check if the user has any level credential
+      const credentials: CredentialsCollection = getCredentials(
+        UserStore.getStore().getState(),
+      );
+      const filteredCredentials = credentials.filterByField("level", level);
+
+      if (filteredCredentials.length === 0) {
+        reject(ERROR_CREDENTIALS_NOT_FOUND());
+      }
+
+      // generate an id
+      const id = uuidv4();
+
+      // add request to store
+      await UserStore.getStore().dispatch(
+        requestsActions.addVerificationRequest({
+          id,
+          level,
+          requester,
+        }),
+      );
+
+      // open popup on a new window
+      const window = await WindowsService.createPopup(PopupSizes.LARGE);
+
+      if (!window) {
+        reject(ERROR_VERIFICATION_REQUEST_WINDOW_OPEN());
+        return;
+      }
+
+      const onAccepted = (verificationRequest: IVerificationRequest) => {
+        // close request popup
+        WindowsService.closeWindow(window.id);
+
+        // resolve promise
+        resolve(verificationRequest.serialize());
+      };
+
+      const onDeclined = () => {
+        // close request popup
+        WindowsService.closeWindow(window.id);
+
+        // reject promise
+        reject(ERROR_VERIFICATION_REQUEST_DECLINED());
+      };
+
+      const onTimeout = async () => {
+        // close request popup
+        WindowsService.closeWindow(window.id);
+
+        await UserStore.getStore().dispatch(
+          requestsActions.declineVerificationRequest({
+            id,
+            credential: filteredCredentials[0].serialize(),
+          }),
+        );
+
+        reject(ERROR_VERIFICATION_REQUEST_TIME_OUT());
+      };
+
+      requestsWatcher.listenForRequest(id, onAccepted, onDeclined, onTimeout);
+    } catch (error) {
+      console.error(error);
+      reject(error);
+    }
+  });
+
 const Callbacks = {
   [ConnectionTypes.CREDENTIAL_STORE_BACKGROUND]: {
     callback: credentialStore,
@@ -149,6 +236,10 @@ const Callbacks = {
   },
   [ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND]: {
     callback: isCredentialValid,
+    middlewares: [new AuthMiddleware()],
+  },
+  [ConnectionTypes.GET_VERIFICATION_REQUEST_BACKGROUND]: {
+    callback: getVerificationRequest,
     middlewares: [new AuthMiddleware()],
   },
 };

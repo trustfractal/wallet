@@ -1,4 +1,3 @@
-import { BigNumber } from "@ethersproject/bignumber";
 import {
   IClaimProperties,
   IAttestationRequest,
@@ -8,6 +7,8 @@ import {
 import { IConnectionStatus } from "./Connection";
 import { IStakingDetails } from "./Staking";
 import { ITransactionDetails } from "./Transaction";
+import { IVerificationRequest } from "./Request";
+import { SignedNonce } from "./Common";
 
 export interface IFractalInpageProvider {
   init: () => Promise<void>;
@@ -34,6 +35,11 @@ export interface IFractalInpageProvider {
   ): Promise<ITransactionDetails>;
   hasCredential(id: string, level: string): Promise<boolean>;
   isCredentialValid(id: string, level: string): Promise<boolean>;
+  getSignedNonce(nonce?: string): Promise<SignedNonce>;
+  getVerificationRequest(
+    level: string,
+    requester: { name: string; url: string; icon: string },
+  ): Promise<IVerificationRequest>;
   getStakingDetails(token: string): Promise<IStakingDetails>;
   setupPlugin(): Promise<IConnectionStatus>;
   verifyConnection(): Promise<IConnectionStatus>;

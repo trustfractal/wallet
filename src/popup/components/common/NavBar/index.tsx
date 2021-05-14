@@ -34,7 +34,6 @@ const LogoNavbarContainer = styled.div`
 `;
 
 const BalanceNavbaContainer = styled.div`
-  position: relative;
   display: flex;
   flex-direction: row;
 
@@ -75,6 +74,10 @@ const BalanceAmounts = styled.div`
   display: flex;
   flex-direction: column;
   margin-right: var(--s-12);
+`;
+
+const RootContainer = styled.div`
+  position: relative;
 `;
 
 const BalanceTokens = styled.div``;
@@ -174,7 +177,9 @@ export const withNavBar = <P extends object>(
   Component: React.ComponentType<P>,
 ) => (props: any) => (
   <>
-    <Navbar />
-    <Component {...(props as P)} />
+    <RootContainer>
+      <Navbar />
+      <Component {...(props as P)} />
+    </RootContainer>
   </>
 );

@@ -65,6 +65,28 @@ export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
     }
   });
 
+export const getSignedNonce = ([nonce]: [string?], port: string) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const address = getAccount(UserStore.getStore().getState());
+
+      const signature = await ContentScriptConnection.invoke(
+        ConnectionTypes.GET_SIGNED_NONCE_INPAGE,
+        [nonce, address],
+        port,
+      );
+
+      resolve({
+        signer: address,
+        nonce,
+        signature,
+      });
+    } catch (error) {
+      console.error(error);
+      reject(error);
+    }
+  });
+
 export const approveStake = (
   [amount, token]: [string, TokenTypes],
   port: string,
@@ -204,6 +226,10 @@ const Callbacks = {
   [ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND]: {
     callback: getStakingDetails,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
+  },
+  [ConnectionTypes.GET_SIGNED_NONCE_BACKGROUND]: {
+    callback: getSignedNonce,
+    middlewares: [new AuthMiddleware()],
   },
   [ConnectionTypes.STAKE_BACKGROUND]: {
     callback: stake,
