@@ -104,9 +104,6 @@ class Web3ProviderService implements IWeb3ProviderService {
       this.ensureProviderIsInitialized();
       const signer = this.web3Provider!.getSigner(address);
 
-      console.log("address", address);
-      console.log("nounce", nounce);
-
       return signer.signMessage(nounce);
     } catch (error) {
       console.error(error);
