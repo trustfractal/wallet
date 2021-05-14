@@ -34,9 +34,6 @@ export default abstract class BaseConnection implements IConnection {
   public abstract postMessage(message: IResponse | IInvokation): void;
 
   protected handleMessage({ type, message }: Message): void {
-    // TODO: Remove debug console.log
-    console.log(`${this.from} -> ${this.to}`, { type, message });
-
     if (type === Response.NAME) {
       this.handleResponse(message);
     } else if (type === Invokation.NAME) {

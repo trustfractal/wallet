@@ -17,6 +17,7 @@ import {
   ITransactionDetails,
   IConnectionStatus,
   IVerificationRequest,
+  SignedNounce,
 } from "@pluginTypes/index";
 
 import ExtensionConnection from "@sdk/InpageProvider/connection";
@@ -29,6 +30,7 @@ import ConnectionStatus from "@models/Connection/ConnectionStatus";
 import StakingDetails from "@models/Staking/StakingDetails";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 import VerificationRequest from "@models/VerificationRequest";
+import { getRandomBytes } from "@utils/CryptoUtils";
 
 export default class InpageProvider implements IFractalInpageProvider {
   private initialized: boolean = false;
@@ -147,6 +149,16 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
 
     return request;
+  }
+
+  public getSignedNounce(nounce: string): Promise<SignedNounce> {
+    this.ensureFractalIsInitialized();
+
+    // call the signer
+    return ExtensionConnection.invoke(
+      ConnectionTypes.GET_SIGNED_NOUNCE_BACKGROUND,
+      [nounce || getRandomBytes(64)],
+    );
   }
 
   public async credentialStore(

@@ -7,7 +7,8 @@ import {
 import { IConnectionStatus } from "./Connection";
 import { IStakingDetails } from "./Staking";
 import { ITransactionDetails } from "./Transaction";
-import { IVerificationRequest, IRequester } from "./Request";
+import { IVerificationRequest } from "./Request";
+import { SignedNounce } from "./Common";
 
 export interface IFractalInpageProvider {
   init: () => Promise<void>;
@@ -34,6 +35,7 @@ export interface IFractalInpageProvider {
   ): Promise<ITransactionDetails>;
   hasCredential(id: string, level: string): Promise<boolean>;
   isCredentialValid(id: string, level: string): Promise<boolean>;
+  getSignedNounce(nounce?: string): Promise<SignedNounce>;
   getVerificationRequest(
     level: string,
     requester: { name: string; url: string; icon: string },

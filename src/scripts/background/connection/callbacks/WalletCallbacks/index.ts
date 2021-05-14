@@ -65,6 +65,28 @@ export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
     }
   });
 
+export const getSignedNounce = ([nounce]: [string?], port: string) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const address = getAccount(UserStore.getStore().getState());
+
+      const signature = await ContentScriptConnection.invoke(
+        ConnectionTypes.GET_SIGNED_NOUNCE_INPAGE,
+        [nounce, address],
+        port,
+      );
+
+      resolve({
+        signer: address,
+        nounce,
+        signature,
+      });
+    } catch (error) {
+      console.error(error);
+      reject(error);
+    }
+  });
+
 export const approveStake = (
   [amount, token]: [string, TokenTypes],
   port: string,
@@ -204,6 +226,10 @@ const Callbacks = {
   [ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND]: {
     callback: getStakingDetails,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
+  },
+  [ConnectionTypes.GET_SIGNED_NOUNCE_BACKGROUND]: {
+    callback: getSignedNounce,
+    middlewares: [new AuthMiddleware()],
   },
   [ConnectionTypes.STAKE_BACKGROUND]: {
     callback: stake,

@@ -26,6 +26,7 @@ const RootContainer = styled.div`
 `;
 
 const ExpandContainer = styled.div<{ collapsed: boolean }>`
+  user-select: none;
   cursor: pointer;
 
   display: flex;
@@ -53,6 +54,7 @@ const ExpandLabel = styled.div`
 const ExpandButton = styled.div``;
 const LastActivityLabel = styled.div`
   opacity: 0.6;
+  user-select: none;
   text-transform: uppercase;
 `;
 const LastActivity = styled.div`
@@ -69,10 +71,12 @@ const ActivitiesLabel = styled.div`
   padding-bottom: var(--s-12);
   padding-left: var(--s-12);
 
+  user-select: none;
   text-transform: uppercase;
 `;
 const ActivityDate = styled.div`
   opacity: 0.6;
+  user-select: none;
 `;
 const ActivityContainer = styled.div`
   padding: var(--s-20) var(--s-12);
