@@ -184,9 +184,7 @@ export const getVerificationRequest = ([level, requester]: [string, string]) =>
         return;
       }
 
-      const onAccepted = (
-        verificationRequest: IVerificationRequest,
-      ) => async () => {
+      const onAccepted = (verificationRequest: IVerificationRequest) => {
         // close request popup
         WindowsService.closeWindow(window.id);
 
@@ -194,7 +192,7 @@ export const getVerificationRequest = ([level, requester]: [string, string]) =>
         resolve(verificationRequest.serialize());
       };
 
-      const onDeclined = async () => {
+      const onDeclined = () => {
         // close request popup
         WindowsService.closeWindow(window.id);
 
