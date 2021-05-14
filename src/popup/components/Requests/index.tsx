@@ -136,6 +136,9 @@ const PropertyContainer = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: var(--s-12);
+
+  cursor: pointer;
+  user-select: none;
 `;
 
 const CheckboxContainer = styled.div`
@@ -288,7 +291,10 @@ function Requests(props: RequestsProps) {
             </SelectedCredential>
             <SelectedProperties>
               {Object.keys(selectedProperties).map((propertyKey) => (
-                <PropertyContainer key={propertyKey}>
+                <PropertyContainer
+                  key={propertyKey}
+                  onClick={() => selectProperty(propertyKey)}
+                >
                   <CheckboxContainer>
                     <CheckboxInput
                       name="credential"
