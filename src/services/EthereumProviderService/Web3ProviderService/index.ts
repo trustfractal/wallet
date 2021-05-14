@@ -99,12 +99,12 @@ class Web3ProviderService implements IWeb3ProviderService {
     }
   }
 
-  public getSignedNounce(nounce: string, address: string): Promise<string> {
+  public getSignedNonce(nonce: string, address: string): Promise<string> {
     try {
       this.ensureProviderIsInitialized();
       const signer = this.web3Provider!.getSigner(address);
 
-      return signer.signMessage(nounce);
+      return signer.signMessage(nonce);
     } catch (error) {
       console.error(error);
       if (error.code === MetamaskErrors.USER_DECLINED) {

@@ -16,8 +16,8 @@ export interface ICollection<T> extends ISerializable, Array<T> {
   removeByField: (field: string, value: any) => void;
 }
 
-export interface SignedNounce {
+export interface SignedNonce {
   signer: string;
-  nounce: string;
+  nonce: string;
   signature: string;
 }

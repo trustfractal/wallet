@@ -17,7 +17,7 @@ import {
   ITransactionDetails,
   IConnectionStatus,
   IVerificationRequest,
-  SignedNounce,
+  SignedNonce,
 } from "@pluginTypes/index";
 
 import ExtensionConnection from "@sdk/InpageProvider/connection";
@@ -151,13 +151,13 @@ export default class InpageProvider implements IFractalInpageProvider {
     return request;
   }
 
-  public getSignedNounce(nounce: string): Promise<SignedNounce> {
+  public getSignedNonce(nonce: string): Promise<SignedNonce> {
     this.ensureFractalIsInitialized();
 
     // call the signer
     return ExtensionConnection.invoke(
-      ConnectionTypes.GET_SIGNED_NOUNCE_BACKGROUND,
-      [nounce || getRandomBytes(64)],
+      ConnectionTypes.GET_SIGNED_NONCE_BACKGROUND,
+      [nonce || getRandomBytes(64)],
     );
   }
 

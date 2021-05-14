@@ -65,20 +65,20 @@ export const getStakingDetails = ([token]: [TokenTypes], port: string) =>
     }
   });
 
-export const getSignedNounce = ([nounce]: [string?], port: string) =>
+export const getSignedNonce = ([nonce]: [string?], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
       const address = getAccount(UserStore.getStore().getState());
 
       const signature = await ContentScriptConnection.invoke(
-        ConnectionTypes.GET_SIGNED_NOUNCE_INPAGE,
-        [nounce, address],
+        ConnectionTypes.GET_SIGNED_NONCE_INPAGE,
+        [nonce, address],
         port,
       );
 
       resolve({
         signer: address,
-        nounce,
+        nonce,
         signature,
       });
     } catch (error) {
@@ -227,8 +227,8 @@ const Callbacks = {
     callback: getStakingDetails,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
   },
-  [ConnectionTypes.GET_SIGNED_NOUNCE_BACKGROUND]: {
-    callback: getSignedNounce,
+  [ConnectionTypes.GET_SIGNED_NONCE_BACKGROUND]: {
+    callback: getSignedNonce,
     middlewares: [new AuthMiddleware()],
   },
   [ConnectionTypes.STAKE_BACKGROUND]: {
