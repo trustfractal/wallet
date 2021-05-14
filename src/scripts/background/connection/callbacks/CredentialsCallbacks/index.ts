@@ -27,7 +27,10 @@ import { requestsWatcher } from "@redux/middlewares/watchers";
 import {
   ERROR_VERIFICATION_REQUEST_TIME_OUT,
   ERROR_VERIFICATION_REQUEST_DECLINED,
+  ERROR_VERIFICATION_REQUEST_WINDOW_OPEN,
 } from "@background/Errors";
+
+import WindowsService, { PopupSizes } from "@services/WindowsService";
 
 import { IVerificationRequest } from "@pluginTypes/plugin";
 
@@ -173,10 +176,36 @@ export const getVerificationRequest = ([level, requester]: [string, string]) =>
         }),
       );
 
-      const onAccepted = (verificationRequest: IVerificationRequest) =>
+      // open popup on a new window
+      const window = await WindowsService.createPopup(PopupSizes.LARGE);
+
+      if (!window) {
+        reject(ERROR_VERIFICATION_REQUEST_WINDOW_OPEN());
+        return;
+      }
+
+      const onAccepted = (
+        verificationRequest: IVerificationRequest,
+      ) => async () => {
+        // close request popup
+        WindowsService.closeWindow(window.id);
+
+        // resolve promise
         resolve(verificationRequest.serialize());
-      const onDeclined = () => reject(ERROR_VERIFICATION_REQUEST_DECLINED());
+      };
+
+      const onDeclined = async () => {
+        // close request popup
+        WindowsService.closeWindow(window.id);
+
+        // reject promise
+        reject(ERROR_VERIFICATION_REQUEST_DECLINED());
+      };
+
       const onTimeout = async () => {
+        // close request popup
+        WindowsService.closeWindow(window.id);
+
         await UserStore.getStore().dispatch(
           requestsActions.declineVerificationRequest({
             id,
