@@ -11,14 +11,11 @@ It also enables you to stake your FCL.
 
 **Table of Contents**
 
-- [Instalation](#instalation)
 - [Setup](#setup)
 - [Development](#development)
 - [Contribution Guidelines](#contribution-guidelines)
 - [License](#license)
 - [About](#about)
-
-## Instalation
 
 ## Setup
 
@@ -26,7 +23,6 @@ First, clone & setup the repository:
 
 ```
 git clone git@github.com:trustfractal/wallet.git
-cd wallet
 yarn install
 ```
 
