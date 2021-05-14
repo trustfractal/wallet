@@ -10,7 +10,7 @@ import RequestsTypes from "@models/Request/types";
 import VerificationRequest from "@models/VerificationRequest";
 import RequestsStatus from "@models/Request/status";
 
-import WindowsService from "@services/WindowsService";
+import WindowsService, { PopupSizes } from "@services/WindowsService";
 
 export const addVerificationRequest = ({
   payload: { id, level, requester },
@@ -37,7 +37,7 @@ export const addVerificationRequest = ({
     dispatch(requestsActions.setRequests(requests));
 
     // open popup on a new window
-    await WindowsService.createPopup();
+    await WindowsService.createPopup(PopupSizes.LARGE);
   };
 };
 
