@@ -31,6 +31,7 @@ const { default: Import } = require("@assets/import.svg");
 const { default: Request } = require("@assets/request.svg");
 const { default: Accepted } = require("@assets/accepted.svg");
 const { default: Declined } = require("@assets/declined.svg");
+const { default: Reconnect } = require("@assets/reconnect.svg");
 
 const Root = styled.div<{
   clickable: boolean;
@@ -72,6 +73,7 @@ export enum IconNames {
   REQUEST = "request",
   ACCEPTED = "accepted",
   DECLINED = "declined",
+  RECONNECT = "reconnect",
 }
 
 const Icons: Record<string, any> = {
@@ -104,6 +106,7 @@ const Icons: Record<string, any> = {
   [IconNames.REQUEST]: Request,
   [IconNames.ACCEPTED]: Accepted,
   [IconNames.DECLINED]: Declined,
+  [IconNames.RECONNECT]: Reconnect,
 };
 
 export type IconProps = {
