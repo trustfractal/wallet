@@ -2,9 +2,12 @@ import React from "react";
 import styled from "styled-components";
 
 import { useAppSelector } from "@redux/stores/application/context";
+import { useUserDispatch, useUserSelector } from "@redux/stores/user/context";
+
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
-import { useUserSelector } from "@redux/stores/user/context";
+import walletActions from "@redux/stores/user/reducers/wallet";
+
 import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 
@@ -83,6 +86,8 @@ const RootContainer = styled.div`
 const BalanceTokens = styled.div``;
 
 function BalanceNavbar() {
+  const dispatch = useUserDispatch();
+
   const stakingDetails: any = useUserSelector(getStakingDetails);
   const credentials = useUserSelector(getCredentials);
 
@@ -90,6 +95,7 @@ function BalanceNavbar() {
     exportFile(credentials.serialize(), "fractal_wallet.backup");
 
   const importBackup = () => windows.openTab("upload.html");
+  const reconnect = () => dispatch(walletActions.connectWalletRequest());
 
   const menuItems = [
     {
@@ -102,6 +108,11 @@ function BalanceNavbar() {
       label: "Import your data",
       icon: IconNames.IMPORT,
       onClick: importBackup,
+    },
+    {
+      label: "Reconnect to crypto wallet",
+      icon: IconNames.RECONNECT,
+      onClick: reconnect,
     },
   ];
 
