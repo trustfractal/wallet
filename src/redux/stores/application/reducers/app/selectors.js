@@ -12,12 +12,12 @@ export const isSetup = createSelector(
 
 export const getTokensContractsAddresses = createSelector(
   (state) => state.app,
-  (app) => app.addresses.staking,
+  (app) => app.addresses.erc20,
 );
 
 export const getStakingContractsAddresses = createSelector(
   (state) => state.app,
-  (app) => app.addresses.erc20,
+  (app) => app.addresses.staking,
 );
 
 export const getClaimsRegistryContractAddress = createSelector(

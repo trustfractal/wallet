@@ -22,13 +22,13 @@ export const startup = () => {
     dispatch(
       appActions.setAddresses({
         staking: {
-          FCL: fclContract,
-          FCL_ETH_LP: fclUniswapContract,
+          FCL: stackingFclContract,
+          FCL_ETH_LP: stackingFclUniswapContract,
           enabled: stakingEnabled === "1",
         },
         erc20: {
-          FCL: stackingFclContract,
-          FCL_ETH_LP: stackingFclUniswapContract,
+          FCL: fclContract,
+          FCL_ETH_LP: fclUniswapContract,
         },
         claimsRegistry: didContract,
         ethereumNetwork,
