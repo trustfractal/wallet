@@ -11,14 +11,16 @@ import VerificationRequest from "@models/VerificationRequest";
 import RequestsStatus from "@models/Request/status";
 
 export const addVerificationRequest = ({
-  payload: { id, level, requester },
+  payload: { id, requester, request: serializedVerificationRequest },
 }) => {
   return async (dispatch, getState) => {
     const requests = getRequests(getState());
 
     // parse data
     const parsedRequester = Requester.parse(requester);
-    let verificationRequest = new VerificationRequest(level);
+    let verificationRequest = VerificationRequest.parse(
+      serializedVerificationRequest,
+    );
 
     // create request instance
     const request = new Request(

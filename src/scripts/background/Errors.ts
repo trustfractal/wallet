@@ -6,6 +6,7 @@ export enum ErrorCode {
   ERROR_CREDENTIALS_NOT_FOUND = 5004,
   ERROR_VERIFICATION_REQUEST_WINDOW_OPEN = 5005,
   ERROR_VERIFICATION_REQUEST_WINDOW_CLOSED = 5006,
+  ERROR_VERIFICATION_REQUEST_INVALID_FIELDS = 5007,
 }
 
 export class BackgroundScriptError extends Error {
@@ -65,5 +66,12 @@ export const ERROR_VERIFICATION_REQUEST_WINDOW_CLOSED = (): BackgroundScriptErro
   return new BackgroundScriptError(
     ErrorCode.ERROR_VERIFICATION_REQUEST_WINDOW_CLOSED,
     `BackgroundScript: Verification request window was closed`,
+  );
+};
+
+export const ERROR_VERIFICATION_REQUEST_INVALID_FIELDS = (): BackgroundScriptError => {
+  return new BackgroundScriptError(
+    ErrorCode.ERROR_VERIFICATION_REQUEST_INVALID_FIELDS,
+    `BackgroundScript: Verification request fields are not valid`,
   );
 };

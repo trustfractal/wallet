@@ -1,6 +1,6 @@
 import React from "react";
 
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 const CheckboxIcon = styled.span`
   position: absolute;
@@ -40,7 +40,7 @@ const Checkbox = styled.input`
   }
 `;
 
-const RootContainer = styled.div`
+const RootContainer = styled.div<{ disabled?: boolean }>`
   user-select: none;
   cursor: pointer;
   position: relative;
@@ -48,19 +48,26 @@ const RootContainer = styled.div`
   width: var(--s-24);
   height: var(--s-24);
 
+  ${(props) =>
+    props.disabled &&
+    css`
+      cursor: not-allowed;
+      opacity: 0.6;
+    `}
+
   :hover ${Checkbox}:not(:checked) ~ ${CheckboxIcon} {
     background-color: var(--c-dark-gray);
   }
 `;
 
 function CheckboxInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  const { children, ...otherProps } = props;
+  const { children, disabled, ...otherProps } = props;
 
   const ref = React.createRef<HTMLInputElement>();
 
   return (
-    <RootContainer>
-      <Checkbox ref={ref} type="checkbox" {...otherProps} />
+    <RootContainer disabled={disabled}>
+      <Checkbox ref={ref} type="checkbox" disabled={disabled} {...otherProps} />
       <CheckboxIcon onClick={() => ref.current?.click()} />
     </RootContainer>
   );

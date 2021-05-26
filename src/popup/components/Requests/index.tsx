@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import RequestsCollection from "@models/Request/RequestsCollection";
@@ -132,13 +132,19 @@ const SelectedProperties = styled.div`
   padding: var(--s-20) var(--s-12);
 `;
 
-const PropertyContainer = styled.div`
+const PropertyContainer = styled.div<{ disabled: boolean }>`
   display: flex;
   align-items: center;
   margin-bottom: var(--s-12);
 
   cursor: pointer;
   user-select: none;
+
+  ${(props) =>
+    props.disabled &&
+    css`
+      cursor: not-allowed;
+    `}
 `;
 
 const CheckboxContainer = styled.div`
@@ -230,18 +236,24 @@ function Requests(props: RequestsProps) {
     setSelectedCredentialId(selected.id);
     setSelectedCredential(selected);
     setSelectedProperties(
-      Object.keys(selected.claim.properties).reduce(
-        (memo, property) => ({ ...memo, [property]: true }),
+      Object.keys(verificationRequest.fields).reduce(
+        (memo, property) => ({
+          ...memo,
+          [property]: verificationRequest.fields[property],
+        }),
         {},
       ),
     );
   };
 
-  const selectProperty = (property: string) =>
-    setSelectedProperties({
-      ...selectedProperties,
-      [property]: !selectedProperties[property],
-    });
+  const selectProperty = (property: string) => {
+    if (!verificationRequest.fields[property]) {
+      setSelectedProperties({
+        ...selectedProperties,
+        [property]: !selectedProperties[property],
+      });
+    }
+  };
 
   const onChangeRadio = ({
     target: { value },
@@ -293,6 +305,7 @@ function Requests(props: RequestsProps) {
               {Object.keys(selectedProperties).map((propertyKey) => (
                 <PropertyContainer
                   key={propertyKey}
+                  disabled={verificationRequest.fields[propertyKey]}
                   onClick={() => selectProperty(propertyKey)}
                 >
                   <CheckboxContainer>
@@ -300,6 +313,7 @@ function Requests(props: RequestsProps) {
                       name="credential"
                       value={propertyKey}
                       checked={selectedProperties[propertyKey]}
+                      disabled={verificationRequest.fields[propertyKey]}
                       onChange={onChangeCheckbox}
                     />
                   </CheckboxContainer>

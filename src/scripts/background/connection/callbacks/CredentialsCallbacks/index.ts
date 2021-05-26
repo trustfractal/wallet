@@ -25,6 +25,7 @@ import { getClaimsRegistryContractAddress } from "@redux/stores/application/redu
 import { requestsWatcher } from "@redux/middlewares/watchers";
 
 import {
+  ERROR_VERIFICATION_REQUEST_INVALID_FIELDS,
   ERROR_VERIFICATION_REQUEST_TIME_OUT,
   ERROR_VERIFICATION_REQUEST_DECLINED,
   ERROR_VERIFICATION_REQUEST_WINDOW_OPEN,
@@ -33,6 +34,7 @@ import {
 import WindowsService, { PopupSizes } from "@services/WindowsService";
 
 import { IVerificationRequest } from "@pluginTypes/plugin";
+import VerificationRequest from "@models/VerificationRequest";
 
 export const credentialStore = (
   [serializedCredential]: [string],
@@ -151,9 +153,27 @@ export const getCredentialStatus = ([id]: [string], port: string) =>
     }
   });
 
-export const getVerificationRequest = ([level, requester]: [string, string]) =>
+export const getVerificationRequest = ([level, requester, fields]: [
+  string,
+  string,
+  Record<string, boolean>,
+]) =>
   new Promise(async (resolve, reject) => {
     try {
+      // check if the level fields are empty
+      if (Object.keys(fields).length === 0) {
+        reject(ERROR_VERIFICATION_REQUEST_INVALID_FIELDS());
+        return;
+      }
+
+      // create verification request instance
+      const verificationRequest = new VerificationRequest(level, fields);
+
+      if (!verificationRequest.validate()) {
+        reject(ERROR_VERIFICATION_REQUEST_INVALID_FIELDS());
+        return;
+      }
+
       // check if the user has any level credential
       const credentials: CredentialsCollection = getCredentials(
         UserStore.getStore().getState(),
@@ -162,6 +182,7 @@ export const getVerificationRequest = ([level, requester]: [string, string]) =>
 
       if (filteredCredentials.length === 0) {
         reject(ERROR_CREDENTIALS_NOT_FOUND());
+        return;
       }
 
       // generate an id
@@ -171,8 +192,8 @@ export const getVerificationRequest = ([level, requester]: [string, string]) =>
       await UserStore.getStore().dispatch(
         requestsActions.addVerificationRequest({
           id,
-          level,
           requester,
+          request: verificationRequest.serialize(),
         }),
       );
 

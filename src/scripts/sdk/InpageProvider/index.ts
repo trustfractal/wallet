@@ -83,6 +83,7 @@ export default class InpageProvider implements IFractalInpageProvider {
   public async getVerificationRequest(
     level: string,
     requester: { name: string; url: string; icon: string },
+    fields: Record<string, boolean> = {},
   ): Promise<IVerificationRequest> {
     this.ensureFractalIsInitialized();
 
@@ -94,7 +95,7 @@ export default class InpageProvider implements IFractalInpageProvider {
 
     const serializedRequest = await ExtensionConnection.invoke(
       ConnectionTypes.GET_VERIFICATION_REQUEST_BACKGROUND,
-      [level, parsedRequester.serialize()],
+      [level, parsedRequester.serialize(), fields],
     );
 
     // parse request

@@ -39,6 +39,7 @@ export interface IFractalInpageProvider {
   getVerificationRequest(
     level: string,
     requester: { name: string; url: string; icon: string },
+    fields: Record<string, boolean>,
   ): Promise<IVerificationRequest>;
   getStakingDetails(token: string): Promise<IStakingDetails>;
   setupPlugin(): Promise<IConnectionStatus>;
