@@ -2,17 +2,12 @@ import { BigNumber } from "ethers";
 
 import ConnectionTypes from "@models/Connection/types";
 import EthereumProviderService from "@services/EthereumProviderService/Web3ProviderService";
-import Credential from "@models/Credential";
 import { ERROR_FRACTAL_NOT_INITIALIZED } from "@sdk/InpageProvider/Errors";
 
-import {
-  IClaimProperties,
-  AttestedClaim as SDKAttestedClaim,
-} from "@trustfractal/sdk";
+import { IClaimProperties } from "@trustfractal/sdk";
 
 import {
   IFractalInpageProvider,
-  ICredential,
   IStakingDetails,
   ITransactionDetails,
   IConnectionStatus,
@@ -29,7 +24,6 @@ import ConnectionStatus from "@models/Connection/ConnectionStatus";
 import StakingDetails from "@models/Staking/StakingDetails";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 import VerificationRequest from "@models/VerificationRequest";
-import CredentialStatus from "@models/Credential/status";
 
 import { getRandomBytes } from "@utils/CryptoUtils";
 
@@ -161,30 +155,6 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
   }
 
-  public async credentialStore(
-    credentialJSON: ICredential,
-    id: string,
-    level: string,
-  ): Promise<ITransactionDetails> {
-    this.ensureFractalIsInitialized();
-
-    const sdkCredential = new SDKAttestedClaim(credentialJSON);
-
-    const credential = new Credential(
-      sdkCredential,
-      `${id}:${level}`,
-      level,
-      CredentialStatus.PENDING,
-    );
-
-    const serializedTransactionDetails = await ExtensionConnection.invoke(
-      ConnectionTypes.CREDENTIAL_STORE_BACKGROUND,
-      [credential.serialize()],
-    );
-
-    return TransactionDetails.parse(serializedTransactionDetails);
-  }
-
   public hasCredential(id: string, level: string): Promise<boolean> {
     this.ensureFractalIsInitialized();
 
@@ -194,15 +164,12 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
   }
 
-  public async isCredentialValid(id: string, level: string): Promise<boolean> {
+  public isCredentialValid(id: string, level: string): Promise<boolean> {
     this.ensureFractalIsInitialized();
 
-    const status = await ExtensionConnection.invoke(
-      ConnectionTypes.GET_CREDENTIAL_STATUS_BACKGROUND,
-      [`${id}:${level}`],
-    );
-
-    return status === CredentialStatus.VALID;
+    return ExtensionConnection.invoke(ConnectionTypes.IS_CREDENTIAL_VALID, [
+      `${id}:${level}`,
+    ]);
   }
 
   public async getStakingDetails(token: string): Promise<IStakingDetails> {

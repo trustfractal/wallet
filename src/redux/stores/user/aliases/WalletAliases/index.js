@@ -24,6 +24,7 @@ import {
   ERROR_NOT_ON_FRACTAL,
 } from "@models/Connection/Errors";
 import TokenTypes from "@models/Token/types";
+
 export const connectWallet = () => {
   return async (dispatch) => {
     dispatch(walletActions.connectWalletPending());

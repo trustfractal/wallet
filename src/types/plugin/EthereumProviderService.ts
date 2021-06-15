@@ -4,16 +4,6 @@ import { IStakingDetails } from "./Staking";
 export interface IWeb3ProviderService {
   isAvailable(): boolean;
   getAccountAddress(): Promise<string | undefined>;
-  credentialStore(
-    address: string,
-    serializedCredential: string,
-    claimsRegistryContractAddress: string,
-  ): Promise<string>;
-  getCredentialStatus(
-    address: string,
-    serializedCredential: string,
-    claimsRegistryContractAddress: string,
-  ): Promise<string>;
   getAttestationRequest(
     address: string,
     level: string,

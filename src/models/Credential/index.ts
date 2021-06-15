@@ -1,13 +1,5 @@
 import { AttestedClaim as SDKAttestedClaim } from "@trustfractal/sdk";
-import {
-  ICredential,
-  ITransactionDetails,
-  ISerializable,
-} from "@pluginTypes/index";
-
-import TransactionDetails from "@models/Transaction/TransactionDetails";
-
-import CredentialStatus from "./status";
+import { ICredential, ISerializable } from "@pluginTypes/index";
 
 export default class Credential
   extends SDKAttestedClaim
@@ -15,17 +7,13 @@ export default class Credential
 {
   public id: string;
   public level: string;
-  public transaction?: ITransactionDetails;
-  public valid: boolean;
-  public status: CredentialStatus;
+  public revoked: boolean;
 
   public constructor(
     credential: SDKAttestedClaim,
     id: string,
     level: string,
-    status?: CredentialStatus,
-    transaction?: ITransactionDetails,
-    valid: boolean = false,
+    revoked: boolean = false,
   ) {
     super({
       claim: credential.claim,
@@ -41,18 +29,7 @@ export default class Credential
     });
     this.id = id;
     this.level = level;
-    this.transaction = transaction;
-    this.valid = valid;
-
-    if (status !== undefined) {
-      this.status = status;
-    } else {
-      if (this.valid) {
-        this.status = CredentialStatus.VALID;
-      } else {
-        this.status = CredentialStatus.INVALID;
-      }
-    }
+    this.revoked = revoked;
   }
 
   public serialize(): string {
@@ -69,9 +46,7 @@ export default class Credential
       claimHashTree: this.claimHashTree,
       id: this.id,
       level: this.level,
-      transaction: this.transaction?.serialize(),
-      valid: this.valid,
-      status: this.status,
+      revoked: this.revoked,
     });
   }
 
@@ -89,9 +64,7 @@ export default class Credential
       claimHashTree,
       id,
       level,
-      transaction,
-      valid,
-      status,
+      revoked,
     } = JSON.parse(str);
 
     const attestedCLaim = new SDKAttestedClaim({
@@ -107,19 +80,6 @@ export default class Credential
       claimHashTree,
     });
 
-    let transactionInstance;
-
-    if (transaction) {
-      transactionInstance = TransactionDetails.parse(transaction);
-    }
-
-    return new Credential(
-      attestedCLaim,
-      id,
-      level,
-      status,
-      transactionInstance,
-      valid,
-    );
+    return new Credential(attestedCLaim, id, level, revoked);
   }
 }
