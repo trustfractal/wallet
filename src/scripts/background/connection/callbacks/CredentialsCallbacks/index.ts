@@ -187,7 +187,7 @@ const Callbacks = {
     callback: hasCredential,
     middlewares: [new AuthMiddleware()],
   },
-  [ConnectionTypes.IS_CREDENTIAL_VALID]: {
+  [ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND]: {
     callback: isCredentialValid,
     middlewares: [new AuthMiddleware()],
   },

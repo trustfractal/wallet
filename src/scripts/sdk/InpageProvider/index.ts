@@ -167,9 +167,10 @@ export default class InpageProvider implements IFractalInpageProvider {
   public isCredentialValid(id: string, level: string): Promise<boolean> {
     this.ensureFractalIsInitialized();
 
-    return ExtensionConnection.invoke(ConnectionTypes.IS_CREDENTIAL_VALID, [
-      `${id}:${level}`,
-    ]);
+    return ExtensionConnection.invoke(
+      ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND,
+      [`${id}:${level}`],
+    );
   }
 
   public async getStakingDetails(token: string): Promise<IStakingDetails> {

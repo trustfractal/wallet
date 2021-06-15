@@ -3,6 +3,7 @@ import { createActions, handleActions } from "redux-actions";
 
 const types = mirrorCreator([
   "SET_HASHED_PASSWORD",
+  "SET_BACKEND_SESSION",
   "SIGN_IN_REQUEST",
   "SIGN_IN_PENDING",
   "SIGN_IN_FAILED",
@@ -15,6 +16,7 @@ const types = mirrorCreator([
 
 export const creators = createActions(
   types.SET_HASHED_PASSWORD,
+  types.SET_BACKEND_SESSION,
   types.SIGN_IN_REQUEST,
   types.SIGN_IN_PENDING,
   types.SIGN_IN_FAILED,
@@ -36,6 +38,7 @@ export const initialState = {
     loading: false,
     error: "",
   },
+  session: "",
   hashedPassword: "",
   loggedIn: false,
   registered: false,
@@ -47,6 +50,11 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         hashedPassword,
+      }),
+    [types.SET_BACKEND_SESSION]: (state, { payload: session }) =>
+      Object.freeze({
+        ...state,
+        session,
       }),
     [types.SIGN_IN_REQUEST]: (state) =>
       Object.freeze({
@@ -137,6 +145,7 @@ export async function store(state) {
   return {
     hashedPassword: state.hashedPassword,
     registered: state.registered,
+    session: state.session,
   };
 }
 

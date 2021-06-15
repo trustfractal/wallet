@@ -13,6 +13,7 @@ import {
 import walletActions, { walletTypes } from "@redux/stores/user/reducers/wallet";
 
 import AppStore from "@redux/stores/application";
+import authActions from "@redux/stores/application/reducers/auth";
 import appActions from "@redux/stores/application/reducers/app";
 import {
   getTokensContractsAddresses,
@@ -22,6 +23,7 @@ import {
 import {
   ERROR_NO_ACCOUNT,
   ERROR_NOT_ON_FRACTAL,
+  ERROR_USER_NOT_LOGGED_IN,
 } from "@models/Connection/Errors";
 import TokenTypes from "@models/Token/types";
 
@@ -38,6 +40,15 @@ export const connectWallet = () => {
 
       if (!fractalPort) throw ERROR_NOT_ON_FRACTAL();
 
+      // get megalodon session
+      const session = await ContentScriptConnection.invoke(
+        ConnectionTypes.GET_BACKEND_SESSION_INPAGE,
+        [],
+        fractalPort.id,
+      );
+
+      if (!session) throw ERROR_USER_NOT_LOGGED_IN();
+
       // get ethereumm wallet account address
       const account = await ContentScriptConnection.invoke(
         ConnectionTypes.GET_ACCOUNT_ADDRESS_INPAGE,
@@ -49,6 +60,9 @@ export const connectWallet = () => {
 
       // save app setup flag
       AppStore.getStore().dispatch(appActions.setSetup(true));
+
+      // save session
+      AppStore.getStore().dispatch(authActions.setBackendSession(session));
 
       // save wallet address on the redux store
       dispatch(walletActions.setAccount(account));

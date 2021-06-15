@@ -44,3 +44,8 @@ export const getHashedPassword = createSelector(
   (state) => state.auth,
   (auth) => auth.hashedPassword,
 );
+
+export const getBackendSession = createSelector(
+  (state) => state.auth,
+  (auth) => auth.session,
+);

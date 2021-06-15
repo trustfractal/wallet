@@ -5,13 +5,13 @@ import credentialsActions from "@redux/stores/user/reducers/credentials";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
-const DEFAULT_CREDENTIALSS_VALIDITY_POLLING_INTERVAL_IN_MILLIS = 30 * 1000; // 30 seconds
+const DEFAULT_CREDENTIALS_VALIDITY_POLLING_INTERVAL_IN_MILLIS = 30 * 1000; // 30 seconds
 
 export default class CredentialsStatusPolling {
   private interval: NodeJS.Timeout | undefined;
 
   public start(
-    intervalTime: number = DEFAULT_CREDENTIALSS_VALIDITY_POLLING_INTERVAL_IN_MILLIS,
+    intervalTime: number = DEFAULT_CREDENTIALS_VALIDITY_POLLING_INTERVAL_IN_MILLIS,
   ) {
     this.interval = setInterval(async () => {
       // check if the user store is available
