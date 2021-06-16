@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 
 import UserStore from "@redux/stores/user";
+import AppStore from "@redux/stores/application";
 
 import ContentScriptConnection from "@background/connection";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
@@ -11,12 +12,15 @@ import ConnectionTypes from "@models/Connection/types";
 import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 import requestsActions from "@redux/stores/user/reducers/requests";
+import credentialsActions from "@redux/stores/user/reducers/credentials";
+
+import { getClaimsRegistryContractAddress } from "@redux/stores/application/reducers/app/selectors";
+import { requestsWatcher } from "@redux/middlewares/watchers";
 
 import {
   ERROR_CREDENTIAL_NOT_FOUND,
   ERROR_CREDENTIALS_NOT_FOUND,
 } from "@background/Errors";
-import { requestsWatcher } from "@redux/middlewares/watchers";
 
 import {
   ERROR_VERIFICATION_REQUEST_INVALID_FIELDS,
@@ -29,6 +33,52 @@ import WindowsService, { PopupSizes } from "@services/WindowsService";
 
 import { IVerificationRequest } from "@pluginTypes/plugin";
 import VerificationRequest from "@models/VerificationRequest";
+import CredentialsVersions from "@models/Credential/versions";
+import LegacyCredential from "@models/Credential/LegacyCredential";
+import StableCredential from "@models/Credential/StableCredential";
+import TransactionDetails from "@models/Transaction/TransactionDetails";
+import CredentialsStatus from "@models/Credential/status";
+
+export const credentialStore = (
+  [serializedCredential]: [string],
+  port: string,
+) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const address: string = getAccount(UserStore.getStore().getState());
+      const claimsRegistryContractAddress: string = getClaimsRegistryContractAddress(
+        AppStore.getStore().getState(),
+      );
+
+      // redirect request to the inpage fractal provider
+      const serializedTransactionDetails = await ContentScriptConnection.invoke(
+        ConnectionTypes.CREDENTIAL_STORE_INPAGE,
+        [address, serializedCredential, claimsRegistryContractAddress],
+        port,
+      );
+
+      // parse transaction details
+      const parsedTransactionDetails = TransactionDetails.parse(
+        serializedTransactionDetails,
+      );
+
+      // parse the string credential
+      const parsedCredential = LegacyCredential.parse(serializedCredential);
+
+      // update parsed credentials
+      parsedCredential.transaction = parsedTransactionDetails;
+
+      // store the credential
+      await UserStore.getStore().dispatch(
+        credentialsActions.addCredential(parsedCredential.serialize()),
+      );
+
+      resolve(serializedTransactionDetails);
+    } catch (error) {
+      console.error(error);
+      reject(error);
+    }
+  });
 
 export const getAttestationRequest = (
   [level, serializedProperties]: [string, string],
@@ -82,7 +132,31 @@ export const isCredentialValid = ([id]: [string], port: string) =>
         return;
       }
 
-      resolve(credential.revoked === false);
+      if (credential.version === CredentialsVersions.VERSION_TWO) {
+        resolve((credential as StableCredential).revoked === false);
+        return;
+      }
+
+      // check legacy credential status on blockchain
+      const address: string = getAccount(UserStore.getStore().getState());
+
+      const claimsRegistryContractAddress: string = getClaimsRegistryContractAddress(
+        AppStore.getStore().getState(),
+      );
+
+      // redirect request to the inpage fractal provider
+      const status = await ContentScriptConnection.invoke(
+        ConnectionTypes.GET_CREDENTIAL_STATUS_INPAGE,
+        [address, credential.serialize(), claimsRegistryContractAddress],
+        port,
+      );
+
+      // update credential data
+      await UserStore.getStore().dispatch(
+        credentialsActions.setCredentialStatus({ id, status }),
+      );
+
+      resolve(status === CredentialsStatus.VALID);
     } catch (error) {
       console.error(error);
       reject(error);
@@ -179,6 +253,10 @@ export const getVerificationRequest = ([level, requester, fields]: [
   });
 
 const Callbacks = {
+  [ConnectionTypes.CREDENTIAL_STORE_BACKGROUND]: {
+    callback: credentialStore,
+    middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],
+  },
   [ConnectionTypes.GET_ATTESTATION_REQUEST_BACKGROUND]: {
     callback: getAttestationRequest,
     middlewares: [new FractalWebpageMiddleware(), new AuthMiddleware()],

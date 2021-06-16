@@ -1,19 +1,20 @@
 import { AttestedClaim as SDKAttestedClaim } from "@trustfractal/sdk";
-import { ICredential, ISerializable } from "@pluginTypes/index";
+import { IAbstractCredential, ICredential } from "@pluginTypes/index";
+import CredentialsVersions from "./versions";
 
-export default class Credential
+export default abstract class Credential
   extends SDKAttestedClaim
-  implements ICredential, ISerializable
+  implements IAbstractCredential
 {
   public id: string;
   public level: string;
-  public revoked: boolean;
+  public version: string;
 
   public constructor(
     credential: SDKAttestedClaim,
     id: string,
     level: string,
-    revoked: boolean = false,
+    version: string = CredentialsVersions.VERSION_TWO,
   ) {
     super({
       claim: credential.claim,
@@ -29,57 +30,17 @@ export default class Credential
     });
     this.id = id;
     this.level = level;
-    this.revoked = revoked;
+    this.version = version;
   }
 
-  public serialize(): string {
-    return JSON.stringify({
-      claim: this.claim,
-      rootHash: this.rootHash,
-      attestedClaimHash: this.attestedClaimHash,
-      attestedClaimSignature: this.attestedClaimSignature,
-      attesterAddress: this.attesterAddress,
-      attesterSignature: this.attesterSignature,
-      claimerAddress: this.claimerAddress,
-      claimerSignature: this.claimerSignature,
-      claimTypeHash: this.claimTypeHash,
-      claimHashTree: this.claimHashTree,
-      id: this.id,
-      level: this.level,
-      revoked: this.revoked,
-    });
-  }
+  public static fromString(str: string): ICredential {
+    const { version } = JSON.parse(str);
 
-  public static parse(str: string): ICredential {
-    const {
-      claim,
-      rootHash,
-      attestedClaimHash,
-      attestedClaimSignature,
-      attesterAddress,
-      attesterSignature,
-      claimerAddress,
-      claimerSignature,
-      claimTypeHash,
-      claimHashTree,
-      id,
-      level,
-      revoked,
-    } = JSON.parse(str);
+    const { default: LegacyCredential } = require("./LegacyCredential");
+    const { default: StableCredential } = require("./StableCredential");
 
-    const attestedCLaim = new SDKAttestedClaim({
-      claim,
-      rootHash,
-      attestedClaimHash,
-      attestedClaimSignature,
-      attesterAddress,
-      attesterSignature,
-      claimerAddress,
-      claimerSignature,
-      claimTypeHash,
-      claimHashTree,
-    });
-
-    return new Credential(attestedCLaim, id, level, revoked);
+    if (version === CredentialsVersions.VERSION_TWO)
+      return StableCredential.parse(str);
+    else return LegacyCredential.parse(str);
   }
 }

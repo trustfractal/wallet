@@ -8,6 +8,7 @@ const { default: ChevronLeft } = require("@assets/chevron-left.svg");
 const { default: ChevronDown } = require("@assets/chevron-down.svg");
 const { default: Eye } = require("@assets/eye.svg");
 const { default: EyeSlash } = require("@assets/eye-slash.svg");
+const { default: LegacyBadge } = require("@assets/legacy-badge.svg");
 const { default: LogoName } = require("@assets/logo-name.svg");
 const { default: Logo } = require("@assets/logo.svg");
 const { default: LogoSmall } = require("@assets/logo-small.svg");
@@ -56,6 +57,7 @@ export enum IconNames {
   LOGO = "logo",
   LOGO_SMALL = "logo-small",
   LOGO_NAME = "logo-name",
+  LEGACY_BADGE = "legacy-badge",
   SUCCESS = "success",
   CONNECTED = "connected",
   ROBOT = "robot",
@@ -90,6 +92,7 @@ const Icons: Record<string, any> = {
   [IconNames.EYE]: Eye,
   [IconNames.EYE_SLASH]: EyeSlash,
   [IconNames.LOGO_NAME]: LogoName,
+  [IconNames.LEGACY_BADGE]: LegacyBadge,
   [IconNames.LOGO]: Logo,
   [IconNames.LOGO_SMALL]: LogoSmall,
   [IconNames.SUCCESS]: Success,

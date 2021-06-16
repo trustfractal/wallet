@@ -28,6 +28,11 @@ export interface IFractalInpageProvider {
     level: string,
     properties: IClaimProperties,
   ): Promise<IAttestationRequest>;
+  credentialStore(
+    credential: IAttestedClaim,
+    id: string,
+    level: string,
+  ): Promise<ITransactionDetails>;
   hasCredential(id: string, level: string): Promise<boolean>;
   isCredentialValid(id: string, level: string): Promise<boolean>;
   getSignedNonce(nonce?: string): Promise<SignedNonce>;

@@ -4,9 +4,13 @@ import ConnectionTypes from "@models/Connection/types";
 import EthereumProviderService from "@services/EthereumProviderService/Web3ProviderService";
 import { ERROR_FRACTAL_NOT_INITIALIZED } from "@sdk/InpageProvider/Errors";
 
-import { IClaimProperties } from "@trustfractal/sdk";
+import {
+  IClaimProperties,
+  AttestedClaim as SDKAttestedClaim,
+} from "@trustfractal/sdk";
 
 import {
+  ICredential,
   IFractalInpageProvider,
   IStakingDetails,
   ITransactionDetails,
@@ -24,6 +28,8 @@ import ConnectionStatus from "@models/Connection/ConnectionStatus";
 import StakingDetails from "@models/Staking/StakingDetails";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 import VerificationRequest from "@models/VerificationRequest";
+import LegacyCredential from "@models/Credential/LegacyCredential";
+import CredentialsStatus from "@models/Credential/status";
 
 import { getRandomBytes } from "@utils/CryptoUtils";
 
@@ -155,6 +161,30 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
   }
 
+  public async credentialStore(
+    credentialJSON: ICredential,
+    id: string,
+    level: string,
+  ): Promise<ITransactionDetails> {
+    this.ensureFractalIsInitialized();
+
+    const sdkCredential = new SDKAttestedClaim(credentialJSON);
+
+    const credential = new LegacyCredential(
+      sdkCredential,
+      `${id}:${level}`,
+      level,
+      CredentialsStatus.PENDING,
+    );
+
+    const serializedTransactionDetails = await ExtensionConnection.invoke(
+      ConnectionTypes.CREDENTIAL_STORE_BACKGROUND,
+      [credential.serialize()],
+    );
+
+    return TransactionDetails.parse(serializedTransactionDetails);
+  }
+
   public hasCredential(id: string, level: string): Promise<boolean> {
     this.ensureFractalIsInitialized();
 
@@ -164,7 +194,7 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
   }
 
-  public isCredentialValid(id: string, level: string): Promise<boolean> {
+  public async isCredentialValid(id: string, level: string): Promise<boolean> {
     this.ensureFractalIsInitialized();
 
     return ExtensionConnection.invoke(

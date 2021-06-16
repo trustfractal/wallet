@@ -4,6 +4,7 @@ import credentialsActions from "@redux/stores/user/reducers/credentials";
 
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
+import CredentialsVersions from "@models/Credential/versions";
 
 const DEFAULT_CREDENTIALS_VALIDITY_POLLING_INTERVAL_IN_MILLIS = 30 * 1000; // 30 seconds
 
@@ -23,8 +24,14 @@ export default class CredentialsStatusPolling {
         UserStore.getStore().getState(),
       );
 
+      // filter only legacy credentials
+      const legacyCredentials = credentials.filterByField(
+        "version",
+        CredentialsVersions.VERSION_ONE,
+      );
+
       // fetch credential validity
-      for (const credential of credentials) {
+      for (const credential of legacyCredentials) {
         UserStore.getStore().dispatch(
           credentialsActions.fetchCredentialStatus(credential.id),
         );

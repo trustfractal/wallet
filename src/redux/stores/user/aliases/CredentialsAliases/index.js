@@ -17,7 +17,7 @@ export const addCredential = ({ payload: serializedCredential }) => {
     const credentials = getCredentials(getState());
 
     // create credential instance
-    const credential = Credential.parse(serializedCredential);
+    const credential = Credential.fromString(serializedCredential);
 
     // append credential
     credentials.push(credential);
@@ -31,7 +31,7 @@ export const updateCredential = ({ payload: serializedUpdatedCredential }) => {
   return async (dispatch, getState) => {
     const credentials = getCredentials(getState());
 
-    const credential = Credential.parse(serializedUpdatedCredential);
+    const credential = Credential.fromString(serializedUpdatedCredential);
 
     // update credential
     const updatedCredential = credentials.updateByField(
