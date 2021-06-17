@@ -41,6 +41,10 @@ export class AppStore {
     return AppStore.instance;
   }
 
+  async isInitialized() {
+    return this.storeInternal !== undefined;
+  }
+
   async init() {
     const storedState = await AppStore.getStoredState("{}");
     const persistedState = await AppStore.deserialize(storedState);
@@ -69,7 +73,7 @@ export class AppStore {
         await store.ready();
         clearInterval(interval);
         resolve(store);
-      }, 100);
+      }, 500);
     });
   }
 

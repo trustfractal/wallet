@@ -10,6 +10,7 @@ const types = mirrorCreator([
   "CONNECT_WALLET_PENDING",
   "CONNECT_WALLET_FAILED",
   "CONNECT_WALLET_SUCCESS",
+  "CONNECT_WALLET_RESET",
   "FETCH_STAKING_DETAILS",
   "UPDATE_STAKING_DETAILS",
   "SET_ACCOUNT",
@@ -24,6 +25,7 @@ export const creators = createActions(
   types.CONNECT_WALLET_PENDING,
   types.CONNECT_WALLET_FAILED,
   types.CONNECT_WALLET_SUCCESS,
+  types.CONNECT_WALLET_RESET,
   types.FETCH_STAKING_DETAILS,
   types.UPDATE_STAKING_DETAILS,
   types.SET_ACCOUNT,
@@ -56,6 +58,15 @@ export const initialState = {
 
 export const reducer = handleActions(
   {
+    [types.CONNECT_WALLET_RESET]: (state) =>
+      Object.freeze({
+        ...state,
+        connect: {
+          success: false,
+          loading: false,
+          error: "",
+        },
+      }),
     [types.CONNECT_WALLET_REQUEST]: (state) =>
       Object.freeze({
         ...state,
@@ -69,7 +80,7 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         connect: {
-          success: true,
+          success: false,
           loading: true,
           error: "",
         },

@@ -69,7 +69,7 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         signIn: {
-          success: true,
+          success: false,
           loading: true,
           error: "",
         },

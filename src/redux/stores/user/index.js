@@ -89,15 +89,10 @@ export class UserStore {
     return this.storeInternal;
   }
 
-  static connect() {
-    return new Promise((resolve) => {
-      const interval = setInterval(async () => {
-        let store = new Store({ portName: UserStore.PORT_NAME });
-        await store.ready();
-        clearInterval(interval);
-        resolve(store);
-      }, 100);
-    });
+  static async connect() {
+    let store = new Store({ portName: UserStore.PORT_NAME });
+    await store.ready();
+    return store;
   }
 
   static getCombinedReducers() {
