@@ -33,7 +33,6 @@ export const initialState = {
       FCL_ETH_LP: "",
     },
     claimsRegistry: "",
-    ethereumNetwork: "",
     issuerAddress: "",
   },
   version: "",

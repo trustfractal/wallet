@@ -12,6 +12,7 @@ import {
   Staking as IStaking,
   ClaimsRegistry as IClaimsRegistry,
   IWeb3ProviderService,
+  ILegacyCredential,
 } from "@pluginTypes/index";
 import { Claim, ClaimType, IClaimProperties } from "@trustfractal/sdk";
 
@@ -397,7 +398,9 @@ class Web3ProviderService implements IWeb3ProviderService {
   ): Promise<string> {
     try {
       // prepare data
-      const parsedCredential = Credential.fromString(serializedCredential);
+      const parsedCredential = Credential.fromString(
+        serializedCredential,
+      ) as ILegacyCredential;
       const signer = this.web3Provider!.getSigner(address);
       const etherAmount = BigNumber.from(amount) as BigNumberish;
 

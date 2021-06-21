@@ -9,11 +9,13 @@ import TransactionDetails from "@models/Transaction/TransactionDetails";
 
 import CredentialsStatus from "./status";
 import CredentialsVersions from "./versions";
-import Credential from "@models/Credential";
 
 export default class LegacyCredential
-  extends Credential
+  extends SDKAttestedClaim
   implements ILegacyCredential, ISerializable {
+  public id: string;
+  public level: string;
+  public version: string;
   public status: CredentialsStatus;
   public transaction?: ITransactionDetails;
   public valid: boolean;
@@ -27,7 +29,21 @@ export default class LegacyCredential
     valid: boolean = false,
     version: string = CredentialsVersions.VERSION_ONE,
   ) {
-    super(credential, id, level, version);
+    super({
+      claim: credential.claim,
+      rootHash: credential.rootHash,
+      attestedClaimHash: credential.attestedClaimHash,
+      attestedClaimSignature: credential.attestedClaimSignature,
+      attesterAddress: credential.attesterAddress,
+      attesterSignature: credential.attesterSignature,
+      claimerAddress: credential.claimerAddress,
+      claimerSignature: credential.claimerSignature,
+      claimTypeHash: credential.claimTypeHash,
+      claimHashTree: credential.claimHashTree,
+    });
+    this.id = id;
+    this.level = level;
+    this.version = version;
     this.transaction = transaction;
     this.valid = valid;
 

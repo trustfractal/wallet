@@ -10,7 +10,7 @@ import {
 } from "@trustfractal/sdk";
 
 import {
-  ICredential,
+  ILegacyCredential,
   IFractalInpageProvider,
   IStakingDetails,
   ITransactionDetails,
@@ -162,7 +162,7 @@ export default class InpageProvider implements IFractalInpageProvider {
   }
 
   public async credentialStore(
-    credentialJSON: ICredential,
+    credentialJSON: ILegacyCredential,
     id: string,
     level: string,
   ): Promise<ITransactionDetails> {

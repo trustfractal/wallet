@@ -1,37 +1,53 @@
-import { AttestedClaim as SDKAttestedClaim } from "@trustfractal/sdk";
+import { SelfAttestedClaim as SDKSelfAttestedClaim } from "@trustfractal/sdk";
 import { IStableCredential, ISerializable } from "@pluginTypes/index";
 
-import Credential from "@models/Credential";
 import CredentialsVersions from "./versions";
 
 export default class StableCredential
-  extends Credential
+  extends SDKSelfAttestedClaim
   implements IStableCredential, ISerializable {
+  public id: string;
+  public level: string;
+  public version: string;
   public revoked: boolean;
 
   public constructor(
-    credential: SDKAttestedClaim,
+    credential: SDKSelfAttestedClaim,
     id: string,
     level: string,
     revoked: boolean = false,
     version: string = CredentialsVersions.VERSION_TWO,
   ) {
-    super(credential, id, level, version);
+    super({
+      claim: credential.claim,
+      claimTypeHash: credential.claimTypeHash,
+      claimHashTree: credential.claimHashTree,
+      rootHash: credential.rootHash,
+      claimerAddress: credential.claimerAddress,
+      attesterAddress: credential.attesterAddress,
+      attesterSignature: credential.attesterSignature,
+      countryOfIDIssuance: credential.countryOfIDIssuance,
+      countryOfResidence: credential.countryOfResidence,
+      kycType: credential.kycType,
+    });
+    this.id = id;
+    this.level = level;
+    this.version = version;
     this.revoked = revoked;
   }
 
   public serialize(): string {
     return JSON.stringify({
       claim: this.claim,
-      rootHash: this.rootHash,
-      attestedClaimHash: this.attestedClaimHash,
-      attestedClaimSignature: this.attestedClaimSignature,
-      attesterAddress: this.attesterAddress,
-      attesterSignature: this.attesterSignature,
-      claimerAddress: this.claimerAddress,
-      claimerSignature: this.claimerSignature,
       claimTypeHash: this.claimTypeHash,
       claimHashTree: this.claimHashTree,
+      rootHash: this.rootHash,
+      claimerAddress: this.claimerAddress,
+      attesterAddress: this.attesterAddress,
+      attesterSignature: this.attesterSignature,
+      countryOfIDIssuance: this.countryOfIDIssuance,
+      countryOfResidence: this.countryOfResidence,
+      kycType: this.kycType,
       id: this.id,
       level: this.level,
       revoked: this.revoked,
@@ -42,34 +58,34 @@ export default class StableCredential
   public static parse(str: string): IStableCredential {
     const {
       claim,
-      rootHash,
-      attestedClaimHash,
-      attestedClaimSignature,
-      attesterAddress,
-      attesterSignature,
-      claimerAddress,
-      claimerSignature,
       claimTypeHash,
       claimHashTree,
+      rootHash,
+      claimerAddress,
+      attesterAddress,
+      attesterSignature,
+      countryOfIDIssuance,
+      countryOfResidence,
+      kycType,
       id,
       level,
       revoked,
       version,
     } = JSON.parse(str);
 
-    const attestedCLaim = new SDKAttestedClaim({
+    const selfAttestedCLaim = new SDKSelfAttestedClaim({
       claim,
-      rootHash,
-      attestedClaimHash,
-      attestedClaimSignature,
-      attesterAddress,
-      attesterSignature,
-      claimerAddress,
-      claimerSignature,
       claimTypeHash,
       claimHashTree,
+      rootHash,
+      claimerAddress,
+      attesterAddress,
+      attesterSignature,
+      countryOfIDIssuance,
+      countryOfResidence,
+      kycType,
     });
 
-    return new StableCredential(attestedCLaim, id, level, revoked, version);
+    return new StableCredential(selfAttestedCLaim, id, level, revoked, version);
   }
 }

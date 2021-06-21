@@ -27,7 +27,7 @@ const ActionsContainer = styled.div`
   justify-content: center;
   flex-direction: column;
 
-  margin: var(--s-32) 0px;
+  margin-bottom: var(--s-32);
 `;
 
 const FooterContainer = styled.div``;
@@ -36,7 +36,7 @@ const InputContainer = styled.div`
   height: calc(
     ${TextHeights.SMALL} + var(--s-5) + ${TextHeights.MEDIUM} + var(--s-12)
   );
-  margin-bottom: var(--s-26);
+  margin-bottom: calc(var(--s-32) + var(--s-6));
 `;
 
 export type LoginProps = {

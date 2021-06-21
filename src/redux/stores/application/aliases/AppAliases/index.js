@@ -15,7 +15,6 @@ export const startup = () => {
       stackingFclContract,
       stackingFclUniswapContract,
       didContract,
-      ethereumNetwork,
       issuerAddress,
     } = await GoldfishService.getAddresses();
 
@@ -31,7 +30,6 @@ export const startup = () => {
           FCL_ETH_LP: fclUniswapContract,
         },
         claimsRegistry: didContract,
-        ethereumNetwork,
         issuerAddress,
       }),
     );

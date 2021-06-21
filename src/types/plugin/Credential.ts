@@ -1,19 +1,24 @@
 import { ISerializable } from "./Common";
 
-import { IAttestedClaim as ISDKAttestedClaim } from "@trustfractal/sdk";
+import {
+  IAttestedClaim as ISDKAttestedClaim,
+  ISelfAttestedClaim as ISDKSelfAttestedClaim,
+} from "@trustfractal/sdk";
 import { ITransactionDetails } from "./Transaction";
 
-export interface IAbstractCredential extends ISDKAttestedClaim {
+export interface IStableCredential
+  extends ISerializable,
+    ISDKSelfAttestedClaim {
   id: string;
   level: string;
   version: string;
-}
-
-export interface IStableCredential extends IAbstractCredential, ISerializable {
   revoked: boolean;
 }
 
-export interface ILegacyCredential extends IAbstractCredential, ISerializable {
+export interface ILegacyCredential extends ISerializable, ISDKAttestedClaim {
+  id: string;
+  level: string;
+  version: string;
   status: string;
   transaction?: ITransactionDetails;
   valid: boolean;

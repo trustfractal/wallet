@@ -25,11 +25,6 @@ export const getClaimsRegistryContractAddress = createSelector(
   (app) => app.addresses.claimsRegistry,
 );
 
-export const getNetwork = createSelector(
-  (state) => state.app,
-  (app) => app.addresses.network,
-);
-
 export const getAttesterAdddress = createSelector(
   (state) => state.app,
   (app) => app.addresses.issuerAddress,
