@@ -1,7 +1,20 @@
+import { Action } from "redux-actions";
+import {
+  SelfAttestedClaim as SDKSelfAttestedClaim,
+  Byte,
+} from "@trustfractal/sdk";
+
 import authActions, {
   authTypes,
 } from "@redux/stores/application/reducers/auth";
 import registerActions from "@redux/stores/application/reducers/register";
+import { getRegisterPassword } from "@redux/stores/application/reducers/register/selectors";
+import { isSetup } from "@redux/stores/application/reducers/app/selectors";
+import {
+  getBackendSession,
+  getHashedPassword,
+} from "@redux/stores/application/reducers/auth/selectors";
+
 import {
   AppStoreError,
   ErrorCode,
@@ -9,10 +22,12 @@ import {
 } from "@redux/stores/application/Errors";
 
 import Store, { UserStore } from "@redux/stores/user";
-import { getRegisterPassword } from "@redux/stores/application/reducers/register/selectors";
-import { getHashedPassword } from "@redux/stores/application/reducers/auth/selectors";
+import credentialsActions from "@redux/stores/user/reducers/credentials";
 
-import { Action } from "redux-actions";
+import MaguroService from "@services/MaguroService";
+
+import StableCredential from "@models/Credential/StableCredential";
+import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
 export const signUp = () => {
   return async (dispatch: (arg: Action<any>) => void, getState: () => any) => {
@@ -50,6 +65,7 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
 
     try {
       const hashedPassword = getHashedPassword(getState());
+      const setup = isSetup(getState());
 
       // hash attempted password
       const hashedAttemptedPassword = (
@@ -68,6 +84,46 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
       if (!isInitialized) {
         // init the encrypted user store
         await Store.init(attemptedPassword);
+      }
+
+      // get user stable credentials
+      if (setup) {
+        const session = getBackendSession(getState());
+        const { credentials } = await MaguroService.getCredentials(session);
+
+        const formattedCredentials: CredentialsCollection = credentials.reduce(
+          (memo: CredentialsCollection, credential: any) => {
+            memo.push(
+              new StableCredential(
+                new SDKSelfAttestedClaim({
+                  claim: credential.data.claim,
+                  claimTypeHash: credential.data.claimTypeHash,
+                  claimHashTree: credential.data.claimHashTree,
+                  rootHash: credential.data.rootHash,
+                  claimerAddress: credential.data.claimerAddress,
+                  attesterAddress: credential.data.attesterAddress,
+                  attesterSignature: credential.data.attesterSignature,
+                  countryOfIDIssuance: new Byte(
+                    Number(credential.data.countryOfIDIssuance),
+                  ),
+                  countryOfResidence: new Byte(
+                    Number(credential.data.countryOfResidence),
+                  ),
+                  kycType: new Byte(Number(credential.data.kycType)),
+                }),
+                `${credential.user_id}:${credential.level}`,
+                credential.level,
+              ),
+            );
+
+            return memo;
+          },
+          new CredentialsCollection(),
+        );
+
+        Store.getStore().dispatch(
+          credentialsActions.addCredentials(formattedCredentials.serialize()),
+        );
       }
 
       dispatch(authActions.signInSuccess());

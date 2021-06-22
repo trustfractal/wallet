@@ -1,3 +1,8 @@
+import {
+  SelfAttestedClaim as SDKSelfAttestedClaim,
+  Byte,
+} from "@trustfractal/sdk";
+
 import ContentScriptConnection from "@background/connection";
 import ConnectionTypes from "@models/Connection/types";
 import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
@@ -14,6 +19,7 @@ import walletActions, { walletTypes } from "@redux/stores/user/reducers/wallet";
 
 import AppStore from "@redux/stores/application";
 import authActions from "@redux/stores/application/reducers/auth";
+import credentialsActions from "@redux/stores/user/reducers/credentials";
 import appActions from "@redux/stores/application/reducers/app";
 import {
   getTokensContractsAddresses,
@@ -26,6 +32,11 @@ import {
   ERROR_USER_NOT_LOGGED_IN,
 } from "@models/Connection/Errors";
 import TokenTypes from "@models/Token/types";
+
+import MaguroService from "@services/MaguroService";
+
+import StableCredential from "@models/Credential/StableCredential";
+import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
 export const connectWallet = () => {
   return async (dispatch) => {
@@ -63,6 +74,40 @@ export const connectWallet = () => {
 
       // save session
       AppStore.getStore().dispatch(authActions.setBackendSession(session));
+
+      // get user stable credentials
+      const { credentials } = await MaguroService.getCredentials(session);
+
+      const formattedCredentials = credentials.reduce((memo, credential) => {
+        memo.push(
+          new StableCredential(
+            new SDKSelfAttestedClaim({
+              claim: credential.data.claim,
+              claimTypeHash: credential.data.claimTypeHash,
+              claimHashTree: credential.data.claimHashTree,
+              rootHash: credential.data.rootHash,
+              claimerAddress: credential.data.claimerAddress,
+              attesterAddress: credential.data.attesterAddress,
+              attesterSignature: credential.data.attesterSignature,
+              countryOfIDIssuance: new Byte(
+                Number(credential.data.countryOfIDIssuance),
+              ),
+              countryOfResidence: new Byte(
+                Number(credential.data.countryOfResidence),
+              ),
+              kycType: new Byte(Number(credential.data.kycType)),
+            }),
+            `${credential.user_id}:${credential.level}`,
+            credential.level,
+          ),
+        );
+
+        return memo;
+      }, new CredentialsCollection());
+
+      dispatch(
+        credentialsActions.addCredentials(formattedCredentials.serialize()),
+      );
 
       // save wallet address on the redux store
       dispatch(walletActions.setAccount(account));

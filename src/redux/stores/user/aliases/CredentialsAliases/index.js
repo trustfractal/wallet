@@ -11,6 +11,7 @@ import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 
 import Credential from "@models/Credential";
 import { getClaimsRegistryContractAddress } from "@redux/stores/application/reducers/app/selectors";
+import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
 export const addCredential = ({ payload: serializedCredential }) => {
   return async (dispatch, getState) => {
@@ -21,6 +22,21 @@ export const addCredential = ({ payload: serializedCredential }) => {
 
     // append credential
     credentials.push(credential);
+
+    // update redux store
+    dispatch(credentialsActions.setCredentials(credentials));
+  };
+};
+
+export const addCredentials = ({ payload: serializedCredentials }) => {
+  return async (dispatch, getState) => {
+    const credentials = getCredentials(getState());
+
+    // create credential instance
+    const newCredentials = CredentialsCollection.parse(serializedCredentials);
+
+    // append credentials
+    newCredentials.map((credential) => credentials.push(credential));
 
     // update redux store
     dispatch(credentialsActions.setCredentials(credentials));
@@ -121,6 +137,7 @@ export const setCredentialStatus = ({ payload: { id, status } }) => {
 
 const Aliases = {
   [credentialsTypes.ADD_CREDENTIAL]: addCredential,
+  [credentialsTypes.ADD_CREDENTIALS]: addCredentials,
   [credentialsTypes.UPDATE_CREDENTIAL]: updateCredential,
   [credentialsTypes.REMOVE_CREDENTIAL]: removeCredential,
   [credentialsTypes.FETCH_CREDENTIAL_STATUS]: fetchCredentialStatus,

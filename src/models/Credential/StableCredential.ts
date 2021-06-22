@@ -1,11 +1,15 @@
-import { SelfAttestedClaim as SDKSelfAttestedClaim } from "@trustfractal/sdk";
+import {
+  SelfAttestedClaim as SDKSelfAttestedClaim,
+  Byte,
+} from "@trustfractal/sdk";
 import { IStableCredential, ISerializable } from "@pluginTypes/index";
 
 import CredentialsVersions from "./versions";
 
 export default class StableCredential
   extends SDKSelfAttestedClaim
-  implements IStableCredential, ISerializable {
+  implements IStableCredential, ISerializable
+{
   public id: string;
   public level: string;
   public version: string;
@@ -45,9 +49,9 @@ export default class StableCredential
       claimerAddress: this.claimerAddress,
       attesterAddress: this.attesterAddress,
       attesterSignature: this.attesterSignature,
-      countryOfIDIssuance: this.countryOfIDIssuance,
-      countryOfResidence: this.countryOfResidence,
-      kycType: this.kycType,
+      countryOfIDIssuance: this.countryOfIDIssuance.toJSON(),
+      countryOfResidence: this.countryOfResidence.toJSON(),
+      kycType: this.kycType.toJSON(),
       id: this.id,
       level: this.level,
       revoked: this.revoked,
@@ -81,9 +85,9 @@ export default class StableCredential
       claimerAddress,
       attesterAddress,
       attesterSignature,
-      countryOfIDIssuance,
-      countryOfResidence,
-      kycType,
+      countryOfIDIssuance: new Byte(countryOfIDIssuance),
+      countryOfResidence: new Byte(countryOfResidence),
+      kycType: new Byte(kycType),
     });
 
     return new StableCredential(selfAttestedCLaim, id, level, revoked, version);
