@@ -26,7 +26,7 @@ import credentialsActions from "@redux/stores/user/reducers/credentials";
 
 import MaguroService from "@services/MaguroService";
 
-import StableCredential from "@models/Credential/StableCredential";
+import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
 export const signUp = () => {
@@ -86,7 +86,7 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
         await Store.init(attemptedPassword);
       }
 
-      // get user stable credentials
+      // get user self attested claims
       if (setup) {
         const session = getBackendSession(getState());
         const { credentials } = await MaguroService.getCredentials(session);
@@ -94,7 +94,7 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
         const formattedCredentials: CredentialsCollection = credentials.reduce(
           (memo: CredentialsCollection, credential: any) => {
             memo.push(
-              new StableCredential(
+              new SelfAttestedClaim(
                 new SDKSelfAttestedClaim({
                   claim: credential.data.claim,
                   claimTypeHash: credential.data.claimTypeHash,

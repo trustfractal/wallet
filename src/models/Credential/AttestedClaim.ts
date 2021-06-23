@@ -1,6 +1,6 @@
 import { AttestedClaim as SDKAttestedClaim } from "@trustfractal/sdk";
 import {
-  ILegacyCredential,
+  IAttestedClaim,
   ITransactionDetails,
   ISerializable,
 } from "@pluginTypes/index";
@@ -10,9 +10,10 @@ import TransactionDetails from "@models/Transaction/TransactionDetails";
 import CredentialsStatus from "./status";
 import CredentialsVersions from "./versions";
 
-export default class LegacyCredential
+export default class AttestedClaim
   extends SDKAttestedClaim
-  implements ILegacyCredential, ISerializable {
+  implements IAttestedClaim, ISerializable
+{
   public id: string;
   public level: string;
   public version: string;
@@ -79,7 +80,7 @@ export default class LegacyCredential
     });
   }
 
-  public static parse(str: string): ILegacyCredential {
+  public static parse(str: string): IAttestedClaim {
     const {
       claim,
       rootHash,
@@ -118,7 +119,7 @@ export default class LegacyCredential
       transactionInstance = TransactionDetails.parse(transaction);
     }
 
-    return new LegacyCredential(
+    return new AttestedClaim(
       attestedCLaim,
       id,
       level,

@@ -6,7 +6,7 @@ import {
 } from "@trustfractal/sdk";
 import { ITransactionDetails } from "./Transaction";
 
-export interface IStableCredential
+export interface ISelfAttestedClaim
   extends ISerializable,
     ISDKSelfAttestedClaim {
   id: string;
@@ -15,7 +15,7 @@ export interface IStableCredential
   revoked: boolean;
 }
 
-export interface ILegacyCredential extends ISerializable, ISDKAttestedClaim {
+export interface IAttestedClaim extends ISerializable, ISDKAttestedClaim {
   id: string;
   level: string;
   version: string;
@@ -24,4 +24,4 @@ export interface ILegacyCredential extends ISerializable, ISDKAttestedClaim {
   valid: boolean;
 }
 
-export type ICredential = IStableCredential | ILegacyCredential;
+export type ICredential = ISelfAttestedClaim | IAttestedClaim;

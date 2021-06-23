@@ -35,7 +35,7 @@ import TokenTypes from "@models/Token/types";
 
 import MaguroService from "@services/MaguroService";
 
-import StableCredential from "@models/Credential/StableCredential";
+import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
 export const connectWallet = () => {
@@ -75,12 +75,12 @@ export const connectWallet = () => {
       // save session
       AppStore.getStore().dispatch(authActions.setBackendSession(session));
 
-      // get user stable credentials
+      // get user self attested claims
       const { credentials } = await MaguroService.getCredentials(session);
 
       const formattedCredentials = credentials.reduce((memo, credential) => {
         memo.push(
-          new StableCredential(
+          new SelfAttestedClaim(
             new SDKSelfAttestedClaim({
               claim: credential.data.claim,
               claimTypeHash: credential.data.claimTypeHash,

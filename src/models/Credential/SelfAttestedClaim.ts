@@ -2,13 +2,13 @@ import {
   SelfAttestedClaim as SDKSelfAttestedClaim,
   Byte,
 } from "@trustfractal/sdk";
-import { IStableCredential, ISerializable } from "@pluginTypes/index";
+import { ISelfAttestedClaim, ISerializable } from "@pluginTypes/index";
 
 import CredentialsVersions from "./versions";
 
-export default class StableCredential
+export default class SelfAttestedClaim
   extends SDKSelfAttestedClaim
-  implements IStableCredential, ISerializable
+  implements ISelfAttestedClaim, ISerializable
 {
   public id: string;
   public level: string;
@@ -59,7 +59,7 @@ export default class StableCredential
     });
   }
 
-  public static parse(str: string): IStableCredential {
+  public static parse(str: string): ISelfAttestedClaim {
     const {
       claim,
       claimTypeHash,
@@ -90,6 +90,12 @@ export default class StableCredential
       kycType: new Byte(kycType),
     });
 
-    return new StableCredential(selfAttestedCLaim, id, level, revoked, version);
+    return new SelfAttestedClaim(
+      selfAttestedCLaim,
+      id,
+      level,
+      revoked,
+      version,
+    );
   }
 }

@@ -10,7 +10,7 @@ import {
 } from "@trustfractal/sdk";
 
 import {
-  ILegacyCredential,
+  IAttestedClaim,
   IFractalInpageProvider,
   IStakingDetails,
   ITransactionDetails,
@@ -28,7 +28,7 @@ import ConnectionStatus from "@models/Connection/ConnectionStatus";
 import StakingDetails from "@models/Staking/StakingDetails";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 import VerificationRequest from "@models/VerificationRequest";
-import LegacyCredential from "@models/Credential/LegacyCredential";
+import AttestedClaim from "@models/Credential/AttestedClaim";
 import CredentialsStatus from "@models/Credential/status";
 
 import { getRandomBytes } from "@utils/CryptoUtils";
@@ -162,7 +162,7 @@ export default class InpageProvider implements IFractalInpageProvider {
   }
 
   public async credentialStore(
-    credentialJSON: ILegacyCredential,
+    credentialJSON: IAttestedClaim,
     id: string,
     level: string,
   ): Promise<ITransactionDetails> {
@@ -170,7 +170,7 @@ export default class InpageProvider implements IFractalInpageProvider {
 
     const sdkCredential = new SDKAttestedClaim(credentialJSON);
 
-    const credential = new LegacyCredential(
+    const credential = new AttestedClaim(
       sdkCredential,
       `${id}:${level}`,
       level,

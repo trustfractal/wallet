@@ -34,8 +34,8 @@ import WindowsService, { PopupSizes } from "@services/WindowsService";
 import { IVerificationRequest } from "@pluginTypes/plugin";
 import VerificationRequest from "@models/VerificationRequest";
 import CredentialsVersions from "@models/Credential/versions";
-import LegacyCredential from "@models/Credential/LegacyCredential";
-import StableCredential from "@models/Credential/StableCredential";
+import AttestedClaim from "@models/Credential/AttestedClaim";
+import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 import CredentialsStatus from "@models/Credential/status";
 
@@ -46,9 +46,8 @@ export const credentialStore = (
   new Promise(async (resolve, reject) => {
     try {
       const address: string = getAccount(UserStore.getStore().getState());
-      const claimsRegistryContractAddress: string = getClaimsRegistryContractAddress(
-        AppStore.getStore().getState(),
-      );
+      const claimsRegistryContractAddress: string =
+        getClaimsRegistryContractAddress(AppStore.getStore().getState());
 
       // redirect request to the inpage fractal provider
       const serializedTransactionDetails = await ContentScriptConnection.invoke(
@@ -63,7 +62,7 @@ export const credentialStore = (
       );
 
       // parse the string credential
-      const parsedCredential = LegacyCredential.parse(serializedCredential);
+      const parsedCredential = AttestedClaim.parse(serializedCredential);
 
       // update parsed credentials
       parsedCredential.transaction = parsedTransactionDetails;
@@ -133,16 +132,15 @@ export const isCredentialValid = ([id]: [string], port: string) =>
       }
 
       if (credential.version === CredentialsVersions.VERSION_TWO) {
-        resolve((credential as StableCredential).revoked === false);
+        resolve((credential as SelfAttestedClaim).revoked === false);
         return;
       }
 
       // check legacy credential status on blockchain
       const address: string = getAccount(UserStore.getStore().getState());
 
-      const claimsRegistryContractAddress: string = getClaimsRegistryContractAddress(
-        AppStore.getStore().getState(),
-      );
+      const claimsRegistryContractAddress: string =
+        getClaimsRegistryContractAddress(AppStore.getStore().getState());
 
       // redirect request to the inpage fractal provider
       const status = await ContentScriptConnection.invoke(

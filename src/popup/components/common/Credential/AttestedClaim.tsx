@@ -1,6 +1,8 @@
 import styled from "styled-components";
 
-import { IStableCredential } from "@pluginTypes/index";
+import { IAttestedClaim } from "@pluginTypes/index";
+
+import CredentialStatus from "@models/Credential/status";
 
 import Text, {
   TextHeights,
@@ -50,6 +52,12 @@ const NameContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
 `;
+const BadgesContainer = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+`;
 
 const LevelName = styled.div`
   opacity: 0.6;
@@ -76,16 +84,16 @@ const Status = styled.div`
 `;
 
 export type CredentialProps = {
-  credential: IStableCredential;
+  credential: IAttestedClaim;
 };
 
-function StableCredential(
+function AttestedClaim(
   props: CredentialProps & React.HTMLProps<HTMLDivElement>,
 ) {
   const { credential } = props;
 
   const {
-    revoked,
+    status,
     claim: {
       properties: { full_name: name },
     },
@@ -109,12 +117,15 @@ function StableCredential(
     levelName = `ID Plus + ${addonsStr}`;
   }
 
-  if (revoked) {
-    statusName = "Revoked";
+  if (status === CredentialStatus.VALID) {
+    statusName = "Valid";
+    statusIconName = IconNames.VALID;
+  } else if (status === CredentialStatus.INVALID) {
+    statusName = "Invalid";
     statusIconName = IconNames.INVALID;
   } else {
-    statusName = "Verified";
-    statusIconName = IconNames.VALID;
+    statusName = "Pending";
+    statusIconName = IconNames.PENDING;
   }
 
   return (
@@ -150,10 +161,13 @@ function StableCredential(
               </LevelName>
             )}
           </NameContainer>
+          <BadgesContainer>
+            <Icon name={IconNames.LEGACY_BADGE} />
+          </BadgesContainer>
         </NameBadgesContainer>
       </CredentialWrapper>
     </RootContainer>
   );
 }
 
-export default StableCredential;
+export default AttestedClaim;

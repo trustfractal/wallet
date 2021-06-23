@@ -1,11 +1,11 @@
 import {
   ICredential,
-  IStableCredential,
-  ILegacyCredential,
+  ISelfAttestedClaim,
+  IAttestedClaim,
 } from "@pluginTypes/index";
 
-import StableCredential from "../StableCredential";
-import LegacyCredential from "../LegacyCredential";
+import SelfAttestedClaim from "./SelfAttestedClaim";
+import AttestedClaim from "./AttestedClaim";
 import CredentialsVersions from "@models/Credential/versions";
 
 export type CredentialProps = {
@@ -16,8 +16,8 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
   const { credential } = props;
 
   if (credential.version === CredentialsVersions.VERSION_TWO)
-    return <StableCredential credential={credential as IStableCredential} />;
-  else return <LegacyCredential credential={credential as ILegacyCredential} />;
+    return <SelfAttestedClaim credential={credential as ISelfAttestedClaim} />;
+  else return <AttestedClaim credential={credential as IAttestedClaim} />;
 }
 
 export default Credential;

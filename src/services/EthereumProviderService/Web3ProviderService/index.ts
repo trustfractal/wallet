@@ -12,14 +12,14 @@ import {
   Staking as IStaking,
   ClaimsRegistry as IClaimsRegistry,
   IWeb3ProviderService,
-  ILegacyCredential,
+  IAttestedClaim,
 } from "@pluginTypes/index";
 import { Claim, ClaimType, IClaimProperties } from "@trustfractal/sdk";
 
 import StakingDetails from "@models/Staking/StakingDetails";
 
 import Credential from "@models/Credential";
-import LegacyCredential from "@models/Credential/LegacyCredential";
+import AttestedClaim from "@models/Credential/AttestedClaim";
 import CredentialsStatus from "@models/Credential/status";
 
 import AttestationRequest from "@models/AttestationRequest";
@@ -127,7 +127,7 @@ class Web3ProviderService implements IWeb3ProviderService {
   ): Promise<string> {
     try {
       // prepare data
-      const parsedCredential = LegacyCredential.parse(serializedCredential);
+      const parsedCredential = AttestedClaim.parse(serializedCredential);
       const rootHashByteArray = ethersUtils.arrayify(parsedCredential.rootHash);
       const signer = this.web3Provider!.getSigner(address);
 
@@ -175,7 +175,7 @@ class Web3ProviderService implements IWeb3ProviderService {
   ): Promise<CredentialsStatus> {
     try {
       // prepare data
-      const parsedCredential = LegacyCredential.parse(serializedCredential);
+      const parsedCredential = AttestedClaim.parse(serializedCredential);
       const signer = this.web3Provider!.getSigner(address);
 
       // init smart contract
@@ -400,7 +400,7 @@ class Web3ProviderService implements IWeb3ProviderService {
       // prepare data
       const parsedCredential = Credential.fromString(
         serializedCredential,
-      ) as ILegacyCredential;
+      ) as IAttestedClaim;
       const signer = this.web3Provider!.getSigner(address);
       const etherAmount = BigNumber.from(amount) as BigNumberish;
 

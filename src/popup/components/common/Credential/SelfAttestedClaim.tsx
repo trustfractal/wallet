@@ -1,8 +1,6 @@
 import styled from "styled-components";
 
-import { ILegacyCredential } from "@pluginTypes/index";
-
-import CredentialStatus from "@models/Credential/status";
+import { ISelfAttestedClaim } from "@pluginTypes/index";
 
 import Text, {
   TextHeights,
@@ -52,12 +50,6 @@ const NameContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
 `;
-const BadgesContainer = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-`;
 
 const LevelName = styled.div`
   opacity: 0.6;
@@ -84,16 +76,16 @@ const Status = styled.div`
 `;
 
 export type CredentialProps = {
-  credential: ILegacyCredential;
+  credential: ISelfAttestedClaim;
 };
 
-function LegacyCredential(
+function SelfAttestedClaim(
   props: CredentialProps & React.HTMLProps<HTMLDivElement>,
 ) {
   const { credential } = props;
 
   const {
-    status,
+    revoked,
     claim: {
       properties: { full_name: name },
     },
@@ -117,15 +109,12 @@ function LegacyCredential(
     levelName = `ID Plus + ${addonsStr}`;
   }
 
-  if (status === CredentialStatus.VALID) {
-    statusName = "Valid";
-    statusIconName = IconNames.VALID;
-  } else if (status === CredentialStatus.INVALID) {
-    statusName = "Invalid";
+  if (revoked) {
+    statusName = "Revoked";
     statusIconName = IconNames.INVALID;
   } else {
-    statusName = "Pending";
-    statusIconName = IconNames.PENDING;
+    statusName = "Verified";
+    statusIconName = IconNames.VALID;
   }
 
   return (
@@ -161,13 +150,10 @@ function LegacyCredential(
               </LevelName>
             )}
           </NameContainer>
-          <BadgesContainer>
-            <Icon name={IconNames.LEGACY_BADGE} />
-          </BadgesContainer>
         </NameBadgesContainer>
       </CredentialWrapper>
     </RootContainer>
   );
 }
 
-export default LegacyCredential;
+export default SelfAttestedClaim;
