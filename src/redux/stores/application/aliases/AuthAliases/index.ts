@@ -111,7 +111,7 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
                   ),
                   kycType: new Byte(Number(credential.data.kycType)),
                 }),
-                `${credential.user_id}:${credential.level}`,
+                `${credential.user_id}:${credential.level}:${credential.version}`,
                 credential.level,
               ),
             );

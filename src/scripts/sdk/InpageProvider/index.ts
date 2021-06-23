@@ -187,21 +187,39 @@ export default class InpageProvider implements IFractalInpageProvider {
     return TransactionDetails.parse(serializedTransactionDetails);
   }
 
-  public hasCredential(id: string, level: string): Promise<boolean> {
+  public hasCredential(
+    id: string,
+    level: string,
+    version?: CredentialsVersions,
+  ): Promise<boolean> {
     this.ensureFractalIsInitialized();
+
+    let credentialId = `${id}:${level}`;
+    if (version || version !== CredentialsVersions.VERSION_ONE) {
+      credentialId = `${credentialId}:${version}`;
+    }
 
     return ExtensionConnection.invoke(
       ConnectionTypes.HAS_CREDENTIAL_BACKGROUND,
-      [`${id}:${level}`],
+      [credentialId],
     );
   }
 
-  public async isCredentialValid(id: string, level: string): Promise<boolean> {
+  public async isCredentialValid(
+    id: string,
+    level: string,
+    version?: CredentialsVersions,
+  ): Promise<boolean> {
     this.ensureFractalIsInitialized();
+
+    let credentialId = `${id}:${level}`;
+    if (version || version !== CredentialsVersions.VERSION_ONE) {
+      credentialId = `${credentialId}:${version}`;
+    }
 
     return ExtensionConnection.invoke(
       ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND,
-      [`${id}:${level}`],
+      [credentialId],
     );
   }
 

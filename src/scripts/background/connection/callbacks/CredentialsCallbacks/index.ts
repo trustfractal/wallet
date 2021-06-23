@@ -101,7 +101,7 @@ export const getAttestationRequest = (
     }
   });
 
-export const hasCredential = ([id]: [string]) =>
+export const hasCredential = ([id]: [string, CredentialsVersions]) =>
   new Promise((resolve, reject) => {
     try {
       const credentials: CredentialsCollection = getCredentials(
