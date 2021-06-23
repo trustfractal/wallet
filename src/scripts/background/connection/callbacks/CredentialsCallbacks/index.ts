@@ -161,19 +161,14 @@ export const isCredentialValid = ([id]: [string], port: string) =>
     }
   });
 
-export const getVerificationRequest = ([level, requester, fields]: [
-  string,
-  string,
-  Record<string, boolean>,
-]) =>
+export const getVerificationRequest = ([
+  level,
+  requester,
+  fields = {},
+  version,
+]: [string, string, Record<string, boolean>, CredentialsVersions]) =>
   new Promise(async (resolve, reject) => {
     try {
-      // check if the level fields are empty
-      if (Object.keys(fields).length === 0) {
-        reject(ERROR_VERIFICATION_REQUEST_INVALID_FIELDS());
-        return;
-      }
-
       // create verification request instance
       const verificationRequest = new VerificationRequest(level, fields);
 
@@ -186,7 +181,17 @@ export const getVerificationRequest = ([level, requester, fields]: [
       const credentials: CredentialsCollection = getCredentials(
         UserStore.getStore().getState(),
       );
-      const filteredCredentials = credentials.filterByField("level", level);
+      const filteredCredentials = credentials.filter((credential) => {
+        if (credential.level !== level) {
+          return false;
+        }
+
+        if (version && credential.version !== version) {
+          return false;
+        }
+
+        return true;
+      });
 
       if (filteredCredentials.length === 0) {
         reject(ERROR_CREDENTIALS_NOT_FOUND());

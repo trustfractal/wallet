@@ -4,6 +4,8 @@ import styled, { css } from "styled-components";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import RequestsCollection from "@models/Request/RequestsCollection";
 import VerificationRequest from "@models/VerificationRequest";
+import CredentialsVersions from "@models/Credential/versions";
+import CredentialsStatus from "@models/Credential/status";
 
 import { withNavBar } from "@popup/components/common/NavBar";
 import Button from "@popup/components/common/Button";
@@ -20,7 +22,11 @@ import CheckboxInput from "@popup/components/common/CheckboxInput";
 import RadioInput from "@popup/components/common/RadioInput";
 import LevelIcon, { LevelIconSizes } from "@popup/components/common/LevelIcon";
 
-import { ICredential } from "@pluginTypes/plugin";
+import {
+  IAttestedClaim,
+  ICredential,
+  ISelfAttestedClaim,
+} from "@pluginTypes/plugin";
 
 import { fromSnackCase } from "@utils/FormatUtils";
 
@@ -38,29 +44,13 @@ const SelectContainer = styled.div`
 
 const CredentialContainer = styled.div`
   display: flex;
-  flex: 1;
   flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
+  flex: 1;
 
   margin-left: var(--s-8);
 `;
 
-const LevelIconContainer = styled.div`
-  margin-right: var(--s-8);
-`;
-
-const LevelName = styled.div`
-  opacity: 0.6;
-`;
-
-const LevelContentContainer = styled.div``;
-
 const SelectCredential = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
   padding: var(--s-20) var(--s-12);
 
   :not(:last-child) {
@@ -79,10 +69,6 @@ const RightContainer = styled.div`
 `;
 
 const SelectedCredential = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
   padding: var(--s-20) var(--s-12);
 
   border-bottom: 1px solid rgb(19, 44, 83, 0.2);
@@ -151,6 +137,70 @@ const CheckboxContainer = styled.div`
   margin-right: var(--s-8);
 `;
 
+const LevelStatusContainer = styled.div`
+  display: flex;
+`;
+const LevelContainer = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
+const StatusContainer = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+`;
+const NameBadgesContainer = styled.div`
+  display: flex;
+  margin-top: var(--s-12);
+`;
+const NameContainer = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
+const BadgesContainer = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+`;
+const BadgeContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  border-radius: var(--s-12);
+  padding: var(--s-4) var(--s-12);
+
+  background: var(--c-gray);
+`;
+const BadgeName = styled.div`
+  opacity: 0.6;
+`;
+const LevelName = styled.div`
+  opacity: 0.6;
+`;
+const LevelIconContainer = styled.div`
+  margin-right: var(--s-12);
+`;
+const CredentialWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+const StatusName = styled.div`
+  opacity: 0.6;
+  margin-right: var(--s-8);
+`;
+const Status = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 export type RequestsProps = {
   requests: RequestsCollection;
   credentials: CredentialsCollection;
@@ -162,6 +212,14 @@ export type RequestsProps = {
   onDecline: (id: string, credential: ICredential) => void;
 };
 
+export type AttestedClaimProps = {
+  credential: IAttestedClaim;
+};
+
+export type SelfAttestedClaimProps = {
+  credential: ISelfAttestedClaim;
+};
+
 export type CredentialProps = {
   credential: ICredential;
 };
@@ -169,7 +227,18 @@ export type CredentialProps = {
 function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
   const { credential } = props;
 
+  if (credential.version === CredentialsVersions.VERSION_TWO)
+    return <SelfAttestedClaim credential={credential as ISelfAttestedClaim} />;
+  else return <AttestedClaim credential={credential as IAttestedClaim} />;
+}
+
+function AttestedClaim(
+  props: AttestedClaimProps & React.HTMLProps<HTMLDivElement>,
+) {
+  const { credential } = props;
+
   const {
+    status,
     claim: {
       properties: { full_name: name },
     },
@@ -182,6 +251,8 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
 
   const [level, ...addons] = credential.level.split("+");
   let levelName;
+  let statusName;
+  let statusIconName;
 
   const addonsStr = addons.join(" + ");
 
@@ -191,23 +262,143 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
     levelName = `ID Plus + ${addonsStr}`;
   }
 
+  if (status === CredentialsStatus.VALID) {
+    statusName = "Valid";
+    statusIconName = IconNames.VALID;
+  } else if (status === CredentialsStatus.INVALID) {
+    statusName = "Invalid";
+    statusIconName = IconNames.INVALID;
+  } else {
+    statusName = "Pending";
+    statusIconName = IconNames.PENDING;
+  }
+
   return (
     <CredentialContainer>
       <LevelIconContainer>
         <LevelIcon level={level} size={LevelIconSizes.SMALL} />
       </LevelIconContainer>
-      <LevelContentContainer>
-        <Text height={TextHeights.LARGE} weight={TextWeights.BOLD}>
-          {levelName}
-        </Text>
-        {hasName && (
-          <LevelName>
-            <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-              {name}
+      <CredentialWrapper>
+        <LevelStatusContainer>
+          <LevelContainer>
+            <Text height={TextHeights.LARGE} weight={TextWeights.BOLD}>
+              {levelName}
             </Text>
-          </LevelName>
-        )}
-      </LevelContentContainer>
+          </LevelContainer>
+          <StatusContainer>
+            <Status>
+              <StatusName>
+                <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+                  {statusName}
+                </Text>
+              </StatusName>
+              <Icon name={statusIconName} />
+            </Status>
+          </StatusContainer>
+        </LevelStatusContainer>
+        <NameBadgesContainer>
+          <NameContainer>
+            {hasName && (
+              <LevelName>
+                <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+                  {name}
+                </Text>
+              </LevelName>
+            )}
+          </NameContainer>
+          <BadgesContainer>
+            <BadgeContainer>
+              <BadgeName>
+                <Text
+                  size={TextSizes.SMALL}
+                  height={TextHeights.SMALL}
+                  weight={TextWeights.SEMIBOLD}
+                >
+                  Legacy
+                </Text>
+              </BadgeName>
+            </BadgeContainer>
+            {/* <Icon name={IconNames.LEGACY_BADGE} /> */}
+          </BadgesContainer>
+        </NameBadgesContainer>
+      </CredentialWrapper>
+    </CredentialContainer>
+  );
+}
+
+function SelfAttestedClaim(
+  props: SelfAttestedClaimProps & React.HTMLProps<HTMLDivElement>,
+) {
+  const { credential } = props;
+
+  const {
+    revoked,
+    claim: {
+      properties: { full_name: name },
+    },
+  } = credential;
+
+  let hasName = true;
+  if (name === undefined || (name as String).length === 0) {
+    hasName = false;
+  }
+
+  const [level, ...addons] = credential.level.split("+");
+  let levelName;
+  let statusName;
+  let statusIconName;
+
+  const addonsStr = addons.join(" + ");
+
+  if (level === "basic") {
+    levelName = `ID Basic + ${addonsStr}`;
+  } else {
+    levelName = `ID Plus + ${addonsStr}`;
+  }
+
+  if (revoked) {
+    statusName = "Revoked";
+    statusIconName = IconNames.INVALID;
+  } else {
+    statusName = "Verified";
+    statusIconName = IconNames.VALID;
+  }
+
+  return (
+    <CredentialContainer>
+      <LevelIconContainer>
+        <LevelIcon level={level} size={LevelIconSizes.SMALL} />
+      </LevelIconContainer>
+      <CredentialWrapper>
+        <LevelStatusContainer>
+          <LevelContainer>
+            <Text height={TextHeights.LARGE} weight={TextWeights.BOLD}>
+              {levelName}
+            </Text>
+          </LevelContainer>
+          <StatusContainer>
+            <Status>
+              <StatusName>
+                <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+                  {statusName}
+                </Text>
+              </StatusName>
+              <Icon name={statusIconName} />
+            </Status>
+          </StatusContainer>
+        </LevelStatusContainer>
+        <NameBadgesContainer>
+          <NameContainer>
+            {hasName && (
+              <LevelName>
+                <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+                  {name}
+                </Text>
+              </LevelName>
+            )}
+          </NameContainer>
+        </NameBadgesContainer>
+      </CredentialWrapper>
     </CredentialContainer>
   );
 }
@@ -239,7 +430,7 @@ function Requests(props: RequestsProps) {
       Object.keys(verificationRequest.fields).reduce(
         (memo, property) => ({
           ...memo,
-          [property]: verificationRequest.fields[property],
+          [property]: verificationRequest.fields[property] === true,
         }),
         {},
       ),
@@ -263,9 +454,8 @@ function Requests(props: RequestsProps) {
     target: { value },
   }: React.ChangeEvent<HTMLInputElement>) => selectProperty(value);
 
+  const hasFields = Object.keys(verificationRequest.fields).length > 0;
   const hasCredentialSelected = selectedCredential !== undefined;
-  const hasPropertiesSelected =
-    Object.values(selectedProperties).filter((elem) => elem).length > 0;
 
   const filteredCredentials = credentials.filterByField(
     "level",
@@ -301,26 +491,28 @@ function Requests(props: RequestsProps) {
                 </RightContainer>
               )}
             </SelectedCredential>
-            <SelectedProperties>
-              {Object.keys(selectedProperties).map((propertyKey) => (
-                <PropertyContainer
-                  key={propertyKey}
-                  disabled={verificationRequest.fields[propertyKey]}
-                  onClick={() => selectProperty(propertyKey)}
-                >
-                  <CheckboxContainer>
-                    <CheckboxInput
-                      name="credential"
-                      value={propertyKey}
-                      checked={selectedProperties[propertyKey]}
-                      disabled={verificationRequest.fields[propertyKey]}
-                      onChange={onChangeCheckbox}
-                    />
-                  </CheckboxContainer>
-                  <Text key={propertyKey}>{fromSnackCase(propertyKey)}</Text>
-                </PropertyContainer>
-              ))}
-            </SelectedProperties>
+            {hasFields && (
+              <SelectedProperties>
+                {Object.keys(selectedProperties).map((propertyKey) => (
+                  <PropertyContainer
+                    key={propertyKey}
+                    disabled={verificationRequest.fields[propertyKey]}
+                    onClick={() => selectProperty(propertyKey)}
+                  >
+                    <CheckboxContainer>
+                      <CheckboxInput
+                        name="credential"
+                        value={propertyKey}
+                        checked={selectedProperties[propertyKey]}
+                        disabled={verificationRequest.fields[propertyKey]}
+                        onChange={onChangeCheckbox}
+                      />
+                    </CheckboxContainer>
+                    <Text key={propertyKey}>{fromSnackCase(propertyKey)}</Text>
+                  </PropertyContainer>
+                ))}
+              </SelectedProperties>
+            )}
           </SelectPropertiesContainer>
         )}
         {!hasCredentialSelected && (
@@ -360,7 +552,7 @@ function Requests(props: RequestsProps) {
         </ActionContainer>
         <ActionContainer>
           <Button
-            disabled={!hasCredentialSelected || !hasPropertiesSelected}
+            disabled={!hasCredentialSelected}
             onClick={() =>
               onAccept(request.id, selectedCredential!, selectedProperties)
             }

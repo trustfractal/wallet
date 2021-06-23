@@ -48,7 +48,7 @@ export const acceptVerificationRequest = ({
     const credential = Credential.fromString(serializedCredential);
 
     // remove unselected properties
-    Object.keys(properties).forEach(
+    Object.keys(credential.claim.properties).forEach(
       (property) =>
         !properties[property] && credential.removeProperty(property),
     );

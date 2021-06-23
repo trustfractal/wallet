@@ -75,12 +75,12 @@ const Status = styled.div`
   align-items: center;
 `;
 
-export type CredentialProps = {
+export type SelfAttestedClaimProps = {
   credential: ISelfAttestedClaim;
 };
 
 function SelfAttestedClaim(
-  props: CredentialProps & React.HTMLProps<HTMLDivElement>,
+  props: SelfAttestedClaimProps & React.HTMLProps<HTMLDivElement>,
 ) {
   const { credential } = props;
 

@@ -83,12 +83,27 @@ const Status = styled.div`
   align-items: center;
 `;
 
-export type CredentialProps = {
+const BadgeContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  border-radius: var(--s-12);
+  padding: var(--s-4) var(--s-12);
+
+  background: var(--c-white);
+`;
+const BadgeName = styled.div`
+  opacity: 0.6;
+  color: var(--c-blue-dark);
+`;
+
+export type AttestedClaimProps = {
   credential: IAttestedClaim;
 };
 
 function AttestedClaim(
-  props: CredentialProps & React.HTMLProps<HTMLDivElement>,
+  props: AttestedClaimProps & React.HTMLProps<HTMLDivElement>,
 ) {
   const { credential } = props;
 
@@ -162,7 +177,17 @@ function AttestedClaim(
             )}
           </NameContainer>
           <BadgesContainer>
-            <Icon name={IconNames.LEGACY_BADGE} />
+            <BadgeContainer>
+              <BadgeName>
+                <Text
+                  size={TextSizes.SMALL}
+                  height={TextHeights.SMALL}
+                  weight={TextWeights.SEMIBOLD}
+                >
+                  Legacy
+                </Text>
+              </BadgeName>
+            </BadgeContainer>
           </BadgesContainer>
         </NameBadgesContainer>
       </CredentialWrapper>

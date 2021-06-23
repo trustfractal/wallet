@@ -30,6 +30,7 @@ import TransactionDetails from "@models/Transaction/TransactionDetails";
 import VerificationRequest from "@models/VerificationRequest";
 import AttestedClaim from "@models/Credential/AttestedClaim";
 import CredentialsStatus from "@models/Credential/status";
+import CredentialsVersions from "@models/Credential/versions";
 
 import { getRandomBytes } from "@utils/CryptoUtils";
 
@@ -84,6 +85,7 @@ export default class InpageProvider implements IFractalInpageProvider {
     level: string,
     requester: { name: string; url: string; icon: string },
     fields: Record<string, boolean> = {},
+    version?: CredentialsVersions,
   ): Promise<IVerificationRequest> {
     this.ensureFractalIsInitialized();
 
@@ -95,7 +97,7 @@ export default class InpageProvider implements IFractalInpageProvider {
 
     const serializedRequest = await ExtensionConnection.invoke(
       ConnectionTypes.GET_VERIFICATION_REQUEST_BACKGROUND,
-      [level, parsedRequester.serialize(), fields],
+      [level, parsedRequester.serialize(), fields, version],
     );
 
     // parse request

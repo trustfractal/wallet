@@ -21,8 +21,8 @@ const RadioIcon = styled.span`
 
     background-color: var(--c-orange);
 
-    left: var(--s-4);
-    top: var(--s-4);
+    left: 3px;
+    top: 3px;
     width: var(--s-16);
     height: var(--s-16);
     border-radius: var(--s-24);
