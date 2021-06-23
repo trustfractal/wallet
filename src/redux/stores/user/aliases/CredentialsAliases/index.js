@@ -36,7 +36,13 @@ export const addCredentials = ({ payload: serializedCredentials }) => {
     const newCredentials = CredentialsCollection.parse(serializedCredentials);
 
     // append credentials
-    newCredentials.map((credential) => credentials.push(credential));
+    newCredentials.forEach((credential) => {
+      if (credentials.hasByField("id", credential.id)) {
+        credentials.updateByField("id", credential.id, credential);
+      } else {
+        credentials.push(credential);
+      }
+    });
 
     // update redux store
     dispatch(credentialsActions.setCredentials(credentials));
