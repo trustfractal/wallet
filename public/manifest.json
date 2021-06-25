@@ -1,11 +1,11 @@
 {
   "author": "https://www.trustfractal.com",
-  "manifest_version": 3,
+  "manifest_version": 2,
   "version": "0.1.0",
   "short_name": "Fractal ID Wallet",
   "name": "Fractal ID Wallet",
   "description": "The Fractal ID Wallet is a browser extension that lets users receive staking rewards for issuing a credential to a DID contract.",
-  "action": {
+  "browser_action": {
     "default_title": "Fractal ID Wallet",
     "default_popup": "popup.html",
     "default_icon": {
@@ -18,8 +18,18 @@
       "512": "img/icon_512.png"
     }
   },
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "windows": "Alt+Shift+F",
+        "mac": "Alt+Shift+F",
+        "chromeos": "Alt+Shift+F",
+        "linux": "Alt+Shift+F"
+      }
+    }
+  },
   "background": {
-    "service_worker": "background.bundle.js"
+    "scripts": ["background.bundle.js"]
   },
   "content_scripts": [
     {
@@ -29,14 +39,7 @@
       "all_frames": true
     }
   ],
-  "web_accessible_resources": [
-    {
-      "matches": ["<all_urls>"],
-      "resources": ["sdk.bundle.js"],
-      "run_at": "document_end",
-      "all_frames": true
-    }
-  ],
+  "web_accessible_resources": ["sdk.bundle.js"],
   "icons": {
     "16": "img/icon_16.png",
     "19": "img/icon_19.png",
