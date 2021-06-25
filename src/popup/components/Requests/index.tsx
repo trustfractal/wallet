@@ -5,7 +5,6 @@ import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import RequestsCollection from "@models/Request/RequestsCollection";
 import VerificationRequest from "@models/VerificationRequest";
 import CredentialsVersions from "@models/Credential/versions";
-import CredentialsStatus from "@models/Credential/status";
 
 import { withNavBar } from "@popup/components/common/NavBar";
 import Button from "@popup/components/common/Button";
@@ -52,6 +51,8 @@ const CredentialContainer = styled.div`
 
 const SelectCredential = styled.div`
   padding: var(--s-20) var(--s-12);
+  display: flex;
+  align-items: center;
 
   :not(:last-child) {
     border-bottom: 1px solid rgb(19, 44, 83, 0.2);
@@ -64,11 +65,15 @@ const LeftContainer = styled.div`
   justify-content: flex-start;
 `;
 
-const RightContainer = styled.div`
+const CollapseButtonContainer = styled.div`
   cursor: pointer;
+  position: absolute;
+  top: var(--s-24);
+  right: var(--s-24);
 `;
 
 const SelectedCredential = styled.div`
+  position: relative;
   padding: var(--s-20) var(--s-12);
 
   border-bottom: 1px solid rgb(19, 44, 83, 0.2);
@@ -146,12 +151,6 @@ const LevelContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
 `;
-const StatusContainer = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
-`;
 const NameBadgesContainer = styled.div`
   display: flex;
   margin-top: var(--s-12);
@@ -168,7 +167,7 @@ const BadgesContainer = styled.div`
   align-items: center;
   justify-content: flex-end;
 `;
-const BadgeContainer = styled.div`
+const AttestedClaimBadge = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -178,8 +177,22 @@ const BadgeContainer = styled.div`
 
   background: var(--c-gray);
 `;
-const BadgeName = styled.div`
+const SelfAttestedClaimBadge = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  border-radius: var(--s-12);
+  padding: var(--s-4) var(--s-12);
+
+  background: var(--c-orange);
+`;
+const AttestedClaimBadgeName = styled.div`
   opacity: 0.6;
+  color: var(--c-blue-dark);
+`;
+const SelfAttestedClaimBadgeName = styled.div`
+  color: var(--c-white);
 `;
 const LevelName = styled.div`
   opacity: 0.6;
@@ -191,14 +204,6 @@ const CredentialWrapper = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-`;
-const StatusName = styled.div`
-  opacity: 0.6;
-  margin-right: var(--s-8);
-`;
-const Status = styled.div`
-  display: flex;
-  align-items: center;
 `;
 
 export type RequestsProps = {
@@ -238,7 +243,6 @@ function AttestedClaim(
   const { credential } = props;
 
   const {
-    status,
     claim: {
       properties: { full_name: name },
     },
@@ -251,8 +255,6 @@ function AttestedClaim(
 
   const [level, ...addons] = credential.level.split("+");
   let levelName;
-  let statusName;
-  let statusIconName;
 
   const addonsStr = addons.join(" + ");
 
@@ -260,17 +262,6 @@ function AttestedClaim(
     levelName = `ID Basic + ${addonsStr}`;
   } else {
     levelName = `ID Plus + ${addonsStr}`;
-  }
-
-  if (status === CredentialsStatus.VALID) {
-    statusName = "Valid";
-    statusIconName = IconNames.VALID;
-  } else if (status === CredentialsStatus.INVALID) {
-    statusName = "Invalid";
-    statusIconName = IconNames.INVALID;
-  } else {
-    statusName = "Pending";
-    statusIconName = IconNames.PENDING;
   }
 
   return (
@@ -285,16 +276,6 @@ function AttestedClaim(
               {levelName}
             </Text>
           </LevelContainer>
-          <StatusContainer>
-            <Status>
-              <StatusName>
-                <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-                  {statusName}
-                </Text>
-              </StatusName>
-              <Icon name={statusIconName} />
-            </Status>
-          </StatusContainer>
         </LevelStatusContainer>
         <NameBadgesContainer>
           <NameContainer>
@@ -307,18 +288,17 @@ function AttestedClaim(
             )}
           </NameContainer>
           <BadgesContainer>
-            <BadgeContainer>
-              <BadgeName>
+            <AttestedClaimBadge>
+              <AttestedClaimBadgeName>
                 <Text
                   size={TextSizes.SMALL}
                   height={TextHeights.SMALL}
                   weight={TextWeights.SEMIBOLD}
                 >
-                  Legacy
+                  Attested Claim
                 </Text>
-              </BadgeName>
-            </BadgeContainer>
-            {/* <Icon name={IconNames.LEGACY_BADGE} /> */}
+              </AttestedClaimBadgeName>
+            </AttestedClaimBadge>
           </BadgesContainer>
         </NameBadgesContainer>
       </CredentialWrapper>
@@ -332,7 +312,6 @@ function SelfAttestedClaim(
   const { credential } = props;
 
   const {
-    revoked,
     claim: {
       properties: { full_name: name },
     },
@@ -345,8 +324,6 @@ function SelfAttestedClaim(
 
   const [level, ...addons] = credential.level.split("+");
   let levelName;
-  let statusName;
-  let statusIconName;
 
   const addonsStr = addons.join(" + ");
 
@@ -354,14 +331,6 @@ function SelfAttestedClaim(
     levelName = `ID Basic + ${addonsStr}`;
   } else {
     levelName = `ID Plus + ${addonsStr}`;
-  }
-
-  if (revoked) {
-    statusName = "Revoked";
-    statusIconName = IconNames.INVALID;
-  } else {
-    statusName = "Verified";
-    statusIconName = IconNames.VALID;
   }
 
   return (
@@ -376,16 +345,6 @@ function SelfAttestedClaim(
               {levelName}
             </Text>
           </LevelContainer>
-          <StatusContainer>
-            <Status>
-              <StatusName>
-                <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-                  {statusName}
-                </Text>
-              </StatusName>
-              <Icon name={statusIconName} />
-            </Status>
-          </StatusContainer>
         </LevelStatusContainer>
         <NameBadgesContainer>
           <NameContainer>
@@ -397,6 +356,19 @@ function SelfAttestedClaim(
               </LevelName>
             )}
           </NameContainer>
+          <BadgesContainer>
+            <SelfAttestedClaimBadge>
+              <SelfAttestedClaimBadgeName>
+                <Text
+                  size={TextSizes.SMALL}
+                  height={TextHeights.SMALL}
+                  weight={TextWeights.SEMIBOLD}
+                >
+                  SelfAttested Claim
+                </Text>
+              </SelfAttestedClaimBadgeName>
+            </SelfAttestedClaimBadge>
+          </BadgesContainer>
         </NameBadgesContainer>
       </CredentialWrapper>
     </CredentialContainer>
@@ -486,9 +458,9 @@ function Requests(props: RequestsProps) {
                 <Credential credential={selectedCredential!} />
               </LeftContainer>
               {hasMultipleCredentials && (
-                <RightContainer onClick={resetSelectedCredential}>
+                <CollapseButtonContainer onClick={resetSelectedCredential}>
                   <Icon name={IconNames.CHEVRON_DOWN} />
-                </RightContainer>
+                </CollapseButtonContainer>
               )}
             </SelectedCredential>
             {hasFields && (

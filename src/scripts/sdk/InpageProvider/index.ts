@@ -195,7 +195,7 @@ export default class InpageProvider implements IFractalInpageProvider {
     this.ensureFractalIsInitialized();
 
     let credentialId = `${id}:${level}`;
-    if (version || version !== CredentialsVersions.VERSION_ONE) {
+    if (version !== undefined && version !== CredentialsVersions.VERSION_ONE) {
       credentialId = `${credentialId}:${version}`;
     }
 
@@ -213,7 +213,7 @@ export default class InpageProvider implements IFractalInpageProvider {
     this.ensureFractalIsInitialized();
 
     let credentialId = `${id}:${level}`;
-    if (version || version !== CredentialsVersions.VERSION_ONE) {
+    if (version !== undefined && version !== CredentialsVersions.VERSION_ONE) {
       credentialId = `${credentialId}:${version}`;
     }
 

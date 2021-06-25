@@ -192,7 +192,9 @@ class Web3ProviderService implements IWeb3ProviderService {
 
       if (
         transactionReceipt === undefined ||
-        transactionReceipt.blockNumber === undefined
+        transactionReceipt === null ||
+        transactionReceipt.blockNumber === undefined ||
+        transactionReceipt.blockNumber === null
       ) {
         return CredentialsStatus.PENDING;
       }

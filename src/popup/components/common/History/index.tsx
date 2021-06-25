@@ -94,11 +94,15 @@ export type HistoryProps = {
   requests: IRequest[];
 };
 
+const NUMBER_OF_DISPLAYED_REQUESTS = 5;
+
 function History(props: HistoryProps & React.HTMLProps<HTMLDivElement>) {
   const { requests } = props;
 
   const [collapsed, setCollapsed] = useState(true);
-  const sortedRequests = requests.sort(Request.sortByUpdatedAt);
+  const sortedRequests = requests
+    .sort(Request.sortByUpdatedAt)
+    .slice(0, NUMBER_OF_DISPLAYED_REQUESTS);
   const [lastRequest] = sortedRequests;
 
   const formatDate = (date: number) => moment(date).format("DD/MM/YY · h:mm A");

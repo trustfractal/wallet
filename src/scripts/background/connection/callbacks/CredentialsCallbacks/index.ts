@@ -186,6 +186,18 @@ export const getVerificationRequest = ([
           return false;
         }
 
+        if (
+          credential.version === CredentialsVersions.VERSION_ONE &&
+          !(credential as AttestedClaim).valid
+        ) {
+          return false;
+        } else if (
+          credential.version === CredentialsVersions.VERSION_ONE &&
+          (credential as SelfAttestedClaim).revoked
+        ) {
+          return false;
+        }
+
         if (version && credential.version !== version) {
           return false;
         }

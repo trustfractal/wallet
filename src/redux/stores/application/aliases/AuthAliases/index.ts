@@ -28,6 +28,7 @@ import MaguroService from "@services/MaguroService";
 
 import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
+import CredentialsVersions from "@models/Credential/versions";
 
 export const signUp = () => {
   return async (dispatch: (arg: Action<any>) => void, getState: () => any) => {
@@ -111,7 +112,7 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
                   ),
                   kycType: new Byte(Number(credential.data.kycType)),
                 }),
-                `${credential.user_id}:${credential.level}:${credential.version}`,
+                `${credential.user_id}:${credential.level}:${CredentialsVersions.VERSION_TWO}`,
                 credential.level,
               ),
             );

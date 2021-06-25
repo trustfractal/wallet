@@ -4,10 +4,14 @@ import {
 } from "@trustfractal/sdk";
 
 import ContentScriptConnection from "@background/connection";
+
 import ConnectionTypes from "@models/Connection/types";
 import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
 import StakingStatus from "@models/Staking/status";
 import StakingDetails from "@models/Staking/StakingDetails";
+import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
+import CredentialsCollection from "@models/Credential/CredentialsCollection";
+import CredentialsVersions from "@models/Credential/versions";
 
 import UserStore from "@redux/stores/user";
 import {
@@ -34,9 +38,6 @@ import {
 import TokenTypes from "@models/Token/types";
 
 import MaguroService from "@services/MaguroService";
-
-import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
-import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
 export const connectWallet = () => {
   return async (dispatch) => {
@@ -97,7 +98,7 @@ export const connectWallet = () => {
               ),
               kycType: new Byte(Number(credential.data.kycType)),
             }),
-            `${credential.user_id}:${credential.level}:${credential.version}`,
+            `${credential.user_id}:${credential.level}:${CredentialsVersions.VERSION_TWO}`,
             credential.level,
           ),
         );

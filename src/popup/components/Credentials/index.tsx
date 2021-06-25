@@ -1,10 +1,8 @@
-import styled from "styled-components";
-
 import { ICredential, IRequest } from "@pluginTypes/index";
-
-import TopComponent from "@popup/components/common/TopComponent";
 import Credential from "@popup/components/common/Credential";
 import History from "@popup/components/common/History";
+import TopComponent from "@popup/components/common/TopComponent";
+import styled from "styled-components";
 
 const RootContainer = styled.div`
   margin-bottom: var(--s-32);
@@ -23,14 +21,18 @@ function Credentials(props: CredentialsProps) {
 
   return (
     <TopComponent>
-      {credentials.map((credential: ICredential) => (
-        <RootContainer key={credential.id}>
-          <Credential key={credential.level} credential={credential} />
-          {requests.length > 0 && (
-            <History requests={getCredentialRequests(credential.id)} />
-          )}
-        </RootContainer>
-      ))}
+      {credentials.map((credential: ICredential) => {
+        const credentialsRequests = getCredentialRequests(credential.id);
+
+        return (
+          <RootContainer key={credential.id}>
+            <Credential key={credential.level} credential={credential} />
+            {credentialsRequests.length > 0 && (
+              <History requests={getCredentialRequests(credential.id)} />
+            )}
+          </RootContainer>
+        );
+      })}
     </TopComponent>
   );
 }
