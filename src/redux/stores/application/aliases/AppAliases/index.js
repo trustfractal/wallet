@@ -3,7 +3,7 @@ import appActions, { appTypes } from "@redux/stores/application/reducers/app";
 import GoldfishService from "@services/GoldfishService";
 
 import StakingDetailsPolling from "@models/Polling/StakingDetailsPolling";
-import CredentialsStatusPolling from "@models/Polling/CredentialsStatusPolling";
+import CredentialsPolling from "@models/Polling/CredentialsPolling";
 
 export const startup = () => {
   return async (dispatch) => {
@@ -38,7 +38,7 @@ export const startup = () => {
     new StakingDetailsPolling().start();
 
     // start credentials status polling
-    new CredentialsStatusPolling().start();
+    new CredentialsPolling().start();
 
     // get app version
     // eslint-disable-next-line no-undef

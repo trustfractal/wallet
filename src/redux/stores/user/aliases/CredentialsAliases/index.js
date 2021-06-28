@@ -1,4 +1,8 @@
 import AppStore from "@redux/stores/application";
+import {
+  SelfAttestedClaim as SDKSelfAttestedClaim,
+  Byte,
+} from "@trustfractal/sdk";
 
 import ContentScriptConnection from "@background/connection";
 import ConnectionTypes from "@models/Connection/types";
@@ -10,8 +14,13 @@ import { getCredentials } from "@redux/stores/user/reducers/credentials/selector
 import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 
 import Credential from "@models/Credential";
-import { getClaimsRegistryContractAddress } from "@redux/stores/application/reducers/app/selectors";
+import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
+import CredentialsVersions from "@models/Credential/versions";
+
+import { getClaimsRegistryContractAddress } from "@redux/stores/application/reducers/app/selectors";
+
+import MaguroService from "@services/MaguroService";
 
 export const addCredential = ({ payload: serializedCredential }) => {
   return async (dispatch, getState) => {
@@ -141,12 +150,50 @@ export const setCredentialStatus = ({ payload: { id, status } }) => {
   };
 };
 
+export const fetchCredentials = () => {
+  return async (dispatch) => {
+    const { credentials } = await MaguroService.getCredentials();
+
+    const formattedCredentials = credentials.reduce((memo, credential) => {
+      memo.push(
+        new SelfAttestedClaim(
+          new SDKSelfAttestedClaim({
+            claim: credential.data.claim,
+            claimTypeHash: credential.data.claimTypeHash,
+            claimHashTree: credential.data.claimHashTree,
+            rootHash: credential.data.rootHash,
+            claimerAddress: credential.data.claimerAddress,
+            attesterAddress: credential.data.attesterAddress,
+            attesterSignature: credential.data.attesterSignature,
+            countryOfIDIssuance: new Byte(
+              Number(credential.data.countryOfIDIssuance),
+            ),
+            countryOfResidence: new Byte(
+              Number(credential.data.countryOfResidence),
+            ),
+            kycType: new Byte(Number(credential.data.kycType)),
+          }),
+          `${credential.id}:${credential.level}:${CredentialsVersions.VERSION_TWO}`,
+          credential.level,
+        ),
+      );
+
+      return memo;
+    }, new CredentialsCollection());
+
+    dispatch(
+      credentialsActions.addCredentials(formattedCredentials.serialize()),
+    );
+  };
+};
+
 const Aliases = {
   [credentialsTypes.ADD_CREDENTIAL]: addCredential,
   [credentialsTypes.ADD_CREDENTIALS]: addCredentials,
   [credentialsTypes.UPDATE_CREDENTIAL]: updateCredential,
   [credentialsTypes.REMOVE_CREDENTIAL]: removeCredential,
   [credentialsTypes.FETCH_CREDENTIAL_STATUS]: fetchCredentialStatus,
+  [credentialsTypes.FETCH_CREDENTIALS]: fetchCredentials,
   [credentialsTypes.SET_CREDENTIAL_STATUS]: setCredentialStatus,
 };
 

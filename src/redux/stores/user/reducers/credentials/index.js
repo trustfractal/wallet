@@ -9,6 +9,7 @@ const types = mirrorCreator([
   "SET_CREDENTIALS",
   "SET_CREDENTIAL_STATUS",
   "FETCH_CREDENTIAL_STATUS",
+  "FETCH_CREDENTIALS",
 ]);
 
 export const creators = createActions(
@@ -19,6 +20,7 @@ export const creators = createActions(
   types.SET_CREDENTIALS,
   types.SET_CREDENTIAL_STATUS,
   types.FETCH_CREDENTIAL_STATUS,
+  types.FETCH_CREDENTIALS,
 );
 
 export const initialState = {

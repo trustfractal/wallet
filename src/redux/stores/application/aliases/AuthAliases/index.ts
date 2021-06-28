@@ -1,8 +1,4 @@
 import { Action } from "redux-actions";
-import {
-  SelfAttestedClaim as SDKSelfAttestedClaim,
-  Byte,
-} from "@trustfractal/sdk";
 
 import authActions, {
   authTypes,
@@ -20,12 +16,6 @@ import {
 
 import Store, { UserStore } from "@redux/stores/user";
 import credentialsActions from "@redux/stores/user/reducers/credentials";
-
-import MaguroService from "@services/MaguroService";
-
-import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
-import CredentialsCollection from "@models/Credential/CredentialsCollection";
-import CredentialsVersions from "@models/Credential/versions";
 
 export const signUp = () => {
   return async (dispatch: (arg: Action<any>) => void, getState: () => any) => {
@@ -84,43 +74,9 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
         await Store.init(attemptedPassword);
       }
 
-      // get user self attested claims
       if (setup) {
-        const { credentials } = await MaguroService.getCredentials();
-
-        const formattedCredentials: CredentialsCollection = credentials.reduce(
-          (memo: CredentialsCollection, credential: any) => {
-            memo.push(
-              new SelfAttestedClaim(
-                new SDKSelfAttestedClaim({
-                  claim: credential.data.claim,
-                  claimTypeHash: credential.data.claimTypeHash,
-                  claimHashTree: credential.data.claimHashTree,
-                  rootHash: credential.data.rootHash,
-                  claimerAddress: credential.data.claimerAddress,
-                  attesterAddress: credential.data.attesterAddress,
-                  attesterSignature: credential.data.attesterSignature,
-                  countryOfIDIssuance: new Byte(
-                    Number(credential.data.countryOfIDIssuance),
-                  ),
-                  countryOfResidence: new Byte(
-                    Number(credential.data.countryOfResidence),
-                  ),
-                  kycType: new Byte(Number(credential.data.kycType)),
-                }),
-                `${credential.user_id}:${credential.level}:${CredentialsVersions.VERSION_TWO}`,
-                credential.level,
-              ),
-            );
-
-            return memo;
-          },
-          new CredentialsCollection(),
-        );
-
-        Store.getStore().dispatch(
-          credentialsActions.addCredentials(formattedCredentials.serialize()),
-        );
+        // get user's self attested claims
+        Store.getStore().dispatch(credentialsActions.fetchCredentials());
       }
 
       dispatch(authActions.signInSuccess());

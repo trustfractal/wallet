@@ -1,17 +1,9 @@
-import {
-  SelfAttestedClaim as SDKSelfAttestedClaim,
-  Byte,
-} from "@trustfractal/sdk";
-
 import ContentScriptConnection from "@background/connection";
 
 import ConnectionTypes from "@models/Connection/types";
 import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
 import StakingStatus from "@models/Staking/status";
 import StakingDetails from "@models/Staking/StakingDetails";
-import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
-import CredentialsCollection from "@models/Credential/CredentialsCollection";
-import CredentialsVersions from "@models/Credential/versions";
 
 import UserStore from "@redux/stores/user";
 import {
@@ -36,8 +28,6 @@ import {
   ERROR_USER_NOT_LOGGED_IN,
 } from "@models/Connection/Errors";
 import TokenTypes from "@models/Token/types";
-
-import MaguroService from "@services/MaguroService";
 
 export const connectWallet = () => {
   return async (dispatch) => {
@@ -76,39 +66,8 @@ export const connectWallet = () => {
       // save session
       AppStore.getStore().dispatch(authActions.setBackendSessions(sessions));
 
-      // get user self attested claims
-      const { credentials } = await MaguroService.getCredentials();
-
-      const formattedCredentials = credentials.reduce((memo, credential) => {
-        memo.push(
-          new SelfAttestedClaim(
-            new SDKSelfAttestedClaim({
-              claim: credential.data.claim,
-              claimTypeHash: credential.data.claimTypeHash,
-              claimHashTree: credential.data.claimHashTree,
-              rootHash: credential.data.rootHash,
-              claimerAddress: credential.data.claimerAddress,
-              attesterAddress: credential.data.attesterAddress,
-              attesterSignature: credential.data.attesterSignature,
-              countryOfIDIssuance: new Byte(
-                Number(credential.data.countryOfIDIssuance),
-              ),
-              countryOfResidence: new Byte(
-                Number(credential.data.countryOfResidence),
-              ),
-              kycType: new Byte(Number(credential.data.kycType)),
-            }),
-            `${credential.user_id}:${credential.level}:${CredentialsVersions.VERSION_TWO}`,
-            credential.level,
-          ),
-        );
-
-        return memo;
-      }, new CredentialsCollection());
-
-      dispatch(
-        credentialsActions.addCredentials(formattedCredentials.serialize()),
-      );
+      // get user's self attested claims
+      dispatch(credentialsActions.fetchCredentials());
 
       // save wallet address on the redux store
       dispatch(walletActions.setAccount(account));
