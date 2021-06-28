@@ -29,16 +29,17 @@ export default class CatfishService {
 
     return this.callApi("account/me", "GET", null, {
       authorization: `Bearer ${token}`,
-    }).then(({ data }) =>
-      CatfishService.resourceServerAccessToken({ username: data.user_id }).then(
-        ({ data }) => {
-          // update token
-          AppStore.getStore().dispatch(
-            authActions.setBackendMegalodonSession(data.access_token),
-          );
-          return data.access_token;
-        },
-      ),
+    }).then(({ user_id }) =>
+      CatfishService.resourceServerAccessToken({
+        username: user_id,
+      }).then(({ access_token }) => {
+        // update token
+        AppStore.getStore().dispatch(
+          authActions.setBackendMegalodonSession(access_token),
+        );
+
+        return access_token;
+      }),
     );
   }
 
@@ -47,7 +48,7 @@ export default class CatfishService {
     const scopes = getBackendScopes(AppStore.getStore().getState());
 
     return this.callApi(
-      "/oauth/token",
+      "oauth/token",
       "POST",
       JSON.stringify({
         grant_type: "password",
@@ -55,6 +56,7 @@ export default class CatfishService {
         scope: scopes,
         username,
       }),
+      { "Content-Type": "application/json" },
     );
   }
 }

@@ -1,8 +1,5 @@
 import AppStore from "@redux/stores/application";
-import {
-  getBackendMegalodonSession,
-  getBackendSessions,
-} from "@redux/stores/application/reducers/auth/selectors";
+import { getBackendMegalodonSession } from "@redux/stores/application/reducers/auth/selectors";
 
 import Environment from "@environment/index";
 
@@ -24,14 +21,12 @@ export default class MaguroService {
         // check if megalodon token has expired
         if (headers && (headers as Record<string, string>)["megalodon-token"]) {
           if (response.status === 401) {
-            console.log("refresh");
-
-            CatfishService.refreshResourceServerToken().then((token) => {
-              return this.callApi(route, method, body, {
+            return CatfishService.refreshResourceServerToken().then((token) =>
+              this.callApi(route, method, body, {
                 ...headers,
                 "megalodon-token": token,
-              });
-            });
+              }),
+            );
           }
         } else throw new Error(response.statusText);
       } else {
@@ -41,11 +36,7 @@ export default class MaguroService {
   }
 
   public static getCredentials() {
-    const sessions = getBackendSessions(AppStore.getStore().getState());
     const token = getBackendMegalodonSession(AppStore.getStore().getState());
-
-    console.log("sessions", sessions);
-    console.log("maguro token", token);
 
     return this.callApi("credentials", "GET", null, {
       "megalodon-token": token,
