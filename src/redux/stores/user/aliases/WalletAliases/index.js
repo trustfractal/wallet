@@ -53,13 +53,13 @@ export const connectWallet = () => {
       if (!fractalPort) throw ERROR_NOT_ON_FRACTAL();
 
       // get megalodon session
-      const session = await ContentScriptConnection.invoke(
-        ConnectionTypes.GET_BACKEND_SESSION_INPAGE,
+      const sessions = await ContentScriptConnection.invoke(
+        ConnectionTypes.GET_BACKEND_SESSIONS_INPAGE,
         [],
         fractalPort.id,
       );
 
-      if (!session) throw ERROR_USER_NOT_LOGGED_IN();
+      if (!sessions.megalodon) throw ERROR_USER_NOT_LOGGED_IN();
 
       // get ethereumm wallet account address
       const account = await ContentScriptConnection.invoke(
@@ -74,10 +74,10 @@ export const connectWallet = () => {
       AppStore.getStore().dispatch(appActions.setSetup(true));
 
       // save session
-      AppStore.getStore().dispatch(authActions.setBackendSession(session));
+      AppStore.getStore().dispatch(authActions.setBackendSessions(sessions));
 
       // get user self attested claims
-      const { credentials } = await MaguroService.getCredentials(session);
+      const { credentials } = await MaguroService.getCredentials();
 
       const formattedCredentials = credentials.reduce((memo, credential) => {
         memo.push(

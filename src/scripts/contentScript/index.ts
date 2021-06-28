@@ -54,6 +54,6 @@ proxyConnection
   .reversedProxy(ConnectionTypes.GET_STAKING_DETAILS_INPAGE)
   .reversedProxy(ConnectionTypes.GET_SIGNED_NONCE_INPAGE)
   .reversedProxy(ConnectionTypes.GET_CREDENTIAL_STATUS_INPAGE)
-  .reversedProxy(ConnectionTypes.GET_BACKEND_SESSION_INPAGE)
+  .reversedProxy(ConnectionTypes.GET_BACKEND_SESSIONS_INPAGE)
   .reversedProxy(ConnectionTypes.STAKE_INPAGE)
   .reversedProxy(ConnectionTypes.WITHDRAW_INPAGE);

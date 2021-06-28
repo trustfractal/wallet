@@ -10,10 +10,7 @@ import authActions, {
 import registerActions from "@redux/stores/application/reducers/register";
 import { getRegisterPassword } from "@redux/stores/application/reducers/register/selectors";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
-import {
-  getBackendSession,
-  getHashedPassword,
-} from "@redux/stores/application/reducers/auth/selectors";
+import { getHashedPassword } from "@redux/stores/application/reducers/auth/selectors";
 
 import {
   AppStoreError,
@@ -89,8 +86,7 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
 
       // get user self attested claims
       if (setup) {
-        const session = getBackendSession(getState());
-        const { credentials } = await MaguroService.getCredentials(session);
+        const { credentials } = await MaguroService.getCredentials();
 
         const formattedCredentials: CredentialsCollection = credentials.reduce(
           (memo: CredentialsCollection, credential: any) => {

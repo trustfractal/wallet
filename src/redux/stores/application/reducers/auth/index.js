@@ -3,7 +3,10 @@ import { createActions, handleActions } from "redux-actions";
 
 const types = mirrorCreator([
   "SET_HASHED_PASSWORD",
-  "SET_BACKEND_SESSION",
+  "SET_BACKEND_SESSIONS",
+  "SET_BACKEND_CATFISH_SESSION",
+  "SET_BACKEND_MEGALODON_SESSION",
+  "SET_BACKEND_SCOPES",
   "SIGN_IN_REQUEST",
   "SIGN_IN_PENDING",
   "SIGN_IN_FAILED",
@@ -16,7 +19,10 @@ const types = mirrorCreator([
 
 export const creators = createActions(
   types.SET_HASHED_PASSWORD,
-  types.SET_BACKEND_SESSION,
+  types.SET_BACKEND_SESSIONS,
+  types.SET_BACKEND_CATFISH_SESSION,
+  types.SET_BACKEND_MEGALODON_SESSION,
+  types.SET_BACKEND_SCOPES,
   types.SIGN_IN_REQUEST,
   types.SIGN_IN_PENDING,
   types.SIGN_IN_FAILED,
@@ -38,7 +44,11 @@ export const initialState = {
     loading: false,
     error: "",
   },
-  session: "",
+  sessions: {
+    catfish: "",
+    megalodon: "",
+    scopes: "",
+  },
   hashedPassword: "",
   loggedIn: false,
   registered: false,
@@ -51,10 +61,31 @@ export const reducer = handleActions(
         ...state,
         hashedPassword,
       }),
-    [types.SET_BACKEND_SESSION]: (state, { payload: session }) =>
+    [types.SET_BACKEND_SESSIONS]: (state, { payload: sessions }) =>
       Object.freeze({
         ...state,
-        session,
+        sessions,
+      }),
+    [types.SET_BACKEND_CATFISH_SESSION]: (state, { payload: catfish }) =>
+      Object.freeze({
+        ...state,
+        sessions: {
+          ...state.sessions,
+          catfish,
+        },
+      }),
+    [types.SET_BACKEND_MEGALODON_SESSION]: (state, { payload: megalodon }) =>
+      Object.freeze({
+        ...state,
+        sessions: {
+          ...state.sessions,
+          megalodon,
+        },
+      }),
+    [types.SET_BACKEND_SCOPES]: (state, { payload: scopes }) =>
+      Object.freeze({
+        ...state,
+        scopes,
       }),
     [types.SIGN_IN_REQUEST]: (state) =>
       Object.freeze({
@@ -145,7 +176,7 @@ export async function store(state) {
   return {
     hashedPassword: state.hashedPassword,
     registered: state.registered,
-    session: state.session,
+    sessions: state.sessions,
   };
 }
 

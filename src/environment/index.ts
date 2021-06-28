@@ -1,6 +1,7 @@
 import { Environment } from "@pluginTypes/index";
 
 const {
+  REACT_APP_CATFISH_URL: CATFISH_URL = "",
   REACT_APP_GOLDFISH_URL: GOLDFISH_URL = "",
   REACT_APP_FRACTAL_WEBSITE_URL: FRACTAL_WEBSITE_URL = "",
   REACT_APP_MAGURO_URL: MAGURO_URL = "",
@@ -8,6 +9,7 @@ const {
 } = process.env;
 
 const environment: Environment = {
+  CATFISH_URL,
   GOLDFISH_URL,
   FRACTAL_WEBSITE_URL,
   MAGURO_URL,
