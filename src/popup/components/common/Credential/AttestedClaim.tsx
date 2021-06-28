@@ -184,7 +184,7 @@ function AttestedClaim(
                   height={TextHeights.SMALL}
                   weight={TextWeights.SEMIBOLD}
                 >
-                  Attested Claim
+                  Legacy
                 </Text>
               </BadgeName>
             </BadgeContainer>

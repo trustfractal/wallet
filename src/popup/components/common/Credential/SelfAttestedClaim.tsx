@@ -74,25 +74,6 @@ const Status = styled.div`
   display: flex;
   align-items: center;
 `;
-const BadgesContainer = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-`;
-const BadgeContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-
-  border-radius: var(--s-12);
-  padding: var(--s-4) var(--s-12);
-
-  background: var(--c-orange);
-`;
-const BadgeName = styled.div`
-  color: var(--c-white);
-`;
 export type SelfAttestedClaimProps = {
   credential: ISelfAttestedClaim;
 };
@@ -168,19 +149,6 @@ function SelfAttestedClaim(
               </LevelName>
             )}
           </NameContainer>
-          <BadgesContainer>
-            <BadgeContainer>
-              <BadgeName>
-                <Text
-                  size={TextSizes.SMALL}
-                  height={TextHeights.SMALL}
-                  weight={TextWeights.SEMIBOLD}
-                >
-                  SelfAttested Claim
-                </Text>
-              </BadgeName>
-            </BadgeContainer>
-          </BadgesContainer>
         </NameBadgesContainer>
       </CredentialWrapper>
     </RootContainer>

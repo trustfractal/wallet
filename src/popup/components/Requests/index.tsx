@@ -177,22 +177,9 @@ const AttestedClaimBadge = styled.div`
 
   background: var(--c-gray);
 `;
-const SelfAttestedClaimBadge = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-
-  border-radius: var(--s-12);
-  padding: var(--s-4) var(--s-12);
-
-  background: var(--c-orange);
-`;
 const AttestedClaimBadgeName = styled.div`
   opacity: 0.6;
   color: var(--c-blue-dark);
-`;
-const SelfAttestedClaimBadgeName = styled.div`
-  color: var(--c-white);
 `;
 const LevelName = styled.div`
   opacity: 0.6;
@@ -295,7 +282,7 @@ function AttestedClaim(
                   height={TextHeights.SMALL}
                   weight={TextWeights.SEMIBOLD}
                 >
-                  Attested Claim
+                  Legacy
                 </Text>
               </AttestedClaimBadgeName>
             </AttestedClaimBadge>
@@ -356,19 +343,6 @@ function SelfAttestedClaim(
               </LevelName>
             )}
           </NameContainer>
-          <BadgesContainer>
-            <SelfAttestedClaimBadge>
-              <SelfAttestedClaimBadgeName>
-                <Text
-                  size={TextSizes.SMALL}
-                  height={TextHeights.SMALL}
-                  weight={TextWeights.SEMIBOLD}
-                >
-                  SelfAttested Claim
-                </Text>
-              </SelfAttestedClaimBadgeName>
-            </SelfAttestedClaimBadge>
-          </BadgesContainer>
         </NameBadgesContainer>
       </CredentialWrapper>
     </CredentialContainer>
