@@ -36,6 +36,7 @@ import { getRandomBytes } from "@utils/CryptoUtils";
 
 export default class InpageProvider implements IFractalInpageProvider {
   private initialized: boolean = false;
+  private initializedEventName: string = "fractal-wallet#initialized";
 
   public async init(): Promise<void> {
     // init application connection
@@ -49,6 +50,14 @@ export default class InpageProvider implements IFractalInpageProvider {
     }
 
     this.initialized = true;
+    this.triggerInitializedEvent();
+  }
+
+  private triggerInitializedEvent() {
+    const event = new Event(this.initializedEventName);
+
+    // Dispatch the event.
+    window.dispatchEvent(event);
   }
 
   private ensureFractalIsInitialized() {
