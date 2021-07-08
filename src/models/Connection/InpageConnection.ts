@@ -12,7 +12,8 @@ import {
 
 export default class InpageConnection
   extends BaseConnection
-  implements IInpageConnection {
+  implements IInpageConnection
+{
   public inpage: IInpageConnection["inpage"];
 
   constructor(inpageParams: DuplexConnectionParams) {

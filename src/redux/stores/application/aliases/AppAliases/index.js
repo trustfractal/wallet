@@ -42,6 +42,11 @@ export const startup = () => {
     // start credentials status polling
     new CredentialsStatusPolling().start();
 
+    // get app version
+    // eslint-disable-next-line no-undef
+    const { version } = chrome.runtime.getManifest();
+
+    dispatch(appActions.setVersion(version));
     dispatch(appActions.setLaunched(true));
   };
 };

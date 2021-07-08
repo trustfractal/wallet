@@ -19,9 +19,10 @@ export const ERROR_FRACTAL_NOT_INITIALIZED = (): InpageProviderError => {
   );
 };
 
-export const ERROR_EXTENSION_CONNECTION_NOT_INITIALIZED = (): InpageProviderError => {
-  return new InpageProviderError(
-    ErrorCode.ERROR_EXTENSION_CONNECTION_NOT_INITIALIZED,
-    `ExtensionConnection: Connection is not initialized, please call init before trying to access it`,
-  );
-};
+export const ERROR_EXTENSION_CONNECTION_NOT_INITIALIZED =
+  (): InpageProviderError => {
+    return new InpageProviderError(
+      ErrorCode.ERROR_EXTENSION_CONNECTION_NOT_INITIALIZED,
+      `ExtensionConnection: Connection is not initialized, please call init before trying to access it`,
+    );
+  };

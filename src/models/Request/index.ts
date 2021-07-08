@@ -51,15 +51,8 @@ export default class Request implements IRequest, ISerializable {
   }
 
   public static parse(str: string): Request {
-    const {
-      id,
-      requester,
-      request,
-      type,
-      status,
-      createdAt,
-      updatedAt,
-    } = JSON.parse(str);
+    const { id, requester, request, type, status, createdAt, updatedAt } =
+      JSON.parse(str);
 
     return new Request(
       id,

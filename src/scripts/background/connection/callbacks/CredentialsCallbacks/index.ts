@@ -43,9 +43,8 @@ export const credentialStore = (
   new Promise(async (resolve, reject) => {
     try {
       const address: string = getAccount(UserStore.getStore().getState());
-      const claimsRegistryContractAddress: string = getClaimsRegistryContractAddress(
-        AppStore.getStore().getState(),
-      );
+      const claimsRegistryContractAddress: string =
+        getClaimsRegistryContractAddress(AppStore.getStore().getState());
 
       // redirect request to the inpage fractal provider
       const serializedTransactionDetails = await ContentScriptConnection.invoke(
@@ -130,9 +129,8 @@ export const getCredentialStatus = ([id]: [string], port: string) =>
         return;
       }
 
-      const claimsRegistryContractAddress: string = getClaimsRegistryContractAddress(
-        AppStore.getStore().getState(),
-      );
+      const claimsRegistryContractAddress: string =
+        getClaimsRegistryContractAddress(AppStore.getStore().getState());
 
       // redirect request to the inpage fractal provider
       const status = await ContentScriptConnection.invoke(

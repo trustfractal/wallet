@@ -1,10 +1,11 @@
 import { ISerializable, ICollection } from "@pluginTypes/index";
 
 export default class BaseCollection<
-    T extends ISerializable & Record<string, any>
+    T extends ISerializable & Record<string, any>,
   >
   extends Array<T>
-  implements ICollection<T> {
+  implements ICollection<T>
+{
   public serialize(): string {
     return JSON.stringify(this.map((element) => element.serialize()));
   }

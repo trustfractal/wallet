@@ -49,8 +49,8 @@ function ConnectWalletRequest(props: ConnectWalletRequestProps) {
         </Text>
         <Text>
           You’ll be prompted to give Fractal{" "}
-          <strong>permission to access your wallet</strong>, which is required
-          to pay for your credentials, as well as access the staking program.
+          <b>permission to access your wallet</b>, which is required to pay for
+          your credentials, as well as access the staking program.
         </Text>
       </ContentContainer>
       <ActionContainer>

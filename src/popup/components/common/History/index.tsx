@@ -107,14 +107,14 @@ function History(props: HistoryProps & React.HTMLProps<HTMLDivElement>) {
     if (request.status === RequestsStatus.ACCEPTED) {
       return (
         <span>
-          Allow <strong>{request.requester.name}</strong> to access credential
+          Allow <b>{request.requester.name}</b> to access credential
         </span>
       );
     }
 
     return (
       <span>
-        Deny <strong>{request.requester.name}</strong> to access credential
+        Deny <b>{request.requester.name}</b> to access credential
       </span>
     );
   };

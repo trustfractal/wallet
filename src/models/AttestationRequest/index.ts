@@ -3,7 +3,8 @@ import { IAttestationRequest } from "@pluginTypes/index";
 
 export default class AttestationRequest
   extends SDKAttestationRequest
-  implements IAttestationRequest {
+  implements IAttestationRequest
+{
   constructor(attestationRequest: SDKAttestationRequest) {
     super({
       claim: attestationRequest.claim,
@@ -25,13 +26,8 @@ export default class AttestationRequest
   }
 
   public static parse(str: string): AttestationRequest {
-    const {
-      claim,
-      claimerSignature,
-      claimHashTree,
-      claimTypeHash,
-      rootHash,
-    } = JSON.parse(str);
+    const { claim, claimerSignature, claimHashTree, claimTypeHash, rootHash } =
+      JSON.parse(str);
 
     const sdkAttestationRequest = new SDKAttestationRequest({
       claim,

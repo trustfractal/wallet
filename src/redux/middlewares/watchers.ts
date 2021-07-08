@@ -11,16 +11,16 @@ export const setupWatcher = new SetupWatcher();
 export const requestsWatcher = new RequestsWatcher();
 
 function createActionsWatchersMiddleware() {
-  return () => (next: (action: WatcherInvokation) => void) => (
-    action: WatcherInvokation,
-  ) => {
-    watcher.invoke(action);
-    authWatcher.invoke(action);
-    setupWatcher.invoke(action);
-    requestsWatcher.invoke(action);
+  return () =>
+    (next: (action: WatcherInvokation) => void) =>
+    (action: WatcherInvokation) => {
+      watcher.invoke(action);
+      authWatcher.invoke(action);
+      setupWatcher.invoke(action);
+      requestsWatcher.invoke(action);
 
-    return next(action);
-  };
+      return next(action);
+    };
 }
 
 const middleware = createActionsWatchersMiddleware();

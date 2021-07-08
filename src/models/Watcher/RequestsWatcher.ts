@@ -15,7 +15,8 @@ const REQUESTS_TIME_OUT = 30 * 1000; // 30 seconds
 
 export default class RequestsWatcher
   extends Watcher
-  implements IRequestsWatcher {
+  implements IRequestsWatcher
+{
   public invoke({ type, payload }: WatcherInvokation): void {
     if (!(requestsTypes[type] && this.listeners[type])) return;
 

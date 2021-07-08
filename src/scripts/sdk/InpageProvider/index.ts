@@ -99,9 +99,8 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
 
     // parse request
-    const request: VerificationRequest = VerificationRequest.parse(
-      serializedRequest,
-    );
+    const request: VerificationRequest =
+      VerificationRequest.parse(serializedRequest);
 
     return request;
   }
@@ -146,9 +145,8 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
 
     // parse request
-    const request: AttestationRequest = AttestationRequest.parse(
-      serializedRequest,
-    );
+    const request: AttestationRequest =
+      AttestationRequest.parse(serializedRequest);
 
     return request;
   }
