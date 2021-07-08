@@ -1,4 +1,5 @@
 import { useOutsideAlerter } from "@popup/hooks/useOutsideAlerter";
+import { Utils } from "@trustfractal/sdk";
 import React, { useState } from "react";
 
 import styled, { css } from "styled-components";
@@ -55,6 +56,26 @@ const MenuLink = styled.button<{ disabled?: boolean }>`
   cursor: pointer;
 
   :not(:first-child)  {
+    border-top: 1px solid rgba(255, 255, 255);
+  }
+
+  ${(props) =>
+    props.disabled &&
+    css`
+      opacity: 0.6;
+      cursor: default;
+    `}
+`;
+
+const SubMenuLink = styled.button<{ disabled?: boolean }>`
+  display: flex;
+  align-items: center;
+  padding: var(--s-24) var(--s-20);
+  background: none;
+  color: var(--c-white);
+  cursor: pointer;
+
+  :not(:first-child)  {
     border-top: 1px solid rgba(255, 255, 255, 0.2);
   }
 
@@ -70,12 +91,14 @@ const IconContainer = styled.div`
   margin-right: var(--s-12);
 `;
 
-export type MenuItem = {
+export type Item = {
   label: string;
   icon: string;
   onClick: () => void;
   disabled?: boolean;
 };
+
+export type MenuItem = Item | Item[];
 
 export type MenuProps = {
   items: MenuItem[];
@@ -99,21 +122,47 @@ function Menu(
         {!menuOpen && <Icon name={IconNames.MENU_INACTIVE} />}
       </MenuButton>
       <MenuContainer active={menuOpen} ref={menuRef}>
-        {items.map(({ label, icon, onClick, disabled }) => (
-          <MenuLink
-            key={label}
-            onClick={() => {
-              closeMenu();
-              onClick();
-            }}
-            disabled={disabled}
-          >
-            <IconContainer>
-              <Icon name={icon} />
-            </IconContainer>
-            {label}
-          </MenuLink>
-        ))}
+        {items.map((item: Item | Item[]) => {
+          if (Utils.isArray(item)) {
+            return (item as Item[]).map((subItem: Item) => {
+              const { label, icon, onClick, disabled } = subItem;
+
+              return (
+                <SubMenuLink
+                  key={label}
+                  onClick={() => {
+                    closeMenu();
+                    onClick();
+                  }}
+                  disabled={disabled}
+                >
+                  <IconContainer>
+                    <Icon name={icon} />
+                  </IconContainer>
+                  {label}
+                </SubMenuLink>
+              );
+            });
+          }
+
+          const { label, icon, onClick, disabled } = item as Item;
+
+          return (
+            <MenuLink
+              key={label}
+              onClick={() => {
+                closeMenu();
+                onClick();
+              }}
+              disabled={disabled}
+            >
+              <IconContainer>
+                <Icon name={icon} />
+              </IconContainer>
+              {label}
+            </MenuLink>
+          );
+        })}
       </MenuContainer>
       <MenuOverlay active={menuOpen} />
     </>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router";
 import styled from "styled-components";
 
 import { useAppSelector } from "@redux/stores/application/context";
@@ -10,6 +11,8 @@ import walletActions from "@redux/stores/user/reducers/wallet";
 
 import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+
+import RoutesPaths from "@popup/routes/paths";
 
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
 import Text, {
@@ -86,33 +89,41 @@ const RootContainer = styled.div`
 const BalanceTokens = styled.div``;
 
 function BalanceNavbar() {
+  const history = useHistory();
   const dispatch = useUserDispatch();
 
   const stakingDetails: any = useUserSelector(getStakingDetails);
   const credentials = useUserSelector(getCredentials);
 
-  const exportBackup = async () =>
+  const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
-
-  const importBackup = () => windows.openTab("upload.html");
-  const reconnect = () => dispatch(walletActions.connectWalletRequest());
+  const onClickImport = () => windows.openTab("upload.html");
+  const onClickReconnect = () => dispatch(walletActions.connectWalletRequest());
+  const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
   const menuItems = [
-    {
-      label: "Export your data",
-      icon: IconNames.EXPORT,
-      onClick: exportBackup,
-      disabled: credentials.length === 0,
-    },
-    {
-      label: "Import your data",
-      icon: IconNames.IMPORT,
-      onClick: importBackup,
-    },
+    [
+      {
+        label: "Export your data",
+        icon: IconNames.EXPORT,
+        onClick: onClickExport,
+        disabled: credentials.length === 0,
+      },
+      {
+        label: "Import your data",
+        icon: IconNames.IMPORT,
+        onClick: onClickImport,
+      },
+    ],
     {
       label: "Reconnect to crypto wallet",
       icon: IconNames.RECONNECT,
-      onClick: reconnect,
+      onClick: onClickReconnect,
+    },
+    {
+      label: "About",
+      icon: IconNames.ABOUT,
+      onClick: onClickAbout,
     },
   ];
 
@@ -184,13 +195,14 @@ export default function Navbar() {
   return <LogoNavbar />;
 }
 
-export const withNavBar = <P extends object>(
-  Component: React.ComponentType<P>,
-) => (props: any) => (
-  <>
-    <RootContainer>
-      <Navbar />
-      <Component {...(props as P)} />
-    </RootContainer>
-  </>
-);
+export const withNavBar =
+  <P extends object>(Component: React.ComponentType<P>) =>
+  (props: any) =>
+    (
+      <>
+        <RootContainer>
+          <Navbar />
+          <Component {...(props as P)} />
+        </RootContainer>
+      </>
+    );

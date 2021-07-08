@@ -7,6 +7,7 @@ const types = mirrorCreator([
   "SET_LAUNCHED",
   "SET_SETUP",
   "SET_STATUS",
+  "SET_VERSION",
 ]);
 
 export const creators = createActions(
@@ -15,6 +16,7 @@ export const creators = createActions(
   types.SET_LAUNCHED,
   types.SET_SETUP,
   types.SET_STATUS,
+  types.SET_VERSION,
 );
 
 export const initialState = {
@@ -34,6 +36,7 @@ export const initialState = {
     ethereumNetwork: "",
     issuerAddress: "",
   },
+  version: "",
 };
 
 export const reducer = handleActions(
@@ -52,6 +55,11 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         addresses,
+      }),
+    [types.SET_VERSION]: (state, { payload: version }) =>
+      Object.freeze({
+        ...state,
+        version,
       }),
   },
   initialState,

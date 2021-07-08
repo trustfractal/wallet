@@ -11,7 +11,8 @@ import CredentialStatus from "./status";
 
 export default class Credential
   extends SDKAttestedClaim
-  implements ICredential, ISerializable {
+  implements ICredential, ISerializable
+{
   public id: string;
   public level: string;
   public transaction?: ITransactionDetails;

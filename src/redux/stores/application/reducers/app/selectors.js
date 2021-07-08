@@ -39,3 +39,8 @@ export const isStakingEnabled = createSelector(
   (state) => state.app,
   (app) => app.addresses.staking.enabled,
 );
+
+export const getVersion = createSelector(
+  (state) => state.app,
+  (app) => app.version,
+);

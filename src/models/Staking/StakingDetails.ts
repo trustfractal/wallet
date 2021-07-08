@@ -66,7 +66,8 @@ export default class StakingDetails implements IStakingDetails, ISerializable {
       stakingEndDate: this.stakingEndDate.toJSON(),
       stakingStartDate: this.stakingStartDate.toJSON(),
       stakingAPY: this.stakingAPY.toJSON(),
-      stakingCurrentExpectedRewardRate: this.stakingCurrentExpectedRewardRate.toJSON(),
+      stakingCurrentExpectedRewardRate:
+        this.stakingCurrentExpectedRewardRate.toJSON(),
       status: this.status,
     });
   }

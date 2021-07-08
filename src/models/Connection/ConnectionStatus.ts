@@ -1,7 +1,8 @@
 import { IConnectionStatus, ISerializable } from "@pluginTypes/index";
 
 export default class ConnectionStatus
-  implements IConnectionStatus, ISerializable {
+  implements IConnectionStatus, ISerializable
+{
   public version: string;
   public registered: boolean;
   public locked: boolean;

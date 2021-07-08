@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 
 import WalletScreen from "@popup/containers/WalletScreen";
+import AboutScreen from "@popup/containers/AboutScreen";
 
 import ConnectWalletScreen from "@popup/containers/ConnectWalletScreen";
 import RoutesPaths from "./paths";
@@ -13,6 +14,7 @@ import RoutesPaths from "./paths";
 const Routes = () => (
   <Router>
     <Switch>
+      <Route path={RoutesPaths.ABOUT} component={AboutScreen} />
       <Route
         path={RoutesPaths.CONNECT_WALLET}
         component={ConnectWalletScreen}

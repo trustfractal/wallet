@@ -3,7 +3,8 @@ import { IVerificationRequest } from "@pluginTypes/index";
 import { ClaimType } from "@trustfractal/sdk";
 
 export default class VerificationRequest
-  implements IVerificationRequest, ISerializable {
+  implements IVerificationRequest, ISerializable
+{
   public level: string;
   public fields: Record<string, boolean>;
   public credential?: ICredential;

@@ -34,13 +34,8 @@ TopComponent.defaultProps = {
 function TopComponent(
   props: TopComponentProps & React.HTMLProps<HTMLDivElement>,
 ) {
-  const {
-    children,
-    paddingTop,
-    paddingBottom,
-    paddingLeft,
-    paddingRight,
-  } = props;
+  const { children, paddingTop, paddingBottom, paddingLeft, paddingRight } =
+    props;
 
   return (
     <Root
