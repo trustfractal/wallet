@@ -173,7 +173,7 @@ export const fetchCredentials = () => {
             ),
             kycType: new Byte(Number(credential.data.kycType)),
           }),
-          `${credential.id}:${credential.level}:${CredentialsVersions.VERSION_TWO}`,
+          `${credential.verification_case_id}:${credential.level}:${CredentialsVersions.VERSION_TWO}`,
           credential.level,
         ),
       );

@@ -19,16 +19,18 @@ export default class MaguroService {
     }).then((response: Response) => {
       if (!response.ok) {
         // check if megalodon token has expired
-        if (headers && (headers as Record<string, string>)["megalodon-token"]) {
+        if (headers && (headers as Record<string, string>)["authorization"]) {
           if (response.status === 401) {
             return CatfishService.refreshResourceServerToken().then((token) =>
               this.callApi(route, method, body, {
                 ...headers,
-                "megalodon-token": token,
+                authorization: token,
               }),
             );
           }
-        } else throw new Error(response.statusText);
+        }
+
+        throw new Error(response.statusText);
       } else {
         return response.json();
       }
@@ -39,7 +41,7 @@ export default class MaguroService {
     const token = getBackendMegalodonSession(AppStore.getStore().getState());
 
     return this.callApi("credentials", "GET", null, {
-      "megalodon-token": token,
+      authorization: `Bearer ${token}`,
     });
   }
 }
