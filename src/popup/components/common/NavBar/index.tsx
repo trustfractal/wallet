@@ -1,7 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router";
 import styled from "styled-components";
-import { useHistory } from "react-router";
 
 import { useAppSelector } from "@redux/stores/application/context";
 import { useUserSelector } from "@redux/stores/user/context";
@@ -10,8 +9,6 @@ import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
 import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
-
-import RoutesPaths from "@popup/routes/paths";
 
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
 import Text, {
