@@ -9,6 +9,7 @@ export enum ErrorCode {
   ERROR_NO_ACTIVE_TAB = 7007,
   ERROR_NOT_ON_FRACTAL = 7008,
   ERROR_NO_ACCOUNT = 7009,
+  ERROR_USER_NOT_LOGGED_IN = 7010,
 }
 
 export class ConnectionError extends Error {
@@ -90,5 +91,12 @@ export const ERROR_NO_ACCOUNT = (): ConnectionError => {
   return new ConnectionError(
     ErrorCode.ERROR_NO_ACCOUNT,
     "Connection: no ethereum account could be found",
+  );
+};
+
+export const ERROR_USER_NOT_LOGGED_IN = (): ConnectionError => {
+  return new ConnectionError(
+    ErrorCode.ERROR_USER_NOT_LOGGED_IN,
+    "Connection: no user logged in",
   );
 };

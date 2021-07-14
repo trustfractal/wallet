@@ -1,63 +1,12 @@
-import styled from "styled-components";
+import {
+  ICredential,
+  ISelfAttestedClaim,
+  IAttestedClaim,
+} from "@pluginTypes/index";
 
-import { ICredential } from "@pluginTypes/index";
-
-import CredentialStatus from "@models/Credential/status";
-
-import Text, {
-  TextHeights,
-  TextSizes,
-  TextWeights,
-} from "@popup/components/common/Text";
-import Icon, { IconNames } from "@popup/components/common/Icon";
-import LevelIcon from "@popup/components/common/LevelIcon";
-
-const RootContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  border-radius: var(--s-12);
-  padding: var(--s-20) var(--s-12);
-
-  background: var(--c-gray);
-
-  color: var(--c-dark-blue);
-
-  border: 1px solid rgba(19, 44, 83, 0.2);
-`;
-
-const LeftContainer = styled.div`
-  display: flex;
-  flex: 1;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-`;
-
-const LevelIconContainer = styled.div`
-  margin-right: var(--s-8);
-`;
-
-const LevelContentContainer = styled.div``;
-
-const LevelName = styled.div`
-  opacity: 0.6;
-`;
-
-const RightContainer = styled.div`
-  display: flex;
-  flex: 1;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  align-self: flex-start;
-`;
-
-const RightTextContainer = styled.div`
-  margin-right: var(--s-8);
-  opacity: 0.6;
-`;
+import SelfAttestedClaim from "./SelfAttestedClaim";
+import AttestedClaim from "./AttestedClaim";
+import CredentialsVersions from "@models/Credential/versions";
 
 export type CredentialProps = {
   credential: ICredential;
@@ -66,71 +15,9 @@ export type CredentialProps = {
 function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
   const { credential } = props;
 
-  const {
-    status,
-    claim: {
-      properties: { full_name: name },
-    },
-  } = credential;
-
-  let hasName = true;
-  if (name === undefined || (name as String).length === 0) {
-    hasName = false;
-  }
-
-  const [level, ...addons] = credential.level.split("+");
-  let levelName;
-  let statusName;
-  let statusIconName;
-
-  const addonsStr = addons.join(" + ");
-
-  if (level === "basic") {
-    levelName = `ID Basic + ${addonsStr}`;
-  } else {
-    levelName = `ID Plus + ${addonsStr}`;
-  }
-
-  if (status === CredentialStatus.VALID) {
-    statusName = "Valid";
-    statusIconName = IconNames.VALID;
-  } else if (status === CredentialStatus.INVALID) {
-    statusName = "Invalid";
-    statusIconName = IconNames.INVALID;
-  } else {
-    statusName = "Pending";
-    statusIconName = IconNames.PENDING;
-  }
-
-  return (
-    <RootContainer>
-      <LeftContainer>
-        <LevelIconContainer>
-          <LevelIcon level={level} />
-        </LevelIconContainer>
-        <LevelContentContainer>
-          <Text height={TextHeights.LARGE} weight={TextWeights.BOLD}>
-            {levelName}
-          </Text>
-          {hasName && (
-            <LevelName>
-              <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-                {name}
-              </Text>
-            </LevelName>
-          )}
-        </LevelContentContainer>
-      </LeftContainer>
-      <RightContainer>
-        <RightTextContainer>
-          <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-            {statusName}
-          </Text>
-        </RightTextContainer>
-        <Icon name={statusIconName} />
-      </RightContainer>
-    </RootContainer>
-  );
+  if (credential.version === CredentialsVersions.VERSION_TWO)
+    return <SelfAttestedClaim credential={credential as ISelfAttestedClaim} />;
+  else return <AttestedClaim credential={credential as IAttestedClaim} />;
 }
 
 export default Credential;

@@ -1,7 +1,7 @@
-enum CredentialStatus {
+enum CredentialsStatus {
   VALID = "VALID",
   PENDING = "PENDING",
   INVALID = "INVALID",
 }
 
-export default CredentialStatus;
+export default CredentialsStatus;

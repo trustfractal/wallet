@@ -41,6 +41,10 @@ export class AppStore {
     return AppStore.instance;
   }
 
+  async isInitialized() {
+    return this.storeInternal !== undefined;
+  }
+
   async init() {
     const storedState = await AppStore.getStoredState("{}");
     const persistedState = await AppStore.deserialize(storedState);
@@ -64,12 +68,17 @@ export class AppStore {
 
   static connect() {
     return new Promise((resolve) => {
-      const interval = setInterval(async () => {
+      let interval;
+
+      const connectToStore = async () => {
         let store = new Store({ portName: AppStore.PORT_NAME });
         await store.ready();
-        clearInterval(interval);
+        if (interval) clearInterval(interval);
         resolve(store);
-      }, 100);
+      };
+
+      connectToStore();
+      interval = setInterval(connectToStore, 1000);
     });
   }
 

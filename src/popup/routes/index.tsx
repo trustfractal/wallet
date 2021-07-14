@@ -9,6 +9,8 @@ import WalletScreen from "@popup/containers/WalletScreen";
 import AboutScreen from "@popup/containers/AboutScreen";
 
 import ConnectWalletScreen from "@popup/containers/ConnectWalletScreen";
+import ConnectBackendScreen from "@popup/containers/ConnectBackendScreen";
+
 import RoutesPaths from "./paths";
 
 const Routes = () => (
@@ -18,6 +20,10 @@ const Routes = () => (
       <Route
         path={RoutesPaths.CONNECT_WALLET}
         component={ConnectWalletScreen}
+      />
+      <Route
+        path={RoutesPaths.CONNECT_BACKEND}
+        component={ConnectBackendScreen}
       />
       <Route path={RoutesPaths.WALLET} component={WalletScreen} />
       <Redirect to={RoutesPaths.WALLET} />

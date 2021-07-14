@@ -4,38 +4,32 @@ import { useUserDispatch, useUserSelector } from "@redux/stores/user/context";
 
 import walletActions from "@redux/stores/user/reducers/wallet";
 
-import ConnectWalletRequest from "@popup/components/ConnectWalletRequest";
-import ConnectWalletCompleted from "@popup/components/ConnectWalletCompleted";
+import ConnectBackendRequest from "@popup/components/ConnectBackendRequest";
 
 import {
-  getAccount,
   getConnectWalletError,
   isConnectWalletLoading,
-  isConnectWalletSuccess,
 } from "@redux/stores/user/reducers/wallet/selectors";
 import RoutesPaths from "@popup/routes/paths";
+import { useAppSelector } from "@redux/stores/application/context";
+import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
-function ConnectWalletScreen() {
+function ConnectBackendScreen() {
   const dispatch = useUserDispatch();
   const history = useHistory();
 
   const isLoading = useUserSelector(isConnectWalletLoading);
-  const isSuccess = useUserSelector(isConnectWalletSuccess);
   const error = useUserSelector(getConnectWalletError);
-  const account = useUserSelector(getAccount);
+  const setup = useAppSelector(isSetup);
 
-  const onDone = () => {
-    dispatch(walletActions.connectWalletReset());
-    history.replace(RoutesPaths.WALLET);
-  };
   const onConnect = () => dispatch(walletActions.connectWalletRequest());
 
-  if (isSuccess) {
-    return <ConnectWalletCompleted onNext={onDone} account={account} />;
+  if (setup) {
+    history.replace(RoutesPaths.WALLET);
   }
 
   return (
-    <ConnectWalletRequest
+    <ConnectBackendRequest
       onNext={onConnect}
       error={error}
       loading={isLoading}
@@ -43,4 +37,4 @@ function ConnectWalletScreen() {
   );
 }
 
-export default ConnectWalletScreen;
+export default ConnectBackendScreen;

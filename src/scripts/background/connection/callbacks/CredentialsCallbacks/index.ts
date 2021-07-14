@@ -1,8 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
 
-import Credential from "@models/Credential";
-import TransactionDetails from "@models/Transaction/TransactionDetails";
-
 import UserStore from "@redux/stores/user";
 import AppStore from "@redux/stores/application";
 
@@ -13,16 +10,17 @@ import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebp
 import ConnectionTypes from "@models/Connection/types";
 
 import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
-import credentialsActions from "@redux/stores/user/reducers/credentials";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 import requestsActions from "@redux/stores/user/reducers/requests";
+import credentialsActions from "@redux/stores/user/reducers/credentials";
+
+import { getClaimsRegistryContractAddress } from "@redux/stores/application/reducers/app/selectors";
+import { requestsWatcher } from "@redux/middlewares/watchers";
 
 import {
   ERROR_CREDENTIAL_NOT_FOUND,
   ERROR_CREDENTIALS_NOT_FOUND,
 } from "@background/Errors";
-import { getClaimsRegistryContractAddress } from "@redux/stores/application/reducers/app/selectors";
-import { requestsWatcher } from "@redux/middlewares/watchers";
 
 import {
   ERROR_VERIFICATION_REQUEST_INVALID_FIELDS,
@@ -35,6 +33,11 @@ import WindowsService, { PopupSizes } from "@services/WindowsService";
 
 import { IVerificationRequest } from "@pluginTypes/plugin";
 import VerificationRequest from "@models/VerificationRequest";
+import CredentialsVersions from "@models/Credential/versions";
+import AttestedClaim from "@models/Credential/AttestedClaim";
+import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
+import TransactionDetails from "@models/Transaction/TransactionDetails";
+import CredentialsStatus from "@models/Credential/status";
 
 export const credentialStore = (
   [serializedCredential]: [string],
@@ -59,7 +62,7 @@ export const credentialStore = (
       );
 
       // parse the string credential
-      const parsedCredential = Credential.parse(serializedCredential);
+      const parsedCredential = AttestedClaim.parse(serializedCredential);
 
       // update parsed credentials
       parsedCredential.transaction = parsedTransactionDetails;
@@ -98,7 +101,7 @@ export const getAttestationRequest = (
     }
   });
 
-export const hasCredential = ([id]: [string]) =>
+export const hasCredential = ([id]: [string, CredentialsVersions]) =>
   new Promise((resolve, reject) => {
     try {
       const credentials: CredentialsCollection = getCredentials(
@@ -114,10 +117,9 @@ export const hasCredential = ([id]: [string]) =>
     }
   });
 
-export const getCredentialStatus = ([id]: [string], port: string) =>
+export const isCredentialValid = ([id]: [string], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
-      const address: string = getAccount(UserStore.getStore().getState());
       const credentials: CredentialsCollection = getCredentials(
         UserStore.getStore().getState(),
       );
@@ -128,6 +130,14 @@ export const getCredentialStatus = ([id]: [string], port: string) =>
         reject(ERROR_CREDENTIAL_NOT_FOUND(id));
         return;
       }
+
+      if (credential.version === CredentialsVersions.VERSION_TWO) {
+        resolve((credential as SelfAttestedClaim).revoked === false);
+        return;
+      }
+
+      // check legacy credential status on blockchain
+      const address: string = getAccount(UserStore.getStore().getState());
 
       const claimsRegistryContractAddress: string =
         getClaimsRegistryContractAddress(AppStore.getStore().getState());
@@ -144,26 +154,21 @@ export const getCredentialStatus = ([id]: [string], port: string) =>
         credentialsActions.setCredentialStatus({ id, status }),
       );
 
-      resolve(status);
+      resolve(status === CredentialsStatus.VALID);
     } catch (error) {
       console.error(error);
       reject(error);
     }
   });
 
-export const getVerificationRequest = ([level, requester, fields]: [
-  string,
-  string,
-  Record<string, boolean>,
-]) =>
+export const getVerificationRequest = ([
+  level,
+  requester,
+  fields = {},
+  version,
+]: [string, string, Record<string, boolean>, CredentialsVersions]) =>
   new Promise(async (resolve, reject) => {
     try {
-      // check if the level fields are empty
-      if (Object.keys(fields).length === 0) {
-        reject(ERROR_VERIFICATION_REQUEST_INVALID_FIELDS());
-        return;
-      }
-
       // create verification request instance
       const verificationRequest = new VerificationRequest(level, fields);
 
@@ -176,7 +181,29 @@ export const getVerificationRequest = ([level, requester, fields]: [
       const credentials: CredentialsCollection = getCredentials(
         UserStore.getStore().getState(),
       );
-      const filteredCredentials = credentials.filterByField("level", level);
+      const filteredCredentials = credentials.filter((credential) => {
+        if (credential.level !== level) {
+          return false;
+        }
+
+        if (
+          credential.version === CredentialsVersions.VERSION_ONE &&
+          !(credential as AttestedClaim).valid
+        ) {
+          return false;
+        } else if (
+          credential.version === CredentialsVersions.VERSION_ONE &&
+          (credential as SelfAttestedClaim).revoked
+        ) {
+          return false;
+        }
+
+        if (version && credential.version !== version) {
+          return false;
+        }
+
+        return true;
+      });
 
       if (filteredCredentials.length === 0) {
         reject(ERROR_CREDENTIALS_NOT_FOUND());
@@ -253,8 +280,8 @@ const Callbacks = {
     callback: hasCredential,
     middlewares: [new AuthMiddleware()],
   },
-  [ConnectionTypes.GET_CREDENTIAL_STATUS_BACKGROUND]: {
-    callback: getCredentialStatus,
+  [ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND]: {
+    callback: isCredentialValid,
     middlewares: [new AuthMiddleware()],
   },
   [ConnectionTypes.GET_VERIFICATION_REQUEST_BACKGROUND]: {

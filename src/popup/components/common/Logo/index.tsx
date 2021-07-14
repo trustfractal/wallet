@@ -3,9 +3,15 @@ import React from "react";
 import styled, { css } from "styled-components";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 
-const Root = styled.div<{ height: string; width: string }>`
+const Root = styled.div<{ height: string; width: string; clickable?: boolean }>`
   background: var(--c-white);
   border-radius: 50%;
+
+  ${(props) =>
+    props.clickable &&
+    css`
+      cursor: pointer;
+    `}
 
   ${(props) => css`
     width: ${props.width};
@@ -60,11 +66,11 @@ Logo.defaultProps = {
 };
 
 function Logo(props: LogoProps & React.HtmlHTMLAttributes<HTMLImageElement>) {
-  const { size } = props;
+  const { size, ...otherProps } = props;
   const { name, logo, container } = Sizes[size];
 
   return (
-    <Root {...container}>
+    <Root {...container} {...otherProps}>
       <Icon name={name} {...logo} />
     </Root>
   );

@@ -3,16 +3,12 @@ import { useHistory } from "react-router";
 import styled from "styled-components";
 
 import { useAppSelector } from "@redux/stores/application/context";
-import { useUserDispatch, useUserSelector } from "@redux/stores/user/context";
+import { useUserSelector } from "@redux/stores/user/context";
 
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
-import walletActions from "@redux/stores/user/reducers/wallet";
-
 import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
-
-import RoutesPaths from "@popup/routes/paths";
 
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
 import Text, {
@@ -28,6 +24,8 @@ import { parseAndFormatEther } from "@utils/FormatUtils";
 import { exportFile } from "@utils/FileUtils";
 
 import windows from "@services/WindowsService";
+
+import RoutesPaths from "@popup/routes/paths";
 
 const LogoNavbarContainer = styled.div`
   display: flex;
@@ -84,13 +82,13 @@ const BalanceAmounts = styled.div`
 
 const RootContainer = styled.div`
   position: relative;
+  overflow: hidden;
 `;
 
 const BalanceTokens = styled.div``;
 
 function BalanceNavbar() {
   const history = useHistory();
-  const dispatch = useUserDispatch();
 
   const stakingDetails: any = useUserSelector(getStakingDetails);
   const credentials = useUserSelector(getCredentials);
@@ -98,7 +96,7 @@ function BalanceNavbar() {
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
   const onClickImport = () => windows.openTab("upload.html");
-  const onClickReconnect = () => dispatch(walletActions.connectWalletRequest());
+  const onClickReconnect = () => history.push(RoutesPaths.CONNECT_WALLET);
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
   const menuItems = [

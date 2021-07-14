@@ -1,7 +1,13 @@
+import { Action } from "redux-actions";
+
 import authActions, {
   authTypes,
 } from "@redux/stores/application/reducers/auth";
 import registerActions from "@redux/stores/application/reducers/register";
+import { getRegisterPassword } from "@redux/stores/application/reducers/register/selectors";
+import { isSetup } from "@redux/stores/application/reducers/app/selectors";
+import { getHashedPassword } from "@redux/stores/application/reducers/auth/selectors";
+
 import {
   AppStoreError,
   ErrorCode,
@@ -9,10 +15,7 @@ import {
 } from "@redux/stores/application/Errors";
 
 import Store, { UserStore } from "@redux/stores/user";
-import { getRegisterPassword } from "@redux/stores/application/reducers/register/selectors";
-import { getHashedPassword } from "@redux/stores/application/reducers/auth/selectors";
-
-import { Action } from "redux-actions";
+import credentialsActions from "@redux/stores/user/reducers/credentials";
 
 export const signUp = () => {
   return async (dispatch: (arg: Action<any>) => void, getState: () => any) => {
@@ -50,6 +53,7 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
 
     try {
       const hashedPassword = getHashedPassword(getState());
+      const setup = isSetup(getState());
 
       // hash attempted password
       const hashedAttemptedPassword = (
@@ -68,6 +72,11 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
       if (!isInitialized) {
         // init the encrypted user store
         await Store.init(attemptedPassword);
+      }
+
+      if (setup) {
+        // get user's self attested claims
+        Store.getStore().dispatch(credentialsActions.fetchCredentials());
       }
 
       dispatch(authActions.signInSuccess());

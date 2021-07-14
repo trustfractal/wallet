@@ -2,6 +2,18 @@ import EthereumProviderService from "@services/EthereumProviderService/Web3Provi
 
 import ConnectionTypes from "@models/Connection/types";
 
+const CATFISH_SESSION_KEY = "catfish_token";
+const MEGALODON_SESSION_KEY = "megalodon_token";
+
+export const getBackendSessions = () => ({
+  catfish: localStorage.getItem(CATFISH_SESSION_KEY),
+  megalodon: localStorage.getItem(MEGALODON_SESSION_KEY),
+  scopes: localStorage.getItem(`${MEGALODON_SESSION_KEY}-scopes`),
+});
+
+export const getMegalodonSession = () =>
+  localStorage.getItem(MEGALODON_SESSION_KEY);
+
 export const getAccountAddress = () =>
   EthereumProviderService.getAccountAddress();
 
@@ -53,6 +65,9 @@ export const withdraw = ([address, stakingTokenContractAddress]: [
 ]) => EthereumProviderService.withdraw(address, stakingTokenContractAddress);
 
 const Callbacks = {
+  [ConnectionTypes.GET_BACKEND_SESSIONS_INPAGE]: {
+    callback: getBackendSessions,
+  },
   [ConnectionTypes.GET_ACCOUNT_ADDRESS_INPAGE]: { callback: getAccountAddress },
   [ConnectionTypes.GET_STAKING_DETAILS_INPAGE]: { callback: getStakingDetails },
   [ConnectionTypes.GET_SIGNED_NONCE_INPAGE]: { callback: getSignedNonce },

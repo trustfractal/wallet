@@ -7,13 +7,14 @@ export default class GoldfishService {
     body?: RequestInit["body"],
     headers?: RequestInit["headers"],
   ): Promise<any> {
-    return await (
-      await fetch(`${Environment.GOLDFISH_URL}/${route}`, {
-        method,
-        body,
-        headers,
-      })
-    ).json();
+    return fetch(`${Environment.GOLDFISH_URL}/${route}`, {
+      method,
+      body,
+      headers,
+    }).then((response: Response) => {
+      if (!response.ok) throw new Error(response.statusText);
+      else return response.json();
+    });
   }
 
   public static getAddresses() {

@@ -12,11 +12,16 @@ import {
   Staking as IStaking,
   ClaimsRegistry as IClaimsRegistry,
   IWeb3ProviderService,
+  IAttestedClaim,
 } from "@pluginTypes/index";
 import { Claim, ClaimType, IClaimProperties } from "@trustfractal/sdk";
 
 import StakingDetails from "@models/Staking/StakingDetails";
+
 import Credential from "@models/Credential";
+import AttestedClaim from "@models/Credential/AttestedClaim";
+import CredentialsStatus from "@models/Credential/status";
+
 import AttestationRequest from "@models/AttestationRequest";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
 
@@ -32,7 +37,6 @@ import ClaimsRegistry from "@contracts/ClaimsRegistry.json";
 import Staking from "@contracts/Staking.json";
 import ERC20 from "@contracts/ERC20.json";
 import MetamaskErrors from "./MetamaskErrors";
-import CredentialStatus from "@models/Credential/status";
 
 class Web3ProviderService implements IWeb3ProviderService {
   private static instance: Web3ProviderService;
@@ -123,7 +127,7 @@ class Web3ProviderService implements IWeb3ProviderService {
   ): Promise<string> {
     try {
       // prepare data
-      const parsedCredential = Credential.parse(serializedCredential);
+      const parsedCredential = AttestedClaim.parse(serializedCredential);
       const rootHashByteArray = ethersUtils.arrayify(parsedCredential.rootHash);
       const signer = this.web3Provider!.getSigner(address);
 
@@ -168,10 +172,10 @@ class Web3ProviderService implements IWeb3ProviderService {
     address: string,
     serializedCredential: string,
     claimsRegistryContractAddress: string,
-  ): Promise<CredentialStatus> {
+  ): Promise<CredentialsStatus> {
     try {
       // prepare data
-      const parsedCredential = Credential.parse(serializedCredential);
+      const parsedCredential = AttestedClaim.parse(serializedCredential);
       const signer = this.web3Provider!.getSigner(address);
 
       // init smart contract
@@ -188,9 +192,11 @@ class Web3ProviderService implements IWeb3ProviderService {
 
       if (
         transactionReceipt === undefined ||
-        transactionReceipt.blockNumber === undefined
+        transactionReceipt === null ||
+        transactionReceipt.blockNumber === undefined ||
+        transactionReceipt.blockNumber === null
       ) {
-        return CredentialStatus.PENDING;
+        return CredentialsStatus.PENDING;
       }
 
       // verify claim
@@ -201,9 +207,9 @@ class Web3ProviderService implements IWeb3ProviderService {
       );
 
       if (verifyClaim) {
-        return CredentialStatus.VALID;
+        return CredentialsStatus.VALID;
       } else {
-        return CredentialStatus.INVALID;
+        return CredentialsStatus.INVALID;
       }
     } catch (error) {
       console.error(error);
@@ -394,7 +400,9 @@ class Web3ProviderService implements IWeb3ProviderService {
   ): Promise<string> {
     try {
       // prepare data
-      const parsedCredential = Credential.parse(serializedCredential);
+      const parsedCredential = Credential.fromString(
+        serializedCredential,
+      ) as IAttestedClaim;
       const signer = this.web3Provider!.getSigner(address);
       const etherAmount = BigNumber.from(amount) as BigNumberish;
 

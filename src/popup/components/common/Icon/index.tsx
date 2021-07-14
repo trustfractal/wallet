@@ -35,6 +35,7 @@ const { default: Reconnect } = require("@assets/reconnect.svg");
 const { default: About } = require("@assets/about.svg");
 const { default: FractalFullLogo } = require("@assets/fractal-full-logo.svg");
 const { default: KiltFullLogo } = require("@assets/kilt-full-logo.svg");
+const { default: Welcome } = require("@assets/welcome.svg");
 
 const Root = styled.div<{
   clickable: boolean;
@@ -56,6 +57,7 @@ export enum IconNames {
   LOGO = "logo",
   LOGO_SMALL = "logo-small",
   LOGO_NAME = "logo-name",
+  LEGACY_BADGE = "legacy-badge",
   SUCCESS = "success",
   CONNECTED = "connected",
   ROBOT = "robot",
@@ -80,6 +82,7 @@ export enum IconNames {
   ABOUT = "about",
   FRACTAL_FULL_LOGO = "fractal-full-logo",
   KILT_FULL_LOGO = "kilt-full-logo",
+  WELCOME = "welcome",
 }
 
 const Icons: Record<string, any> = {
@@ -116,6 +119,7 @@ const Icons: Record<string, any> = {
   [IconNames.ABOUT]: About,
   [IconNames.FRACTAL_FULL_LOGO]: FractalFullLogo,
   [IconNames.KILT_FULL_LOGO]: KiltFullLogo,
+  [IconNames.WELCOME]: Welcome,
 };
 
 export type IconProps = {

@@ -40,7 +40,7 @@ module.exports = function () {
     contentBase: paths.devAppBuild,
     contentBasePublicPath: "",
     // By default files from `contentBase` will not trigger a page reload.
-    watchContentBase: true,
+    watchContentBase: false,
     // Enable hot reloading server. It will provide WDS_SOCKET_PATH endpoint
     // for the WebpackDevServer client so it can learn when the files were
     // updated. The WebpackDevServer client is included as an entry point
