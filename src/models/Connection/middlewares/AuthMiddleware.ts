@@ -3,8 +3,11 @@ import { authWatcher, setupWatcher } from "@redux/middlewares/watchers";
 
 import AppStore from "@redux/stores/application";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
-import { isLoggedIn } from "@redux/stores/application/reducers/auth/selectors";
-import WindowsService from "@services/WindowsService";
+import {
+  isLoggedIn,
+  isRegistered,
+} from "@redux/stores/application/reducers/auth/selectors";
+import WindowsService, { PopupSizes } from "@services/WindowsService";
 import {
   ERROR_LOGIN_WINDOW_OPEN,
   ERROR_LOGIN_TIMEOUT,
@@ -13,9 +16,16 @@ import {
 
 function loginFlow(): Promise<void> {
   return new Promise(async (resolve, reject) => {
-    let unlisten = () => {};
+    const registered = isRegistered(AppStore.getStore().getState());
 
-    const window = await WindowsService.createPopup();
+    let unlisten = () => {};
+    let size = PopupSizes.MEDIUM;
+
+    if (registered) {
+      size = PopupSizes.SMALL;
+    }
+
+    const window = await WindowsService.createPopup(size);
 
     if (window === undefined) {
       reject(ERROR_LOGIN_WINDOW_OPEN());
@@ -64,9 +74,16 @@ function loginFlow(): Promise<void> {
 function setupFlow(): Promise<void> {
   return new Promise(async (resolve, reject) => {
     let unlisten = () => {};
+    const registered = isRegistered(AppStore.getStore().getState());
+
+    let size = PopupSizes.MEDIUM;
+
+    if (registered) {
+      size = PopupSizes.SMALL;
+    }
 
     // create normal popup to setup
-    const window = await WindowsService.createPopup();
+    const window = await WindowsService.createPopup(size);
 
     if (!window) {
       reject(ERROR_LOGIN_WINDOW_OPEN());

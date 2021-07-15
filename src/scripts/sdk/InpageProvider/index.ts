@@ -2,7 +2,6 @@ import { BigNumber } from "ethers";
 
 import ConnectionTypes from "@models/Connection/types";
 import EthereumProviderService from "@services/EthereumProviderService/Web3ProviderService";
-import Credential from "@models/Credential";
 import { ERROR_FRACTAL_NOT_INITIALIZED } from "@sdk/InpageProvider/Errors";
 
 import {
@@ -11,23 +10,33 @@ import {
 } from "@trustfractal/sdk";
 
 import {
+  IAttestedClaim,
   IFractalInpageProvider,
-  ICredential,
   IStakingDetails,
   ITransactionDetails,
   IConnectionStatus,
+  IVerificationRequest,
+  SignedNonce,
 } from "@pluginTypes/index";
 
 import ExtensionConnection from "@sdk/InpageProvider/connection";
-import TokenTypes from "@models/Token/types";
 
+import TokenTypes from "@models/Token/types";
+import Requester from "@models/Request/Requester";
 import AttestationRequest from "@models/AttestationRequest";
 import ConnectionStatus from "@models/Connection/ConnectionStatus";
 import StakingDetails from "@models/Staking/StakingDetails";
 import TransactionDetails from "@models/Transaction/TransactionDetails";
+import VerificationRequest from "@models/VerificationRequest";
+import AttestedClaim from "@models/Credential/AttestedClaim";
+import CredentialsStatus from "@models/Credential/status";
+import CredentialsVersions from "@models/Credential/versions";
+
+import { getRandomBytes } from "@utils/CryptoUtils";
 
 export default class InpageProvider implements IFractalInpageProvider {
   private initialized: boolean = false;
+  private initializedEventName: string = "fractal-wallet#initialized";
 
   public async init(): Promise<void> {
     // init application connection
@@ -41,6 +50,14 @@ export default class InpageProvider implements IFractalInpageProvider {
     }
 
     this.initialized = true;
+    this.triggerInitializedEvent();
+  }
+
+  private triggerInitializedEvent() {
+    const event = new Event(this.initializedEventName);
+
+    // Dispatch the event.
+    window.dispatchEvent(event);
   }
 
   private ensureFractalIsInitialized() {
@@ -71,6 +88,32 @@ export default class InpageProvider implements IFractalInpageProvider {
 
     if (serializedTransactionDetails)
       return TransactionDetails.parse(serializedTransactionDetails);
+  }
+
+  public async getVerificationRequest(
+    level: string,
+    requester: { name: string; url: string; icon: string },
+    fields: Record<string, boolean> = {},
+    version?: CredentialsVersions,
+  ): Promise<IVerificationRequest> {
+    this.ensureFractalIsInitialized();
+
+    const parsedRequester = new Requester(
+      requester.name,
+      requester.url,
+      requester.icon,
+    );
+
+    const serializedRequest = await ExtensionConnection.invoke(
+      ConnectionTypes.GET_VERIFICATION_REQUEST_BACKGROUND,
+      [level, parsedRequester.serialize(), fields, version],
+    );
+
+    // parse request
+    const request: VerificationRequest =
+      VerificationRequest.parse(serializedRequest);
+
+    return request;
   }
 
   public async stake(
@@ -113,15 +156,24 @@ export default class InpageProvider implements IFractalInpageProvider {
     );
 
     // parse request
-    const request: AttestationRequest = AttestationRequest.parse(
-      serializedRequest,
-    );
+    const request: AttestationRequest =
+      AttestationRequest.parse(serializedRequest);
 
     return request;
   }
 
+  public getSignedNonce(nonce: string): Promise<SignedNonce> {
+    this.ensureFractalIsInitialized();
+
+    // call the signer
+    return ExtensionConnection.invoke(
+      ConnectionTypes.GET_SIGNED_NONCE_BACKGROUND,
+      [nonce || getRandomBytes(64)],
+    );
+  }
+
   public async credentialStore(
-    credentialJSON: ICredential,
+    credentialJSON: IAttestedClaim,
     id: string,
     level: string,
   ): Promise<ITransactionDetails> {
@@ -129,7 +181,12 @@ export default class InpageProvider implements IFractalInpageProvider {
 
     const sdkCredential = new SDKAttestedClaim(credentialJSON);
 
-    const credential = new Credential(sdkCredential, `${id}:${level}`, level);
+    const credential = new AttestedClaim(
+      sdkCredential,
+      `${id}:${level}`,
+      level,
+      CredentialsStatus.PENDING,
+    );
 
     const serializedTransactionDetails = await ExtensionConnection.invoke(
       ConnectionTypes.CREDENTIAL_STORE_BACKGROUND,
@@ -139,21 +196,39 @@ export default class InpageProvider implements IFractalInpageProvider {
     return TransactionDetails.parse(serializedTransactionDetails);
   }
 
-  public hasCredential(id: string, level: string): Promise<boolean> {
+  public hasCredential(
+    id: string,
+    level: string,
+    version?: CredentialsVersions,
+  ): Promise<boolean> {
     this.ensureFractalIsInitialized();
+
+    let credentialId = `${id}:${level}`;
+    if (version !== undefined && version !== CredentialsVersions.VERSION_ONE) {
+      credentialId = `${credentialId}:${version}`;
+    }
 
     return ExtensionConnection.invoke(
       ConnectionTypes.HAS_CREDENTIAL_BACKGROUND,
-      [`${id}:${level}`],
+      [credentialId],
     );
   }
 
-  public isCredentialValid(id: string, level: string): Promise<boolean> {
+  public async isCredentialValid(
+    id: string,
+    level: string,
+    version?: CredentialsVersions,
+  ): Promise<boolean> {
     this.ensureFractalIsInitialized();
+
+    let credentialId = `${id}:${level}`;
+    if (version !== undefined && version !== CredentialsVersions.VERSION_ONE) {
+      credentialId = `${credentialId}:${version}`;
+    }
 
     return ExtensionConnection.invoke(
       ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND,
-      [`${id}:${level}`],
+      [credentialId],
     );
   }
 

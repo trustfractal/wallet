@@ -37,6 +37,7 @@ const CredentialsContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: space-between;
 `;
 
 export type UploadCompletedProps = {

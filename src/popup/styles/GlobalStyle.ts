@@ -17,8 +17,10 @@ export const global = css`
     --c-orange: #ff671d;
     --c-light-orange: rgba(255, 103, 29, 0.2);
     --c-lightest-orange: rgba(255, 103, 29, 0.05);
+    --s-3: 0.1875rem;
     --s-4: 0.25rem;
     --s-5: 0.3125rem;
+    --s-6: 0.375rem;
     --s-8: 0.5rem;
     --s-10: 0.625rem;
     --s-12: 0.75rem;

@@ -79,14 +79,8 @@ Button.defaultProps = {
 function Button(
   props: ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>,
 ) {
-  const {
-    loading,
-    disabled,
-    children,
-    leftIcon,
-    rightIcon,
-    ...otherProps
-  } = props;
+  const { loading, disabled, children, leftIcon, rightIcon, ...otherProps } =
+    props;
 
   return (
     <Root disabled={disabled || loading} {...otherProps}>

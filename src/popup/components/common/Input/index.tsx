@@ -74,6 +74,7 @@ const LineContainer = styled.hr<{ active: boolean; error: boolean }>`
 `;
 
 export type InputProps = {
+  underlined?: boolean;
   onEnter?: () => void;
   error?: string;
   label?: string;
@@ -81,6 +82,7 @@ export type InputProps = {
 };
 
 Input.defaultProps = {
+  underlined: true,
   onEnter: () => {},
 };
 
@@ -94,6 +96,7 @@ function Input(
     hint,
     children,
     value,
+    underlined,
     onEnter,
     ...otherProps
   } = props;
@@ -134,7 +137,7 @@ function Input(
       >
         {children}
       </InputContainer>
-      <LineContainer active={active} error={hasError} />
+      {underlined && <LineContainer active={active} error={hasError} />}
       {hasError && (
         <ErrorContainer>
           <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>

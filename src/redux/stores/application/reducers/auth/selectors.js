@@ -44,3 +44,23 @@ export const getHashedPassword = createSelector(
   (state) => state.auth,
   (auth) => auth.hashedPassword,
 );
+
+export const getBackendSessions = createSelector(
+  (state) => state.auth,
+  (auth) => auth.sessions,
+);
+
+export const getBackendCatfishSession = createSelector(
+  (state) => state.auth,
+  (auth) => auth.sessions.catfish,
+);
+
+export const getBackendMegalodonSession = createSelector(
+  (state) => state.auth,
+  (auth) => auth.sessions.megalodon,
+);
+
+export const getBackendScopes = createSelector(
+  (state) => state.auth,
+  (auth) => auth.sessions.scopes,
+);

@@ -23,12 +23,12 @@ export const getAttestationRequest = ([address, level, serializedProperties]: [
     serializedProperties,
   );
 
-export const isCredentialValid = ([
+export const getCredentialStatus = ([
   address,
   serializedCredential,
   claimsRegistryAddress,
 ]: [string, string, string]) =>
-  EthereumProviderService.isCredentialValid(
+  EthereumProviderService.getCredentialStatus(
     address,
     serializedCredential,
     claimsRegistryAddress,
@@ -39,7 +39,9 @@ const Callbacks = {
   [ConnectionTypes.GET_ATTESTATION_REQUEST_INPAGE]: {
     callback: getAttestationRequest,
   },
-  [ConnectionTypes.IS_CREDENTIAL_VALID_INPAGE]: { callback: isCredentialValid },
+  [ConnectionTypes.GET_CREDENTIAL_STATUS_INPAGE]: {
+    callback: getCredentialStatus,
+  },
 };
 
 export default Callbacks;

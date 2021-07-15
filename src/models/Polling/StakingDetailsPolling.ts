@@ -2,11 +2,7 @@ import UserStore from "@redux/stores/user";
 
 import walletActions from "@redux/stores/user/reducers/wallet";
 
-import {
-  getAccount,
-  getStakingLastUpdated,
-} from "@redux/stores/user/reducers/wallet/selectors";
-import TokenTypes from "@models/Token/types";
+import { getStakingLastUpdated } from "@redux/stores/user/reducers/wallet/selectors";
 
 const DEFAULT_STAKING_DETAILS_POLLING_INTERVAL_IN_MILLIS = 30 * 1000; // 30 seconds
 
@@ -19,12 +15,6 @@ export default class StakingDetailsPolling {
     this.interval = setInterval(async () => {
       // check if the user store is available
       if (!(await UserStore.isInitialized())) {
-        return;
-      }
-
-      // check if the user is connected
-      const account = getAccount(UserStore.getStore().getState());
-      if (account.length === 0) {
         return;
       }
 
@@ -43,12 +33,7 @@ export default class StakingDetailsPolling {
       }
 
       // fetch staking details
-      UserStore.getStore().dispatch(
-        walletActions.fetchStakingDetails(TokenTypes.FCL),
-      );
-      UserStore.getStore().dispatch(
-        walletActions.fetchStakingDetails(TokenTypes.FCL_ETH_LP),
-      );
+      UserStore.getStore().dispatch(walletActions.fetchStakingDetails());
     }, intervalTime);
   }
 

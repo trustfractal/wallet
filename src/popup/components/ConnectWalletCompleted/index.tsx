@@ -32,6 +32,9 @@ const ActionContainer = styled.div`
   justify-content: center;
   padding: var(--s-24) 0;
 `;
+const TitleContainer = styled.div`
+  text-align: center;
+`;
 
 export type ConnectWalletCompletedProps = {
   account: string;
@@ -47,7 +50,9 @@ function ConnectWalletCompleted(props: ConnectWalletCompletedProps) {
         <Icon name={IconNames.SUCCESS} />
       </IconContainer>
       <ContentContainer>
-        <Title>Fractal is now connected to your wallet</Title>
+        <TitleContainer>
+          <Title>Fractal is now connected to your wallet</Title>
+        </TitleContainer>
         <AddressContainer>
           <LabelContainer>
             <Text>Detected Address</Text>

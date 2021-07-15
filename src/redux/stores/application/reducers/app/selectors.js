@@ -12,22 +12,17 @@ export const isSetup = createSelector(
 
 export const getTokensContractsAddresses = createSelector(
   (state) => state.app,
-  (app) => app.addresses.staking,
+  (app) => app.addresses.erc20,
 );
 
 export const getStakingContractsAddresses = createSelector(
   (state) => state.app,
-  (app) => app.addresses.erc20,
+  (app) => app.addresses.staking,
 );
 
 export const getClaimsRegistryContractAddress = createSelector(
   (state) => state.app,
   (app) => app.addresses.claimsRegistry,
-);
-
-export const getNetwork = createSelector(
-  (state) => state.app,
-  (app) => app.addresses.network,
 );
 
 export const getAttesterAdddress = createSelector(
@@ -38,4 +33,9 @@ export const getAttesterAdddress = createSelector(
 export const isStakingEnabled = createSelector(
   (state) => state.app,
   (app) => app.addresses.staking.enabled,
+);
+
+export const getVersion = createSelector(
+  (state) => state.app,
+  (app) => app.version,
 );

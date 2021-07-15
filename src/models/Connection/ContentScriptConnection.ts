@@ -15,7 +15,8 @@ import { background } from "@models/Connection/params";
 
 export default class ContentScriptConnection
   extends BaseConnection
-  implements IContentScriptConnection {
+  implements IContentScriptConnection
+{
   public ports: IContentScriptConnection["ports"];
 
   constructor() {

@@ -11,7 +11,8 @@ import {
 
 export default class BackgroundConnection
   extends BaseConnection
-  implements IBackgroundConnection {
+  implements IBackgroundConnection
+{
   public port: IBackgroundConnection["port"];
 
   constructor(backgroundParams: chrome.runtime.ConnectInfo) {

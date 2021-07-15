@@ -9,11 +9,11 @@ export interface IWeb3ProviderService {
     serializedCredential: string,
     claimsRegistryContractAddress: string,
   ): Promise<string>;
-  isCredentialValid(
+  getCredentialStatus(
     address: string,
     serializedCredential: string,
     claimsRegistryContractAddress: string,
-  ): Promise<boolean>;
+  ): Promise<string>;
   getAttestationRequest(
     address: string,
     level: string,

@@ -210,15 +210,11 @@ export class Staking extends Contract {
   interface: StakingInterface;
 
   functions: {
-    availablePool(
-      overrides?: CallOverrides,
-    ): Promise<{
+    availablePool(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    "availablePool()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "availablePool()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
@@ -240,75 +236,51 @@ export class Staking extends Contract {
       0: BigNumber;
     }>;
 
-    cap(
-      overrides?: CallOverrides,
-    ): Promise<{
+    cap(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    "cap()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "cap()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    claimAttester(
-      overrides?: CallOverrides,
-    ): Promise<{
+    claimAttester(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
 
-    "claimAttester()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "claimAttester()"(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
 
-    currentAPY(
-      overrides?: CallOverrides,
-    ): Promise<{
+    currentAPY(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    "currentAPY()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "currentAPY()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    distributedReward(
-      overrides?: CallOverrides,
-    ): Promise<{
+    distributedReward(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    "distributedReward()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "distributedReward()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    endDate(
-      overrides?: CallOverrides,
-    ): Promise<{
+    endDate(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    "endDate()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "endDate()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    erc20(
-      overrides?: CallOverrides,
-    ): Promise<{
+    erc20(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
 
-    "erc20()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "erc20()"(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
 
@@ -354,63 +326,43 @@ export class Staking extends Contract {
       0: BigNumber;
     }>;
 
-    lockedReward(
-      overrides?: CallOverrides,
-    ): Promise<{
+    lockedReward(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    "lockedReward()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "lockedReward()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    maxAmount(
-      overrides?: CallOverrides,
-    ): Promise<{
+    maxAmount(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    "maxAmount()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "maxAmount()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    minAmount(
-      overrides?: CallOverrides,
-    ): Promise<{
+    minAmount(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    "minAmount()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "minAmount()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    owner(
-      overrides?: CallOverrides,
-    ): Promise<{
+    owner(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
 
-    "owner()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "owner()"(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
 
-    registry(
-      overrides?: CallOverrides,
-    ): Promise<{
+    registry(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
 
-    "registry()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "registry()"(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
 
@@ -430,27 +382,19 @@ export class Staking extends Contract {
       overrides?: Overrides,
     ): Promise<ContractTransaction>;
 
-    stakedAmount(
-      overrides?: CallOverrides,
-    ): Promise<{
+    stakedAmount(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    "stakedAmount()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "stakedAmount()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    startDate(
-      overrides?: CallOverrides,
-    ): Promise<{
+    startDate(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    "startDate()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "startDate()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
@@ -494,15 +438,11 @@ export class Staking extends Contract {
       6: BigNumber;
     }>;
 
-    totalPool(
-      overrides?: CallOverrides,
-    ): Promise<{
+    totalPool(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
-    "totalPool()"(
-      overrides?: CallOverrides,
-    ): Promise<{
+    "totalPool()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 

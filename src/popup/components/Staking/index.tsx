@@ -101,7 +101,7 @@ const PoolLeftInfo = styled.div`
 
 const PoolRightInfo = styled.div`
   display: flex;
-  flex: 1;
+  flex: 2;
   flex-direction: column;
   align-items: flex-end;
   justify-content: center;
@@ -445,12 +445,12 @@ function Staking(props: StakingProps) {
   const pools = [
     {
       id: 1,
-      startDate: moment(fclDetails.stakingStartDate.toNumber(), "X").format(
-        "Do MMMM",
-      ),
-      endDate: moment(fclDetails.stakingEndDate.toNumber(), "X").format(
-        "Do MMMM",
-      ),
+      startDate: moment
+        .unix(fclDetails.stakingStartDate.toNumber())
+        .format("Do MMMM"),
+      endDate: moment
+        .unix(fclDetails.stakingEndDate.toNumber())
+        .format("Do MMMM"),
       token: "FCL",
       apy: fclDetails.stakingAPY.toString() + "%",
       currentExpectedRewardRate:
@@ -476,14 +476,13 @@ function Staking(props: StakingProps) {
     },
     {
       id: 2,
-      startDate: moment(
-        fclEthLpDetails.stakingStartDate.toNumber(),
-        "X",
-      ).format("Do MMMM"),
-      endDate: moment(fclEthLpDetails.stakingEndDate.toNumber(), "X").format(
-        "Do MMMM",
-      ),
-      token: "FCL/ETH",
+      startDate: moment
+        .unix(fclEthLpDetails.stakingStartDate.toNumber())
+        .format("Do MMMM"),
+      endDate: moment
+        .unix(fclEthLpDetails.stakingEndDate.toNumber())
+        .format("Do MMMM"),
+      token: "FCL/ETH LP",
       apy: fclEthLpDetails.stakingAPY.toString() + "%",
       currentExpectedRewardRate:
         fclEthLpDetails.stakingCurrentExpectedRewardRate.toString() + "%",

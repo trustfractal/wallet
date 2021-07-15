@@ -12,7 +12,8 @@ import {
 
 export default class ExtensionConnection
   extends BaseConnection
-  implements IExtensionConnection {
+  implements IExtensionConnection
+{
   public extension: IExtensionConnection["extension"];
 
   constructor(extensionParams: DuplexConnectionParams) {

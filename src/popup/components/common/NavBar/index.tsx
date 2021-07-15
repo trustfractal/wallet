@@ -1,10 +1,12 @@
 import React from "react";
+import { useHistory } from "react-router";
 import styled from "styled-components";
 
 import { useAppSelector } from "@redux/stores/application/context";
+import { useUserSelector } from "@redux/stores/user/context";
+
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
-import { useUserSelector } from "@redux/stores/user/context";
 import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 
@@ -23,6 +25,8 @@ import { exportFile } from "@utils/FileUtils";
 
 import windows from "@services/WindowsService";
 
+import RoutesPaths from "@popup/routes/paths";
+
 const LogoNavbarContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -34,7 +38,6 @@ const LogoNavbarContainer = styled.div`
 `;
 
 const BalanceNavbaContainer = styled.div`
-  position: relative;
   display: flex;
   flex-direction: row;
 
@@ -77,28 +80,51 @@ const BalanceAmounts = styled.div`
   margin-right: var(--s-12);
 `;
 
+const RootContainer = styled.div`
+  position: relative;
+  overflow: hidden;
+
+  min-width: 400px;
+  min-height: 460px;
+`;
+
 const BalanceTokens = styled.div``;
 
 function BalanceNavbar() {
+  const history = useHistory();
+
   const stakingDetails: any = useUserSelector(getStakingDetails);
   const credentials = useUserSelector(getCredentials);
 
-  const exportBackup = async () =>
+  const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
-
-  const importBackup = () => windows.openTab("upload.html");
+  const onClickImport = () => windows.openTab("upload.html");
+  const onClickReconnect = () => history.push(RoutesPaths.CONNECT_WALLET);
+  const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
   const menuItems = [
+    [
+      {
+        label: "Export your data",
+        icon: IconNames.EXPORT,
+        onClick: onClickExport,
+        disabled: credentials.length === 0,
+      },
+      {
+        label: "Import your data",
+        icon: IconNames.IMPORT,
+        onClick: onClickImport,
+      },
+    ],
     {
-      label: "Export your data",
-      icon: IconNames.EXPORT,
-      onClick: exportBackup,
-      disabled: credentials.length === 0,
+      label: "Reconnect to crypto wallet",
+      icon: IconNames.RECONNECT,
+      onClick: onClickReconnect,
     },
     {
-      label: "Import your data",
-      icon: IconNames.IMPORT,
-      onClick: importBackup,
+      label: "About",
+      icon: IconNames.ABOUT,
+      onClick: onClickAbout,
     },
   ];
 
@@ -133,7 +159,7 @@ function BalanceNavbar() {
               FCL
             </Text>
             <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-              FCL/ETH
+              FCL/ETH LP
             </Text>
           </BalanceTokens>
         </BalanceAmountContainer>
@@ -170,11 +196,14 @@ export default function Navbar() {
   return <LogoNavbar />;
 }
 
-export const withNavBar = <P extends object>(
-  Component: React.ComponentType<P>,
-) => (props: any) => (
-  <>
-    <Navbar />
-    <Component {...(props as P)} />
-  </>
-);
+export const withNavBar =
+  <P extends object>(Component: React.ComponentType<P>) =>
+  (props: any) =>
+    (
+      <>
+        <RootContainer>
+          <Navbar />
+          <Component {...(props as P)} />
+        </RootContainer>
+      </>
+    );
