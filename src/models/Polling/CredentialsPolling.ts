@@ -31,7 +31,7 @@ export default class CredentialsPolling {
   }
 
   public fetchCredentialsList() {
-    UserStore.getStore().dispatch(credentialsActions.fetchCredentials());
+    UserStore.getStore().dispatch(credentialsActions.fetchCredentialsList());
   }
 
   public start(

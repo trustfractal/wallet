@@ -4,6 +4,7 @@ import { getBackendMegalodonSession } from "@redux/stores/application/reducers/a
 import Environment from "@environment/index";
 
 import CatfishService from "@services/CatfishService";
+import HttpService from "@services/HttpService";
 
 export default class MaguroService {
   private static async callApi(
@@ -12,29 +13,30 @@ export default class MaguroService {
     body?: RequestInit["body"],
     headers?: RequestInit["headers"],
   ): Promise<any> {
-    return fetch(`${Environment.MAGURO_URL}/${route}`, {
+    const response = await HttpService.call(
+      `${Environment.MAGURO_URL}/${route}`,
       method,
       body,
       headers,
-    }).then((response: Response) => {
-      if (!response.ok) {
-        // check if megalodon token has expired
-        if (headers && (headers as Record<string, string>)["authorization"]) {
-          if (response.status === 401) {
-            return CatfishService.refreshResourceServerToken().then((token) =>
-              this.callApi(route, method, body, {
-                ...headers,
-                authorization: token,
-              }),
-            );
-          }
-        }
+    );
 
-        throw new Error(response.statusText);
-      } else {
-        return response.json();
+    if (!response.ok) {
+      // check if megalodon token has expired
+      if (headers && (headers as Record<string, string>)["authorization"]) {
+        if (response.status === 401) {
+          return CatfishService.refreshResourceServerToken().then((token) =>
+            this.callApi(route, method, body, {
+              ...headers,
+              authorization: token,
+            }),
+          );
+        }
       }
-    });
+
+      throw new Error(response.statusText);
+    }
+
+    return response.json();
   }
 
   public static getCredentials() {

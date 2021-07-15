@@ -67,14 +67,13 @@ export const connectWallet = () => {
       AppStore.getStore().dispatch(authActions.setBackendSessions(sessions));
 
       // get user's self attested claims
-      dispatch(credentialsActions.fetchCredentials());
+      dispatch(credentialsActions.fetchCredentialsList());
 
       // save wallet address on the redux store
       dispatch(walletActions.setAccount(account));
       dispatch(walletActions.connectWalletSuccess());
 
-      dispatch(walletActions.fetchStakingDetails(TokenTypes.FCL));
-      dispatch(walletActions.fetchStakingDetails(TokenTypes.FCL_ETH_LP));
+      dispatch(walletActions.fetchStakingDetails());
     } catch (error) {
       console.error(error);
       dispatch(walletActions.connectWalletFailed(error.message));
@@ -114,7 +113,7 @@ function getNextStakingStatus(previousStakingStatus, details) {
   return StakingStatus.STAKED;
 }
 
-export const fetchStakingDetails = ({ payload: token }) => {
+export const fetchTokenStakingDetails = ({ payload: token }) => {
   return async (dispatch, getState) => {
     const account = getAccount(getState());
 
@@ -151,6 +150,19 @@ export const fetchStakingDetails = ({ payload: token }) => {
   };
 };
 
+export const fetchStakingDetails = () => {
+  return async (dispatch) => {
+    // check if the user is connected
+    const account = getAccount(UserStore.getStore().getState());
+    if (account.length === 0) {
+      return;
+    }
+
+    dispatch(walletActions.fetchTokenStakingDetails(TokenTypes.FCL));
+    dispatch(walletActions.fetchTokenStakingDetails(TokenTypes.FCL_ETH_LP));
+  };
+};
+
 export const updateStakingDetails = ({ payload: { details, token } }) => {
   return async (dispatch, getState) => {
     // update wallet staking details
@@ -181,6 +193,7 @@ export const updateStakingDetails = ({ payload: { details, token } }) => {
 
 const Aliases = {
   [walletTypes.CONNECT_WALLET_REQUEST]: connectWallet,
+  [walletTypes.FETCH_TOKEN_STAKING_DETAILS]: fetchTokenStakingDetails,
   [walletTypes.FETCH_STAKING_DETAILS]: fetchStakingDetails,
   [walletTypes.UPDATE_STAKING_DETAILS]: updateStakingDetails,
 };

@@ -101,7 +101,7 @@ const PoolLeftInfo = styled.div`
 
 const PoolRightInfo = styled.div`
   display: flex;
-  flex: 1;
+  flex: 2;
   flex-direction: column;
   align-items: flex-end;
   justify-content: center;

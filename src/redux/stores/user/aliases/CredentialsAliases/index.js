@@ -150,7 +150,7 @@ export const setCredentialStatus = ({ payload: { id, status } }) => {
   };
 };
 
-export const fetchCredentials = () => {
+export const fetchCredentialsList = () => {
   return async (dispatch) => {
     const { credentials } = await MaguroService.getCredentials();
 
@@ -193,7 +193,7 @@ const Aliases = {
   [credentialsTypes.UPDATE_CREDENTIAL]: updateCredential,
   [credentialsTypes.REMOVE_CREDENTIAL]: removeCredential,
   [credentialsTypes.FETCH_CREDENTIAL_STATUS]: fetchCredentialStatus,
-  [credentialsTypes.FETCH_CREDENTIALS]: fetchCredentials,
+  [credentialsTypes.FETCH_CREDENTIALS_LIST]: fetchCredentialsList,
   [credentialsTypes.SET_CREDENTIAL_STATUS]: setCredentialStatus,
 };
 

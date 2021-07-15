@@ -6,6 +6,7 @@ import {
 import authActions from "@redux/stores/application/reducers/auth";
 
 import Environment from "@environment/index";
+import HttpService from "@services/HttpService";
 
 export default class CatfishService {
   private static async callApi(
@@ -14,33 +15,33 @@ export default class CatfishService {
     body?: RequestInit["body"],
     headers?: RequestInit["headers"],
   ): Promise<any> {
-    return fetch(`${Environment.CATFISH_URL}/${route}`, {
+    return HttpService.call(
+      `${Environment.CATFISH_URL}/${route}`,
       method,
       body,
       headers,
-    }).then((response: Response) => {
+    ).then((response: Response) => {
       if (!response.ok) throw new Error(response.statusText);
       else return response.json();
     });
   }
 
-  public static refreshResourceServerToken() {
+  public static async refreshResourceServerToken() {
     const token = getBackendCatfishSession(AppStore.getStore().getState());
 
-    return this.callApi("account/me", "GET", null, {
+    const { user_id } = await this.callApi("account/me", "GET", null, {
       authorization: `Bearer ${token}`,
-    }).then(({ user_id }) =>
-      CatfishService.resourceServerAccessToken({
-        username: user_id,
-      }).then(({ access_token }) => {
-        // update token
-        AppStore.getStore().dispatch(
-          authActions.setBackendMegalodonSession(access_token),
-        );
+    });
 
-        return access_token;
-      }),
+    const { access_token } = await CatfishService.resourceServerAccessToken({
+      username: user_id,
+    });
+
+    // update token
+    AppStore.getStore().dispatch(
+      authActions.setBackendMegalodonSession(access_token),
     );
+    return access_token;
   }
 
   public static resourceServerAccessToken({ username }: { username: string }) {

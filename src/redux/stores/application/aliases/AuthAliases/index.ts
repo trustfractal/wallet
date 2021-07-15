@@ -16,6 +16,7 @@ import {
 
 import Store, { UserStore } from "@redux/stores/user";
 import credentialsActions from "@redux/stores/user/reducers/credentials";
+import walletActions from "@redux/stores/user/reducers/wallet";
 
 export const signUp = () => {
   return async (dispatch: (arg: Action<any>) => void, getState: () => any) => {
@@ -76,7 +77,10 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
 
       if (setup) {
         // get user's self attested claims
-        Store.getStore().dispatch(credentialsActions.fetchCredentials());
+        Store.getStore().dispatch(credentialsActions.fetchCredentialsList());
+
+        // get staking details
+        Store.getStore().dispatch(walletActions.fetchStakingDetails());
       }
 
       dispatch(authActions.signInSuccess());
