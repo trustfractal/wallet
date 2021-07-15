@@ -38,8 +38,8 @@ const MenuOverlay = styled.div<{ active: boolean }>`
   width: 292px;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background: var(--c-dark-blue);
   opacity: ${(props) => (props.active ? "0.2" : "0")};
   transition: opacity 0.3s ease-in-out;

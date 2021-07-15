@@ -83,6 +83,9 @@ const BalanceAmounts = styled.div`
 const RootContainer = styled.div`
   position: relative;
   overflow: hidden;
+
+  min-width: 400px;
+  min-height: 460px;
 `;
 
 const BalanceTokens = styled.div``;
