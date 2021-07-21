@@ -18,7 +18,10 @@ import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import CredentialsVersions from "@models/Credential/versions";
 
-import { getClaimsRegistryContractAddress } from "@redux/stores/application/reducers/app/selectors";
+import {
+  getClaimsRegistryContractAddress,
+  isSetup,
+} from "@redux/stores/application/reducers/app/selectors";
 
 import MaguroService from "@services/MaguroService";
 
@@ -152,6 +155,12 @@ export const setCredentialStatus = ({ payload: { id, status } }) => {
 
 export const fetchCredentialsList = () => {
   return async (dispatch) => {
+    const setup = isSetup(AppStore.getStore().getState());
+
+    if (!setup) {
+      return;
+    }
+
     const { credentials } = await MaguroService.getCredentials();
 
     const formattedCredentials = credentials.reduce((memo, credential) => {
