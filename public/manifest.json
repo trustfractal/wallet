@@ -1,7 +1,7 @@
 {
   "author": "https://www.trustfractal.com",
   "manifest_version": 2,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "short_name": "Fractal ID Wallet",
   "name": "Fractal ID Wallet",
   "description": "The Fractal ID Wallet is a browser extension that lets users receive staking rewards for issuing a credential to a DID contract.",

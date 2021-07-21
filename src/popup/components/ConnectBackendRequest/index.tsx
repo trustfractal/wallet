@@ -43,7 +43,7 @@ function ConnectBackendRequest(props: ConnectBackendRequestProps) {
         <Icon name={IconNames.WELCOME} />
       </IconContainer>
       <ContentContainer>
-        <Title>Welcome to Fractal ID Wallet v0.1.0</Title>
+        <Title>Welcome to Fractal ID Wallet v0.1.1</Title>
         <Text>
           <br />
         </Text>
