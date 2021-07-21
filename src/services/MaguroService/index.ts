@@ -24,11 +24,24 @@ export default class MaguroService {
       // check if megalodon token has expired
       if (headers && (headers as Record<string, string>)["authorization"]) {
         if (response.status === 401) {
-          return CatfishService.refreshResourceServerToken().then((token) =>
-            this.callApi(route, method, body, {
-              ...headers,
-              authorization: token,
-            }),
+          return CatfishService.refreshResourceServerToken().then(
+            async (token) => {
+              const response = await HttpService.call(
+                `${Environment.MAGURO_URL}/${route}`,
+                method,
+                body,
+                {
+                  ...headers,
+                  authorization: `Bearer ${token}`,
+                },
+              );
+
+              if (!response.ok) {
+                throw new Error(response.statusText);
+              }
+
+              return response.json();
+            },
           );
         }
       }
