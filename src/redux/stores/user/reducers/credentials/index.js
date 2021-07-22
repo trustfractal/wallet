@@ -2,6 +2,7 @@ import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
 const types = mirrorCreator([
+  "SET_CREDENTIALS",
   "ADD_ATTESTED_CLAIM",
   "UPDATE_ATTESTED_CLAIM",
   "REMOVE_ATTESTED_CLAIM",
@@ -13,6 +14,7 @@ const types = mirrorCreator([
 ]);
 
 export const creators = createActions(
+  types.SET_CREDENTIALS,
   types.ADD_ATTESTED_CLAIM,
   types.UPDATE_ATTESTED_CLAIM,
   types.REMOVE_ATTESTED_CLAIM,
@@ -24,24 +26,15 @@ export const creators = createActions(
 );
 
 export const initialState = {
-  selfAttestedClaims: "[]",
-  attestedClaims: "[]",
+  credentials: "[]",
 };
 
 export const reducer = handleActions(
   {
-    [types.SET_SELF_ATTESTED_CLAIMS]: (
-      state,
-      { payload: selfAttestedClaims },
-    ) =>
+    [types.SET_CREDENTIALS]: (state, { payload: credentials }) =>
       Object.freeze({
         ...state,
-        selfAttestedClaims: selfAttestedClaims.serialize(),
-      }),
-    [types.SET_ATTESTED_CLAIMS]: (state, { payload: attestedClaims }) =>
-      Object.freeze({
-        ...state,
-        attestedClaims: attestedClaims.serialize(),
+        credentials: credentials.serialize(),
       }),
   },
   initialState,
@@ -56,8 +49,7 @@ export async function restore(state = {}) {
 
 export async function store(state) {
   return {
-    selfAttestedClaims: state.selfAttestedClaims,
-    attestedClaims: state.attestedClaims,
+    credentials: state.credentials,
   };
 }
 

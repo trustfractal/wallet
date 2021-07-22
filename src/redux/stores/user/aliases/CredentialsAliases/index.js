@@ -10,7 +10,10 @@ import ConnectionTypes from "@models/Connection/types";
 import credentialsActions, {
   credentialsTypes,
 } from "@redux/stores/user/reducers/credentials";
-import { getAttestedClaims } from "@redux/stores/user/reducers/credentials/selectors";
+import {
+  getAttestedClaims,
+  getSelfAttestedClaims,
+} from "@redux/stores/user/reducers/credentials/selectors";
 import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 
 import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
@@ -175,6 +178,34 @@ export const fetchSelfAttestedClaims = () => {
   };
 };
 
+export const setSelfAttestedClaims = ({ payload: selfAttestedClaims }) => {
+  return async (dispatch, getState) => {
+    const attestedClaims = getAttestedClaims(getState());
+
+    dispatch(
+      credentialsActions.setCredentials(
+        new CredentialsCollection(
+          ...[...selfAttestedClaims, ...attestedClaims],
+        ),
+      ),
+    );
+  };
+};
+
+export const setAttestedClaims = ({ payload: attestedClaims }) => {
+  return async (dispatch, getState) => {
+    const selfAttestedClaims = getSelfAttestedClaims(getState());
+
+    dispatch(
+      credentialsActions.setCredentials(
+        new CredentialsCollection(
+          ...[...selfAttestedClaims, ...attestedClaims],
+        ),
+      ),
+    );
+  };
+};
+
 const Aliases = {
   [credentialsTypes.ADD_ATTESTED_CLAIM]: addAttestedClaim,
   [credentialsTypes.UPDATE_ATTESTED_CLAIM]: updateAttestedClaim,
@@ -182,6 +213,8 @@ const Aliases = {
   [credentialsTypes.FETCH_ATTESTED_CLAIM_STATUS]: fetchAttestedClaimStatus,
   [credentialsTypes.SET_ATTESTED_CLAIM_STATUS]: setAttestedClaimStatus,
   [credentialsTypes.FETCH_SELF_ATTESTED_CLAIMS]: fetchSelfAttestedClaims,
+  [credentialsTypes.SET_SELF_ATTESTED_CLAIMS]: setSelfAttestedClaims,
+  [credentialsTypes.SET_ATTESTED_CLAIMS]: setAttestedClaims,
 };
 
 export default Aliases;
