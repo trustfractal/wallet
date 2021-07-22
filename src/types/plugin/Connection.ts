@@ -20,7 +20,7 @@ export interface IInvokation extends ISerializable {
 }
 
 export type IMiddleware = {
-  apply(): Promise<void>;
+  apply(invokation: IInvokation): Promise<void>;
 };
 
 export interface ConnectionResponse {

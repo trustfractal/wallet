@@ -52,6 +52,11 @@ export const initialState = {
     loading: false,
     error: "",
   },
+  connect: {
+    success: false,
+    loading: false,
+    error: "",
+  },
   sessions: {
     catfish: "",
     megalodon: "",
@@ -168,6 +173,42 @@ export const reducer = handleActions(
           error: "",
         },
         registered: true,
+      }),
+    [types.CONNECT_FRACTAL_REQUEST]: (state) =>
+      Object.freeze({
+        ...state,
+        connect: {
+          success: false,
+          loading: false,
+          error: "",
+        },
+      }),
+    [types.CONNECT_FRACTAL_PENDING]: (state) =>
+      Object.freeze({
+        ...state,
+        connect: {
+          success: false,
+          loading: true,
+          error: "",
+        },
+      }),
+    [types.CONNECT_FRACTAL_FAILED]: (state, { payload: error }) =>
+      Object.freeze({
+        ...state,
+        connect: {
+          success: false,
+          loading: false,
+          error,
+        },
+      }),
+    [types.CONNECT_FRACTAL_SUCCESS]: (state) =>
+      Object.freeze({
+        ...state,
+        connect: {
+          success: true,
+          loading: false,
+          error: "",
+        },
       }),
   },
   initialState,

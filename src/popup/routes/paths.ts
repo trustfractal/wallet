@@ -1,6 +1,6 @@
 enum RoutesPaths {
   ABOUT = "/about",
-  CONNECT_BACKEND = "/connect-backend",
+  CONNECT_FRACTAL = "/connect-fractal",
   WALLET = "/",
 }
 

@@ -7,7 +7,8 @@ import {
 
 import WalletScreen from "@popup/containers/WalletScreen";
 import AboutScreen from "@popup/containers/AboutScreen";
-import ConnectBackendScreen from "@popup/containers/ConnectBackendScreen";
+
+import ConnectFractalScreen from "@popup/containers/ConnectFractalScreen";
 
 import RoutesPaths from "./paths";
 
@@ -15,11 +16,11 @@ const Routes = () => (
   <Router>
     <Switch>
       <Route path={RoutesPaths.ABOUT} component={AboutScreen} />
-      <Route path={RoutesPaths.WALLET} component={WalletScreen} />
       <Route
-        path={RoutesPaths.CONNECT_BACKEND}
-        component={ConnectBackendScreen}
+        path={RoutesPaths.CONNECT_FRACTAL}
+        component={ConnectFractalScreen}
       />
+      <Route path={RoutesPaths.WALLET} component={WalletScreen} />
       <Redirect to={RoutesPaths.WALLET} />
     </Switch>
   </Router>

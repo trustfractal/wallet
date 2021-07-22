@@ -95,7 +95,6 @@ export class UserStore {
   static getCombinedReducers() {
     return combineReducers({
       credentials: credentialsReducer,
-      wallet: walletReducer,
       requests: requestsReducer,
     });
   }
@@ -169,7 +168,6 @@ export class UserStore {
 
     return {
       credentials: await credentialsRestore(deserializedState.credentials),
-      wallet: await walletRestore(deserializedState.wallet),
       requests: await requestsRestore(deserializedState.requests),
     };
   }
@@ -177,7 +175,6 @@ export class UserStore {
   static async serialize(state) {
     return JSON.stringify({
       credentials: await credentialsStore(state.credentials),
-      wallet: await walletStore(state.wallet),
       requests: await requestsStore(state.requests),
     });
   }

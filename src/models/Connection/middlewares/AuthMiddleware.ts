@@ -1,5 +1,5 @@
-import { IMiddleware, IInvokation } from "@pluginTypes/index";
-import { authWatcher } from "@redux/middlewares/watchers";
+import { IMiddleware } from "@pluginTypes/index";
+import { authWatcher, setupWatcher } from "@redux/middlewares/watchers";
 
 import AppStore from "@redux/stores/application";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
@@ -72,7 +72,7 @@ function loginFlow(): Promise<void> {
 }
 
 function setupFlow(): Promise<void> {
-  return new Promise(async (_resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let unlisten = () => {};
     const registered = isRegistered(AppStore.getStore().getState());
 
@@ -97,6 +97,32 @@ function setupFlow(): Promise<void> {
         reject(ERROR_LOGIN_WINDOW_CLOSED());
       }
     });
+
+    // create callbacks
+    const onSetupSuccess = async () => {
+      // close setup popup
+      await WindowsService.closeWindow(window.id);
+
+      // resolve promise
+      resolve();
+    };
+
+    const onSetupFailed = async (error: any) => reject(error);
+    const onTimeout = async () => {
+      // close setup popup
+      await WindowsService.closeWindow(window.id);
+
+      // resolve promise
+      reject(ERROR_LOGIN_TIMEOUT());
+    };
+
+    // register listener
+    const subscribed = setupWatcher.listenForSetup(
+      onSetupSuccess,
+      onSetupFailed,
+      onTimeout,
+    );
+    unlisten = subscribed.unlisten;
   });
 }
 

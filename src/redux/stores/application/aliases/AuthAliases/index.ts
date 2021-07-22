@@ -87,7 +87,7 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
 
       if (setup) {
         // get user's self attested claims
-        Store.getStore().dispatch(credentialsActions.fetchCredentialsList());
+        Store.getStore().dispatch(credentialsActions.fetchSelfAttestedClaims());
       }
 
       dispatch(authActions.signInSuccess());
@@ -131,8 +131,7 @@ export const connectFractal = () => {
       dispatch(authActions.setBackendSessions(sessions));
 
       // get user's self attested claims
-      dispatch(credentialsActions.fetchSelfAttestedClaims());
-
+      Store.getStore().dispatch(credentialsActions.fetchSelfAttestedClaims());
       dispatch(authActions.connectFractalSuccess());
     } catch (error) {
       console.error(error);

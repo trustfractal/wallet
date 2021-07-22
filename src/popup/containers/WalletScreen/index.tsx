@@ -25,9 +25,9 @@ function WalletScreen() {
   const requests = useUserSelector(getPendingRequests);
   const setup = useAppSelector(isSetup);
 
-  // redirect to wallet connect
+  // redirect to fractal connect screen
   if (!setup) {
-    history.push(RoutesPaths.CONNECT_BACKEND);
+    history.push(RoutesPaths.CONNECT_FRACTAL);
   }
 
   // check if has credentials
