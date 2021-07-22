@@ -2,37 +2,46 @@ import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
 const types = mirrorCreator([
-  "ADD_CREDENTIAL",
-  "ADD_CREDENTIALS",
-  "UPDATE_CREDENTIAL",
-  "REMOVE_CREDENTIAL",
-  "SET_CREDENTIALS",
-  "SET_CREDENTIAL_STATUS",
-  "FETCH_CREDENTIAL_STATUS",
-  "FETCH_CREDENTIALS_LIST",
+  "ADD_ATTESTED_CLAIM",
+  "UPDATE_ATTESTED_CLAIM",
+  "REMOVE_ATTESTED_CLAIM",
+  "SET_SELF_ATTESTED_CLAIMS",
+  "SET_ATTESTED_CLAIMS",
+  "SET_ATTESTED_CLAIM_STATUS",
+  "FETCH_ATTESTED_CLAIM_STATUS",
+  "FETCH_SELF_ATTESTED_CLAIMS",
 ]);
 
 export const creators = createActions(
-  types.ADD_CREDENTIAL,
-  types.ADD_CREDENTIALS,
-  types.UPDATE_CREDENTIAL,
-  types.REMOVE_CREDENTIAL,
-  types.SET_CREDENTIALS,
-  types.SET_CREDENTIAL_STATUS,
-  types.FETCH_CREDENTIAL_STATUS,
-  types.FETCH_CREDENTIALS_LIST,
+  types.ADD_ATTESTED_CLAIM,
+  types.UPDATE_ATTESTED_CLAIM,
+  types.REMOVE_ATTESTED_CLAIM,
+  types.SET_SELF_ATTESTED_CLAIMS,
+  types.SET_ATTESTED_CLAIMS,
+  types.SET_ATTESTED_CLAIM_STATUS,
+  types.FETCH_ATTESTED_CLAIM_STATUS,
+  types.FETCH_SELF_ATTESTED_CLAIMS,
 );
 
 export const initialState = {
-  credentials: "[]",
+  selfAttestedClaims: "[]",
+  attestedClaims: "[]",
 };
 
 export const reducer = handleActions(
   {
-    [types.SET_CREDENTIALS]: (state, { payload: credentials }) =>
+    [types.SET_SELF_ATTESTED_CLAIMS]: (
+      state,
+      { payload: selfAttestedClaims },
+    ) =>
       Object.freeze({
         ...state,
-        credentials: credentials.serialize(),
+        selfAttestedClaims: selfAttestedClaims.serialize(),
+      }),
+    [types.SET_ATTESTED_CLAIMS]: (state, { payload: attestedClaims }) =>
+      Object.freeze({
+        ...state,
+        attestedClaims: attestedClaims.serialize(),
       }),
   },
   initialState,
@@ -47,7 +56,8 @@ export async function restore(state = {}) {
 
 export async function store(state) {
   return {
-    credentials: state.credentials,
+    selfAttestedClaims: state.selfAttestedClaims,
+    attestedClaims: state.attestedClaims,
   };
 }
 

@@ -20,6 +20,7 @@ import appActions from "@redux/stores/application/reducers/app";
 import {
   getTokensContractsAddresses,
   getStakingContractsAddresses,
+  isSetup,
 } from "@redux/stores/application/reducers/app/selectors";
 
 import {
@@ -67,7 +68,7 @@ export const connectWallet = () => {
       AppStore.getStore().dispatch(authActions.setBackendSessions(sessions));
 
       // get user's self attested claims
-      dispatch(credentialsActions.fetchCredentialsList());
+      dispatch(credentialsActions.fetchSelfAttestedClaims());
 
       // save wallet address on the redux store
       dispatch(walletActions.setAccount(account));
@@ -153,8 +154,9 @@ export const fetchTokenStakingDetails = ({ payload: token }) => {
 export const fetchStakingDetails = () => {
   return async (dispatch) => {
     // check if the user is connected
-    const account = getAccount(UserStore.getStore().getState());
-    if (account.length === 0) {
+    const setup = isSetup(AppStore.getStore().getState());
+
+    if (!setup) {
       return;
     }
 
