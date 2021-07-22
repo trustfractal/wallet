@@ -1,6 +1,5 @@
 export enum ErrorCode {
   ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED = 5000,
-  ERROR_CREDENTIAL_NOT_FOUND = 5001,
   ERROR_VERIFICATION_REQUEST_DECLINED = 5002,
   ERROR_VERIFICATION_REQUEST_TIME_OUT = 5003,
   ERROR_CREDENTIALS_NOT_FOUND = 5004,
@@ -25,15 +24,6 @@ export const ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED =
       `BackgroundScript: Connection is not initialized, please call init before trying to access it`,
     );
   };
-
-export const ERROR_CREDENTIAL_NOT_FOUND = (
-  id: string,
-): BackgroundScriptError => {
-  return new BackgroundScriptError(
-    ErrorCode.ERROR_CREDENTIAL_NOT_FOUND,
-    `BackgroundScript: Credential with id ${id} not found`,
-  );
-};
 
 export const ERROR_VERIFICATION_REQUEST_DECLINED =
   (): BackgroundScriptError => {

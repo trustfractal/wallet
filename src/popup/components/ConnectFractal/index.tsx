@@ -24,33 +24,26 @@ const ActionContainer = styled.div`
   padding: var(--s-24) 0;
 `;
 
-export type ConnectBackendRequestProps = {
+export type ConnectFractalProps = {
   loading: boolean;
   onNext: () => void;
   error: string;
 };
 
-ConnectBackendRequest.defaultProps = {
+ConnectFractal.defaultProps = {
   error: "",
 };
 
-function ConnectBackendRequest(props: ConnectBackendRequestProps) {
+function ConnectFractal(props: ConnectFractalProps) {
   const { loading, onNext } = props;
 
   return (
     <TopComponent>
       <IconContainer>
-        <Icon name={IconNames.WELCOME} />
+        <Icon name={IconNames.CONNECTED} />
       </IconContainer>
       <ContentContainer>
-        <Title>Welcome to Fractal ID Wallet v0.1.1</Title>
-        <Text>
-          <br />
-        </Text>
-        <Text>Major updates:</Text>
-        <Text>
-          · <strong>New</strong> Fractal self-attested credentials.
-        </Text>
+        <Title>Connect to your Fractal ID account.</Title>
         <Text>
           <br />
         </Text>
@@ -68,4 +61,4 @@ function ConnectBackendRequest(props: ConnectBackendRequestProps) {
   );
 }
 
-export default withNavBar(ConnectBackendRequest);
+export default withNavBar(ConnectFractal);

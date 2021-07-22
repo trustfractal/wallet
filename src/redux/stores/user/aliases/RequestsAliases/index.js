@@ -45,10 +45,10 @@ export const acceptVerificationRequest = ({
     const requests = getRequests(getState());
 
     // parse data
-    const credential = Credential.fromString(serializedCredential);
+    const credential = Credential.parse(serializedCredential);
 
     // remove unselected properties
-    Object.keys(credential.claim.properties).forEach(
+    Object.keys(credential.properties).forEach(
       (property) =>
         !properties[property] && credential.removeProperty(property),
     );
@@ -83,7 +83,7 @@ export const declineVerificationRequest = ({
     const requests = getRequests(getState());
 
     // parse data
-    const credential = Credential.fromString(serializedCredential);
+    const credential = Credential.parse(serializedCredential);
 
     // get request
     const request = requests.getByField("id", id);

@@ -31,10 +31,8 @@ const { default: Import } = require("@assets/import.svg");
 const { default: Request } = require("@assets/request.svg");
 const { default: Accepted } = require("@assets/accepted.svg");
 const { default: Declined } = require("@assets/declined.svg");
-const { default: Reconnect } = require("@assets/reconnect.svg");
 const { default: About } = require("@assets/about.svg");
 const { default: FractalFullLogo } = require("@assets/fractal-full-logo.svg");
-const { default: KiltFullLogo } = require("@assets/kilt-full-logo.svg");
 const { default: Welcome } = require("@assets/welcome.svg");
 
 const Root = styled.div<{
@@ -78,10 +76,8 @@ export enum IconNames {
   REQUEST = "request",
   ACCEPTED = "accepted",
   DECLINED = "declined",
-  RECONNECT = "reconnect",
   ABOUT = "about",
   FRACTAL_FULL_LOGO = "fractal-full-logo",
-  KILT_FULL_LOGO = "kilt-full-logo",
   WELCOME = "welcome",
 }
 
@@ -115,10 +111,8 @@ const Icons: Record<string, any> = {
   [IconNames.REQUEST]: Request,
   [IconNames.ACCEPTED]: Accepted,
   [IconNames.DECLINED]: Declined,
-  [IconNames.RECONNECT]: Reconnect,
   [IconNames.ABOUT]: About,
   [IconNames.FRACTAL_FULL_LOGO]: FractalFullLogo,
-  [IconNames.KILT_FULL_LOGO]: KiltFullLogo,
   [IconNames.WELCOME]: Welcome,
 };
 

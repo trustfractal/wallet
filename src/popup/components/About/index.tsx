@@ -52,15 +52,8 @@ function About(props: AboutProps) {
         <Text>
           <br />
         </Text>
-        <Text>
-          This product includes software developed by the BOTLabs GmbH.
-        </Text>
-        <Text>
-          <br />
-        </Text>
         <IconsContainer>
           <Icon name={IconNames.FRACTAL_FULL_LOGO} />
-          <Icon name={IconNames.KILT_FULL_LOGO} />
         </IconsContainer>
       </ContentContainer>
       <ActionContainer>

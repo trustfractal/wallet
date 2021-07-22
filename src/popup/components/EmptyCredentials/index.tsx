@@ -37,13 +37,13 @@ function EmptyCredentials(props: EmptyCredentialsProps) {
         <Icon name={IconNames.ROBOT} />
       </IconContainer>
       <ContentContainer>
-        <Title>You haven’t issued a credential yet.</Title>
+        <Title>You don't have a credential yet.</Title>
         <Text>
           <br />
         </Text>
         <Text>
-          You can only issue a credential through your Fractal dashboard. The
-          button below will redirect you to Fractal.
+          Once you complete a valid KYC, your credentials will appear here
+          automatically.
         </Text>
       </ContentContainer>
       <ActionContainer>

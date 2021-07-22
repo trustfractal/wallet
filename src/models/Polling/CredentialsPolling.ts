@@ -3,9 +3,6 @@ import AppStore from "@redux/stores/application";
 
 import credentialsActions from "@redux/stores/user/reducers/credentials";
 
-import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
-import CredentialsCollection from "@models/Credential/CredentialsCollection";
-import CredentialsVersions from "@models/Credential/versions";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
 const DEFAULT_CREDENTIALS_POLLING_INTERVAL_IN_MILLIS = 15 * 60 * 1000; // 15 minutes
@@ -13,27 +10,8 @@ const DEFAULT_CREDENTIALS_POLLING_INTERVAL_IN_MILLIS = 15 * 60 * 1000; // 15 min
 export default class CredentialsPolling {
   private interval: NodeJS.Timeout | undefined;
 
-  public fetchLegacyCredentialsStatus() {
-    const credentials: CredentialsCollection = getCredentials(
-      UserStore.getStore().getState(),
-    );
-
-    // filter only legacy credentials
-    const legacyCredentials = credentials.filterByField(
-      "version",
-      CredentialsVersions.VERSION_ONE,
-    );
-
-    // fetch credential status
-    for (const credential of legacyCredentials) {
-      UserStore.getStore().dispatch(
-        credentialsActions.fetchCredentialStatus(credential.id),
-      );
-    }
-  }
-
-  public fetchCredentialsList() {
-    UserStore.getStore().dispatch(credentialsActions.fetchCredentialsList());
+  public fetchCredentials() {
+    UserStore.getStore().dispatch(credentialsActions.fetchCredentials());
   }
 
   public start(
@@ -51,8 +29,7 @@ export default class CredentialsPolling {
         return;
       }
 
-      this.fetchLegacyCredentialsStatus();
-      this.fetchCredentialsList();
+      this.fetchCredentials();
     }, intervalTime);
   }
 

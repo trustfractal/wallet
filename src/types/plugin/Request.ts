@@ -1,5 +1,3 @@
-import { IAttestationRequest as SDKAttestationRequest } from "@trustfractal/sdk";
-
 import { ISerializable } from "./Common";
 import { ICredential } from "./Credential";
 
@@ -23,7 +21,3 @@ export interface IVerificationRequest extends ISerializable {
   level: string;
   credential?: ICredential;
 }
-
-export interface IAttestationRequest
-  extends SDKAttestationRequest,
-    ISerializable {}
