@@ -3,7 +3,6 @@ import { createActions, handleActions } from "redux-actions";
 
 const types = mirrorCreator([
   "STARTUP",
-  "SET_ADDRESSES",
   "SET_LAUNCHED",
   "SET_SETUP",
   "SET_STATUS",
@@ -12,7 +11,6 @@ const types = mirrorCreator([
 
 export const creators = createActions(
   types.STARTUP,
-  types.SET_ADDRESSES,
   types.SET_LAUNCHED,
   types.SET_SETUP,
   types.SET_STATUS,
@@ -22,19 +20,6 @@ export const creators = createActions(
 export const initialState = {
   launched: false,
   setup: false,
-  addresses: {
-    staking: {
-      FCL: "",
-      FCL_ETH_LP: "",
-      enabled: false,
-    },
-    erc20: {
-      FCL: "",
-      FCL_ETH_LP: "",
-    },
-    claimsRegistry: "",
-    issuerAddress: "",
-  },
   version: "",
 };
 
@@ -49,11 +34,6 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         setup,
-      }),
-    [types.SET_ADDRESSES]: (state, { payload: addresses }) =>
-      Object.freeze({
-        ...state,
-        addresses,
       }),
     [types.SET_VERSION]: (state, { payload: version }) =>
       Object.freeze({
