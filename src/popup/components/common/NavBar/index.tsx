@@ -7,9 +7,7 @@ import { useUserSelector } from "@redux/stores/user/context";
 
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
-import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
 import { getAttestedClaims } from "@redux/stores/user/reducers/credentials/selectors";
-
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
 import Text, {
   TextHeights,
@@ -18,14 +16,8 @@ import Text, {
 } from "@popup/components/common/Text";
 import { IconNames } from "@popup/components/common/Icon";
 import Menu from "@popup/components/common/Menu";
-import TokenTypes from "@models/Token/types";
 
-import { parseAndFormatEther } from "@utils/FormatUtils";
 import { exportFile } from "@utils/FileUtils";
-
-import windows from "@services/WindowsService";
-
-import RoutesPaths from "@popup/routes/paths";
 
 const LogoNavbarContainer = styled.div`
   display: flex;
@@ -93,7 +85,6 @@ const BalanceTokens = styled.div``;
 function BalanceNavbar() {
   const history = useHistory();
 
-  const stakingDetails: any = useUserSelector(getStakingDetails);
   const credentials = useUserSelector(getAttestedClaims);
 
   const onClickExport = async () =>
@@ -146,12 +137,10 @@ function BalanceNavbar() {
         <BalanceAmountContainer>
           <BalanceAmounts>
             <Text weight={TextWeights.BOLD}>
-              {parseAndFormatEther(stakingDetails[TokenTypes.FCL].userBalance)}
+              FCL User balance used to be here
             </Text>
             <Text weight={TextWeights.BOLD}>
-              {parseAndFormatEther(
-                stakingDetails[TokenTypes.FCL_ETH_LP].userBalance,
-              )}
+              FCL/ETH Swap balance used to be here
             </Text>
           </BalanceAmounts>
           <BalanceTokens>

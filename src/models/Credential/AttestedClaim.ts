@@ -12,8 +12,7 @@ import CredentialsVersions from "./versions";
 
 export default class AttestedClaim
   extends SDKAttestedClaim
-  implements IAttestedClaim, ISerializable
-{
+  implements IAttestedClaim, ISerializable {
   public id: string;
   public level: string;
   public version: string;

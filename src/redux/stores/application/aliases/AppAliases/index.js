@@ -2,7 +2,6 @@ import appActions, { appTypes } from "@redux/stores/application/reducers/app";
 
 import GoldfishService from "@services/GoldfishService";
 
-import StakingDetailsPolling from "@models/Polling/StakingDetailsPolling";
 import CredentialsPolling from "@models/Polling/CredentialsPolling";
 
 export const startup = () => {
@@ -33,9 +32,6 @@ export const startup = () => {
         issuerAddress,
       }),
     );
-
-    // start staking details polling
-    new StakingDetailsPolling().start();
 
     // start credentials status polling
     new CredentialsPolling().start();

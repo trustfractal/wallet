@@ -5,7 +5,6 @@ export * from "./Crypto";
 export * from "./Environment";
 export * from "./EthereumProviderService";
 export * from "./InpageProvider";
-export * from "./Staking";
 export * from "./Request";
 export * from "./Transaction";
 export * from "./Watcher";

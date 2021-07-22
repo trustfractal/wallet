@@ -13,16 +13,13 @@ import {
   restore as credentialsRestore,
   store as credentialsStore,
 } from "@redux/stores/user/reducers/credentials";
-import {
-  reducer as walletReducer,
-  restore as walletRestore,
-  store as walletStore,
-} from "@redux/stores/user/reducers/wallet";
+
 import {
   reducer as requestsReducer,
   restore as requestsRestore,
   store as requestsStore,
 } from "@redux/stores/user/reducers/requests";
+
 import {
   ERROR_DECRYPT_FAILED,
   ERROR_LOCAL_STATE_NOT_FOUND,

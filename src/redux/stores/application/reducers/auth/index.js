@@ -15,6 +15,10 @@ const types = mirrorCreator([
   "SIGN_UP_PENDING",
   "SIGN_UP_FAILED",
   "SIGN_UP_SUCCESS",
+  "CONNECT_FRACTAL_REQUEST",
+  "CONNECT_FRACTAL_PENDING",
+  "CONNECT_FRACTAL_FAILED",
+  "CONNECT_FRACTAL_SUCCESS",
 ]);
 
 export const creators = createActions(
@@ -31,6 +35,10 @@ export const creators = createActions(
   types.SIGN_UP_PENDING,
   types.SIGN_UP_FAILED,
   types.SIGN_UP_SUCCESS,
+  types.CONNECT_FRACTAL_REQUEST,
+  types.CONNECT_FRACTAL_PENDING,
+  types.CONNECT_FRACTAL_FAILED,
+  types.CONNECT_FRACTAL_SUCCESS,
 );
 
 export const initialState = {
