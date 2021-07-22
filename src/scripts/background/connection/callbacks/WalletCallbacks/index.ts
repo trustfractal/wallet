@@ -16,7 +16,7 @@ import {
 
 import TokenTypes from "@models/Token/types";
 import walletActions from "@redux/stores/user/reducers/wallet";
-import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+import { getAttestedClaims } from "@redux/stores/user/reducers/credentials/selectors";
 
 import { ERROR_CREDENTIAL_NOT_FOUND } from "@background/Errors";
 
@@ -132,7 +132,7 @@ export const stake = (
   new Promise(async (resolve, reject) => {
     try {
       const address = getAccount(UserStore.getStore().getState());
-      const credentials = getCredentials(UserStore.getStore().getState());
+      const credentials = getAttestedClaims(UserStore.getStore().getState());
       const tokenContractAddress = getTokensContractsAddresses(
         AppStore.getStore().getState(),
       )[token];

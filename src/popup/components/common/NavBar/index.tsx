@@ -8,7 +8,7 @@ import { useUserSelector } from "@redux/stores/user/context";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
 import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
-import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+import { getAttestedClaims } from "@redux/stores/user/reducers/credentials/selectors";
 
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
 import Text, {
@@ -94,7 +94,7 @@ function BalanceNavbar() {
   const history = useHistory();
 
   const stakingDetails: any = useUserSelector(getStakingDetails);
-  const credentials = useUserSelector(getCredentials);
+  const credentials = useUserSelector(getAttestedClaims);
 
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");

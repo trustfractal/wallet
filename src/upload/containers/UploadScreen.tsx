@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useUserDispatch, useUserSelector } from "@redux/stores/user/context";
 import credentialsActions from "@redux/stores/user/reducers/credentials";
 
-import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+import { getAttestedClaims } from "@redux/stores/user/reducers/credentials/selectors";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
 import { importFile } from "@utils/FileUtils";
@@ -15,7 +15,7 @@ import { ICredential } from "@pluginTypes/plugin";
 function UploadScreen() {
   const dispatch = useUserDispatch();
 
-  const credentials = useUserSelector(getCredentials);
+  const credentials = useUserSelector(getAttestedClaims);
 
   const [newCredentials, setNewCredentials] = useState<ICredential[]>([]);
   const [uploaded, setUploaded] = useState(false);
@@ -44,7 +44,7 @@ function UploadScreen() {
       // add new credentials
       filteredCredentials.forEach((importedCredential) =>
         dispatch(
-          credentialsActions.addCredential(importedCredential.serialize()),
+          credentialsActions.addAttestedClaim(importedCredential.serialize()),
         ),
       );
 

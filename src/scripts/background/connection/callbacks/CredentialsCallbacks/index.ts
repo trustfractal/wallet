@@ -10,7 +10,10 @@ import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebp
 import ConnectionTypes from "@models/Connection/types";
 
 import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
-import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+import {
+  getAttestedClaims,
+  getCredentials,
+} from "@redux/stores/user/reducers/credentials/selectors";
 import requestsActions from "@redux/stores/user/reducers/requests";
 import credentialsActions from "@redux/stores/user/reducers/credentials";
 
@@ -69,7 +72,7 @@ export const credentialStore = (
 
       // store the credential
       await UserStore.getStore().dispatch(
-        credentialsActions.addCredential(parsedCredential.serialize()),
+        credentialsActions.addAttestedClaim(parsedCredential.serialize()),
       );
 
       resolve(serializedTransactionDetails);
@@ -104,7 +107,7 @@ export const getAttestationRequest = (
 export const hasCredential = ([id]: [string, CredentialsVersions]) =>
   new Promise((resolve, reject) => {
     try {
-      const credentials: CredentialsCollection = getCredentials(
+      const credentials: CredentialsCollection = getAttestedClaims(
         UserStore.getStore().getState(),
       );
 
@@ -120,7 +123,7 @@ export const hasCredential = ([id]: [string, CredentialsVersions]) =>
 export const isCredentialValid = ([id]: [string], port: string) =>
   new Promise(async (resolve, reject) => {
     try {
-      const credentials: CredentialsCollection = getCredentials(
+      const credentials: CredentialsCollection = getAttestedClaims(
         UserStore.getStore().getState(),
       );
 
@@ -151,7 +154,7 @@ export const isCredentialValid = ([id]: [string], port: string) =>
 
       // update credential data
       await UserStore.getStore().dispatch(
-        credentialsActions.setCredentialStatus({ id, status }),
+        credentialsActions.setAttestedClaimStatus({ id, status }),
       );
 
       resolve(status === CredentialsStatus.VALID);
@@ -181,6 +184,7 @@ export const getVerificationRequest = ([
       const credentials: CredentialsCollection = getCredentials(
         UserStore.getStore().getState(),
       );
+
       const filteredCredentials = credentials.filter((credential) => {
         if (credential.level !== level) {
           return false;

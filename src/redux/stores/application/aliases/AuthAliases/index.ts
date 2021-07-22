@@ -77,7 +77,7 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
 
       if (setup) {
         // get user's self attested claims
-        Store.getStore().dispatch(credentialsActions.fetchCredentialsList());
+        Store.getStore().dispatch(credentialsActions.fetchSelfAttestedClaims());
 
         // get staking details
         Store.getStore().dispatch(walletActions.fetchStakingDetails());

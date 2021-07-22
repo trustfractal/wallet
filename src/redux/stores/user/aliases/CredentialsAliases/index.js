@@ -10,12 +10,15 @@ import ConnectionTypes from "@models/Connection/types";
 import credentialsActions, {
   credentialsTypes,
 } from "@redux/stores/user/reducers/credentials";
-import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+import {
+  getAttestedClaims,
+  getSelfAttestedClaims,
+} from "@redux/stores/user/reducers/credentials/selectors";
 import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 
-import Credential from "@models/Credential";
 import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
+import AttestedClaim from "@models/Credential/AttestedClaim";
 import CredentialsVersions from "@models/Credential/versions";
 
 import {
@@ -25,47 +28,28 @@ import {
 
 import MaguroService from "@services/MaguroService";
 
-export const addCredential = ({ payload: serializedCredential }) => {
+export const addAttestedClaim = ({ payload: serializedCredential }) => {
   return async (dispatch, getState) => {
-    const credentials = getCredentials(getState());
+    const credentials = getAttestedClaims(getState());
 
     // create credential instance
-    const credential = Credential.fromString(serializedCredential);
+    const credential = AttestedClaim.parse(serializedCredential);
 
     // append credential
     credentials.push(credential);
 
     // update redux store
-    dispatch(credentialsActions.setCredentials(credentials));
+    dispatch(credentialsActions.setAttestedClaims(credentials));
   };
 };
 
-export const addCredentials = ({ payload: serializedCredentials }) => {
+export const updateAttestedClaim = ({
+  payload: serializedUpdatedCredential,
+}) => {
   return async (dispatch, getState) => {
-    const credentials = getCredentials(getState());
+    const credentials = getAttestedClaims(getState());
 
-    // create credential instance
-    const newCredentials = CredentialsCollection.parse(serializedCredentials);
-
-    // append credentials
-    newCredentials.forEach((credential) => {
-      if (credentials.hasByField("id", credential.id)) {
-        credentials.updateByField("id", credential.id, credential);
-      } else {
-        credentials.push(credential);
-      }
-    });
-
-    // update redux store
-    dispatch(credentialsActions.setCredentials(credentials));
-  };
-};
-
-export const updateCredential = ({ payload: serializedUpdatedCredential }) => {
-  return async (dispatch, getState) => {
-    const credentials = getCredentials(getState());
-
-    const credential = Credential.fromString(serializedUpdatedCredential);
+    const credential = AttestedClaim.parse(serializedUpdatedCredential);
 
     // update credential
     const updatedCredential = credentials.updateByField(
@@ -79,13 +63,13 @@ export const updateCredential = ({ payload: serializedUpdatedCredential }) => {
     }
 
     // update redux store
-    dispatch(credentialsActions.setCredentials(credentials));
+    dispatch(credentialsActions.setAttestedClaims(credentials));
   };
 };
 
-export const removeCredential = ({ payload: id }) => {
+export const removeAttestedClaim = ({ payload: id }) => {
   return async (dispatch, getState) => {
-    const credentials = getCredentials(getState());
+    const credentials = getAttestedClaims(getState());
 
     // get credential
     const credential = credentials.getByField("id", id);
@@ -98,14 +82,14 @@ export const removeCredential = ({ payload: id }) => {
     credentials.removeByField("id", credential.id);
 
     // update redux store
-    dispatch(credentialsActions.setCredentials(credentials));
+    dispatch(credentialsActions.setAttestedClaims(credentials));
   };
 };
 
-export const fetchCredentialStatus = ({ payload: id }) => {
+export const fetchAttestedClaimStatus = ({ payload: id }) => {
   return async (dispatch, getState) => {
     const address = getAccount(getState());
-    const credentials = getCredentials(getState());
+    const credentials = getAttestedClaims(getState());
 
     const credential = credentials.getByField("id", id);
     const claimsRegistryContractAddress = getClaimsRegistryContractAddress(
@@ -125,13 +109,13 @@ export const fetchCredentialStatus = ({ payload: id }) => {
     );
 
     // update redux store
-    dispatch(credentialsActions.setCredentialStatus({ id, status }));
+    dispatch(credentialsActions.setAttestedClaimStatus({ id, status }));
   };
 };
 
-export const setCredentialStatus = ({ payload: { id, status } }) => {
+export const setAttestedClaimStatus = ({ payload: { id, status } }) => {
   return async (dispatch, getState) => {
-    const credentials = getCredentials(getState());
+    const credentials = getAttestedClaims(getState());
 
     const credential = credentials.getByField("id", id);
 
@@ -149,11 +133,11 @@ export const setCredentialStatus = ({ payload: { id, status } }) => {
     }
 
     // update redux store
-    dispatch(credentialsActions.setCredentials(credentials));
+    dispatch(credentialsActions.setAttestedClaims(credentials));
   };
 };
 
-export const fetchCredentialsList = () => {
+export const fetchSelfAttestedClaims = () => {
   return async (dispatch) => {
     const setup = isSetup(AppStore.getStore().getState());
 
@@ -161,7 +145,7 @@ export const fetchCredentialsList = () => {
       return;
     }
 
-    const { credentials } = await MaguroService.getCredentials();
+    const { credentials } = await MaguroService.getSelfAttestedClaims();
 
     const formattedCredentials = credentials.reduce((memo, credential) => {
       memo.push(
@@ -190,20 +174,47 @@ export const fetchCredentialsList = () => {
       return memo;
     }, new CredentialsCollection());
 
+    dispatch(credentialsActions.setSelfAttestedClaims(formattedCredentials));
+  };
+};
+
+export const setSelfAttestedClaims = ({ payload: selfAttestedClaims }) => {
+  return async (dispatch, getState) => {
+    const attestedClaims = getAttestedClaims(getState());
+
     dispatch(
-      credentialsActions.addCredentials(formattedCredentials.serialize()),
+      credentialsActions.setCredentials(
+        new CredentialsCollection(
+          ...[...selfAttestedClaims, ...attestedClaims],
+        ),
+      ),
+    );
+  };
+};
+
+export const setAttestedClaims = ({ payload: attestedClaims }) => {
+  return async (dispatch, getState) => {
+    const selfAttestedClaims = getSelfAttestedClaims(getState());
+
+    dispatch(
+      credentialsActions.setCredentials(
+        new CredentialsCollection(
+          ...[...selfAttestedClaims, ...attestedClaims],
+        ),
+      ),
     );
   };
 };
 
 const Aliases = {
-  [credentialsTypes.ADD_CREDENTIAL]: addCredential,
-  [credentialsTypes.ADD_CREDENTIALS]: addCredentials,
-  [credentialsTypes.UPDATE_CREDENTIAL]: updateCredential,
-  [credentialsTypes.REMOVE_CREDENTIAL]: removeCredential,
-  [credentialsTypes.FETCH_CREDENTIAL_STATUS]: fetchCredentialStatus,
-  [credentialsTypes.FETCH_CREDENTIALS_LIST]: fetchCredentialsList,
-  [credentialsTypes.SET_CREDENTIAL_STATUS]: setCredentialStatus,
+  [credentialsTypes.ADD_ATTESTED_CLAIM]: addAttestedClaim,
+  [credentialsTypes.UPDATE_ATTESTED_CLAIM]: updateAttestedClaim,
+  [credentialsTypes.REMOVE_ATTESTED_CLAIM]: removeAttestedClaim,
+  [credentialsTypes.FETCH_ATTESTED_CLAIM_STATUS]: fetchAttestedClaimStatus,
+  [credentialsTypes.SET_ATTESTED_CLAIM_STATUS]: setAttestedClaimStatus,
+  [credentialsTypes.FETCH_SELF_ATTESTED_CLAIMS]: fetchSelfAttestedClaims,
+  [credentialsTypes.SET_SELF_ATTESTED_CLAIMS]: setSelfAttestedClaims,
+  [credentialsTypes.SET_ATTESTED_CLAIMS]: setAttestedClaims,
 };
 
 export default Aliases;

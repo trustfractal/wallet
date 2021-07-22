@@ -3,7 +3,7 @@ import AppStore from "@redux/stores/application";
 
 import credentialsActions from "@redux/stores/user/reducers/credentials";
 
-import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+import { getAttestedClaims } from "@redux/stores/user/reducers/credentials/selectors";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import CredentialsVersions from "@models/Credential/versions";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
@@ -14,7 +14,7 @@ export default class CredentialsPolling {
   private interval: NodeJS.Timeout | undefined;
 
   public fetchLegacyCredentialsStatus() {
-    const credentials: CredentialsCollection = getCredentials(
+    const credentials: CredentialsCollection = getAttestedClaims(
       UserStore.getStore().getState(),
     );
 
@@ -27,13 +27,13 @@ export default class CredentialsPolling {
     // fetch credential status
     for (const credential of legacyCredentials) {
       UserStore.getStore().dispatch(
-        credentialsActions.fetchCredentialStatus(credential.id),
+        credentialsActions.fetchAttestedClaimStatus(credential.id),
       );
     }
   }
 
-  public fetchCredentialsList() {
-    UserStore.getStore().dispatch(credentialsActions.fetchCredentialsList());
+  public fetchSelfAttestedClaims() {
+    UserStore.getStore().dispatch(credentialsActions.fetchSelfAttestedClaims());
   }
 
   public start(
@@ -52,7 +52,7 @@ export default class CredentialsPolling {
       }
 
       this.fetchLegacyCredentialsStatus();
-      this.fetchCredentialsList();
+      this.fetchSelfAttestedClaims();
     }, intervalTime);
   }
 
