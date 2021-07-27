@@ -33,7 +33,6 @@ const { default: Accepted } = require("@assets/accepted.svg");
 const { default: Declined } = require("@assets/declined.svg");
 const { default: About } = require("@assets/about.svg");
 const { default: FractalFullLogo } = require("@assets/fractal-full-logo.svg");
-const { default: KiltFullLogo } = require("@assets/kilt-full-logo.svg");
 const { default: Welcome } = require("@assets/welcome.svg");
 
 const Root = styled.div<{
@@ -79,7 +78,6 @@ export enum IconNames {
   DECLINED = "declined",
   ABOUT = "about",
   FRACTAL_FULL_LOGO = "fractal-full-logo",
-  KILT_FULL_LOGO = "kilt-full-logo",
   WELCOME = "welcome",
 }
 
@@ -115,7 +113,6 @@ const Icons: Record<string, any> = {
   [IconNames.DECLINED]: Declined,
   [IconNames.ABOUT]: About,
   [IconNames.FRACTAL_FULL_LOGO]: FractalFullLogo,
-  [IconNames.KILT_FULL_LOGO]: KiltFullLogo,
   [IconNames.WELCOME]: Welcome,
 };
 
