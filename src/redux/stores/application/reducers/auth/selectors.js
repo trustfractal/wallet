@@ -37,7 +37,22 @@ export const getSignUpError = createSelector(
 
 export const isSignUpSuccess = createSelector(
   (state) => state.auth,
-  (auth) => auth.signUp.success,
+  (auth) => auth.connect.success,
+);
+
+export const isConnectFractalLoading = createSelector(
+  (state) => state.auth,
+  (auth) => auth.connect.loading,
+);
+
+export const getConnectFractalError = createSelector(
+  (state) => state.auth,
+  (auth) => auth.connect.error,
+);
+
+export const isConnectFractalSuccess = createSelector(
+  (state) => state.auth,
+  (auth) => auth.connect.success,
 );
 
 export const getHashedPassword = createSelector(

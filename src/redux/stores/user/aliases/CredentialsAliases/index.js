@@ -4,9 +4,6 @@ import {
   Byte,
 } from "@trustfractal/sdk";
 
-import ContentScriptConnection from "@background/connection";
-import ConnectionTypes from "@models/Connection/types";
-
 import credentialsActions, {
   credentialsTypes,
 } from "@redux/stores/user/reducers/credentials";
@@ -14,17 +11,13 @@ import {
   getAttestedClaims,
   getSelfAttestedClaims,
 } from "@redux/stores/user/reducers/credentials/selectors";
-import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 
+import AttestedClaim from "@models/Credential/AttestedClaim";
 import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
-import AttestedClaim from "@models/Credential/AttestedClaim";
 import CredentialsVersions from "@models/Credential/versions";
 
-import {
-  getClaimsRegistryContractAddress,
-  isSetup,
-} from "@redux/stores/application/reducers/app/selectors";
+import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
 import MaguroService from "@services/MaguroService";
 
@@ -37,100 +30,6 @@ export const addAttestedClaim = ({ payload: serializedCredential }) => {
 
     // append credential
     credentials.push(credential);
-
-    // update redux store
-    dispatch(credentialsActions.setAttestedClaims(credentials));
-  };
-};
-
-export const updateAttestedClaim = ({
-  payload: serializedUpdatedCredential,
-}) => {
-  return async (dispatch, getState) => {
-    const credentials = getAttestedClaims(getState());
-
-    const credential = AttestedClaim.parse(serializedUpdatedCredential);
-
-    // update credential
-    const updatedCredential = credentials.updateByField(
-      "id",
-      credential.id,
-      credential,
-    );
-
-    if (!updatedCredential) {
-      return;
-    }
-
-    // update redux store
-    dispatch(credentialsActions.setAttestedClaims(credentials));
-  };
-};
-
-export const removeAttestedClaim = ({ payload: id }) => {
-  return async (dispatch, getState) => {
-    const credentials = getAttestedClaims(getState());
-
-    // get credential
-    const credential = credentials.getByField("id", id);
-
-    if (!credential) {
-      return;
-    }
-
-    // remove credential
-    credentials.removeByField("id", credential.id);
-
-    // update redux store
-    dispatch(credentialsActions.setAttestedClaims(credentials));
-  };
-};
-
-export const fetchAttestedClaimStatus = ({ payload: id }) => {
-  return async (dispatch, getState) => {
-    const address = getAccount(getState());
-    const credentials = getAttestedClaims(getState());
-
-    const credential = credentials.getByField("id", id);
-    const claimsRegistryContractAddress = getClaimsRegistryContractAddress(
-      AppStore.getStore().getState(),
-    );
-
-    const activeTab = await ContentScriptConnection.getActiveConnectionPort();
-    if (activeTab === undefined) {
-      return;
-    }
-
-    // fetch credential validity
-    const status = await ContentScriptConnection.invoke(
-      ConnectionTypes.GET_CREDENTIAL_STATUS_INPAGE,
-      [address, credential.serialize(), claimsRegistryContractAddress],
-      activeTab.id,
-    );
-
-    // update redux store
-    dispatch(credentialsActions.setAttestedClaimStatus({ id, status }));
-  };
-};
-
-export const setAttestedClaimStatus = ({ payload: { id, status } }) => {
-  return async (dispatch, getState) => {
-    const credentials = getAttestedClaims(getState());
-
-    const credential = credentials.getByField("id", id);
-
-    // update credential
-    credential.status = status;
-
-    const updatedCredential = credentials.updateByField(
-      "id",
-      credential.id,
-      credential,
-    );
-
-    if (!updatedCredential) {
-      return;
-    }
 
     // update redux store
     dispatch(credentialsActions.setAttestedClaims(credentials));
@@ -207,14 +106,10 @@ export const setAttestedClaims = ({ payload: attestedClaims }) => {
 };
 
 const Aliases = {
-  [credentialsTypes.ADD_ATTESTED_CLAIM]: addAttestedClaim,
-  [credentialsTypes.UPDATE_ATTESTED_CLAIM]: updateAttestedClaim,
-  [credentialsTypes.REMOVE_ATTESTED_CLAIM]: removeAttestedClaim,
-  [credentialsTypes.FETCH_ATTESTED_CLAIM_STATUS]: fetchAttestedClaimStatus,
-  [credentialsTypes.SET_ATTESTED_CLAIM_STATUS]: setAttestedClaimStatus,
   [credentialsTypes.FETCH_SELF_ATTESTED_CLAIMS]: fetchSelfAttestedClaims,
   [credentialsTypes.SET_SELF_ATTESTED_CLAIMS]: setSelfAttestedClaims,
   [credentialsTypes.SET_ATTESTED_CLAIMS]: setAttestedClaims,
+  [credentialsTypes.ADD_ATTESTED_CLAIM]: addAttestedClaim,
 };
 
 export default Aliases;

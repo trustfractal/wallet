@@ -8,7 +8,6 @@ export enum ErrorCode {
   ERROR_NO_SENDER = 7006,
   ERROR_NO_ACTIVE_TAB = 7007,
   ERROR_NOT_ON_FRACTAL = 7008,
-  ERROR_NO_ACCOUNT = 7009,
   ERROR_USER_NOT_LOGGED_IN = 7010,
 }
 
@@ -84,13 +83,6 @@ export const ERROR_NOT_ON_FRACTAL = (): ConnectionError => {
   return new ConnectionError(
     ErrorCode.ERROR_NOT_ON_FRACTAL,
     "Connection: user is not on the fractal webpage, he will be redirected",
-  );
-};
-
-export const ERROR_NO_ACCOUNT = (): ConnectionError => {
-  return new ConnectionError(
-    ErrorCode.ERROR_NO_ACCOUNT,
-    "Connection: no ethereum account could be found",
   );
 };
 

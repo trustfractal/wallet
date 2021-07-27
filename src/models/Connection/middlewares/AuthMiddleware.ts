@@ -1,4 +1,4 @@
-import { IMiddleware, IInvokation } from "@pluginTypes/index";
+import { IMiddleware } from "@pluginTypes/index";
 import { authWatcher, setupWatcher } from "@redux/middlewares/watchers";
 
 import AppStore from "@redux/stores/application";
@@ -127,7 +127,7 @@ function setupFlow(): Promise<void> {
 }
 
 export default class AuthMiddleware implements IMiddleware {
-  public async apply(_invokation: IInvokation): Promise<void> {
+  public async apply(): Promise<void> {
     // check if user is authenticated
     const loggedIn = isLoggedIn(AppStore.getStore().getState());
     const setup = isSetup(AppStore.getStore().getState());

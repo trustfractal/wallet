@@ -32,28 +32,9 @@ const proxyConnection = new ProxyConnection(
 );
 
 proxyConnection
-  .proxy(ConnectionTypes.APPROVE_STAKE_BACKGROUND)
-  .proxy(ConnectionTypes.CREDENTIAL_STORE_BACKGROUND)
   .proxy(ConnectionTypes.HAS_CREDENTIAL_BACKGROUND)
-  .proxy(ConnectionTypes.IS_CREDENTIAL_VALID_BACKGROUND)
-  .proxy(ConnectionTypes.GET_CREDENTIAL_STATUS_BACKGROUND)
-  .proxy(ConnectionTypes.GET_ATTESTATION_REQUEST_BACKGROUND)
-  .proxy(ConnectionTypes.GET_STAKING_DETAILS_BACKGROUND)
-  .proxy(ConnectionTypes.GET_SIGNED_NONCE_BACKGROUND)
   .proxy(ConnectionTypes.GET_VERIFICATION_REQUEST_BACKGROUND)
   .proxy(ConnectionTypes.SETUP_PLUGIN_BACKGROUND)
-  .proxy(ConnectionTypes.STAKE_BACKGROUND)
-  .proxy(ConnectionTypes.RESET_STAKING_BACKGROUND)
   .proxy(ConnectionTypes.VERIFY_CONNECTION_BACKGROUND)
-  .proxy(ConnectionTypes.WITHDRAW_BACKGROUND)
 
-  .reversedProxy(ConnectionTypes.APPROVE_STAKE_INPAGE)
-  .reversedProxy(ConnectionTypes.CREDENTIAL_STORE_INPAGE)
-  .reversedProxy(ConnectionTypes.GET_ACCOUNT_ADDRESS_INPAGE)
-  .reversedProxy(ConnectionTypes.GET_ATTESTATION_REQUEST_INPAGE)
-  .reversedProxy(ConnectionTypes.GET_STAKING_DETAILS_INPAGE)
-  .reversedProxy(ConnectionTypes.GET_SIGNED_NONCE_INPAGE)
-  .reversedProxy(ConnectionTypes.GET_CREDENTIAL_STATUS_INPAGE)
-  .reversedProxy(ConnectionTypes.GET_BACKEND_SESSIONS_INPAGE)
-  .reversedProxy(ConnectionTypes.STAKE_INPAGE)
-  .reversedProxy(ConnectionTypes.WITHDRAW_INPAGE);
+  .reversedProxy(ConnectionTypes.GET_BACKEND_SESSIONS_INPAGE);

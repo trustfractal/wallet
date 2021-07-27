@@ -15,6 +15,10 @@ const types = mirrorCreator([
   "SIGN_UP_PENDING",
   "SIGN_UP_FAILED",
   "SIGN_UP_SUCCESS",
+  "CONNECT_FRACTAL_REQUEST",
+  "CONNECT_FRACTAL_PENDING",
+  "CONNECT_FRACTAL_FAILED",
+  "CONNECT_FRACTAL_SUCCESS",
 ]);
 
 export const creators = createActions(
@@ -31,6 +35,10 @@ export const creators = createActions(
   types.SIGN_UP_PENDING,
   types.SIGN_UP_FAILED,
   types.SIGN_UP_SUCCESS,
+  types.CONNECT_FRACTAL_REQUEST,
+  types.CONNECT_FRACTAL_PENDING,
+  types.CONNECT_FRACTAL_FAILED,
+  types.CONNECT_FRACTAL_SUCCESS,
 );
 
 export const initialState = {
@@ -40,6 +48,11 @@ export const initialState = {
     error: "",
   },
   signUp: {
+    success: false,
+    loading: false,
+    error: "",
+  },
+  connect: {
     success: false,
     loading: false,
     error: "",
@@ -160,6 +173,42 @@ export const reducer = handleActions(
           error: "",
         },
         registered: true,
+      }),
+    [types.CONNECT_FRACTAL_REQUEST]: (state) =>
+      Object.freeze({
+        ...state,
+        connect: {
+          success: false,
+          loading: false,
+          error: "",
+        },
+      }),
+    [types.CONNECT_FRACTAL_PENDING]: (state) =>
+      Object.freeze({
+        ...state,
+        connect: {
+          success: false,
+          loading: true,
+          error: "",
+        },
+      }),
+    [types.CONNECT_FRACTAL_FAILED]: (state, { payload: error }) =>
+      Object.freeze({
+        ...state,
+        connect: {
+          success: false,
+          loading: false,
+          error,
+        },
+      }),
+    [types.CONNECT_FRACTAL_SUCCESS]: (state) =>
+      Object.freeze({
+        ...state,
+        connect: {
+          success: true,
+          loading: false,
+          error: "",
+        },
       }),
   },
   initialState,

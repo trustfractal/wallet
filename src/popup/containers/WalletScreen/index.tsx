@@ -14,7 +14,6 @@ import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 import { getPendingRequests } from "@redux/stores/user/reducers/requests/selectors";
-import { getAccount } from "@redux/stores/user/reducers/wallet/selectors";
 
 import WindowsService from "@services/WindowsService";
 import environment from "@environment/index";
@@ -24,16 +23,11 @@ function WalletScreen() {
 
   const credentials = useUserSelector(getCredentials);
   const requests = useUserSelector(getPendingRequests);
-  const account = useUserSelector(getAccount);
   const setup = useAppSelector(isSetup);
 
-  // redirect to wallet connect
+  // redirect to fractal connect screen
   if (!setup) {
-    if (account.length === 0) {
-      history.push(RoutesPaths.CONNECT_WALLET);
-    } else {
-      history.push(RoutesPaths.CONNECT_BACKEND);
-    }
+    history.push(RoutesPaths.CONNECT_FRACTAL);
   }
 
   // check if has credentials

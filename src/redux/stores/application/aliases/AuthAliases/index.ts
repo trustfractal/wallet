@@ -1,8 +1,11 @@
 import { Action } from "redux-actions";
 
+import ContentScriptConnection from "@background/connection";
+
 import authActions, {
   authTypes,
 } from "@redux/stores/application/reducers/auth";
+import appActions from "@redux/stores/application/reducers/app";
 import registerActions from "@redux/stores/application/reducers/register";
 import { getRegisterPassword } from "@redux/stores/application/reducers/register/selectors";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
@@ -14,9 +17,16 @@ import {
   ERROR_STORE_PASSWORD_INCORRECT,
 } from "@redux/stores/application/Errors";
 
+import {
+  ERROR_NOT_ON_FRACTAL,
+  ERROR_USER_NOT_LOGGED_IN,
+} from "@models/Connection/Errors";
+
 import Store, { UserStore } from "@redux/stores/user";
 import credentialsActions from "@redux/stores/user/reducers/credentials";
-import walletActions from "@redux/stores/user/reducers/wallet";
+
+import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
+import ConnectionTypes from "@models/Connection/types";
 
 export const signUp = () => {
   return async (dispatch: (arg: Action<any>) => void, getState: () => any) => {
@@ -78,9 +88,6 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
       if (setup) {
         // get user's self attested claims
         Store.getStore().dispatch(credentialsActions.fetchSelfAttestedClaims());
-
-        // get staking details
-        Store.getStore().dispatch(walletActions.fetchStakingDetails());
       }
 
       dispatch(authActions.signInSuccess());
@@ -95,9 +102,48 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
   };
 };
 
+export const connectFractal = () => {
+  return async (dispatch: (arg: Action<any>) => void, getState: () => any) => {
+    dispatch(authActions.connectFractalPending());
+
+    try {
+      // ensure that the active port is on the fractal domain
+      await new FractalWebpageMiddleware().apply();
+
+      // get active connected chrome port
+      const fractalPort = await ContentScriptConnection.getConnectedPort();
+
+      if (!fractalPort) throw ERROR_NOT_ON_FRACTAL();
+
+      // get megalodon session
+      const sessions = await ContentScriptConnection.invoke(
+        ConnectionTypes.GET_BACKEND_SESSIONS_INPAGE,
+        [],
+        fractalPort.id,
+      );
+
+      if (!sessions.megalodon) throw ERROR_USER_NOT_LOGGED_IN();
+
+      // save app setup flag
+      dispatch(appActions.setSetup(true));
+
+      // save session
+      dispatch(authActions.setBackendSessions(sessions));
+
+      // get user's self attested claims
+      Store.getStore().dispatch(credentialsActions.fetchSelfAttestedClaims());
+      dispatch(authActions.connectFractalSuccess());
+    } catch (error) {
+      console.error(error);
+      dispatch(authActions.connectFractalFailed(error.message));
+    }
+  };
+};
+
 const Aliases = {
   [authTypes.SIGN_UP_REQUEST]: signUp,
   [authTypes.SIGN_IN_REQUEST]: signIn,
+  [authTypes.CONNECT_FRACTAL_REQUEST]: connectFractal,
 };
 
 export default Aliases;

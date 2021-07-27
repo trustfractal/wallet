@@ -7,9 +7,7 @@ import { useUserSelector } from "@redux/stores/user/context";
 
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
-import { getStakingDetails } from "@redux/stores/user/reducers/wallet/selectors";
 import { getAttestedClaims } from "@redux/stores/user/reducers/credentials/selectors";
-
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
 import Text, {
   TextHeights,
@@ -18,31 +16,18 @@ import Text, {
 } from "@popup/components/common/Text";
 import { IconNames } from "@popup/components/common/Icon";
 import Menu from "@popup/components/common/Menu";
-import TokenTypes from "@models/Token/types";
 
-import { parseAndFormatEther } from "@utils/FormatUtils";
 import { exportFile } from "@utils/FileUtils";
 
-import windows from "@services/WindowsService";
+import WindowsService from "@services/WindowsService";
 
 import RoutesPaths from "@popup/routes/paths";
 
-const LogoNavbarContainer = styled.div`
+const NavbarContainer = styled.div`
   display: flex;
   flex-direction: row;
 
   align-items: center;
-  padding: var(--s-19) var(--s-24);
-
-  border-bottom: 1px solid var(--c-orange);
-`;
-
-const BalanceNavbaContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-
-  align-items: center;
-  justify-content: space-between;
   padding: var(--s-19) var(--s-24);
 
   border-bottom: 1px solid var(--c-orange);
@@ -55,31 +40,6 @@ const LogoContainer = styled.div`
   margin-right: var(--s-24);
 `;
 
-const BalanceContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-`;
-
-const BalanceLabel = styled.div`
-  color: var(--c-orange);
-  margin-bottom: var(--s-8);
-`;
-
-const BalanceAmountContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`;
-
-const BalanceAmounts = styled.div`
-  align-items: flex-end;
-  justify-content: flex-end;
-  display: flex;
-  flex-direction: column;
-  margin-right: var(--s-12);
-`;
-
 const RootContainer = styled.div`
   position: relative;
   overflow: hidden;
@@ -88,18 +48,14 @@ const RootContainer = styled.div`
   min-height: 460px;
 `;
 
-const BalanceTokens = styled.div``;
-
-function BalanceNavbar() {
+function MenuNavbar() {
   const history = useHistory();
 
-  const stakingDetails: any = useUserSelector(getStakingDetails);
   const credentials = useUserSelector(getAttestedClaims);
 
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
-  const onClickImport = () => windows.openTab("upload.html");
-  const onClickReconnect = () => history.push(RoutesPaths.CONNECT_WALLET);
+  const onClickImport = () => WindowsService.openTab("upload.html");
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
   const menuItems = [
@@ -117,11 +73,6 @@ function BalanceNavbar() {
       },
     ],
     {
-      label: "Reconnect to crypto wallet",
-      icon: IconNames.RECONNECT,
-      onClick: onClickReconnect,
-    },
-    {
       label: "About",
       icon: IconNames.ABOUT,
       onClick: onClickAbout,
@@ -129,49 +80,7 @@ function BalanceNavbar() {
   ];
 
   return (
-    <BalanceNavbaContainer>
-      <LogoContainer>
-        <Logo size={LogoSizes.SMALL} />
-      </LogoContainer>
-      <BalanceContainer>
-        <BalanceLabel>
-          <Text
-            size={TextSizes.SMALL}
-            height={TextHeights.SMALL}
-            weight={TextWeights.SEMIBOLD}
-          >
-            Balance
-          </Text>
-        </BalanceLabel>
-        <BalanceAmountContainer>
-          <BalanceAmounts>
-            <Text weight={TextWeights.BOLD}>
-              {parseAndFormatEther(stakingDetails[TokenTypes.FCL].userBalance)}
-            </Text>
-            <Text weight={TextWeights.BOLD}>
-              {parseAndFormatEther(
-                stakingDetails[TokenTypes.FCL_ETH_LP].userBalance,
-              )}
-            </Text>
-          </BalanceAmounts>
-          <BalanceTokens>
-            <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-              FCL
-            </Text>
-            <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-              FCL/ETH LP
-            </Text>
-          </BalanceTokens>
-        </BalanceAmountContainer>
-      </BalanceContainer>
-      <Menu items={menuItems} />
-    </BalanceNavbaContainer>
-  );
-}
-
-function LogoNavbar() {
-  return (
-    <LogoNavbarContainer>
+    <NavbarContainer>
       <LogoContainer>
         <Logo size={LogoSizes.SMALL} />
       </LogoContainer>
@@ -182,7 +91,25 @@ function LogoNavbar() {
       >
         Fractal Identity Wallet
       </Text>
-    </LogoNavbarContainer>
+      <Menu items={menuItems} />
+    </NavbarContainer>
+  );
+}
+
+function LogoNavbar() {
+  return (
+    <NavbarContainer>
+      <LogoContainer>
+        <Logo size={LogoSizes.SMALL} />
+      </LogoContainer>
+      <Text
+        size={TextSizes.LARGE}
+        height={TextHeights.LARGE}
+        weight={TextWeights.BOLD}
+      >
+        Fractal Identity Wallet
+      </Text>
+    </NavbarContainer>
   );
 }
 
@@ -190,7 +117,7 @@ export default function Navbar() {
   const setup = useAppSelector(isSetup);
 
   if (setup) {
-    return <BalanceNavbar />;
+    return <MenuNavbar />;
   }
 
   return <LogoNavbar />;
