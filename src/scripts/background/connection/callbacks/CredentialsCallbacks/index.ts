@@ -6,10 +6,8 @@ import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import AuthMiddleware from "@models/Connection/middlewares/AuthMiddleware";
 import ConnectionTypes from "@models/Connection/types";
 
-import {
-  getAttestedClaims,
-  getCredentials,
-} from "@redux/stores/user/reducers/credentials/selectors";
+import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+
 import requestsActions from "@redux/stores/user/reducers/requests";
 
 import { requestsWatcher } from "@redux/middlewares/watchers";
@@ -27,32 +25,12 @@ import WindowsService, { PopupSizes } from "@services/WindowsService";
 
 import { IVerificationRequest } from "@pluginTypes/plugin";
 import VerificationRequest from "@models/VerificationRequest";
-import CredentialsVersions from "@models/Credential/versions";
-import AttestedClaim from "@models/Credential/AttestedClaim";
-import SelfAttestedClaim from "@models/Credential/SelfAttestedClaim";
 
-export const hasCredential = ([id]: [string, CredentialsVersions]) =>
-  new Promise((resolve, reject) => {
-    try {
-      const credentials: CredentialsCollection = getAttestedClaims(
-        UserStore.getStore().getState(),
-      );
-
-      const credential = credentials.getByField("id", id);
-
-      resolve(credential !== undefined);
-    } catch (error) {
-      console.error(error);
-      reject(error);
-    }
-  });
-
-export const getVerificationRequest = ([
-  level,
-  requester,
-  fields = {},
-  version,
-]: [string, string, Record<string, boolean>, CredentialsVersions]) =>
+export const getVerificationRequest = ([level, requester, fields = {}]: [
+  string,
+  string,
+  Record<string, boolean>,
+]) =>
   new Promise(async (resolve, reject) => {
     try {
       // create verification request instance
@@ -68,29 +46,9 @@ export const getVerificationRequest = ([
         UserStore.getStore().getState(),
       );
 
-      const filteredCredentials = credentials.filter((credential) => {
-        if (credential.level !== level) {
-          return false;
-        }
-
-        if (
-          credential.version === CredentialsVersions.VERSION_ONE &&
-          !(credential as AttestedClaim).valid
-        ) {
-          return false;
-        } else if (
-          credential.version === CredentialsVersions.VERSION_ONE &&
-          (credential as SelfAttestedClaim).revoked
-        ) {
-          return false;
-        }
-
-        if (version && credential.version !== version) {
-          return false;
-        }
-
-        return true;
-      });
+      const filteredCredentials = credentials.filter(
+        (credential) => credential.level === level,
+      );
 
       if (filteredCredentials.length === 0) {
         reject(ERROR_CREDENTIALS_NOT_FOUND());
@@ -155,10 +113,6 @@ export const getVerificationRequest = ([
   });
 
 const Callbacks = {
-  [ConnectionTypes.HAS_CREDENTIAL_BACKGROUND]: {
-    callback: hasCredential,
-    middlewares: [new AuthMiddleware()],
-  },
   [ConnectionTypes.GET_VERIFICATION_REQUEST_BACKGROUND]: {
     callback: getVerificationRequest,
     middlewares: [new AuthMiddleware()],

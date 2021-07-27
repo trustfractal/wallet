@@ -4,7 +4,6 @@ import styled, { css } from "styled-components";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import RequestsCollection from "@models/Request/RequestsCollection";
 import VerificationRequest from "@models/VerificationRequest";
-import CredentialsVersions from "@models/Credential/versions";
 
 import { withNavBar } from "@popup/components/common/NavBar";
 import Button from "@popup/components/common/Button";
@@ -21,11 +20,7 @@ import CheckboxInput from "@popup/components/common/CheckboxInput";
 import RadioInput from "@popup/components/common/RadioInput";
 import LevelIcon, { LevelIconSizes } from "@popup/components/common/LevelIcon";
 
-import {
-  IAttestedClaim,
-  ICredential,
-  ISelfAttestedClaim,
-} from "@pluginTypes/plugin";
+import { ICredential } from "@pluginTypes/plugin";
 
 import { fromSnackCase } from "@utils/FormatUtils";
 
@@ -161,26 +156,6 @@ const NameContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
 `;
-const BadgesContainer = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-`;
-const AttestedClaimBadge = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-
-  border-radius: var(--s-12);
-  padding: var(--s-4) var(--s-12);
-
-  background: var(--c-gray);
-`;
-const AttestedClaimBadgeName = styled.div`
-  opacity: 0.6;
-  color: var(--c-blue-dark);
-`;
 const LevelName = styled.div`
   opacity: 0.6;
 `;
@@ -204,14 +179,6 @@ export type RequestsProps = {
   onDecline: (id: string, credential: ICredential) => void;
 };
 
-export type AttestedClaimProps = {
-  credential: IAttestedClaim;
-};
-
-export type SelfAttestedClaimProps = {
-  credential: ISelfAttestedClaim;
-};
-
 export type CredentialProps = {
   credential: ICredential;
 };
@@ -219,89 +186,8 @@ export type CredentialProps = {
 function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
   const { credential } = props;
 
-  if (credential.version === CredentialsVersions.VERSION_TWO)
-    return <SelfAttestedClaim credential={credential as ISelfAttestedClaim} />;
-  else return <AttestedClaim credential={credential as IAttestedClaim} />;
-}
-
-function AttestedClaim(
-  props: AttestedClaimProps & React.HTMLProps<HTMLDivElement>,
-) {
-  const { credential } = props;
-
   const {
-    claim: {
-      properties: { full_name: name },
-    },
-  } = credential;
-
-  let hasName = true;
-  if (name === undefined || (name as String).length === 0) {
-    hasName = false;
-  }
-
-  const [level, ...addons] = credential.level.split("+");
-  let levelName;
-
-  const addonsStr = addons.join(" + ");
-
-  if (level === "basic") {
-    levelName = `ID Basic + ${addonsStr}`;
-  } else {
-    levelName = `ID Plus + ${addonsStr}`;
-  }
-
-  return (
-    <CredentialContainer>
-      <LevelIconContainer>
-        <LevelIcon level={level} size={LevelIconSizes.SMALL} />
-      </LevelIconContainer>
-      <CredentialWrapper>
-        <LevelStatusContainer>
-          <LevelContainer>
-            <Text height={TextHeights.LARGE} weight={TextWeights.BOLD}>
-              {levelName}
-            </Text>
-          </LevelContainer>
-        </LevelStatusContainer>
-        <NameBadgesContainer>
-          <NameContainer>
-            {hasName && (
-              <LevelName>
-                <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-                  {name}
-                </Text>
-              </LevelName>
-            )}
-          </NameContainer>
-          <BadgesContainer>
-            <AttestedClaimBadge>
-              <AttestedClaimBadgeName>
-                <Text
-                  size={TextSizes.SMALL}
-                  height={TextHeights.SMALL}
-                  weight={TextWeights.SEMIBOLD}
-                >
-                  Legacy
-                </Text>
-              </AttestedClaimBadgeName>
-            </AttestedClaimBadge>
-          </BadgesContainer>
-        </NameBadgesContainer>
-      </CredentialWrapper>
-    </CredentialContainer>
-  );
-}
-
-function SelfAttestedClaim(
-  props: SelfAttestedClaimProps & React.HTMLProps<HTMLDivElement>,
-) {
-  const { credential } = props;
-
-  const {
-    claim: {
-      properties: { full_name: name },
-    },
+    properties: { full_name: name },
   } = credential;
 
   let hasName = true;

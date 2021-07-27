@@ -8,7 +8,7 @@ export default class CredentialsCollection extends Collection<ICredential> {
     const credentials = JSON.parse(str);
 
     const elements = credentials.map((element: string) =>
-      Credential.fromString(element),
+      Credential.parse(element),
     );
 
     return new CredentialsCollection(...elements);

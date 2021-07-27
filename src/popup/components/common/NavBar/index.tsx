@@ -7,7 +7,7 @@ import { useUserSelector } from "@redux/stores/user/context";
 
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
-import { getAttestedClaims } from "@redux/stores/user/reducers/credentials/selectors";
+import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
 import Text, {
   TextHeights,
@@ -18,8 +18,6 @@ import { IconNames } from "@popup/components/common/Icon";
 import Menu from "@popup/components/common/Menu";
 
 import { exportFile } from "@utils/FileUtils";
-
-import WindowsService from "@services/WindowsService";
 
 import RoutesPaths from "@popup/routes/paths";
 
@@ -51,11 +49,10 @@ const RootContainer = styled.div`
 function MenuNavbar() {
   const history = useHistory();
 
-  const credentials = useUserSelector(getAttestedClaims);
+  const credentials = useUserSelector(getCredentials);
 
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
-  const onClickImport = () => WindowsService.openTab("upload.html");
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
   const menuItems = [
@@ -65,11 +62,6 @@ function MenuNavbar() {
         icon: IconNames.EXPORT,
         onClick: onClickExport,
         disabled: credentials.length === 0,
-      },
-      {
-        label: "Import your data",
-        icon: IconNames.IMPORT,
-        onClick: onClickImport,
       },
     ],
     {

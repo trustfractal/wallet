@@ -10,8 +10,8 @@ const DEFAULT_CREDENTIALS_POLLING_INTERVAL_IN_MILLIS = 15 * 60 * 1000; // 15 min
 export default class CredentialsPolling {
   private interval: NodeJS.Timeout | undefined;
 
-  public fetchSelfAttestedClaims() {
-    UserStore.getStore().dispatch(credentialsActions.fetchSelfAttestedClaims());
+  public fetchCredentials() {
+    UserStore.getStore().dispatch(credentialsActions.fetchCredentials());
   }
 
   public start(
@@ -29,7 +29,7 @@ export default class CredentialsPolling {
         return;
       }
 
-      this.fetchSelfAttestedClaims();
+      this.fetchCredentials();
     }, intervalTime);
   }
 
