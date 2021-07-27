@@ -39,3 +39,8 @@ export const getVersion = createSelector(
   (state) => state.app,
   (app) => app.version,
 );
+
+export const getProtocolOptIn = createSelector(
+  (state) => state.app,
+  (app) => app.protocolOptIn,
+);

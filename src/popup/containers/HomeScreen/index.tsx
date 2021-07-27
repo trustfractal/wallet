@@ -2,6 +2,7 @@ import { useUserSelector } from "@redux/stores/user/context";
 
 import Tabs from "@popup/components/common/Tabs";
 import Credentials from "@popup/components/Credentials";
+import Protocol from "@popup/components/Protocol";
 import { withNavBar } from "@popup/components/common/NavBar";
 
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
@@ -21,8 +22,9 @@ function Home() {
     {
       id: "protocol-tab",
       label: "Protocol",
-      props: { credentials, requests },
-      component: Credentials,
+      props: {},
+      disabled: true,
+      component: Protocol,
     },
   ];
 
