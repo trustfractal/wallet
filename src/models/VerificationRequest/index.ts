@@ -34,8 +34,14 @@ export default class VerificationRequest
 
   public validate(): boolean {
     try {
-      const schema = Schema.build(this.level);
-      return Schema.Validator.validate(schema, this.fields);
+      const { properties } = Schema.build(this.level);
+      const fieldNames = Object.keys(this.fields);
+
+      for (const field of fieldNames) {
+        if (properties[field] === undefined) return false;
+      }
+
+      return true;
     } catch (e) {
       console.log(e.message);
 
