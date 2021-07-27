@@ -2160,10 +2160,10 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@trustfractal/sdk@^0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@trustfractal/sdk/-/sdk-0.4.2.tgz#f98a8bca116ddebf30ec33b9be0f25f167e3fb29"
-  integrity sha512-LGWtvShSVOnVn99IJghlyf09s9GlMiU2p0VHkoxDJy7o2LRB3G9DDCFg6epK7I2inrX5pKtrubW/T98mn1iZZw==
+"@trustfractal/sdk@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@trustfractal/sdk/-/sdk-0.5.0.tgz#520cbf57e10a3537d98b75f0887078ef4651ff5b"
+  integrity sha512-RyHtEL7brWks3KlNIaPBXx3dWwti/+7bNAcSdoFf62Csi0tidZ2Dtfi/R51Fq+5Bh2pKu8ENXc5ipGGZd6N+jw==
   dependencies:
     "@types/uuid" "^8.3.0"
     ethers "^5.1.3"

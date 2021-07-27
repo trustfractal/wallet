@@ -1,6 +1,6 @@
 import { ICredential, ISerializable } from "@pluginTypes/index";
 import { IVerificationRequest } from "@pluginTypes/index";
-import { ClaimType } from "@trustfractal/sdk";
+import { Schema } from "@trustfractal/sdk";
 
 export default class VerificationRequest
   implements IVerificationRequest, ISerializable
@@ -33,33 +33,13 @@ export default class VerificationRequest
   }
 
   public validate(): boolean {
-    const levels = this.level.split("+").sort();
+    try {
+      const schema = Schema.build(this.level);
+      return Schema.Validator.validate(schema, this.fields);
+    } catch (e) {
+      console.log(e.message);
 
-    const fullSchema = levels.reduce((memo, level) => {
-      switch (level) {
-        case "liveness":
-          return { ...memo, ...ClaimType.LivenessSchema };
-        case "basic":
-          return { ...memo, ...ClaimType.BasicSchema };
-        case "plus":
-          return { ...memo, ...ClaimType.PlusSchema };
-        case "wallet":
-          return { ...memo, ...ClaimType.WalletSchema };
-        default:
-          return memo;
-      }
-    }, {});
-
-    const { properties } = ClaimType.buildSchema(levels.join("+"), fullSchema);
-
-    const fieldsNames = Object.keys(this.fields);
-
-    for (let index = 0; index < fieldsNames.length; index++) {
-      const element = fieldsNames[index];
-
-      if (properties[element] === undefined) return false;
+      return false;
     }
-
-    return true;
   }
 }

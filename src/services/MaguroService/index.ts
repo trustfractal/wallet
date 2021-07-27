@@ -52,7 +52,7 @@ export default class MaguroService {
     return response.json();
   }
 
-  public static getSelfAttestedClaims() {
+  public static getCredentials() {
     const token = getBackendMegalodonSession(AppStore.getStore().getState());
 
     return this.callApi("credentials", "GET", null, {

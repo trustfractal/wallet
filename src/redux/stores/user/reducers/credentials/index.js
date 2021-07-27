@@ -1,20 +1,11 @@
 import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
-const types = mirrorCreator([
-  "SET_CREDENTIALS",
-  "SET_SELF_ATTESTED_CLAIMS",
-  "SET_ATTESTED_CLAIMS",
-  "ADD_ATTESTED_CLAIM",
-  "FETCH_SELF_ATTESTED_CLAIMS",
-]);
+const types = mirrorCreator(["SET_CREDENTIALS", "FETCH_CREDENTIALS"]);
 
 export const creators = createActions(
   types.SET_CREDENTIALS,
-  types.SET_SELF_ATTESTED_CLAIMS,
-  types.SET_ATTESTED_CLAIMS,
-  types.ADD_ATTESTED_CLAIM,
-  types.FETCH_SELF_ATTESTED_CLAIMS,
+  types.FETCH_CREDENTIALS,
 );
 
 export const initialState = {

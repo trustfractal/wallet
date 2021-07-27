@@ -32,9 +32,7 @@ const proxyConnection = new ProxyConnection(
 );
 
 proxyConnection
-  .proxy(ConnectionTypes.HAS_CREDENTIAL_BACKGROUND)
   .proxy(ConnectionTypes.GET_VERIFICATION_REQUEST_BACKGROUND)
   .proxy(ConnectionTypes.SETUP_PLUGIN_BACKGROUND)
   .proxy(ConnectionTypes.VERIFY_CONNECTION_BACKGROUND)
-
   .reversedProxy(ConnectionTypes.GET_BACKEND_SESSIONS_INPAGE);
