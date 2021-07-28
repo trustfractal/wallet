@@ -15,3 +15,10 @@
 - Increase credentials polling to 15 minutes
 - Increase staking details polling to 30 minutes
 - Fix only fetching credentials when the user is authenticated yet
+
+## version 0.2.0 (28.07.2021)
+
+- Update credentials type
+- Replace Staking with Protocol
+- Remove KILT logo
+- Fix verification request
