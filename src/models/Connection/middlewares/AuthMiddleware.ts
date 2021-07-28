@@ -19,6 +19,7 @@ function loginFlow(): Promise<void> {
     const registered = isRegistered(AppStore.getStore().getState());
 
     let unlisten = () => {};
+    let resolved = false;
     let size = PopupSizes.MEDIUM;
 
     if (registered) {
@@ -34,7 +35,7 @@ function loginFlow(): Promise<void> {
 
     // register a listener for on close window event
     chrome.windows.onRemoved.addListener((windowId) => {
-      if (windowId === window!.id) {
+      if (windowId === window!.id && !resolved) {
         unlisten();
         reject(ERROR_LOGIN_WINDOW_CLOSED());
       }
@@ -42,6 +43,8 @@ function loginFlow(): Promise<void> {
 
     // create callbacks
     const onLoginSuccess = async () => {
+      resolved = true;
+
       // close login popup
       await WindowsService.closeWindow(window!.id);
 
@@ -54,6 +57,8 @@ function loginFlow(): Promise<void> {
     };
 
     const onTimeout = async () => {
+      resolved = true;
+
       // close login popup
       await WindowsService.closeWindow(window!.id);
 
