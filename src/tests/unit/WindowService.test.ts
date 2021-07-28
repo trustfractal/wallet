@@ -239,9 +239,12 @@ describe("Unit Windows Service", () => {
     it("Given a window id, closeWindow closes the window", async () => {
       // Prepare
       const windowId = 12;
-      chrome.windows.remove.mockImplementation((_, callback?: Function) => {
-        callback?.();
-      });
+      chrome.windows.remove.mockImplementation(
+        (removedWindowId, callback?: Function) => {
+          chrome.windows.onRemoved.callListeners(removedWindowId);
+          callback?.();
+        },
+      );
 
       // Execture
       await WindowsService.closeWindow(windowId);
@@ -297,9 +300,12 @@ describe("Unit Windows Service", () => {
           callback?.(currentWindow);
         },
       );
-      chrome.windows.remove.mockImplementation((_, callback?: Function) => {
-        callback?.();
-      });
+      chrome.windows.remove.mockImplementation(
+        (windowId, callback?: Function) => {
+          chrome.windows.onRemoved.callListeners(windowId);
+          callback?.();
+        },
+      );
 
       // Execture
       await WindowsService.closeCurrentWindow();
@@ -335,9 +341,12 @@ describe("Unit Windows Service", () => {
           callback?.(returnedWindows);
         },
       );
-      chrome.windows.remove.mockImplementation((_, callback?: Function) => {
-        callback?.();
-      });
+      chrome.windows.remove.mockImplementation(
+        (removedWindowId, callback?: Function) => {
+          chrome.windows.onRemoved.callListeners(removedWindowId);
+          callback?.();
+        },
+      );
 
       // Execture
       await WindowsService.closeAllWindows();
@@ -492,9 +501,12 @@ describe("Unit Windows Service", () => {
           callback?.(returnedWindows);
         },
       );
-      chrome.windows.remove.mockImplementation((_, callback?: Function) => {
-        callback?.();
-      });
+      chrome.windows.remove.mockImplementation(
+        (windowId, callback?: Function) => {
+          chrome.windows.onRemoved.callListeners(windowId);
+          callback?.();
+        },
+      );
 
       // Execture
       await WindowsService.closeAllPopups();

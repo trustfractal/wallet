@@ -138,13 +138,15 @@ class WindowsService {
 
   closeWindow(windowId: number): Promise<void> {
     return new Promise((resolve, reject) => {
+      chrome.windows.onRemoved.addListener((closedWindowId) => {
+        if (windowId === closedWindowId) resolve();
+      });
+
       chrome.windows.remove(windowId, () => {
         if (chrome.runtime.lastError !== undefined) {
           console.error(chrome.runtime.lastError);
           reject(ERROR_CLOSE_WINDOW(chrome.runtime.lastError));
         }
-
-        resolve();
       });
     });
   }
