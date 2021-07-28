@@ -1,20 +1,20 @@
 import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
-const types = mirrorCreator(["SET_WALLET"]);
+const types = mirrorCreator(["SET_MNEMONIC"]);
 
-export const creators = createActions(types.SET_WALLET);
+export const creators = createActions(types.SET_MNEMONIC);
 
 export const initialState = {
-  wallet: null,
+  mnemonic: null,
 };
 
 export const reducer = handleActions(
   {
-    [types.SET_WALLET]: (state, { payload: wallet }) =>
+    [types.SET_MNEMONIC]: (state, { payload: mnemonic }) =>
       Object.freeze({
         ...state,
-        wallet,
+        mnemonic,
       }),
   },
   initialState,
@@ -29,7 +29,7 @@ export async function restore(state = {}) {
 
 export async function store(state) {
   return {
-    wallet: state.wallet,
+    mnemonic: state.mnemonic,
   };
 }
 

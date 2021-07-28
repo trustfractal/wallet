@@ -31,7 +31,7 @@ const Container = styled.div`
 function OptInForm(
   appDispatch: Dispatch<AnyAction>,
   userDispatch: Dispatch<AnyAction>,
-  wallet: Wallet,
+  wallet?: Wallet,
 ) {
   const onClick = () => {
     appDispatch(appActions.setProtocolOptIn(true));
@@ -39,7 +39,7 @@ function OptInForm(
     if (!wallet) {
       const newWallet = Wallet.generate();
 
-      userDispatch(protocolActions.setWallet(newWallet));
+      userDispatch(protocolActions.setMnemonic(newWallet.mnemonic));
     }
   };
 
@@ -56,7 +56,7 @@ function OptInForm(
   );
 }
 
-function OptedInScreen(dispatch: Dispatch<AnyAction>, wallet: Wallet) {
+function OptedInScreen(dispatch: Dispatch<AnyAction>, wallet?: Wallet) {
   const onNext = () => dispatch(appActions.setProtocolOptIn(false));
 
   return (
@@ -75,7 +75,7 @@ function OptedInScreen(dispatch: Dispatch<AnyAction>, wallet: Wallet) {
 function Protocol() {
   const appDispatch = useAppDispatch();
   const userDispatch = useUserDispatch();
-  const wallet: Wallet = useUserSelector(getWallet);
+  const wallet = useUserSelector(getWallet);
   const protocolOptIn = useAppSelector(getProtocolOptIn);
 
   return (
