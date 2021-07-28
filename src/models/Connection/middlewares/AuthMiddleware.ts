@@ -78,9 +78,10 @@ function loginFlow(): Promise<void> {
 
 function setupFlow(): Promise<void> {
   return new Promise(async (resolve, reject) => {
-    let unlisten = () => {};
     const registered = isRegistered(AppStore.getStore().getState());
 
+    let unlisten = () => {};
+    let resolved = false;
     let size = PopupSizes.MEDIUM;
 
     if (registered) {
@@ -90,14 +91,14 @@ function setupFlow(): Promise<void> {
     // create normal popup to setup
     const window = await WindowsService.createPopup(size);
 
-    if (!window) {
+    if (window === undefined) {
       reject(ERROR_LOGIN_WINDOW_OPEN());
       return;
     }
 
     // register a listener for on close window event
     chrome.windows.onRemoved.addListener((windowId) => {
-      if (windowId === window.id) {
+      if (windowId === window!.id && !resolved) {
         unlisten();
         reject(ERROR_LOGIN_WINDOW_CLOSED());
       }
@@ -105,6 +106,8 @@ function setupFlow(): Promise<void> {
 
     // create callbacks
     const onSetupSuccess = async () => {
+      resolved = true;
+
       // close setup popup
       await WindowsService.closeWindow(window.id);
 
@@ -112,8 +115,14 @@ function setupFlow(): Promise<void> {
       resolve();
     };
 
-    const onSetupFailed = async (error: any) => reject(error);
+    const onSetupFailed = async (error: any) => {
+      resolved = true;
+      reject(error);
+    };
+
     const onTimeout = async () => {
+      resolved = true;
+
       // close setup popup
       await WindowsService.closeWindow(window.id);
 
