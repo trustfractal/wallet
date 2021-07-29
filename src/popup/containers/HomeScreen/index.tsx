@@ -23,7 +23,6 @@ function Home() {
       id: "protocol-tab",
       label: "Protocol",
       props: {},
-      disabled: true,
       component: Protocol,
     },
   ];
