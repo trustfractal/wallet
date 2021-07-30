@@ -8,8 +8,6 @@ import appActions from "@redux/stores/application/reducers/app";
 import protocolActions from "@redux/stores/user/reducers/protocol";
 import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
 
-import Wallet from "@models/Wallet";
-
 const Container = styled.div`
   width: 100%;
   height: 100%;
@@ -23,18 +21,12 @@ function OptInForm() {
   const userDispatch = useUserDispatch();
   const wallet = useUserSelector(getWallet);
 
-  const onClick = () => {
-    appDispatch(appActions.setProtocolOptIn(true));
-
+  const onClick = async () => {
     if (!wallet) {
-      const newWallet = Wallet.generate();
-
-      // TODO(frm): get the signing key from the server
-      const signingKey = "//Fredie";
-
-      userDispatch(protocolActions.setMnemonic(newWallet.mnemonic));
-      userDispatch(protocolActions.setSigningKey(signingKey));
+      userDispatch(protocolActions.createWallet());
     }
+
+    appDispatch(appActions.setProtocolOptIn(true));
   };
 
   return (

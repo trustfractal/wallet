@@ -1,8 +1,9 @@
+import { u8aToHex } from "@polkadot/util";
 import {
   encodeAddress,
   mnemonicGenerate,
   mnemonicToMiniSecret,
-  naclKeypairFromSeed,
+  schnorrkelKeypairFromSeed,
 } from "@polkadot/util-crypto";
 
 export default class Wallet {
@@ -17,17 +18,25 @@ export default class Wallet {
   }
 
   public mnemonic: string;
-  public seed: Uint8Array;
-  public publicKey: Uint8Array;
+  public _seed: Uint8Array;
+  public _publicKey: Uint8Array;
   public address: string;
 
   public constructor(mnemonic: string) {
     this.mnemonic = mnemonic;
 
-    this.seed = mnemonicToMiniSecret(mnemonic);
-    const { publicKey } = naclKeypairFromSeed(this.seed);
-    this.publicKey = publicKey;
+    this._seed = mnemonicToMiniSecret(mnemonic);
+    const { publicKey } = schnorrkelKeypairFromSeed(this._seed);
+    this._publicKey = publicKey;
     this.address = encodeAddress(publicKey);
+  }
+
+  public get seed(): string {
+    return u8aToHex(this._seed);
+  }
+
+  public get publicKey(): string {
+    return u8aToHex(this._publicKey);
   }
 
   public serialize(): string {
