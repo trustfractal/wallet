@@ -8,12 +8,7 @@ export const getWallet = createSelector(
     protocol.mnemonic ? Wallet.fromMnemonic(protocol.mnemonic) : undefined,
 );
 
-export const getSigningKey = createSelector(
-  (state) => state.protocol,
-  (protocol) => protocol.signingKey,
-);
-
 export const isRegisteredForMinting = createSelector(
   (state) => state.protocol,
-  (protocol) => protocol.registerForMinting,
+  (protocol) => protocol.registeredForMinting,
 );

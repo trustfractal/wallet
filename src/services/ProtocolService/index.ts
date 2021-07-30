@@ -1,22 +1,24 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Keyring } from "@polkadot/keyring";
 import type { KeyringPair } from "@polkadot/keyring/types";
-import type { Hash } from "@polkadot/types/interfaces";
+import type { AccountData } from "@polkadot/types/interfaces";
 
 import Environment from "@environment/index";
 
 import types from "./types";
 
+export * from "./context";
+
 export default class ProtocolService {
   public api: ApiPromise;
   public signer: KeyringPair;
 
-  public static async create(signingKey: string): Promise<ProtocolService> {
+  public static async create(uri: string): Promise<ProtocolService> {
     const provider = new WsProvider(Environment.PROTOCOL_RPC_ENDPOINT);
     const api = await ApiPromise.create({ provider, types });
 
     const keyring = new Keyring({ type: "sr25519" });
-    const signer = keyring.addFromUri(signingKey);
+    const signer = keyring.addFromUri(uri);
 
     return new ProtocolService(api, signer);
   }
@@ -26,12 +28,17 @@ export default class ProtocolService {
     this.signer = signer;
   }
 
-  public async registerForMinting(
-    accountId: string,
-    proof: string,
-  ): Promise<Hash> {
-    return await this.api.tx.fractalMinting
-      .registerForMinting(accountId, proof)
-      .signAndSend(this.signer);
+  public async registerForMinting(proof: string): Promise<string> {
+    console.log("register for minting");
+
+    return (
+      await this.api.tx.fractalMinting
+        .registerForMinting(null, proof)
+        .signAndSend(this.signer)
+    ).toHex();
+  }
+
+  public async getBalance(accountId: string): Promise<AccountData> {
+    return await this.api.query.balances.account(accountId);
   }
 }
