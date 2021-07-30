@@ -1,17 +1,29 @@
-import { Dispatch } from "react";
+import { Dispatch, useEffect, useState } from "react";
 import { AnyAction } from "redux";
 import styled from "styled-components";
+import type { AccountData } from "@polkadot/types/interfaces";
+
+import { useAppDispatch } from "@redux/stores/application/context";
+import { useUserSelector } from "@redux/stores/user/context";
+import appActions from "@redux/stores/application/reducers/app";
+import {
+  getWallet,
+  isRegisteredForMinting,
+} from "@redux/stores/user/reducers/protocol/selectors";
+
+import { useProtocol } from "@services/ProtocolService";
 
 import Button from "@popup/components/common/Button";
 
-import { useAppDispatch } from "@redux/stores/application/context";
-import { useUserDispatch, useUserSelector } from "@redux/stores/user/context";
-import appActions from "@redux/stores/application/reducers/app";
-import protocolActions from "@redux/stores/user/reducers/protocol";
-import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
+interface DispatchableComponent {
+  dispatch: Dispatch<AnyAction>;
+}
 
-import ProtocolService from "@services/ProtocolService";
-import { useProtocol } from "@services/ProtocolService/context";
+interface BalanceProps {
+  hasWallet: boolean;
+  isRegistered: boolean;
+  balance?: AccountData;
+}
 
 const Container = styled.div`
   width: 100%;
@@ -21,32 +33,56 @@ const Container = styled.div`
   justify-content: center;
 `;
 
-const optOut = (dispatch: Dispatch<AnyAction>) => {
-  dispatch(appActions.setProtocolOptIn(false));
-};
+function OptOut({ dispatch }: DispatchableComponent) {
+  const onClick = () => {
+    dispatch(appActions.setProtocolOptIn(false));
+  };
 
-const registerForMinting = async (
-  protocol: ProtocolService,
-  dispatch: Dispatch<AnyAction>,
-  address: string,
-) => {
-  // TODO(frm): Calculate proof
-  const proof =
-    "0x4004021ced8799296ceca557832ab941a50b4a11f83478cf141f51f933f653ab9fbcc05a037cddbed06e309bf334942c4e58cdf1a46e237911ccd7fcf9787cbc7fd0";
+  return <Button onClick={onClick}>Opt Out</Button>;
+}
 
-  const response = await protocol.registerForMinting(address, proof);
-  console.log(response);
-
-  dispatch(protocolActions.setRegisteredForMinting(true));
-};
+function Balance({ hasWallet, isRegistered, balance }: BalanceProps) {
+  switch (true) {
+    case !hasWallet:
+      return <></>;
+    case !isRegistered:
+      return <p>Registering for minting...</p>;
+    case balance === undefined:
+      return <p>Fetching your balance...</p>;
+    default:
+      return (
+        <div>
+          <p>
+            <strong>Free: </strong>
+            {balance!.free.toNumber()} FCL
+          </p>
+          <p>
+            <strong>Reserved: </strong>
+            {balance!.reserved.toNumber()} FCL
+          </p>
+        </div>
+      );
+  }
+}
 
 function OptedInScreen() {
   const appDispatch = useAppDispatch();
-  const userDispatch = useUserDispatch();
   const wallet = useUserSelector(getWallet);
+  const isRegistered = useUserSelector(isRegisteredForMinting);
+  const [balance, setBalance] = useState<AccountData>();
+
   const protocol = useProtocol();
 
-  const shouldRegister = !protocol || !wallet || !wallet.address;
+  useEffect(() => {
+    if (!protocol || !wallet) return;
+
+    const fetchBalance = async () => {
+      const accountBalance = await protocol.getBalance(wallet!.address);
+      setBalance(accountBalance);
+    };
+
+    fetchBalance();
+  }, [protocol, wallet]);
 
   return (
     <Container>
@@ -56,23 +92,16 @@ function OptedInScreen() {
       <br />
       <br />
 
-      {shouldRegister ? (
-        <Button disabled>Register for Minting</Button>
-      ) : (
-        <Button
-          disabled={!protocol || !wallet || !wallet.address}
-          onClick={() =>
-            registerForMinting(protocol!, userDispatch, wallet!.address)
-          }
-        >
-          Register for Minting
-        </Button>
-      )}
+      <Balance
+        hasWallet={!!wallet}
+        isRegistered={isRegistered}
+        balance={balance}
+      />
 
       <br />
       <br />
 
-      <Button onClick={() => optOut(appDispatch)}>Opt Out</Button>
+      <OptOut dispatch={appDispatch} />
     </Container>
   );
 }
