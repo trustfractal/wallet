@@ -7,43 +7,58 @@ import CatfishService from "@services/CatfishService";
 import HttpService from "@services/HttpService";
 
 export default class MaguroService {
+  private static ensureAuthorization(
+    headers: Record<string, string>,
+  ): Record<string, string> {
+    if (headers["authorization"]) return headers;
+
+    const token = getBackendMegalodonSession(AppStore.getStore().getState());
+
+    headers["authorization"] = `Bearer ${token}`;
+    headers["content-type"] = "application/json";
+
+    return headers;
+  }
+
   private static async callApi(
     route: string,
     method: RequestInit["method"] = "GET",
     body?: RequestInit["body"],
     headers?: RequestInit["headers"],
   ): Promise<any> {
+    const headersWithAuth = this.ensureAuthorization(
+      (headers as Record<string, string>) || {},
+    );
+
     const response = await HttpService.call(
       `${Environment.MAGURO_URL}/${route}`,
       method,
       body,
-      headers,
+      headersWithAuth,
     );
 
     if (!response.ok) {
       // check if megalodon token has expired
-      if (headers && (headers as Record<string, string>)["authorization"]) {
-        if (response.status === 401) {
-          return CatfishService.refreshResourceServerToken().then(
-            async (token) => {
-              const response = await HttpService.call(
-                `${Environment.MAGURO_URL}/${route}`,
-                method,
-                body,
-                {
-                  ...headers,
-                  authorization: `Bearer ${token}`,
-                },
-              );
+      if (response.status === 401) {
+        return CatfishService.refreshResourceServerToken().then(
+          async (token) => {
+            const response = await HttpService.call(
+              `${Environment.MAGURO_URL}/${route}`,
+              method,
+              body,
+              {
+                ...headers,
+                authorization: `Bearer ${token}`,
+              },
+            );
 
-              if (!response.ok) {
-                throw new Error(response.statusText);
-              }
+            if (!response.ok) {
+              throw new Error(response.statusText);
+            }
 
-              return response.json();
-            },
-          );
-        }
+            return response.json();
+          },
+        );
       }
 
       throw new Error(response.statusText);
@@ -53,10 +68,14 @@ export default class MaguroService {
   }
 
   public static getCredentials() {
-    const token = getBackendMegalodonSession(AppStore.getStore().getState());
+    return this.callApi("credentials", "GET", null);
+  }
 
-    return this.callApi("credentials", "GET", null, {
-      authorization: `Bearer ${token}`,
-    });
+  public static registerIdentity(address: string) {
+    return this.callApi(
+      "protocol/register_identity",
+      "POST",
+      JSON.stringify({ linked_address: address }),
+    );
   }
 }

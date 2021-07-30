@@ -7,7 +7,7 @@ import {
 } from "react";
 
 import { useUserSelector } from "@redux/stores/user/context";
-import { getSigningKey } from "@redux/stores/user/reducers/protocol/selectors";
+import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
 
 import ProtocolService from ".";
 
@@ -20,21 +20,19 @@ export const ProtocolContext = createContext<ProtocolService | null>(null);
 export const ProtocolProvider = ({ children }: Props) => {
   const [protocol, setProtocol] = useState<ProtocolService | null>(null);
   const [isReady, setIsReady] = useState(false);
-  const signingKey = useUserSelector(getSigningKey);
-
-  console.log("signingKey", signingKey);
+  const wallet = useUserSelector(getWallet);
 
   useEffect(() => {
-    if (!isReady && signingKey) {
+    if (!isReady && wallet) {
       const setupService = async () => {
-        const service = await ProtocolService.create(signingKey);
+        const service = await ProtocolService.create(wallet!.publicKey);
         setProtocol(service);
         setIsReady(true);
       };
 
       setupService();
     }
-  }, [isReady, signingKey]);
+  }, [isReady, wallet]);
 
   return (
     <ProtocolContext.Provider value={protocol}>
