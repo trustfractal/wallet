@@ -27,3 +27,8 @@
 
 - Change storage permission to unlimitedStorage
 - Increase requests timeout to 2 minutes
+
+## version 0.2.2 (04.08.2021)
+
+- Fix missing storage permission
+- Add requests feedback screen after reply to it
