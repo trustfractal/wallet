@@ -15,6 +15,11 @@ export const getVersion = createSelector(
   (app) => app.version,
 );
 
+export const getProtocolEnabled = createSelector(
+  (state) => state.app,
+  (app) => app.protocolEnabled,
+);
+
 export const getProtocolOptIn = createSelector(
   (state) => state.app,
   (app) => app.protocolOptIn,
