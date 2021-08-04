@@ -11,7 +11,7 @@ import {
   WatcherInvokation,
 } from "@pluginTypes/index";
 
-const REQUESTS_TIME_OUT = 30 * 1000; // 30 seconds
+const REQUESTS_TIME_OUT = 2 * 60 * 30 * 1000; // 2 minutes
 
 export default class RequestsWatcher
   extends Watcher
