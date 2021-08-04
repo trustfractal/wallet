@@ -2,7 +2,6 @@ import { useState } from "react";
 import styled, { css } from "styled-components";
 
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
-import RequestsCollection from "@models/Request/RequestsCollection";
 import VerificationRequest from "@models/VerificationRequest";
 
 import { withNavBar } from "@popup/components/common/NavBar";
@@ -20,9 +19,10 @@ import CheckboxInput from "@popup/components/common/CheckboxInput";
 import RadioInput from "@popup/components/common/RadioInput";
 import LevelIcon, { LevelIconSizes } from "@popup/components/common/LevelIcon";
 
-import { ICredential } from "@pluginTypes/plugin";
+import { ICredential, IRequest } from "@pluginTypes/plugin";
 
 import { fromSnackCase } from "@utils/FormatUtils";
+import RequestsStatus from "@models/Request/status";
 
 const HeaderContainer = styled.div`
   padding: var(--s-24) 0px;
@@ -76,6 +76,7 @@ const SelectedCredential = styled.div`
 
 const ActionsContainer = styled.div`
   display: flex;
+  justify-content: center;
 `;
 
 const ActionContainer = styled.div`
@@ -168,8 +169,16 @@ const CredentialWrapper = styled.div`
   flex-direction: column;
 `;
 
+const AllowedLabel = styled.span`
+  color: var(--c-green);
+`;
+
+const DeclinedLabel = styled.span`
+  color: var(--c-red);
+`;
+
 export type RequestsProps = {
-  requests: RequestsCollection;
+  request: IRequest;
   credentials: CredentialsCollection;
   onAccept: (
     id: string,
@@ -177,6 +186,7 @@ export type RequestsProps = {
     properties: Record<string, boolean>,
   ) => void;
   onDecline: (id: string, credential: ICredential) => void;
+  onNext: () => void;
 };
 
 export type CredentialProps = {
@@ -235,10 +245,9 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
   );
 }
 
-function Requests(props: RequestsProps) {
-  const { requests, credentials, onAccept, onDecline } = props;
+function PendingRequest(props: RequestsProps) {
+  const { request, credentials, onAccept, onDecline } = props;
 
-  const [request] = requests;
   const verificationRequest = request.request as VerificationRequest;
   const requester = request.requester;
 
@@ -302,12 +311,13 @@ function Requests(props: RequestsProps) {
   return (
     <TopComponent>
       <HeaderContainer>
-        <RequestIcon requester={requester.icon} />
+        <RequestIcon
+          requester={requester.icon}
+          status={RequestsStatus.PENDING}
+        />
       </HeaderContainer>
       <TitleContainer>
-        <Title>
-          {`${requester.name} is asking permission to access some information:`}
-        </Title>
+        <Title>{`${requester.name} is asking permission to access some information:`}</Title>
       </TitleContainer>
       <SelectContainer>
         {hasCredentialSelected && (
@@ -397,4 +407,74 @@ function Requests(props: RequestsProps) {
   );
 }
 
-export default withNavBar(Requests);
+function AcceptedRequest(props: RequestsProps) {
+  const { request, onNext } = props;
+
+  const requester = request.requester;
+
+  return (
+    <TopComponent>
+      <HeaderContainer>
+        <RequestIcon
+          requester={requester.icon}
+          status={RequestsStatus.ACCEPTED}
+        />
+      </HeaderContainer>
+      <TitleContainer>
+        <Title>
+          {requester.name} was <AllowedLabel>allowed</AllowedLabel> to access
+          your credential!
+        </Title>
+      </TitleContainer>
+      <ActionsContainer>
+        <ActionsContainer>
+          <Button onClick={onNext}>Got it</Button>
+        </ActionsContainer>
+      </ActionsContainer>
+    </TopComponent>
+  );
+}
+
+function DeclinedRequest(props: RequestsProps) {
+  const { request, onNext } = props;
+
+  const requester = request.requester;
+
+  return (
+    <TopComponent>
+      <HeaderContainer>
+        <RequestIcon
+          requester={requester.icon}
+          status={RequestsStatus.DECLINED}
+        />
+      </HeaderContainer>
+      <TitleContainer>
+        <Title>
+          {requester.name} was <DeclinedLabel>denied</DeclinedLabel> to access
+          your credential!
+        </Title>
+      </TitleContainer>
+      <ActionsContainer>
+        <ActionsContainer>
+          <Button onClick={onNext}>Got it</Button>
+        </ActionsContainer>
+      </ActionsContainer>
+    </TopComponent>
+  );
+}
+
+function Request(props: RequestsProps) {
+  const { request } = props;
+
+  if (request.status === RequestsStatus.ACCEPTED) {
+    return <AcceptedRequest {...props} />;
+  }
+
+  if (request.status === RequestsStatus.DECLINED) {
+    return <DeclinedRequest {...props} />;
+  }
+
+  return <PendingRequest {...props} />;
+}
+
+export default withNavBar(Request);
