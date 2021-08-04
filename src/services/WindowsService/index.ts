@@ -159,6 +159,14 @@ class WindowsService {
     return window;
   }
 
+  async closeCurrentPopup(): Promise<chrome.windows.Window> {
+    const window = await this.getCurrentWindow({ windowTypes: ["popup"] });
+
+    if (window) await this.closeWindow(window.id);
+
+    return window;
+  }
+
   async closeAllWindows(): Promise<Array<chrome.windows.Window>> {
     const windows = await this.getAllWindows();
 
@@ -221,6 +229,14 @@ class WindowsService {
     }
 
     return popupWindow;
+  }
+
+  public async closePopup() {
+    const window = await this.getPopup();
+
+    if (window !== undefined) {
+      await this.closeWindow(window.id);
+    }
   }
 
   private async getPopup() {

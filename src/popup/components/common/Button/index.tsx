@@ -20,6 +20,8 @@ const Root = styled.button<{
   align-items: center;
   justify-content: center;
 
+  min-width: var(--s-48);
+
   ${(props) =>
     props.disabled &&
     css`

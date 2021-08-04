@@ -76,17 +76,11 @@ export const getVerificationRequest = ([level, requester, fields = {}]: [
       }
 
       const onAccepted = (verificationRequest: IVerificationRequest) => {
-        // close request popup
-        WindowsService.closeWindow(window.id);
-
         // resolve promise
         resolve(verificationRequest.serialize());
       };
 
       const onDeclined = () => {
-        // close request popup
-        WindowsService.closeWindow(window.id);
-
         // reject promise
         reject(ERROR_VERIFICATION_REQUEST_DECLINED());
       };
