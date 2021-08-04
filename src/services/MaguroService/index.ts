@@ -78,4 +78,8 @@ export default class MaguroService {
       JSON.stringify({ linked_address: address }),
     );
   }
+
+  public static getConfig() {
+    return this.callApi("config", "GET", null);
+  }
 }

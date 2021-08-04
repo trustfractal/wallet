@@ -7,6 +7,7 @@ const types = mirrorCreator([
   "SET_SETUP",
   "SET_STATUS",
   "SET_VERSION",
+  "SET_PROTOCOL_ENABLED",
   "SET_PROTOCOL_OPT_IN",
 ]);
 
@@ -16,6 +17,7 @@ export const creators = createActions(
   types.SET_SETUP,
   types.SET_STATUS,
   types.SET_VERSION,
+  types.SET_PROTOCOL_ENABLED,
   types.SET_PROTOCOL_OPT_IN,
 );
 
@@ -24,6 +26,7 @@ export const initialState = {
   setup: false,
   version: "",
   protocolOptIn: false,
+  protocolEnabled: false,
 };
 
 export const reducer = handleActions(
@@ -42,6 +45,11 @@ export const reducer = handleActions(
       Object.freeze({
         ...state,
         version,
+      }),
+    [types.SET_PROTOCOL_ENABLED]: (state, { payload: protocolEnabled }) =>
+      Object.freeze({
+        ...state,
+        protocolEnabled,
       }),
     [types.SET_PROTOCOL_OPT_IN]: (state, { payload: protocolOptIn }) =>
       Object.freeze({
@@ -63,6 +71,7 @@ export async function store(state) {
   return {
     setup: state.setup,
     protocolOptIn: state.protocolOptIn,
+    protocolEnabled: state.protocolEnabled,
   };
 }
 
