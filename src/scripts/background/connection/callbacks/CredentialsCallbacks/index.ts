@@ -76,21 +76,11 @@ export const getVerificationRequest = ([level, requester, fields = {}]: [
       }
 
       const onAccepted = (verificationRequest: IVerificationRequest) => {
-        // close request popup after 39 seconds
-        setTimeout(() => {
-          WindowsService.closeWindow(window.id);
-        }, 39 * 1000);
-
         // resolve promise
         resolve(verificationRequest.serialize());
       };
 
       const onDeclined = () => {
-        // close request popup after 30 seconds
-        setTimeout(() => {
-          WindowsService.closeWindow(window.id);
-        }, 30 * 1000);
-
         // reject promise
         reject(ERROR_VERIFICATION_REQUEST_DECLINED());
       };

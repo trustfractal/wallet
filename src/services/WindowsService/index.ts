@@ -234,8 +234,6 @@ class WindowsService {
   public async closePopup() {
     const window = await this.getPopup();
 
-    console.log(window);
-
     if (window !== undefined) {
       await this.closeWindow(window.id);
     }

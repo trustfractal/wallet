@@ -22,7 +22,6 @@ function RequestsShowScreen() {
   const request = requests.find(({ id }) => id === requestId);
 
   if (request === undefined) {
-    console.log("no request");
     history.push(RoutesPaths.REQUESTS_INDEX);
     return null;
   }
@@ -46,7 +45,7 @@ function RequestsShowScreen() {
         credential: credential.serialize(),
       }),
     );
-  const onNext = () => history.push(RoutesPaths.REQUESTS);
+  const onNext = () => history.push(RoutesPaths.REQUESTS_INDEX);
 
   return (
     <Requests

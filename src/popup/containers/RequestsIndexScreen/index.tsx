@@ -21,13 +21,13 @@ function RequestsIndexScreen() {
 
   useEffect(() => {
     if (requests.length === 0) {
-      // close popup if opened
+      // close popup if it's open
       closeAndRedirect();
       return;
     }
 
     const [request] = requests;
-    history.push(`${RoutesPaths.REQUESTS}/${request.id}`);
+    history.push(`${RoutesPaths.REQUESTS_INDEX}/${request.id}`);
   });
 
   return null;
