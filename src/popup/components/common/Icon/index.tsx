@@ -28,7 +28,9 @@ const { default: MenuActive } = require("@assets/menu-active.svg");
 const { default: MenuInactive } = require("@assets/menu-inactive.svg");
 const { default: Export } = require("@assets/export.svg");
 const { default: Import } = require("@assets/import.svg");
-const { default: Request } = require("@assets/request.svg");
+const { default: RequestAccepted } = require("@assets/request-accepted.svg");
+const { default: RequestPending } = require("@assets/request-pending.svg");
+const { default: RequestDeclined } = require("@assets/request-declined.svg");
 const { default: Accepted } = require("@assets/accepted.svg");
 const { default: Declined } = require("@assets/declined.svg");
 const { default: About } = require("@assets/about.svg");
@@ -73,7 +75,9 @@ export enum IconNames {
   MENU_INACTIVE = "menu-inactive",
   EXPORT = "export",
   IMPORT = "import",
-  REQUEST = "request",
+  REQUEST_ACCEPTED = "request-accepted",
+  REQUEST_PENDING = "request-pending",
+  REQUEST_DECLINED = "request-declined",
   ACCEPTED = "accepted",
   DECLINED = "declined",
   ABOUT = "about",
@@ -108,7 +112,9 @@ const Icons: Record<string, any> = {
   [IconNames.MENU_INACTIVE]: MenuInactive,
   [IconNames.EXPORT]: Export,
   [IconNames.IMPORT]: Import,
-  [IconNames.REQUEST]: Request,
+  [IconNames.REQUEST_ACCEPTED]: RequestAccepted,
+  [IconNames.REQUEST_PENDING]: RequestPending,
+  [IconNames.REQUEST_DECLINED]: RequestDeclined,
   [IconNames.ACCEPTED]: Accepted,
   [IconNames.DECLINED]: Declined,
   [IconNames.ABOUT]: About,

@@ -1,7 +1,6 @@
 import { useHistory } from "react-router";
 
 import HomeScreen from "@popup/containers/HomeScreen";
-import RequestsScreen from "@popup/containers/RequestsScreen";
 
 import EmptyCredentials from "@popup/components/EmptyCredentials";
 
@@ -28,6 +27,7 @@ function WalletScreen() {
   // redirect to fractal connect screen
   if (!setup) {
     history.push(RoutesPaths.CONNECT_FRACTAL);
+    return null;
   }
 
   // check if has credentials
@@ -45,7 +45,8 @@ function WalletScreen() {
 
   // check if requests
   if (requests.length !== 0) {
-    return <RequestsScreen />;
+    history.push(RoutesPaths.REQUESTS_INDEX);
+    return null;
   }
 
   return <HomeScreen />;

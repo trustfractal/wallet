@@ -10,6 +10,7 @@ export const global = css`
     --c-white: #ffffff;
     --c-dark-blue: #132c53;
     --c-red: rgba(239, 68, 68);
+    --c-green: #29dbb0;
     --c-gray: #edeff2;
     --c-dark-gray: #f2f4f8;
     --c-transparent: transparent;
