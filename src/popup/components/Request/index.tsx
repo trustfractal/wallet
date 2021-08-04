@@ -169,7 +169,7 @@ const CredentialWrapper = styled.div`
   flex-direction: column;
 `;
 
-const AcceptedLabel = styled.span`
+const AllowedLabel = styled.span`
   color: var(--c-green);
 `;
 
@@ -422,8 +422,8 @@ function AcceptedRequest(props: RequestsProps) {
       </HeaderContainer>
       <TitleContainer>
         <Title>
-          {requester.name} <AcceptedLabel>allowed</AcceptedLabel> to access your
-          credential!
+          {requester.name} was <AllowedLabel>allowed</AllowedLabel> to access
+          your credential!
         </Title>
       </TitleContainer>
       <ActionsContainer>
@@ -450,8 +450,8 @@ function DeclinedRequest(props: RequestsProps) {
       </HeaderContainer>
       <TitleContainer>
         <Title>
-          {requester.name} <DeclinedLabel>denied</DeclinedLabel> to access your
-          credential!
+          {requester.name} was <DeclinedLabel>denied</DeclinedLabel> to access
+          your credential!
         </Title>
       </TitleContainer>
       <ActionsContainer>
