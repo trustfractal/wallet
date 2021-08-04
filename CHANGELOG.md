@@ -22,3 +22,8 @@
 - Replace Staking with Protocol
 - Remove KILT logo
 - Fix verification request
+
+## version 0.2.1 (04.08.2021)
+
+- Change storage permission to unlimitedStorage
+- Increase requests timeout to 2 minutes
