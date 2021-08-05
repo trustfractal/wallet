@@ -7,8 +7,9 @@ import { useAppDispatch } from "@redux/stores/application/context";
 import { useUserSelector } from "@redux/stores/user/context";
 import appActions from "@redux/stores/application/reducers/app";
 import {
-  getWallet,
   getRegistrationState,
+  getWallet,
+  getWebpages,
   isRegisteredForMinting,
   hasRegistrationErrored,
 } from "@redux/stores/user/reducers/protocol/selectors";
@@ -17,6 +18,8 @@ import { protocolRegistrationTypes } from "@redux/stores/user/reducers/protocol"
 
 import Wallet from "@models/Wallet";
 import { useProtocol } from "@services/ProtocolService";
+
+import Webpage from "@models/Webpage";
 
 import Button from "@popup/components/common/Button";
 
@@ -41,6 +44,10 @@ interface AddressProps {
   registrationErrored: boolean;
   registrationState: string | null;
   wallet?: Wallet;
+}
+
+interface WebpagesProps {
+  webpages: Webpage[];
 }
 
 const Container = styled.div`
@@ -98,6 +105,27 @@ function Address({
   return <></>;
 }
 
+function Webpages({ webpages }: WebpagesProps) {
+  return (
+    <div>
+      <h1>Visited webpages</h1>
+      <ul>
+        {webpages.map(({ pathname, hostname, timestamp }) => (
+          <li>
+            <strong>Hostname:</strong> {hostname}
+            <br />
+            <strong>Pathname:</strong> {pathname}
+            <br />
+            <strong>Timestamp:</strong> {timestamp}
+            <br />
+            <br />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function OptedInScreen() {
   const appDispatch = useAppDispatch();
   const wallet = useUserSelector(getWallet);
@@ -105,6 +133,7 @@ function OptedInScreen() {
   const registrationErrored = useUserSelector(hasRegistrationErrored);
   const registrationState = useUserSelector(getRegistrationState);
   const [balance, setBalance] = useState<AccountData>();
+  const webpages = useUserSelector(getWebpages);
 
   const protocol = useProtocol();
 
@@ -136,6 +165,11 @@ function OptedInScreen() {
         isRegisteredForMinting={registeredForMinting}
         balance={balance}
       />
+
+      <br />
+      <br />
+
+      <Webpages webpages={webpages} />
 
       <br />
       <br />

@@ -1,12 +1,15 @@
 import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
+import Webpage from "@models/Webpage";
+
 const types = mirrorCreator([
   "SET_MNEMONIC",
   "SET_REGISTERED_FOR_MINTING",
   "SET_REGISTRATION_STATE",
   "SET_REGISTRATION_ERROR",
   "CREATE_WALLET",
+  "ADD_WEBPAGE",
 ]);
 
 const registrationTypes = {
@@ -23,6 +26,7 @@ export const creators = createActions(
   types.SET_REGISTRATION_STATE,
   types.SET_REGISTRATION_ERROR,
   types.CREATE_WALLET,
+  types.ADD_WEBPAGE,
 );
 
 export const initialState = {
@@ -30,6 +34,7 @@ export const initialState = {
   isRegisteredForMinting: false,
   registrationState: null,
   registrationError: false,
+  webpages: [],
 };
 
 export const reducer = handleActions(
@@ -60,6 +65,15 @@ export const reducer = handleActions(
         ...state,
         registrationError,
       }),
+
+    [types.ADD_WEBPAGE]: (state, { payload: location }) =>
+      Object.freeze({
+        ...state,
+        webpages: [
+          ...state.webpages,
+          Webpage.fromLocation(location).serialize(),
+        ],
+      }),
   },
   initialState,
 );
@@ -77,6 +91,7 @@ export async function store(state) {
     isRegisteredForMinting: state.isRegisteredForMinting,
     registrationState: state.registrationState,
     registrationError: state.registrationError,
+    webpages: state.webpages,
   };
 }
 
