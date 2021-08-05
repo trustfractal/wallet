@@ -6,6 +6,8 @@ on:
       - dev
 
   pull_request:
+    branches:
+      - dev
     types: [opened, synchronize]
     ignore-paths:
       - "*.md"
@@ -53,6 +55,7 @@ jobs:
       REACT_APP_GOLDFISH_URL: ${{secrets.GOLDFISH_STAGING_URL}}
       REACT_APP_FRACTAL_WEBSITE_URL: ${{secrets.FRACTAL_WEBSITE_STAGING_URL}}
       REACT_APP_MAGURO_URL: ${{secrets.MAGURO_STAGING_URL}}
+      REACT_APP_PROTOCOL_RPC_ENDPOINT: ${{secrets.PROTOCOL_RPC_ENDPOINT}}
 
     steps:
       - uses: actions/checkout@v2
