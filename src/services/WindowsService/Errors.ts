@@ -10,6 +10,9 @@ export enum ErrorCode {
   ERROR_FOCUS_WINDOW = 2008,
   ERROR_GET_LAST_FOCUSED_WINDOW = 2009,
   ERROR_UPDATE_WINDOW_POSITION = 2010,
+  ERROR_UPDATE_WINDOW = 2011,
+  ERROR_UPDATE_TAB = 2012,
+  ERROR_UPDATE_WINDOW_SIZE = 2013,
 }
 
 export class WindowsServiceError extends Error {
@@ -104,7 +107,7 @@ export const ERROR_UPDATE_TAB = (
   tabId: number,
 ): WindowsServiceError => {
   return new WindowsServiceError(
-    ErrorCode.ERROR_GET_TAB,
+    ErrorCode.ERROR_UPDATE_TAB,
     errorChrome,
     `WindowsService: could not update the tab with the ID ${tabId}`,
   );
@@ -114,7 +117,7 @@ export const ERROR_QUERY_TABS = (
   errorChrome: chrome.runtime.LastError,
 ): WindowsServiceError => {
   return new WindowsServiceError(
-    ErrorCode.ERROR_GET_TAB,
+    ErrorCode.ERROR_QUERY_TABS,
     errorChrome,
     "WindowsService: could not get query the tabs",
   );
@@ -147,5 +150,26 @@ export const ERROR_UPDATE_WINDOW_POSITION = (
     ErrorCode.ERROR_UPDATE_WINDOW_POSITION,
     errorChrome,
     "WindowsService: could not updated window position",
+  );
+};
+
+export const ERROR_UPDATE_WINDOW = (
+  errorChrome: chrome.runtime.LastError,
+  windowId: number,
+): WindowsServiceError => {
+  return new WindowsServiceError(
+    ErrorCode.ERROR_UPDATE_WINDOW,
+    errorChrome,
+    `WindowsService: could not update the window with the ID ${windowId}`,
+  );
+};
+
+export const ERROR_UPDATE_WINDOW_SIZE = (
+  errorChrome: chrome.runtime.LastError,
+): WindowsServiceError => {
+  return new WindowsServiceError(
+    ErrorCode.ERROR_UPDATE_WINDOW_SIZE,
+    errorChrome,
+    `WindowsService: could not update the window size`,
   );
 };

@@ -68,7 +68,7 @@ export const getVerificationRequest = ([level, requester, fields = {}]: [
       );
 
       // open popup on a new window
-      const window = await WindowsService.createPopup(PopupSizes.LARGE);
+      const window = await WindowsService.createPopup(PopupSizes.MEDIUM);
 
       if (!window) {
         reject(ERROR_VERIFICATION_REQUEST_WINDOW_OPEN());

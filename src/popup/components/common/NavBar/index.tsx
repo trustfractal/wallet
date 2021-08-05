@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 
-import { useAppSelector } from "@redux/stores/application/context";
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "@redux/stores/application/context";
+import appActions from "@redux/stores/application/reducers/app";
 import { useUserSelector } from "@redux/stores/user/context";
 
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
@@ -117,12 +121,27 @@ export default function Navbar() {
 
 export const withNavBar =
   <P extends object>(Component: React.ComponentType<P>) =>
-  (props: any) =>
-    (
+  (props: any) => {
+    const dispatch = useAppDispatch();
+
+    const ref = React.createRef<HTMLDivElement>();
+
+    useEffect(() => {
+      if (ref.current !== null) {
+        const element = ref.current;
+        const height =
+          Math.max(element.scrollHeight, element.offsetHeight) + 24;
+
+        dispatch(appActions.setPopupSize({ height }));
+      }
+    }, [ref, dispatch]);
+
+    return (
       <>
-        <RootContainer>
+        <RootContainer ref={ref}>
           <Navbar />
           <Component {...(props as P)} />
         </RootContainer>
       </>
     );
+  };
