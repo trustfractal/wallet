@@ -8,6 +8,7 @@ const types = mirrorCreator([
   "SET_STATUS",
   "SET_VERSION",
   "SET_PROTOCOL_OPT_IN",
+  "SET_POPUP_SIZE",
 ]);
 
 export const creators = createActions(
@@ -17,6 +18,7 @@ export const creators = createActions(
   types.SET_STATUS,
   types.SET_VERSION,
   types.SET_PROTOCOL_OPT_IN,
+  types.SET_POPUP_SIZE,
 );
 
 export const initialState = {
