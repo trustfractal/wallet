@@ -32,3 +32,7 @@
 
 - Fix missing storage permission
 - Add requests feedback screen after reply to it
+
+## version 0.2.3 (05.08.2021)
+
+- Fix popup to be automatically resize to only the needed size
