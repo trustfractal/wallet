@@ -1,14 +1,16 @@
-name: Plugin Production Build Workflow
+name: Plugin feature/protocol Build Workflow
 
 on:
   push:
     branches:
-      - main
-      - dev
       - feature/protocol
 
-    tags:
-      - "*"
+  pull_request:
+    branches:
+      - feature/protocol
+    types: [opened, synchronize]
+    ignore-paths:
+      - "*.md"
 
 jobs:
   test-plugin:
@@ -49,10 +51,10 @@ jobs:
 
     env:
       FORCE_COLOR: true
-      REACT_APP_CATFISH_URL: ${{secrets.CATFISH_PRODUCTION_URL}}
-      REACT_APP_GOLDFISH_URL: ${{secrets.GOLDFISH_PRODUCTION_URL}}
-      REACT_APP_FRACTAL_WEBSITE_URL: ${{secrets.FRACTAL_WEBSITE_PRODUCTION_URL}}
-      REACT_APP_MAGURO_URL: ${{secrets.MAGURO_PRODUCTION_URL}}
+      REACT_APP_CATFISH_URL: ${{secrets.CATFISH_STAGING_URL}}
+      REACT_APP_GOLDFISH_URL: ${{secrets.GOLDFISH_STAGING_URL}}
+      REACT_APP_FRACTAL_WEBSITE_URL: ${{secrets.FRACTAL_WEBSITE_STAGING_URL}}
+      REACT_APP_MAGURO_URL: ${{secrets.MAGURO_STAGING_URL}}
       REACT_APP_PROTOCOL_RPC_ENDPOINT: ${{secrets.PROTOCOL_RPC_ENDPOINT}}
 
     steps:
@@ -73,11 +75,11 @@ jobs:
       - name: Install node dependencies
         run: yarn install
 
-      - name: Build production plugin extension
+      - name: Build feature/protocol plugin extension
         run: yarn build
 
-      - name: Upload production artifact zip file
+      - name: Upload feature/protocol artifact zip file
         uses: actions/upload-artifact@v2
         with:
-          name: build-production.zip
+          name: build-protocol.zip
           path: build
