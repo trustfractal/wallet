@@ -12,3 +12,8 @@ export const isRegisteredForMinting = createSelector(
   (state) => state.protocol,
   (protocol) => protocol.registeredForMinting,
 );
+
+export const isRegistered = createSelector(
+  (state) => state.protocol,
+  (protocol) => protocol.registrationSuccess,
+);
