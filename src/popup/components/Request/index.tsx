@@ -177,6 +177,11 @@ const DeclinedLabel = styled.span`
   color: var(--c-red);
 `;
 
+const TextContainer = styled.div`
+  padding-bottom: var(--s-26);
+  padding-bottom: var(--s-48);
+`;
+
 export type RequestsProps = {
   request: IRequest;
   credentials: CredentialsCollection;
@@ -426,6 +431,16 @@ function AcceptedRequest(props: RequestsProps) {
           your credential!
         </Title>
       </TitleContainer>
+      <TextContainer>
+        <Text>
+          You have allowed{" "}
+          <Text weight={TextWeights.BOLD} span>
+            {requester.name}
+          </Text>{" "}
+          to access your credential information. It has now access only to the
+          information you agreed to share.
+        </Text>
+      </TextContainer>
       <ActionsContainer>
         <ActionsContainer>
           <Button onClick={onNext}>Got it</Button>
@@ -454,6 +469,16 @@ function DeclinedRequest(props: RequestsProps) {
           your credential!
         </Title>
       </TitleContainer>
+      <TextContainer>
+        <Text>
+          You have denied{" "}
+          <Text weight={TextWeights.BOLD} span>
+            {requester.name}
+          </Text>{" "}
+          to access your credential information. If this was not intended you
+          can always go back and try again.
+        </Text>
+      </TextContainer>
       <ActionsContainer>
         <ActionsContainer>
           <Button onClick={onNext}>Got it</Button>

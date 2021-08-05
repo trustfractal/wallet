@@ -6,11 +6,13 @@ import {
   ERROR_GET_ALL_WINDOWS,
   ERROR_FOCUS_WINDOW,
   ERROR_GET_LAST_FOCUSED_WINDOW,
+  ERROR_UPDATE_WINDOW,
   ERROR_UPDATE_WINDOW_POSITION,
   ERROR_CLOSE_WINDOW,
   ERROR_GET_TAB,
   ERROR_UPDATE_TAB,
   ERROR_QUERY_TABS,
+  ERROR_UPDATE_WINDOW_SIZE,
 } from "./Errors";
 
 import environment from "@environment/index";
@@ -21,7 +23,10 @@ export enum PopupSizes {
   LARGE = "large",
 }
 
-const Sizes = {
+export const PopupSizesValues: Record<
+  PopupSizes,
+  { width: number; height: number }
+> = {
   [PopupSizes.SMALL]: {
     width: 400,
     height: 460,
@@ -119,21 +124,36 @@ class WindowsService {
     });
   }
 
-  updateWindowPosition(
+  async updateWindowPosition(
     windowId: number,
     left: number,
     top: number,
   ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      chrome.windows.update(windowId, { left, top }, () => {
-        if (chrome.runtime.lastError !== undefined) {
-          console.error(chrome.runtime.lastError);
-          reject(ERROR_UPDATE_WINDOW_POSITION(chrome.runtime.lastError));
-        }
+    try {
+      await this.updateWindow(windowId, { left, top });
+    } catch (error) {
+      if (chrome.runtime.lastError !== undefined) {
+        throw ERROR_UPDATE_WINDOW_POSITION(chrome.runtime.lastError);
+      }
 
-        resolve();
-      });
-    });
+      throw error;
+    }
+  }
+
+  async updateWindowSize(
+    windowId: number,
+    width: number,
+    height: number,
+  ): Promise<void> {
+    try {
+      await this.updateWindow(windowId, { width, height });
+    } catch (error) {
+      if (chrome.runtime.lastError !== undefined) {
+        throw ERROR_UPDATE_WINDOW_SIZE(chrome.runtime.lastError);
+      }
+
+      throw error;
+    }
   }
 
   closeWindow(windowId: number): Promise<void> {
@@ -183,7 +203,7 @@ class WindowsService {
     size: PopupSizes = PopupSizes.SMALL,
   ): Promise<chrome.windows.Window | undefined> {
     const popup = await this.getPopup();
-    const popupSize = Sizes[size];
+    const popupSize = PopupSizesValues[size];
 
     if (popup) {
       // bring focus to existing chrome popup
@@ -239,7 +259,7 @@ class WindowsService {
     }
   }
 
-  private async getPopup() {
+  public async getPopup() {
     const windows = await this.getAllWindows();
 
     if (windows === undefined || windows.length === 0) {
@@ -281,6 +301,22 @@ class WindowsService {
         }
 
         resolve(window);
+      });
+    });
+  }
+
+  updateWindow(
+    windowId: number,
+    config: chrome.windows.UpdateInfo,
+  ): Promise<chrome.windows.Window | undefined> {
+    return new Promise((resolve, reject) => {
+      chrome.windows.update(windowId, config, (updateWindow) => {
+        if (chrome.runtime.lastError !== undefined) {
+          console.error(chrome.runtime.lastError);
+          reject(ERROR_UPDATE_WINDOW(chrome.runtime.lastError, windowId));
+        }
+
+        resolve(updateWindow);
       });
     });
   }

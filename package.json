@@ -1,7 +1,7 @@
 {
   "name": "@trustfractal/plugin",
   "description": "The Fractal ID Wallet is a browser extension that allows users to store their validated decentralized identity (DID) credentials.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "private": true,
   "dependencies": {
     "@metamask/detect-provider": "^1.2.0",
