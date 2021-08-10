@@ -21,7 +21,6 @@ export const createWallet = () => {
       const proof =
         "0x4004021ced8799296ceca557832ab941a50b4a11f83478cf141f51f933f653ab9fbcc05a037cddbed06e309bf334942c4e58cdf1a46e237911ccd7fcf9787cbc7fd0";
 
-      // TODO(frm): check if the extrinsic succeeded
       await protocol.registerForMinting(proof);
 
       dispatch(protocolActions.setMnemonic(wallet.mnemonic));

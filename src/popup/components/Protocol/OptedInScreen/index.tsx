@@ -23,7 +23,7 @@ interface DispatchableComponent {
 
 interface BalanceProps {
   hasWallet: boolean;
-  registeredForMinting: boolean;
+  isRegisteredForMinting: boolean;
   balance?: AccountData;
 }
 
@@ -48,44 +48,33 @@ function OptOut({ dispatch }: DispatchableComponent) {
   return <Button onClick={onClick}>Opt Out</Button>;
 }
 
-function Balance({ hasWallet, registeredForMinting, balance }: BalanceProps) {
-  switch (true) {
-    case !hasWallet:
-      return <></>;
-    case !registeredForMinting:
-      return <p>Registering for minting...</p>;
-    case balance === undefined:
-      return <p>Fetching your balance...</p>;
-    default:
-      return (
-        <div>
-          <p>
-            <strong>Free: </strong>
-            {balance!.free.toNumber()} FCL
-          </p>
-          <p>
-            <strong>Reserved: </strong>
-            {balance!.reserved.toNumber()} FCL
-          </p>
-        </div>
-      );
-  }
+function Balance({ hasWallet, isRegisteredForMinting, balance }: BalanceProps) {
+  if (!hasWallet) return <></>;
+  if (!isRegisteredForMinting) return <p>Registering for minting...</p>;
+
+  if (balance === undefined) return <p>Fetching your balance...</p>;
+
+  return (
+    <div>
+      <p>
+        <strong>Free: </strong>
+        {balance!.free.toNumber()} FCL
+      </p>
+      <p>
+        <strong>Reserved: </strong>
+        {balance!.reserved.toNumber()} FCL
+      </p>
+    </div>
+  );
 }
 
 function Address({ registrationSuccess, wallet }: AddressProps) {
-  switch (true) {
-    case !registrationSuccess:
-      return <p>Something went wrong generating your address.</p>;
+  if (!registrationSuccess)
+    return <p>Something went wrong generating your address.</p>;
 
-    case !!wallet && wallet.address:
-      return <p>Address: {wallet!.address}</p>;
+  if (wallet && wallet.address) return <p>Address: {wallet.address}</p>;
 
-    case !wallet || !wallet.address:
-      return <p>Generating address...</p>;
-
-    default:
-      return <></>;
-  }
+  return <p>Generating address...</p>;
 }
 
 function OptedInScreen() {
@@ -118,7 +107,7 @@ function OptedInScreen() {
 
       <Balance
         hasWallet={!!wallet}
-        registeredForMinting={registeredForMinting}
+        isRegisteredForMinting={registeredForMinting}
         balance={balance}
       />
 

@@ -17,7 +17,7 @@ export const creators = createActions(
 
 export const initialState = {
   mnemonic: null,
-  registeredForMinting: false,
+  isRegisteredForMinting: false,
   registrationSuccess: true,
 };
 
@@ -31,11 +31,11 @@ export const reducer = handleActions(
 
     [types.SET_REGISTERED_FOR_MINTING]: (
       state,
-      { payload: registeredForMinting },
+      { payload: isRegisteredForMinting },
     ) =>
       Object.freeze({
         ...state,
-        registeredForMinting,
+        isRegisteredForMinting,
       }),
 
     [types.SET_REGISTRATION_SUCCESS]: (
@@ -60,7 +60,7 @@ export async function restore(state = {}) {
 export async function store(state) {
   return {
     mnemonic: state.mnemonic,
-    registeredForMinting: state.registeredForMinting,
+    isRegisteredForMinting: state.isRegisteredForMinting,
     registrationSuccess: state.registrationSuccess,
   };
 }
