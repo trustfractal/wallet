@@ -8,14 +8,24 @@ import { useUserSelector } from "@redux/stores/user/context";
 import appActions from "@redux/stores/application/reducers/app";
 import {
   getWallet,
+  getRegistrationState,
   isRegisteredForMinting,
-  isRegistered,
+  hasRegistrationErrored,
 } from "@redux/stores/user/reducers/protocol/selectors";
+
+import { protocolRegistrationTypes } from "@redux/stores/user/reducers/protocol";
 
 import Wallet from "@models/Wallet";
 import { useProtocol } from "@services/ProtocolService";
 
 import Button from "@popup/components/common/Button";
+
+const RegistrationStatusMessages = {
+  [protocolRegistrationTypes.STARTED]: "Generating address",
+  [protocolRegistrationTypes.ADDRESS_GENERATED]: "Registering identity",
+  [protocolRegistrationTypes.IDENTITY_REGISTERED]: "Registering for minting",
+  [protocolRegistrationTypes.COMPLETED]: "Generating address",
+};
 
 interface DispatchableComponent {
   dispatch: Dispatch<AnyAction>;
@@ -28,7 +38,8 @@ interface BalanceProps {
 }
 
 interface AddressProps {
-  registrationSuccess: boolean;
+  registrationErrored: boolean;
+  registrationState: string | null;
   wallet?: Wallet;
 }
 
@@ -49,39 +60,50 @@ function OptOut({ dispatch }: DispatchableComponent) {
 }
 
 function Balance({ hasWallet, isRegisteredForMinting, balance }: BalanceProps) {
-  if (!hasWallet) return <></>;
-  if (!isRegisteredForMinting) return <p>Registering for minting...</p>;
+  if (!hasWallet || !isRegisteredForMinting) return <></>;
 
-  if (balance === undefined) return <p>Fetching your balance...</p>;
+  if (!balance) return <p>Fetching your balance...</p>;
 
   return (
     <div>
       <p>
         <strong>Free: </strong>
-        {balance!.free.toNumber()} FCL
+        {balance.free.toNumber()} FCL
       </p>
       <p>
         <strong>Reserved: </strong>
-        {balance!.reserved.toNumber()} FCL
+        {balance.reserved.toNumber()} FCL
       </p>
     </div>
   );
 }
 
-function Address({ registrationSuccess, wallet }: AddressProps) {
-  if (!registrationSuccess)
-    return <p>Something went wrong generating your address.</p>;
+function Address({
+  registrationErrored,
+  registrationState,
+  wallet,
+}: AddressProps) {
+  if (!registrationState) return <></>;
 
-  if (wallet && wallet.address) return <p>Address: {wallet.address}</p>;
+  const statusMessage = RegistrationStatusMessages[registrationState];
 
-  return <p>Generating address...</p>;
+  if (registrationErrored)
+    return <p>Something went wrong while {statusMessage.toLowerCase()}.</p>;
+
+  if (registrationState !== protocolRegistrationTypes.COMPLETED)
+    return <p>{statusMessage}...</p>;
+
+  if (wallet && wallet.address) return <p>Address: {wallet!.address}</p>;
+
+  return <></>;
 }
 
 function OptedInScreen() {
   const appDispatch = useAppDispatch();
   const wallet = useUserSelector(getWallet);
   const registeredForMinting = useUserSelector(isRegisteredForMinting);
-  const registrationSuccess = useUserSelector(isRegistered);
+  const registrationErrored = useUserSelector(hasRegistrationErrored);
+  const registrationState = useUserSelector(getRegistrationState);
   const [balance, setBalance] = useState<AccountData>();
 
   const protocol = useProtocol();
@@ -101,7 +123,11 @@ function OptedInScreen() {
     <Container>
       <p>You're opted in.</p>
       <br />
-      <Address wallet={wallet} registrationSuccess={registrationSuccess} />
+      <Address
+        wallet={wallet}
+        registrationErrored={registrationErrored}
+        registrationState={registrationState}
+      />
       <br />
       <br />
 
