@@ -3,6 +3,7 @@ import { AnyAction } from "redux";
 
 import protocolActions, {
   protocolTypes,
+  protocolRegistrationTypes,
 } from "@redux/stores/user/reducers/protocol";
 
 import Wallet from "@models/Wallet";
@@ -11,11 +12,28 @@ import ProtocolService from "@services/ProtocolService";
 
 export const createWallet = () => {
   return async (dispatch: Dispatch<AnyAction>) => {
+    dispatch(
+      protocolActions.setRegistrationState(protocolRegistrationTypes.STARTED),
+    );
+
     const wallet = Wallet.generate();
     const protocol = await ProtocolService.create(wallet!.mnemonic);
 
     try {
+      dispatch(protocolActions.setMnemonic(wallet.mnemonic));
+      dispatch(
+        protocolActions.setRegistrationState(
+          protocolRegistrationTypes.ADDRESS_GENERATED,
+        ),
+      );
+
       await MaguroService.registerIdentity(wallet.address);
+
+      dispatch(
+        protocolActions.setRegistrationState(
+          protocolRegistrationTypes.IDENTITY_REGISTERED,
+        ),
+      );
 
       // TODO(frm): Calculate proof
       const proof =
@@ -23,12 +41,14 @@ export const createWallet = () => {
 
       await protocol.registerForMinting(proof);
 
-      dispatch(protocolActions.setMnemonic(wallet.mnemonic));
+      dispatch(
+        protocolActions.setRegistrationState(
+          protocolRegistrationTypes.COMPLETED,
+        ),
+      );
       dispatch(protocolActions.setRegisteredForMinting(true));
-      dispatch(protocolActions.setRegistrationSuccess(true));
     } catch {
-      dispatch(protocolActions.setRegistrationSuccess(false));
-      console.error("Something went wrong registering the identity");
+      dispatch(protocolActions.setRegistrationError(true));
     }
   };
 };

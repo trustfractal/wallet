@@ -13,7 +13,12 @@ export const isRegisteredForMinting = createSelector(
   (protocol) => protocol.registeredForMinting,
 );
 
-export const isRegistered = createSelector(
+export const getRegistrationState = createSelector(
   (state) => state.protocol,
-  (protocol) => protocol.registrationSuccess,
+  (protocol) => protocol.registrationState,
+);
+
+export const hasRegistrationErrored = createSelector(
+  (state) => state.protocol,
+  (protocol) => protocol.registrationError,
 );

@@ -6,6 +6,8 @@ import Environment from "@environment/index";
 import CatfishService from "@services/CatfishService";
 import HttpService from "@services/HttpService";
 
+const HTTP_TIMEOUT = 5 * 60 * 1000; // 5 minutes timeout
+
 export default class MaguroService {
   private static ensureAuthorization(
     headers: Record<string, string>,
@@ -35,6 +37,7 @@ export default class MaguroService {
       method,
       body,
       headersWithAuth,
+      HTTP_TIMEOUT,
     );
 
     if (!response.ok) {
