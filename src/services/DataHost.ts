@@ -4,6 +4,7 @@ import storageService from "@services/StorageService";
 import {
   build,
   extend_multiple,
+  prune_balanced,
   strict_extension_proof,
 } from "@vendor/merklex-js/merklex_js";
 
@@ -62,7 +63,7 @@ export class DataHost {
       this.key("last_proof_index"),
     );
     if (maybeLastProofLength == null) {
-      return [allItems.length, currentTree];
+      return [allItems.length, prune_balanced(currentTree)!];
     }
     const lastProofLength = parseInt(maybeLastProofLength);
     if (lastProofLength === allItems.length) return;
