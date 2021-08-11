@@ -9,8 +9,10 @@ import appActions from "@redux/stores/application/reducers/app";
 import {
   getWallet,
   isRegisteredForMinting,
+  isRegistered,
 } from "@redux/stores/user/reducers/protocol/selectors";
 
+import Wallet from "@models/Wallet";
 import { useProtocol } from "@services/ProtocolService";
 
 import Button from "@popup/components/common/Button";
@@ -21,8 +23,13 @@ interface DispatchableComponent {
 
 interface BalanceProps {
   hasWallet: boolean;
-  isRegistered: boolean;
+  isRegisteredForMinting: boolean;
   balance?: AccountData;
+}
+
+interface AddressProps {
+  registrationSuccess: boolean;
+  wallet?: Wallet;
 }
 
 const Container = styled.div`
@@ -41,34 +48,40 @@ function OptOut({ dispatch }: DispatchableComponent) {
   return <Button onClick={onClick}>Opt Out</Button>;
 }
 
-function Balance({ hasWallet, isRegistered, balance }: BalanceProps) {
-  switch (true) {
-    case !hasWallet:
-      return <></>;
-    case !isRegistered:
-      return <p>Registering for minting...</p>;
-    case balance === undefined:
-      return <p>Fetching your balance...</p>;
-    default:
-      return (
-        <div>
-          <p>
-            <strong>Free: </strong>
-            {balance!.free.toNumber()} FCL
-          </p>
-          <p>
-            <strong>Reserved: </strong>
-            {balance!.reserved.toNumber()} FCL
-          </p>
-        </div>
-      );
-  }
+function Balance({ hasWallet, isRegisteredForMinting, balance }: BalanceProps) {
+  if (!hasWallet) return <></>;
+  if (!isRegisteredForMinting) return <p>Registering for minting...</p>;
+
+  if (balance === undefined) return <p>Fetching your balance...</p>;
+
+  return (
+    <div>
+      <p>
+        <strong>Free: </strong>
+        {balance!.free.toNumber()} FCL
+      </p>
+      <p>
+        <strong>Reserved: </strong>
+        {balance!.reserved.toNumber()} FCL
+      </p>
+    </div>
+  );
+}
+
+function Address({ registrationSuccess, wallet }: AddressProps) {
+  if (!registrationSuccess)
+    return <p>Something went wrong generating your address.</p>;
+
+  if (wallet && wallet.address) return <p>Address: {wallet.address}</p>;
+
+  return <p>Generating address...</p>;
 }
 
 function OptedInScreen() {
   const appDispatch = useAppDispatch();
   const wallet = useUserSelector(getWallet);
-  const isRegistered = useUserSelector(isRegisteredForMinting);
+  const registeredForMinting = useUserSelector(isRegisteredForMinting);
+  const registrationSuccess = useUserSelector(isRegistered);
   const [balance, setBalance] = useState<AccountData>();
 
   const protocol = useProtocol();
@@ -88,13 +101,13 @@ function OptedInScreen() {
     <Container>
       <p>You're opted in.</p>
       <br />
-      <p>Address: {wallet ? wallet.address : "Generating address..."}</p>
+      <Address wallet={wallet} registrationSuccess={registrationSuccess} />
       <br />
       <br />
 
       <Balance
         hasWallet={!!wallet}
-        isRegistered={isRegistered}
+        isRegisteredForMinting={registeredForMinting}
         balance={balance}
       />
 

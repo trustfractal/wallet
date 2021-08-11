@@ -28,14 +28,28 @@ export default class ProtocolService {
     this.signer = signer;
   }
 
-  public async registerForMinting(proof: string): Promise<string> {
-    console.log("register for minting");
-
-    return (
-      await this.api.tx.fractalMinting
+  public async registerForMinting(proof: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.api.tx.fractalMinting
         .registerForMinting(null, proof)
-        .signAndSend(this.signer)
-    ).toHex();
+        .signAndSend(this.signer, ({ status, dispatchError }) => {
+          if (status.isFinalized) return resolve();
+
+          if (dispatchError) {
+            if (dispatchError.isModule) {
+              const decoded = this.api.registry.findMetaError(
+                dispatchError.asModule,
+              );
+              const { name, section } = decoded;
+              const error = `ProtocolService.registerForMinting error: ${section}.${name}`;
+
+              console.error(error);
+
+              reject(error);
+            }
+          }
+        });
+    });
   }
 
   public async getBalance(accountId: string): Promise<AccountData> {

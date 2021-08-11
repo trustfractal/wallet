@@ -4,18 +4,21 @@ import { createActions, handleActions } from "redux-actions";
 const types = mirrorCreator([
   "SET_MNEMONIC",
   "SET_REGISTERED_FOR_MINTING",
+  "SET_REGISTRATION_SUCCESS",
   "CREATE_WALLET",
 ]);
 
 export const creators = createActions(
   types.SET_MNEMONIC,
   types.SET_REGISTERED_FOR_MINTING,
+  types.SET_REGISTRATION_SUCCESS,
   types.CREATE_WALLET,
 );
 
 export const initialState = {
   mnemonic: null,
-  registeredForMinting: false,
+  isRegisteredForMinting: false,
+  registrationSuccess: true,
 };
 
 export const reducer = handleActions(
@@ -28,11 +31,20 @@ export const reducer = handleActions(
 
     [types.SET_REGISTERED_FOR_MINTING]: (
       state,
-      { payload: registeredForMinting },
+      { payload: isRegisteredForMinting },
     ) =>
       Object.freeze({
         ...state,
-        registeredForMinting,
+        isRegisteredForMinting,
+      }),
+
+    [types.SET_REGISTRATION_SUCCESS]: (
+      state,
+      { payload: registrationSuccess },
+    ) =>
+      Object.freeze({
+        ...state,
+        registrationSuccess,
       }),
   },
   initialState,
@@ -48,7 +60,8 @@ export async function restore(state = {}) {
 export async function store(state) {
   return {
     mnemonic: state.mnemonic,
-    registeredForMinting: state.registeredForMinting,
+    isRegisteredForMinting: state.isRegisteredForMinting,
+    registrationSuccess: state.registrationSuccess,
   };
 }
 
