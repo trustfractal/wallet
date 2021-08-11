@@ -18,7 +18,7 @@ class PrefixStorage {
     await this.base.setItem(this.key(key), value);
   }
 
-  async getItem(key: string): any {
+  async getItem(key: string): Promise<any> {
     return await this.base.getItem(this.key(key));
   }
 
@@ -34,7 +34,7 @@ class StringifyStorage {
     await this.base.setItem(key, JSON.stringify(value));
   }
 
-  async getItem(key: string): any {
+  async getItem(key: string): Promise<any> {
     const value = await this.base.getItem(key);
     if (value == null) return null;
     return JSON.parse(value);
@@ -45,14 +45,14 @@ class StringifyStorage {
   }
 }
 
-export class StorageArray<T> {
+export class StorageArray {
   base: StringifyStorage;
 
   constructor(rootStorage: Storage, prefix: string) {
     this.base = new StringifyStorage(new PrefixStorage(rootStorage, prefix));
   }
 
-  async push(item: T): number {
+  async push(item: any): Promise<number> {
     return await withLock(this.base, "$lock", async () => {
       const length = await this.length();
       await this.base.setItem("length", length + 1);
@@ -62,12 +62,12 @@ export class StorageArray<T> {
     });
   }
 
-  async length(): number {
+  async length(): Promise<number> {
     const value = await this.base.getItem("length");
     return value || 0;
   }
 
-  async get(index: number): T {
+  async get(index: number): Promise<any> {
     return this.base.getItem(index.toString());
   }
 
