@@ -85,7 +85,7 @@ function MenuNavbar() {
         height={TextHeights.LARGE}
         weight={TextWeights.BOLD}
       >
-        Fractal Identity Wallet
+        Fractal Wallet
       </Text>
       <Menu items={menuItems} />
     </NavbarContainer>

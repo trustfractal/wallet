@@ -45,7 +45,7 @@ export const createWallet = () => {
 
       dispatch(
         protocolActions.setRegistrationState(
-          protocolRegistrationTypes.COMPLETED,
+          protocolRegistrationTypes.MINTING_REGISTERED,
         ),
       );
       dispatch(protocolActions.setRegisteredForMinting(true));

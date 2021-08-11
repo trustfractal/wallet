@@ -36,6 +36,16 @@ const { default: Declined } = require("@assets/declined.svg");
 const { default: About } = require("@assets/about.svg");
 const { default: FractalFullLogo } = require("@assets/fractal-full-logo.svg");
 const { default: Welcome } = require("@assets/welcome.svg");
+const { default: Protocol } = require("@assets/protocol.svg");
+const {
+  default: ProtocolSetupSuccess,
+} = require("@assets/protocol-setup-success.svg");
+const {
+  default: ProtocolSetupFailure,
+} = require("@assets/protocol-setup-failure.svg");
+const {
+  default: ProtocolSetupPending,
+} = require("@assets/protocol-setup-pending.svg");
 
 const Root = styled.div<{
   clickable: boolean;
@@ -83,6 +93,10 @@ export enum IconNames {
   ABOUT = "about",
   FRACTAL_FULL_LOGO = "fractal-full-logo",
   WELCOME = "welcome",
+  PROTOCOL = "protocol",
+  PROTOCOL_SETUP_SUCCESS = "protocol-setup-success",
+  PROTOCOL_SETUP_FAILURE = "protocol-setup-failure",
+  PROTOCOL_SETUP_PENDING = "protocol-setup-pending",
 }
 
 const Icons: Record<string, any> = {
@@ -120,6 +134,10 @@ const Icons: Record<string, any> = {
   [IconNames.ABOUT]: About,
   [IconNames.FRACTAL_FULL_LOGO]: FractalFullLogo,
   [IconNames.WELCOME]: Welcome,
+  [IconNames.PROTOCOL]: Protocol,
+  [IconNames.PROTOCOL_SETUP_SUCCESS]: ProtocolSetupSuccess,
+  [IconNames.PROTOCOL_SETUP_FAILURE]: ProtocolSetupFailure,
+  [IconNames.PROTOCOL_SETUP_PENDING]: ProtocolSetupPending,
 };
 
 export type IconProps = {
