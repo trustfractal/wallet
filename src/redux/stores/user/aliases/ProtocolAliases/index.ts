@@ -16,7 +16,8 @@ export const createWallet = () => {
     dispatch(
       protocolActions.setRegistrationState(protocolRegistrationTypes.STARTED),
     );
-    await DataHost.instance().enable();
+    const dataHost = DataHost.instance();
+    await dataHost.enable();
 
     const wallet = Wallet.generate();
     const protocol = await ProtocolService.create(wallet!.mnemonic);
@@ -37,11 +38,11 @@ export const createWallet = () => {
         ),
       );
 
-      // TODO(frm): Calculate proof
-      const proof =
-        "0x4004021ced8799296ceca557832ab941a50b4a11f83478cf141f51f933f653ab9fbcc05a037cddbed06e309bf334942c4e58cdf1a46e237911ccd7fcf9787cbc7fd0";
-
+      const extensionProof = await dataHost.extensionProof();
+      if (extensionProof == null) return;
+      const [length, proof] = extensionProof;
       await protocol.registerForMinting(proof);
+      await dataHost.setLastProofLength(length);
 
       dispatch(
         protocolActions.setRegistrationState(

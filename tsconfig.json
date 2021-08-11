@@ -28,7 +28,8 @@
       "@environment/*": ["src/environment/*"],
       "@contracts/*": ["src/contracts/*"],
       "@utils/*": ["src/utils/*"],
-      "@pluginTypes/*": ["src/types/*"]
+      "@pluginTypes/*": ["src/types/*"],
+      "@vendor/*": ["src/vendor/*"]
     }
   },
   "include": ["src"],
