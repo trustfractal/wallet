@@ -1,6 +1,6 @@
 import ConnectionTypes from "@models/Connection/types";
 
-import {DataHost} from "@services/DataHost";
+import { DataHost } from "@services/DataHost";
 
 export async function addWebpage([url]: [string]): Promise<void> {
   await DataHost.instance().storeFact({
