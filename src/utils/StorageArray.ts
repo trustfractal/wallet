@@ -5,7 +5,10 @@ export interface Storage {
 }
 
 class PrefixStorage {
-  constructor(private readonly base: Storage, private readonly prefix: string) {}
+  constructor(
+    private readonly base: Storage,
+    private readonly prefix: string,
+  ) {}
 
   key(key: string): string {
     return `${this.prefix}/${key}`;
@@ -75,7 +78,7 @@ export class StorageArray<T> {
         return {
           i: 0,
           async next() {
-            if (this.i >= await storage.length()) {
+            if (this.i >= (await storage.length())) {
               return { done: true };
             }
 
@@ -92,7 +95,11 @@ export class StorageArray<T> {
 // underlying storage.
 //
 // https://www.cs.rochester.edu/research/synchronization/pseudocode/fastlock.html
-async function withLock<T>(storage: Storage, key: string, callback: () => Promise<T>) {
+async function withLock<T>(
+  storage: Storage,
+  key: string,
+  callback: () => Promise<T>,
+) {
   const MAX_WAIT_MS = 2;
 
   const id = Math.random().toString().split(".")[1];
@@ -102,13 +109,14 @@ async function withLock<T>(storage: Storage, key: string, callback: () => Promis
   do {
     await storage.setItem(acquiring_lock, id);
 
-    if (await storage.getItem(holding_lock) != null) continue;
+    if ((await storage.getItem(holding_lock)) != null) continue;
     await storage.setItem(holding_lock, id);
 
-    if (await storage.getItem(acquiring_lock) != id) {
+    if ((await storage.getItem(acquiring_lock)) != id) {
       await new Promise((resolve) =>
-          setTimeout(resolve, Math.random() * MAX_WAIT_MS));
-      if (await storage.getItem(holding_lock) != id) continue;
+        setTimeout(resolve, Math.random() * MAX_WAIT_MS),
+      );
+      if ((await storage.getItem(holding_lock)) != id) continue;
     }
   } while (false);
 

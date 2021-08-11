@@ -1,6 +1,6 @@
-import { StorageArray, Storage } from '@utils/StorageArray';
+import { StorageArray, Storage } from "@utils/StorageArray";
 
-describe('StorageArray', () => {
+describe("StorageArray", () => {
   const prefix = "some_prefix";
 
   class MockStorage implements Storage {
@@ -16,7 +16,9 @@ describe('StorageArray', () => {
 
     setItem(key: string, value: string) {
       if (typeof value !== "string") {
-        throw TypeError(`Called setItem with ${typeof value} instead of string`);
+        throw TypeError(
+          `Called setItem with ${typeof value} instead of string`,
+        );
       }
       if (!key.startsWith(prefix)) {
         throw `Key ${key} does not start with prefix ${prefix}`;
@@ -31,14 +33,14 @@ describe('StorageArray', () => {
     }
   }
 
-  it('has length zero with no data', async () => {
+  it("has length zero with no data", async () => {
     const mockStorage = new MockStorage();
     const subject = new StorageArray(mockStorage, prefix);
 
     expect(await subject.length()).toEqual(0);
   });
 
-  it('has length 1 after insert', async () => {
+  it("has length 1 after insert", async () => {
     const mockStorage = new MockStorage();
     const subject = new StorageArray(mockStorage, prefix);
 
@@ -47,7 +49,7 @@ describe('StorageArray', () => {
     expect(await subject.length()).toEqual(1);
   });
 
-  it('has item at index', async () => {
+  it("has item at index", async () => {
     const mockStorage = new MockStorage();
     const subject = new StorageArray(mockStorage, prefix);
 
@@ -56,16 +58,16 @@ describe('StorageArray', () => {
     expect(await subject.get(0)).toEqual("foo");
   });
 
-  it('stringifies item', async () => {
+  it("stringifies item", async () => {
     const mockStorage = new MockStorage();
     const subject = new StorageArray(mockStorage, prefix);
 
-    await subject.push({foo: 42});
+    await subject.push({ foo: 42 });
 
-    expect(await subject.get(0)).toEqual({foo: 42});
+    expect(await subject.get(0)).toEqual({ foo: 42 });
   });
 
-  it('has 3 items after pushes', async () => {
+  it("has 3 items after pushes", async () => {
     const mockStorage = new MockStorage();
     const subject = new StorageArray(mockStorage, prefix);
 
@@ -76,7 +78,7 @@ describe('StorageArray', () => {
     expect(await subject.length()).toEqual(3);
   });
 
-  it('iterates over items', async () => {
+  it("iterates over items", async () => {
     const mockStorage = new MockStorage();
     const subject = new StorageArray(mockStorage, prefix);
 
@@ -92,7 +94,7 @@ describe('StorageArray', () => {
     expect(items).toEqual(["foo", "bar", "baz"]);
   });
 
-  it('multiple instances do not race each other', async () => {
+  it("multiple instances do not race each other", async () => {
     const mockStorage = new MockStorage();
     const inParallel = 100;
 
@@ -115,7 +117,7 @@ describe('StorageArray', () => {
     }
   });
 
-  it('returns the index with push', async () => {
+  it("returns the index with push", async () => {
     const mockStorage = new MockStorage();
     const subject = new StorageArray(mockStorage, prefix);
 
