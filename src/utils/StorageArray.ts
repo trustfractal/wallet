@@ -1,6 +1,6 @@
 export interface Storage {
   setItem(key: string, value: string): Promise<void>;
-  getItem(key: string): Promise<string>;
+  getItem(key: string): Promise<string | undefined>;
   removeItem(key: string): Promise<void>;
 }
 
