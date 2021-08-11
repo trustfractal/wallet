@@ -1,7 +1,11 @@
 import { Storage, StorageArray } from "@utils/StorageArray";
 import storageService from "@services/StorageService";
 
-import {build, extend_multiple, strict_extension_proof} from '@vendor/merklex-js/merklex_js';
+import {
+  build,
+  extend_multiple,
+  strict_extension_proof,
+} from "@vendor/merklex-js/merklex_js";
 
 export class DataHost {
   private static _instance?: DataHost;
@@ -52,23 +56,29 @@ export class DataHost {
     }
     if (allItems.length === 0) return;
 
-    const currentTree = buildTree(allItems.map(i => JSON.stringify(i)));
+    const currentTree = buildTree(allItems.map((i) => JSON.stringify(i)));
 
-    const maybeLastProofLength =
-        await this.metadata.getItem(this.key('last_proof_index'));
+    const maybeLastProofLength = await this.metadata.getItem(
+      this.key("last_proof_index"),
+    );
     if (maybeLastProofLength == null) {
       return [allItems.length, currentTree];
     }
     const lastProofLength = parseInt(maybeLastProofLength);
     if (lastProofLength === allItems.length) return;
 
-    const previousTree = buildTree(allItems.slice(0, lastProofLength).map(i => JSON.stringify(i)));
+    const previousTree = buildTree(
+      allItems.slice(0, lastProofLength).map((i) => JSON.stringify(i)),
+    );
     const proof = strict_extension_proof(currentTree, previousTree)!;
     return [allItems.length, proof];
   }
 
   async setLastProofLength(length: number) {
-    await this.metadata.setItem(this.key('last_proof_index'), length.toString());
+    await this.metadata.setItem(
+      this.key("last_proof_index"),
+      length.toString(),
+    );
   }
 }
 
