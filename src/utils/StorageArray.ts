@@ -1,6 +1,6 @@
 export interface Storage {
   setItem(key: string, value: string): Promise<void>;
-  getItem(key: string): Promise<string>;
+  getItem(key: string): Promise<string | undefined>;
   removeItem(key: string): Promise<void>;
 }
 
@@ -112,11 +112,11 @@ async function withLock<T>(
     if ((await storage.getItem(holding_lock)) != null) continue;
     await storage.setItem(holding_lock, id);
 
-    if ((await storage.getItem(acquiring_lock)) != id) {
+    if ((await storage.getItem(acquiring_lock)) !== id) {
       await new Promise((resolve) =>
         setTimeout(resolve, Math.random() * MAX_WAIT_MS),
       );
-      if ((await storage.getItem(holding_lock)) != id) continue;
+      if ((await storage.getItem(holding_lock)) !== id) continue;
     }
   } while (false);
 

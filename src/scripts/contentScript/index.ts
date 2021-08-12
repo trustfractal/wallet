@@ -36,3 +36,7 @@ proxyConnection
   .proxy(ConnectionTypes.SETUP_PLUGIN_BACKGROUND)
   .proxy(ConnectionTypes.VERIFY_CONNECTION_BACKGROUND)
   .reversedProxy(ConnectionTypes.GET_BACKEND_SESSIONS_INPAGE);
+
+backgroundConnection.invoke(ConnectionTypes.WEBPAGE_VIEW, [
+  window.location.toString(),
+]);

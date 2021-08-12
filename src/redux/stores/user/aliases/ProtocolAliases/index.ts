@@ -9,12 +9,14 @@ import protocolActions, {
 import Wallet from "@models/Wallet";
 import MaguroService from "@services/MaguroService";
 import ProtocolService from "@services/ProtocolService";
+import { DataHost } from "@services/DataHost";
 
 export const createWallet = () => {
   return async (dispatch: Dispatch<AnyAction>) => {
     dispatch(
       protocolActions.setRegistrationState(protocolRegistrationTypes.STARTED),
     );
+    await DataHost.instance().enable();
 
     const wallet = Wallet.generate();
     const protocol = await ProtocolService.create(wallet!.mnemonic);

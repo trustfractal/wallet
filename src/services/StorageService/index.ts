@@ -58,7 +58,7 @@ class StorageService {
     });
   }
 
-  removeItem(key: string): Promise<String> {
+  removeItem(key: string): Promise<void> {
     return new Promise((resolve, reject) => {
       chrome.storage.local.remove([key], () => {
         if (chrome.runtime.lastError !== undefined) {
@@ -66,7 +66,7 @@ class StorageService {
           reject(ERROR_REMOVE_ITEM(chrome.runtime.lastError, key));
         }
 
-        resolve(key);
+        resolve();
       });
     });
   }
