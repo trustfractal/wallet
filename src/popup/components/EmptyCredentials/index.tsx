@@ -5,7 +5,9 @@ import Text from "@popup/components/common/Text";
 import Title from "@popup/components/common/Title";
 import TopComponent from "@popup/components/common/TopComponent";
 import Icon, { IconNames } from "@popup/components/common/Icon";
-import { withNavBar } from "@popup/components/common/NavBar";
+
+import WindowsService from "@services/WindowsService";
+import environment from "@environment/index";
 
 const IconContainer = styled.div`
   display: flex;
@@ -24,12 +26,9 @@ const ActionContainer = styled.div`
   padding: var(--s-24) 0;
 `;
 
-export type EmptyCredentialsProps = {
-  onNext: () => void;
-};
-
-function EmptyCredentials(props: EmptyCredentialsProps) {
-  const { onNext } = props;
+function EmptyCredentials() {
+  const onNext = () =>
+    WindowsService.openTab(`${environment.FRACTAL_WEBSITE_URL}/credentials`);
 
   return (
     <TopComponent>
@@ -53,4 +52,4 @@ function EmptyCredentials(props: EmptyCredentialsProps) {
   );
 }
 
-export default withNavBar(EmptyCredentials);
+export default EmptyCredentials;
