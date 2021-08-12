@@ -38,11 +38,7 @@ export const createWallet = () => {
         ),
       );
 
-      const extensionProof = await dataHost.extensionProof();
-      if (extensionProof == null) return;
-      const [length, proof] = extensionProof;
-      await protocol.registerForMinting(proof);
-      await dataHost.setLastProofLength(length);
+      await protocol.registerForMinting();
 
       dispatch(
         protocolActions.setRegistrationState(

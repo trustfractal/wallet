@@ -2,6 +2,7 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Keyring } from "@polkadot/keyring";
 import type { KeyringPair } from "@polkadot/keyring/types";
 import type { AccountData } from "@polkadot/types/interfaces";
+import { DataHost } from "@services/DataHost";
 
 import Environment from "@environment/index";
 
@@ -28,7 +29,17 @@ export default class ProtocolService {
     this.signer = signer;
   }
 
-  public async registerForMinting(proof: string): Promise<void> {
+  public async registerForMinting(): Promise<void> {
+    const dataHost = DataHost.instance();
+    const extensionProof = await dataHost.extensionProof();
+    if (extensionProof == null) return;
+    const [length, proof] = extensionProof;
+
+    await this.submitMintingExtrinsic(proof);
+    await dataHost.setLastProofLength(length);
+  }
+
+  private async submitMintingExtrinsic(proof: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.api.tx.fractalMinting
         .registerForMinting(null, proof)
