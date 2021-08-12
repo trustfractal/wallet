@@ -63,7 +63,7 @@ export class DataHost {
       this.key("last_proof_index"),
     );
     if (maybeLastProofLength == null) {
-      return [allItems.length, prune_balanced(currentTree)!];
+      return [allItems.length, hexPrefix(prune_balanced(currentTree)!)];
     }
     const lastProofLength = parseInt(maybeLastProofLength);
     if (lastProofLength === allItems.length) return;
@@ -72,7 +72,7 @@ export class DataHost {
       allItems.slice(0, lastProofLength).map((i) => JSON.stringify(i)),
     );
     const proof = strict_extension_proof(currentTree, previousTree)!;
-    return [allItems.length, proof];
+    return [allItems.length, hexPrefix(proof)];
   }
 
   async setLastProofLength(length: number) {
@@ -86,4 +86,8 @@ export class DataHost {
 function buildTree(items: string[]): string {
   const begin = build(items[0])!;
   return extend_multiple(begin, items.slice(1))!;
+}
+
+function hexPrefix(s: string): string {
+  return `0x${s}`;
 }
