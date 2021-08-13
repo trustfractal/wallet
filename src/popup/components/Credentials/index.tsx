@@ -4,19 +4,18 @@ import Credential from "@popup/components/common/Credential";
 import History from "@popup/components/common/History";
 import TopComponent from "@popup/components/common/TopComponent";
 
-import { ICredential, IRequest } from "@pluginTypes/index";
+import { ICredential } from "@pluginTypes/index";
+import { useUserSelector } from "@redux/stores/user/context";
+import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+import { getRequests } from "@redux/stores/user/reducers/requests/selectors";
 
 const RootContainer = styled.div`
   margin-bottom: var(--s-32);
 `;
 
-export type CredentialsProps = {
-  credentials: ICredential[];
-  requests: IRequest[];
-};
-
-function Credentials(props: CredentialsProps) {
-  const { credentials, requests } = props;
+function Credentials() {
+  const requests = useUserSelector(getRequests);
+  const credentials = useUserSelector(getCredentials);
 
   const getCredentialRequests = (id: string) =>
     requests.filter((request) => request.request.credential!.id === id);
