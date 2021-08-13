@@ -25,8 +25,8 @@ export class MintingRegistrar {
       console.log("Already registered for next minting, not doing anything");
     } else {
       console.log("Not registered for minting, trying to register");
-      await protocol.registerForMinting();
-      console.log("Successfully registered for minting");
+      const hash = await protocol.registerForMinting();
+      console.log(`Successfully registered for minting ${hash}`);
     }
 
     await this.storage.setItem("minting_registrar/last_check", now.toString());

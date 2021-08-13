@@ -33,21 +33,22 @@ export default class ProtocolService {
     this.signer = signer;
   }
 
-  public async registerForMinting(): Promise<void> {
+  public async registerForMinting(): Promise<string | undefined> {
     const dataHost = DataHost.instance();
     const extensionProof = await dataHost.extensionProof();
     if (extensionProof == null) return;
     const [length, proof] = extensionProof;
 
-    await this.submitMintingExtrinsic(proof);
+    const hash = await this.submitMintingExtrinsic(proof);
     await dataHost.setLastProofLength(length);
+    return hash;
   }
 
-  private async submitMintingExtrinsic(proof: string): Promise<void> {
+  private async submitMintingExtrinsic(proof: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const txn = this.api.tx.fractalMinting.registerForMinting(null, proof);
       txn.signAndSend(this.signer, (result) => {
-        if (result.status.isFinalized) return resolve();
+        if (result.status.isFinalized) return resolve(txn.hash.toHuman() as string);
 
         if (result.dispatchError) {
           if (result.dispatchError.isModule) {
