@@ -10,6 +10,7 @@ import Wallet from "@models/Wallet";
 import MaguroService from "@services/MaguroService";
 import ProtocolService from "@services/ProtocolService";
 import { DataHost } from "@services/DataHost";
+import storageService from "@services/StorageService";
 
 export const createWallet = () => {
   return async (dispatch: Dispatch<AnyAction>) => {
@@ -21,6 +22,7 @@ export const createWallet = () => {
 
     const wallet = Wallet.generate();
     const protocol = await ProtocolService.create(wallet!.mnemonic);
+    await protocol.saveSigner(storageService);
 
     try {
       dispatch(protocolActions.setMnemonic(wallet.mnemonic));
@@ -37,8 +39,6 @@ export const createWallet = () => {
           protocolRegistrationTypes.IDENTITY_REGISTERED,
         ),
       );
-
-      await protocol.registerForMinting();
 
       dispatch(
         protocolActions.setRegistrationState(
