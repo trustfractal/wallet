@@ -3,7 +3,7 @@ import { Keyring } from "@polkadot/keyring";
 import type { KeyringPair } from "@polkadot/keyring/types";
 import type { AccountData } from "@polkadot/types/interfaces";
 import { DataHost } from "@services/DataHost";
-import {Storage} from '@utils/StorageArray';
+import { Storage } from "@utils/StorageArray";
 
 import Environment from "@environment/index";
 
@@ -47,22 +47,22 @@ export default class ProtocolService {
     return new Promise((resolve, reject) => {
       const txn = this.api.tx.fractalMinting.registerForMinting(null, proof);
       txn.signAndSend(this.signer, (result) => {
-          if (result.status.isFinalized) return resolve();
+        if (result.status.isFinalized) return resolve();
 
-          if (result.dispatchError) {
-            if (result.dispatchError.isModule) {
-              const decoded = this.api.registry.findMetaError(
-                result.dispatchError.asModule,
-              );
-              const { name, section } = decoded;
-              const error = `ProtocolService.registerForMinting error: ${section}.${name}`;
+        if (result.dispatchError) {
+          if (result.dispatchError.isModule) {
+            const decoded = this.api.registry.findMetaError(
+              result.dispatchError.asModule,
+            );
+            const { name, section } = decoded;
+            const error = `ProtocolService.registerForMinting error: ${section}.${name}`;
 
-              console.error(error);
+            console.error(error);
 
-              reject(error);
-            }
+            reject(error);
           }
-        });
+        }
+      });
     });
   }
 
@@ -71,7 +71,8 @@ export default class ProtocolService {
     const keys = await this.api.query.fractalMinting.accountIds.keys(accountId);
     if (keys.length === 0) return false;
     const fractalId = keys[0].args[1];
-    const storageSize = await this.api.query.fractalMinting.nextMintingRewards.size(fractalId);
+    const storageSize =
+      await this.api.query.fractalMinting.nextMintingRewards.size(fractalId);
     return storageSize.toNumber() !== 0;
   }
 
@@ -84,12 +85,16 @@ export default class ProtocolService {
   }
 
   async saveSigner(storage: Storage) {
-    await storage.setItem('protocol/signer', JSON.stringify(this.signer.toJson()));
+    await storage.setItem(
+      "protocol/signer",
+      JSON.stringify(this.signer.toJson()),
+    );
   }
 
   static async fromStorage(storage: Storage) {
-    const maybeSigner = await storage.getItem('protocol/signer');
-    if (maybeSigner == null) throw new Error('No signer in the provided storage');
+    const maybeSigner = await storage.getItem("protocol/signer");
+    if (maybeSigner == null)
+      throw new Error("No signer in the provided storage");
     const parsedSigner = JSON.parse(maybeSigner);
 
     const keyring = new Keyring({ type: "sr25519" });

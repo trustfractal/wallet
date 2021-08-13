@@ -10,7 +10,7 @@ import Wallet from "@models/Wallet";
 import MaguroService from "@services/MaguroService";
 import ProtocolService from "@services/ProtocolService";
 import { DataHost } from "@services/DataHost";
-import storageService from '@services/StorageService';
+import storageService from "@services/StorageService";
 
 export const createWallet = () => {
   return async (dispatch: Dispatch<AnyAction>) => {
