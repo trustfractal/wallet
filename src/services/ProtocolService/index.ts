@@ -48,7 +48,8 @@ export default class ProtocolService {
     return new Promise((resolve, reject) => {
       const txn = this.api.tx.fractalMinting.registerForMinting(null, proof);
       txn.signAndSend(this.signer, (result) => {
-        if (result.status.isFinalized) return resolve(txn.hash.toHuman() as string);
+        if (result.status.isFinalized)
+          return resolve(txn.hash.toHuman() as string);
 
         if (result.dispatchError) {
           if (result.dispatchError.isModule) {
