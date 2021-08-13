@@ -1,8 +1,8 @@
 import { useHistory } from "react-router";
 
-import HomeScreen from "@popup/containers/HomeScreen";
-
+import Credentials from "@popup/components/Credentials";
 import EmptyCredentials from "@popup/components/EmptyCredentials";
+import HomeScreen from "@popup/containers/HomeScreen";
 
 import { useUserSelector } from "@redux/stores/user/context";
 
@@ -13,9 +13,6 @@ import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 import { getPendingRequests } from "@redux/stores/user/reducers/requests/selectors";
-
-import WindowsService from "@services/WindowsService";
-import environment from "@environment/index";
 
 function WalletScreen() {
   const history = useHistory();
@@ -31,17 +28,8 @@ function WalletScreen() {
   }
 
   // check if has credentials
-  if (credentials.length === 0) {
-    return (
-      <EmptyCredentials
-        onNext={() =>
-          WindowsService.openTab(
-            `${environment.FRACTAL_WEBSITE_URL}/credentials`,
-          )
-        }
-      />
-    );
-  }
+  if (credentials.length === 0)
+    return <HomeScreen credentials={EmptyCredentials} />;
 
   // check if requests
   if (requests.length !== 0) {
@@ -49,7 +37,7 @@ function WalletScreen() {
     return null;
   }
 
-  return <HomeScreen />;
+  return <HomeScreen credentials={Credentials} />;
 }
 
 export default WalletScreen;
