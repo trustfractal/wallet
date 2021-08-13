@@ -67,7 +67,6 @@ export default class ProtocolService {
   }
 
   public async isRegisteredForMinting(accountId: string): Promise<boolean> {
-    return false;
     const keys = await this.api.query.fractalMinting.accountIds.keys(accountId);
     if (keys.length === 0) return false;
     const fractalId = keys[0].args[1];
