@@ -103,6 +103,8 @@ const BalanceReservedLabel = styled.span`
   opacity: 0.6;
 `;
 
+const toHuman = (balance: Balance) => balance.toNumber() / 10 ** 12;
+
 function MenuNavbar() {
   const history = useHistory();
 
@@ -146,9 +148,11 @@ function MenuNavbar() {
 }
 
 function ProtocolReservedBalance({ reserved }: { reserved: Balance }) {
-  if (reserved.toNumber() === 0) return <></>;
+  const reservedHuman = toHuman(reserved);
 
-  const isPositive = reserved.toNumber() > 0;
+  if (reservedHuman === 0) return <></>;
+
+  const isPositive = reservedHuman > 0;
 
   return (
     <BalanceReservedContainer>
@@ -159,7 +163,7 @@ function ProtocolReservedBalance({ reserved }: { reserved: Balance }) {
           weight={TextWeights.BOLD}
         >
           {isPositive ? "+" : "-"}
-          {reserved.toNumber()}
+          {reservedHuman}
         </Text>
       </BalanceReserved>
 
@@ -208,7 +212,7 @@ function ProtocolBalance({ balance }: { balance?: AccountData }) {
               height={TextHeights.MEDIUM}
               weight={TextWeights.BOLD}
             >
-              {balance.free.toNumber()}
+              {toHuman(balance.free)}
             </Text>
           </BalanceFree>
 

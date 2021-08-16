@@ -82,7 +82,9 @@ export default class ProtocolService {
   }
 
   public async getBalance(accountId: string): Promise<AccountData> {
-    return await this.api.query.balances.account(accountId);
+    const { data } = await this.api.query.system.account(accountId);
+
+    return data;
   }
 
   async saveSigner(storage: Storage) {
