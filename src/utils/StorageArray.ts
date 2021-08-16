@@ -89,6 +89,29 @@ export class StorageArray {
       },
     };
   }
+
+  iterBack() {
+    const storage = this;
+    return {
+      [Symbol.asyncIterator]() {
+        return {
+          i: (async () => await storage.length())(),
+          async next() {
+            const i = (await this.i) - 1;
+
+            if (i < 0) {
+              return { done: true };
+            }
+
+            const value = await storage.get(i);
+            this.i = (async () => (await this.i) - 1)();
+
+            return { value, done: false };
+          },
+        };
+      },
+    };
+  }
 }
 
 // Uses Lamport's first fast lock to acquire a lock on the entirety of the

@@ -54,6 +54,10 @@ export class DataHost {
     return this.array().iter();
   }
 
+  public iterBack() {
+    return this.array().iterBack();
+  }
+
   async extensionProof(): Promise<[number, string] | undefined> {
     const allItems = [];
     for await (let item of this.array().iter()) {
