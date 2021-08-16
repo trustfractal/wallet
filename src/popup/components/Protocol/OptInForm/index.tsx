@@ -104,8 +104,10 @@ function OptInForm() {
 
       <Spacing size="var(--s-16)" />
 
+      <Subsubtitle uppercase>By clicking “Opt In” you agree to our</Subsubtitle>
+
       <Subsubtitle underline uppercase onClick={onClickTerms}>
-        Terms & Conditions
+        Special Testnet Launch User Agreement.
       </Subsubtitle>
 
       <Spacing />
