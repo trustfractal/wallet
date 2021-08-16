@@ -22,7 +22,7 @@ export default class MaguroService {
     return headers;
   }
 
-  private static async callApi(
+  private static async callAuthorizedApi(
     route: string,
     method: RequestInit["method"] = "GET",
     body?: RequestInit["body"],
@@ -31,12 +31,20 @@ export default class MaguroService {
     const headersWithAuth = this.ensureAuthorization(
       (headers as Record<string, string>) || {},
     );
+    return this.callApi(route, method, body, headersWithAuth);
+  }
 
+  private static async callApi(
+    route: string,
+    method: RequestInit["method"] = "GET",
+    body?: RequestInit["body"],
+    headers?: RequestInit["headers"],
+  ): Promise<any> {
     const response = await HttpService.call(
       `${Environment.MAGURO_URL}/${route}`,
       method,
       body,
-      headersWithAuth,
+      headers,
       HTTP_TIMEOUT,
     );
 
@@ -71,11 +79,11 @@ export default class MaguroService {
   }
 
   public static getCredentials() {
-    return this.callApi("credentials", "GET", null);
+    return this.callAuthorizedApi("credentials", "GET", null);
   }
 
   public static registerIdentity(address: string) {
-    return this.callApi(
+    return this.callAuthorizedApi(
       "protocol/register_identity",
       "POST",
       JSON.stringify({ linked_address: address }),
