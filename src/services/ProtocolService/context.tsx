@@ -1,6 +1,6 @@
 import {
   createContext,
-  ReactElement,
+  ReactNode,
   useContext,
   useEffect,
   useState,
@@ -12,7 +12,7 @@ import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
 import ProtocolService from ".";
 
 interface Props {
-  children: ReactElement;
+  children: ReactNode;
 }
 
 export const ProtocolContext = createContext<ProtocolService | null>(null);
