@@ -11,7 +11,6 @@ import Icon, { IconNames } from "@popup/components/common/Icon";
 import Text, { TextWeights } from "@popup/components/common/Text";
 import Subtitle, { Subsubtitle } from "@popup/components/common/Subtitle";
 
-import WindowsService from "@services/WindowsService";
 import environment from "@environment/index";
 
 const Container = styled.div`
