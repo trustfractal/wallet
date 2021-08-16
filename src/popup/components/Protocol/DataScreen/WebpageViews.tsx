@@ -176,7 +176,7 @@ function LatestWebpage() {
 
   useEffect(() => {
     (async () => {
-      const iterContainer = DataHost.instance().iter();
+      const iterContainer = DataHost.instance().iterBack();
       const iter = iterContainer[Symbol.asyncIterator]();
 
       setItem(await iter.next());
@@ -320,23 +320,20 @@ function WebpageEntry({ website }: { website: PageView }) {
 }
 
 function WebpageHistoryList() {
-  const iterContainer = DataHost.instance().iter();
-  const iter = iterContainer[Symbol.asyncIterator]();
-
   const [websites, setWebsites] = useState<PageView[]>([]);
 
   useEffect(() => {
     (async () => {
       const toShow = [];
 
-      for await (let page of DataHost.instance().iter()) {
+      for await (let page of DataHost.instance().iterBack()) {
         toShow.push(page.pageView);
         if (toShow.length >= 4) break;
       }
 
       setWebsites(toShow);
     })();
-  }, [iter]);
+  }, []);
 
   return (
     <WebpageListContainer>

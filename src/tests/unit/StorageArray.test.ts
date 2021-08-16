@@ -94,6 +94,22 @@ describe("StorageArray", () => {
     expect(items).toEqual(["foo", "bar", "baz"]);
   });
 
+  it("iterates over items in a reverse order", async () => {
+    const mockStorage = new MockStorage();
+    const subject = new StorageArray(mockStorage, prefix);
+
+    await subject.push("foo");
+    await subject.push("bar");
+    await subject.push("baz");
+
+    const items = [];
+    for await (let item of subject.iterBack()) {
+      items.push(item);
+    }
+
+    expect(items).toEqual(["baz", "bar", "foo"]);
+  });
+
   it("multiple instances do not race each other", async () => {
     const mockStorage = new MockStorage();
     const inParallel = 100;
