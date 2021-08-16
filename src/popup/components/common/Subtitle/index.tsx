@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEventHandler } from "react";
 
 import styled from "styled-components";
 
@@ -7,6 +7,7 @@ interface Props {
   uppercase?: boolean;
   fontSize?: string;
   lineHeight?: string;
+  onClick?: MouseEventHandler;
 }
 
 const Root = styled.h3<Props>`
@@ -17,13 +18,17 @@ const Root = styled.h3<Props>`
   text-decoration: ${(props) => (props.underline ? "underline" : "none")};
   color: var(--c-white);
   opacity: 0.6;
+
+  &:hover {
+    cursor: ${(props) => (props.onClick ? "pointer" : "default")};
+  }
 `;
 
 function Subtitle(props: React.HTMLProps<HTMLHeadingElement> & Props) {
-  const { children, underline, uppercase } = props;
+  const { children, underline, uppercase, onClick } = props;
 
   return (
-    <Root underline={underline} uppercase={uppercase}>
+    <Root underline={underline} uppercase={uppercase} onClick={onClick}>
       {children}
     </Root>
   );
@@ -32,7 +37,7 @@ function Subtitle(props: React.HTMLProps<HTMLHeadingElement> & Props) {
 export function Subsubtitle(
   props: React.HTMLProps<HTMLHeadingElement> & Props,
 ) {
-  const { children, underline, uppercase } = props;
+  const { children, underline, uppercase, onClick } = props;
 
   return (
     <Root
@@ -40,6 +45,7 @@ export function Subsubtitle(
       lineHeight="var(--s-16)"
       underline={underline}
       uppercase={uppercase}
+      onClick={onClick}
     >
       {children}
     </Root>
