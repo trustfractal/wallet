@@ -11,6 +11,9 @@ import Icon, { IconNames } from "@popup/components/common/Icon";
 import Text, { TextWeights } from "@popup/components/common/Text";
 import Subtitle, { Subsubtitle } from "@popup/components/common/Subtitle";
 
+import WindowsService from "@services/WindowsService";
+import environment from "@environment/index";
+
 const Container = styled.div`
   width: 100%;
   height: 100%;
@@ -96,9 +99,17 @@ function OptInForm() {
 
       <Spacing size="var(--s-16)" />
 
-      <Subsubtitle underline uppercase>
-        Terms & Conditions
-      </Subsubtitle>
+      <Subsubtitle uppercase>By clicking “Opt In” you agree to our</Subsubtitle>
+
+      <a
+        href={`${environment.FRACTAL_WEBSITE_URL}/documents/testnet-launch-special-user-agreement`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <Subsubtitle underline uppercase>
+          Special Testnet Launch User Agreement.
+        </Subsubtitle>
+      </a>
 
       <Spacing />
 
