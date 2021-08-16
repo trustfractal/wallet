@@ -36,3 +36,12 @@
 ## version 0.2.3 (05.08.2021)
 
 - Fix popup to be automatically resize to only the needed size
+
+## version 0.3.0 (17.08.2021)
+
+- Integrate with Fractal Protocol testnet.
+- Add option to opt-in to the Protocol minting.
+
+## version 0.3.1 (17.08.2021)
+
+- Fix the enabled/disabled flickering in the Protocol tab.
