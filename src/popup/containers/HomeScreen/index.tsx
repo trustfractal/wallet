@@ -1,16 +1,25 @@
+import { useEffect, useState } from "react";
+
 import { withNavBar } from "@popup/components/common/NavBar";
 import Tabs from "@popup/components/common/Tabs";
 import Protocol from "@popup/components/Protocol";
-
-import { useAppSelector } from "@redux/stores/application/context";
-import { getProtocolEnabled } from "@redux/stores/application/reducers/app/selectors";
+import MaguroService from "@services/MaguroService";
 
 interface HomeScreenProps {
   credentials: (props: any) => JSX.Element;
 }
 
 function HomeScreen({ credentials }: HomeScreenProps) {
-  const protocolEnabled = useAppSelector(getProtocolEnabled);
+  const [protocolEnabled, setProtocolEnabled] = useState<boolean>(false);
+
+  useEffect(() => {
+    (async () => {
+      if (protocolEnabled) return;
+
+      const config = await MaguroService.getConfig();
+      setProtocolEnabled(config.protocol_enabled);
+    })();
+  });
 
   const tabs = [
     {
