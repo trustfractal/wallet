@@ -50,6 +50,10 @@ export class DataHost {
     return new StorageArray(this.sensitive, this.key("facts"));
   }
 
+  public iter() {
+    return this.array().iter();
+  }
+
   async extensionProof(): Promise<[number, string] | undefined> {
     const allItems = [];
     for await (let item of this.array().iter()) {
