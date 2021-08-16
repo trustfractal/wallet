@@ -12,6 +12,7 @@ import Text, {
 
 // @ts-ignore
 import Copy from "@assets/copy.svg";
+import WebpageViews from "./WebpageViews";
 
 interface AddressProps {
   wallet: Wallet;
@@ -47,6 +48,10 @@ const LineWithCopy = styled.div`
   }
 `;
 
+const Spacing = styled.div`
+  margin-bottom: var(--s-24);
+`;
+
 function Address({ wallet }: AddressProps) {
   return (
     <AddressContainer>
@@ -70,6 +75,8 @@ function DataScreen() {
 
   return (
     <Container>
+      <WebpageViews />
+      <Spacing />
       <Address wallet={wallet} />
     </Container>
   );
