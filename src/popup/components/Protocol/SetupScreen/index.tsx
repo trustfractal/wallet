@@ -21,6 +21,9 @@ import {
   hasRegistrationErrored,
 } from "@redux/stores/user/reducers/protocol/selectors";
 import Icon, { IconNames } from "@popup/components/common/Icon";
+import appActions from "@redux/stores/application/reducers/app";
+import { useAppDispatch } from "@redux/stores/application/context";
+import { useEffect, useState } from "react";
 
 interface SetupStepRouterProps {
   registrationState?: string;
@@ -85,12 +88,26 @@ function Header({ logo }: HeaderProps) {
   );
 }
 
+function ResetButton() {
+  const userDispatch = useUserDispatch();
+  const appDispatch = useAppDispatch();
+  const onClick = () => {
+    userDispatch(protocolActions.setRegistrationState(undefined));
+    userDispatch(protocolActions.setRegistrationError(false));
+    appDispatch(appActions.setProtocolOptIn(false));
+  };
+
+  return (
+    <CTA>
+      <Button onClick={onClick}>Restart</Button>
+    </CTA>
+  );
+}
+
 function Success({ wallet, dispatch }: SuccessProps) {
   if (!wallet) return <></>;
 
   const onClick = () => {
-    console.log("clicked");
-
     dispatch(
       protocolActions.setRegistrationState(protocolRegistrationTypes.COMPLETED),
     );
@@ -143,11 +160,27 @@ function Error({ step }: ErrorProps) {
       >
         Something went wrong {message}.
       </Text>
+
+      <Spacing />
+
+      <ResetButton />
     </Container>
   );
 }
 
 function SetupStep({ message }: { message: string }) {
+  const [showButton, setShowButton] = useState<boolean>();
+
+  useEffect(() => {
+    if (showButton) return;
+
+    const timeout = setTimeout(() => setShowButton(true), 30000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [showButton]);
+
   return (
     <Container>
       <Header logo={IconNames.PROTOCOL_SETUP_PENDING} />
@@ -159,6 +192,10 @@ function SetupStep({ message }: { message: string }) {
       >
         {message}...
       </Text>
+
+      <Spacing />
+
+      {showButton && <ResetButton />}
 
       <Spacing />
     </Container>
