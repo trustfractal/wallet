@@ -107,20 +107,28 @@ function MenuNavbar() {
   const history = useHistory();
 
   const credentials = useUserSelector(getCredentials);
+  const registrationState = useUserSelector(getRegistrationState);
 
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
+
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
+  const onClickMnemonic = () => history.push(RoutesPaths.MNEMONIC);
+
   const menuItems = [
-    [
-      {
-        label: "Export your data",
-        icon: IconNames.EXPORT,
-        onClick: onClickExport,
-        disabled: credentials.length === 0,
-      },
-    ],
+    {
+      label: "Export your data",
+      icon: IconNames.EXPORT,
+      onClick: onClickExport,
+      disabled: credentials.length === 0,
+    },
+    {
+      label: "Backup mnemonic",
+      icon: IconNames.IMPORT,
+      onClick: onClickMnemonic,
+      disabled: registrationState !== protocolRegistrationTypes.COMPLETED,
+    },
     {
       label: "About",
       icon: IconNames.ABOUT,
@@ -227,6 +235,38 @@ function ProtocolNavbar() {
   const wallet = useUserSelector(getWallet);
   const protocol = useProtocol();
 
+  const history = useHistory();
+
+  const credentials = useUserSelector(getCredentials);
+  const registrationState = useUserSelector(getRegistrationState);
+
+  const onClickExport = async () =>
+    exportFile(credentials.serialize(), "fractal_wallet.backup");
+
+  const onClickAbout = () => history.push(RoutesPaths.ABOUT);
+
+  const onClickMnemonic = () => history.push(RoutesPaths.MNEMONIC);
+
+  const menuItems = [
+    {
+      label: "Export your data",
+      icon: IconNames.EXPORT,
+      onClick: onClickExport,
+      disabled: credentials.length === 0,
+    },
+    {
+      label: "Backup mnemonic",
+      icon: IconNames.IMPORT,
+      onClick: onClickMnemonic,
+      disabled: registrationState !== protocolRegistrationTypes.COMPLETED,
+    },
+    {
+      label: "About",
+      icon: IconNames.ABOUT,
+      onClick: onClickAbout,
+    },
+  ];
+
   useEffect(() => {
     if (!protocol || !wallet) return;
 
@@ -245,6 +285,7 @@ function ProtocolNavbar() {
       </LogoContainer>
 
       <ProtocolBalance balance={balance} />
+      <Menu items={menuItems} />
     </NavbarContainer>
   );
 }
