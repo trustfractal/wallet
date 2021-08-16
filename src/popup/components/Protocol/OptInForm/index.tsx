@@ -72,11 +72,6 @@ function OptInForm() {
     }
   };
 
-  const onClickTerms = () =>
-    WindowsService.createTab({
-      url: `${environment.FRACTAL_WEBSITE_URL}/documents/testnet-launch-special-user-agreement`,
-    });
-
   return (
     <Container>
       <IconContainer>
@@ -106,9 +101,15 @@ function OptInForm() {
 
       <Subsubtitle uppercase>By clicking “Opt In” you agree to our</Subsubtitle>
 
-      <Subsubtitle underline uppercase onClick={onClickTerms}>
-        Special Testnet Launch User Agreement.
-      </Subsubtitle>
+      <a
+        href={`${environment.FRACTAL_WEBSITE_URL}/documents/testnet-launch-special-user-agreement`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <Subsubtitle underline uppercase>
+          Special Testnet Launch User Agreement.
+        </Subsubtitle>
+      </a>
 
       <Spacing />
 
