@@ -5,12 +5,24 @@ import Tabs from "@popup/components/common/Tabs";
 import Protocol from "@popup/components/Protocol";
 import MaguroService from "@services/MaguroService";
 
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "@redux/stores/application/context";
+import { getProtocolEnabled } from "@redux/stores/application/reducers/app/selectors";
+import appActions from "@redux/stores/application/reducers/app";
+
 interface HomeScreenProps {
   credentials: (props: any) => JSX.Element;
 }
 
 function HomeScreen({ credentials }: HomeScreenProps) {
-  const [protocolEnabled, setProtocolEnabled] = useState<boolean>(false);
+  const protocolEnabledConfig = useAppSelector(getProtocolEnabled);
+  const appDispatch = useAppDispatch();
+
+  const [protocolEnabled, setProtocolEnabled] = useState<boolean>(
+    protocolEnabledConfig,
+  );
 
   useEffect(() => {
     (async () => {
@@ -18,6 +30,7 @@ function HomeScreen({ credentials }: HomeScreenProps) {
 
       const config = await MaguroService.getConfig();
       setProtocolEnabled(config.protocol_enabled);
+      appDispatch(appActions.setProtocolEnabled(config.protocol_enabled));
     })();
   });
 
