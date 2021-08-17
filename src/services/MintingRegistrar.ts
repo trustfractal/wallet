@@ -30,7 +30,10 @@ export class MintingRegistrar {
         console.log(`Successfully registered for minting ${hash}`);
       }
 
-      await this.storage.setItem("minting_registrar/last_check", now.toString());
+      await this.storage.setItem(
+        "minting_registrar/last_check",
+        now.toString(),
+      );
     });
   }
 }
