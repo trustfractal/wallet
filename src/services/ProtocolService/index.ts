@@ -3,6 +3,7 @@ import { Keyring } from "@polkadot/keyring";
 import type { KeyringPair } from "@polkadot/keyring/types";
 import type { AccountData } from "@polkadot/types/interfaces";
 import { DataHost } from "@services/DataHost";
+import MaguroService from "@services/MaguroService";
 import { Storage } from "@utils/StorageArray";
 
 import Environment from "@environment/index";

@@ -20,8 +20,6 @@ export const createWallet = () => {
     dispatch(
       protocolActions.setRegistrationState(protocolRegistrationTypes.STARTED),
     );
-    const dataHost = DataHost.instance();
-    await dataHost.enable();
 
     const existingWallet = getWallet(UserStore.getStore().getState());
     const wallet = existingWallet || Wallet.generate();
@@ -44,6 +42,8 @@ export const createWallet = () => {
           protocolRegistrationTypes.IDENTITY_REGISTERED,
         ),
       );
+
+      await DataHost.instance().enable();
 
       dispatch(
         protocolActions.setRegistrationState(
