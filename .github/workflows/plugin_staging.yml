@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - dev
+      - emergency/launch
 
   pull_request:
     branches:
       - dev
+      - emergency/launch
     types: [opened, synchronize]
     ignore-paths:
       - "*.md"
