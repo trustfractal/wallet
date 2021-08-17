@@ -50,3 +50,12 @@
 
 - Fix background errors due to attempts to registrer for minting without a
   signer.
+
+## version 0.3.3 (17.08.2021)
+
+- Fix config polling for launch
+- Fix extension getting stuck on an error state when the identity registration
+  fails
+- Fix large balances not supported
+- Show the correct error message in inconsistent states
+- Update production and staging build environment defaults
