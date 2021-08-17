@@ -45,3 +45,8 @@
 ## version 0.3.1 (17.08.2021)
 
 - Fix the enabled/disabled flickering in the Protocol tab.
+
+## version 0.3.2 (17.08.2021)
+
+- Fix background errors due to attempts to registrer for minting without a
+  signer.
