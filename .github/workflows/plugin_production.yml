@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - dev
-      - feature/protocol
+      - emergency/launch
 
     tags:
       - "*"
