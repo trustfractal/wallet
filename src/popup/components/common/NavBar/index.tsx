@@ -103,7 +103,8 @@ const BalanceReservedLabel = styled.span`
   opacity: 0.6;
 `;
 
-const toHuman = (balance: Balance) => balance.toNumber() / 10 ** 12;
+const toHuman = (balance: Balance) =>
+  Number(balance.toBigInt() / BigInt("1000000000000"));
 
 function MenuNavbar() {
   const history = useHistory();
