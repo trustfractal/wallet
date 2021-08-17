@@ -12,6 +12,9 @@ import ProtocolService from "@services/ProtocolService";
 import { DataHost } from "@services/DataHost";
 import storageService from "@services/StorageService";
 
+import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
+import UserStore from "@redux/stores/user";
+
 export const createWallet = () => {
   return async (dispatch: Dispatch<AnyAction>) => {
     dispatch(
@@ -20,7 +23,9 @@ export const createWallet = () => {
     const dataHost = DataHost.instance();
     await dataHost.enable();
 
-    const wallet = Wallet.generate();
+    const existingWallet = getWallet(UserStore.getStore().getState());
+    const wallet = existingWallet || Wallet.generate();
+
     const protocol = await ProtocolService.create(wallet!.mnemonic);
     await protocol.saveSigner(storageService);
 
