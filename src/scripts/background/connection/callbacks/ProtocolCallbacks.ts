@@ -4,8 +4,14 @@ import { DataHost } from "@services/DataHost";
 import storageService from "@services/StorageService";
 import { MintingRegistrar } from "@services/MintingRegistrar";
 import environment from "@environment/index";
+import { getProtocolOptIn } from "@redux/stores/application/reducers/app/selectors";
+import AppStore from "@redux/stores/application";
 
 export async function addWebpage([url]: [string]): Promise<void> {
+  const optedIn = getProtocolOptIn(AppStore.getStore().getState());
+
+  if (!optedIn) return;
+
   await DataHost.instance().storeFact({
     pageView: {
       url,
