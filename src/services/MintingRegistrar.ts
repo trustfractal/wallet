@@ -1,5 +1,5 @@
 import ProtocolService from "@services/ProtocolService";
-import { Storage } from "@utils/StorageArray";
+import { Storage, withLock } from "@utils/StorageArray";
 
 export class MintingRegistrar {
   constructor(
@@ -17,18 +17,23 @@ export class MintingRegistrar {
       now > parseInt(lastCheck) + this.statusCheckSleepSeconds;
     if (!shouldCheck) return;
 
-    const protocol = await ProtocolService.fromStorage(this.storage);
-    const isRegistered = await protocol.isRegisteredForMinting(
-      protocol.address(),
-    );
-    if (isRegistered) {
-      console.log("Already registered for next minting, not doing anything");
-    } else {
-      console.log("Not registered for minting, trying to register");
-      const hash = await protocol.registerForMinting();
-      console.log(`Successfully registered for minting ${hash}`);
-    }
+    await withLock(this.storage, "minting_registrar/lock", async () => {
+      const protocol = await ProtocolService.fromStorage(this.storage);
+      const isRegistered = await protocol.isRegisteredForMinting(
+        protocol.address(),
+      );
+      if (isRegistered) {
+        console.log("Already registered for next minting, not doing anything");
+      } else {
+        console.log("Not registered for minting, trying to register");
+        const hash = await protocol.registerForMinting();
+        console.log(`Successfully registered for minting ${hash}`);
+      }
 
-    await this.storage.setItem("minting_registrar/last_check", now.toString());
+      await this.storage.setItem(
+        "minting_registrar/last_check",
+        now.toString(),
+      );
+    });
   }
 }

@@ -5,7 +5,6 @@ on:
     branches:
       - main
       - dev
-      - feature/protocol
 
     tags:
       - "*"
@@ -53,7 +52,7 @@ jobs:
       REACT_APP_GOLDFISH_URL: ${{secrets.GOLDFISH_PRODUCTION_URL}}
       REACT_APP_FRACTAL_WEBSITE_URL: ${{secrets.FRACTAL_WEBSITE_PRODUCTION_URL}}
       REACT_APP_MAGURO_URL: ${{secrets.MAGURO_PRODUCTION_URL}}
-      REACT_APP_PROTOCOL_RPC_ENDPOINT: ${{secrets.PROTOCOL_RPC_ENDPOINT}}
+      REACT_APP_PROTOCOL_RPC_ENDPOINT: ${{secrets.PROTOCOL_RPC_PRODUCTION_ENDPOINT}}
 
     steps:
       - uses: actions/checkout@v2

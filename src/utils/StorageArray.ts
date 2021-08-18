@@ -118,7 +118,7 @@ export class StorageArray {
 // underlying storage.
 //
 // https://www.cs.rochester.edu/research/synchronization/pseudocode/fastlock.html
-async function withLock<T>(
+export async function withLock<T>(
   storage: Storage,
   key: string,
   callback: () => Promise<T>,

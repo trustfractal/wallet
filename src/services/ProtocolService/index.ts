@@ -3,6 +3,7 @@ import { Keyring } from "@polkadot/keyring";
 import type { KeyringPair } from "@polkadot/keyring/types";
 import type { AccountData } from "@polkadot/types/interfaces";
 import { DataHost } from "@services/DataHost";
+import MaguroService from "@services/MaguroService";
 import { Storage } from "@utils/StorageArray";
 
 import Environment from "@environment/index";
@@ -23,8 +24,17 @@ export default class ProtocolService {
   }
 
   private static async withSigner(signer: KeyringPair) {
-    const provider = new WsProvider(Environment.PROTOCOL_RPC_ENDPOINT);
-    const api = await ApiPromise.create({ provider, types });
+    let api;
+    try {
+      const url = await MaguroService.getConfig().blockchain_url;
+      const provider = new WsProvider(url);
+      api = await ApiPromise.create({ provider, types });
+    } catch (e) {
+      console.error(e);
+      const provider = new WsProvider(Environment.PROTOCOL_RPC_ENDPOINT);
+      api = await ApiPromise.create({ provider, types });
+    }
+
     return new ProtocolService(api, signer);
   }
 

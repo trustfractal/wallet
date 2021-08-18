@@ -147,7 +147,8 @@ function Success({ wallet, dispatch }: SuccessProps) {
 }
 
 function Error({ step }: ErrorProps) {
-  const message = step ? `while ${StatusMessages[step].toLowerCase()}` : "";
+  const statusMessage = step && StatusMessages[step];
+  const message = statusMessage ? ` while ${statusMessage.toLowerCase()}` : "";
 
   return (
     <Container>
@@ -158,7 +159,7 @@ function Error({ step }: ErrorProps) {
         size={TextSizes.LARGE}
         weight={TextWeights.BOLD}
       >
-        Something went wrong {message}.
+        Something went wrong{message}.
       </Text>
 
       <Spacing />

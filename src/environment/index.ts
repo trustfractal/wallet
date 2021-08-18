@@ -15,7 +15,7 @@ const MAGURO_URL =
   "https://maguro.staging.sandbox.fractal.id";
 const PROTOCOL_RPC_ENDPOINT =
   process.env.REACT_APP_PROTOCOL_RPC_ENDPOINT ||
-  "wss://main.devnet.fractalprotocol.com";
+  "wss://65380554.testnet.fractalprotocol.com";
 
 const NODE_ENV = process.env.NODE_ENV || "development";
 
