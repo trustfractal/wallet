@@ -7,7 +7,6 @@ import protocolActions, {
 } from "@redux/stores/user/reducers/protocol";
 
 import Wallet from "@models/Wallet";
-import MaguroService from "@services/MaguroService";
 import ProtocolService from "@services/ProtocolService";
 import { DataHost } from "@services/DataHost";
 import storageService from "@services/StorageService";
@@ -26,6 +25,7 @@ export const createWallet = () => {
 
     const protocol = await ProtocolService.create(wallet!.mnemonic);
     await protocol.saveSigner(storageService);
+    await DataHost.instance().enable();
 
     try {
       dispatch(protocolActions.setMnemonic(wallet.mnemonic));
@@ -35,15 +35,13 @@ export const createWallet = () => {
         ),
       );
 
-      await MaguroService.registerIdentity(wallet.address);
+      await protocol.ensureIdentityRegistered();
 
       dispatch(
         protocolActions.setRegistrationState(
           protocolRegistrationTypes.IDENTITY_REGISTERED,
         ),
       );
-
-      await DataHost.instance().enable();
 
       dispatch(
         protocolActions.setRegistrationState(

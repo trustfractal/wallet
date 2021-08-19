@@ -19,9 +19,8 @@ export class MintingRegistrar {
 
     await withLock(this.storage, "minting_registrar/lock", async () => {
       const protocol = await ProtocolService.fromStorage(this.storage);
-      const isRegistered = await protocol.isRegisteredForMinting(
-        protocol.address(),
-      );
+      await protocol.ensureIdentityRegistered();
+      const isRegistered = await protocol.isRegisteredForMinting();
       if (isRegistered) {
         console.log("Already registered for next minting, not doing anything");
       } else {

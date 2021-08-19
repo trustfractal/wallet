@@ -9,7 +9,6 @@ import AppStore from "@redux/stores/application";
 
 export async function addWebpage([url]: [string]): Promise<void> {
   const optedIn = getProtocolOptIn(AppStore.getStore().getState());
-
   if (!optedIn) return;
 
   await DataHost.instance().storeFact({
@@ -19,7 +18,7 @@ export async function addWebpage([url]: [string]): Promise<void> {
     },
   });
 
-  const sleep = environment.IS_DEV ? 30 : 30 * 60;
+  const sleep = environment.IS_DEV ? 5 : 30 * 60;
   await new MintingRegistrar(storageService, sleep).maybeTryRegister();
 }
 
