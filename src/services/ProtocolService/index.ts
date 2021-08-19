@@ -26,7 +26,7 @@ export default class ProtocolService {
   private static async withSigner(signer: KeyringPair) {
     let api;
     try {
-      const url = await MaguroService.getConfig().blockchain_url;
+      const url = (await MaguroService.getConfig()).blockchain_url;
       const provider = new WsProvider(url);
       api = await ApiPromise.create({ provider, types });
     } catch (e) {
