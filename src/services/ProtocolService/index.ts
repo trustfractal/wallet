@@ -1,5 +1,5 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
-import { u64 } from '@polkadot/types';
+import { u64 } from "@polkadot/types";
 import { Keyring } from "@polkadot/keyring";
 import type { KeyringPair } from "@polkadot/keyring/types";
 import type { AccountData } from "@polkadot/types/interfaces";
@@ -89,7 +89,9 @@ export default class ProtocolService {
   }
 
   private async registeredFractalId(): Promise<u64 | null> {
-    const keys = await this.api.query.fractalMinting.accountIds.keys(this.address());
+    const keys = await this.api.query.fractalMinting.accountIds.keys(
+      this.address(),
+    );
     if (keys.length === 0) return null;
     const fractalId = keys[0].args[1];
     return fractalId as u64;
@@ -98,9 +100,9 @@ export default class ProtocolService {
   public async ensureIdentityRegistered(): Promise<void> {
     if (await this.isIdentityRegistered()) return;
 
-    console.log('Identity is not registered, trying to register');
+    console.log("Identity is not registered, trying to register");
     await MaguroService.registerIdentity(this.address());
-    console.log('Identity successfully registered');
+    console.log("Identity successfully registered");
   }
 
   private async isIdentityRegistered(): Promise<boolean> {
