@@ -39,6 +39,10 @@ export default class ProtocolService {
     return new ProtocolService(api, signer);
   }
 
+  public async disconnect() {
+    await this.api.disconnect();
+  }
+
   public constructor(api: ApiPromise, signer: KeyringPair) {
     this.api = api;
     this.signer = signer;
