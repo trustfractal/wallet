@@ -33,6 +33,7 @@ export class MintingRegistrar {
         "minting_registrar/last_check",
         now.toString(),
       );
+      await protocol.disconnect();
     });
   }
 }
