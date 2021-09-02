@@ -17,6 +17,8 @@ const PROTOCOL_RPC_ENDPOINT =
   process.env.REACT_APP_PROTOCOL_RPC_ENDPOINT ||
   "wss://65380554.testnet.fractalprotocol.com";
 
+const PROTOCOL_CURRENCY = process.env.REACT_APP_PROTOCOL_CURRENCY || "FCL";
+
 const NODE_ENV = process.env.NODE_ENV || "development";
 
 const environment: Environment = {
@@ -26,6 +28,7 @@ const environment: Environment = {
   MAGURO_URL,
   IS_DEV: NODE_ENV === "development",
   PROTOCOL_RPC_ENDPOINT,
+  PROTOCOL_CURRENCY,
 };
 
 export default environment;

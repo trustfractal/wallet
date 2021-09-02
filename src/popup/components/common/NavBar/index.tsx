@@ -35,6 +35,8 @@ import {
 } from "@redux/stores/user/reducers/protocol/selectors";
 import { protocolRegistrationTypes } from "@redux/stores/user/reducers/protocol";
 
+import environment from "@environment/index";
+
 const NavbarContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -226,7 +228,7 @@ function ProtocolBalance({ balance }: { balance?: AccountData }) {
           </BalanceFree>
 
           <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-            FCL
+            {environment.PROTOCOL_CURRENCY}
           </Text>
         </BalanceFreeContainer>
         <ProtocolReservedBalance reserved={balance.reserved} />
