@@ -40,3 +40,7 @@ proxyConnection
 backgroundConnection.invoke(ConnectionTypes.WEBPAGE_VIEW, [
   window.location.toString(),
 ]);
+
+if (window.location.toString().match(`^${environment.FRACTAL_WEBSITE_URL}`)) {
+  backgroundConnection.invoke(ConnectionTypes.SETUP_PLUGIN_BACKGROUND);
+}
