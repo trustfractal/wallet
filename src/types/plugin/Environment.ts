@@ -5,4 +5,5 @@ export type Environment = {
   MAGURO_URL: string;
   IS_DEV: boolean;
   PROTOCOL_RPC_ENDPOINT: string;
+  PROTOCOL_CURRENCY: string;
 };

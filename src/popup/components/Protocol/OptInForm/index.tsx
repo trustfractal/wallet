@@ -88,7 +88,10 @@ function OptInForm() {
         <li>Tracks and stores your browsing data.</li>
         <li>The data is only stored on your local device. </li>
         <li>Publishes a proof of your data provisioning activity on chain</li>
-        <li>You get rewards in FCL for storing your data.</li>
+        <li>
+          You get rewards in {environment.PROTOCOL_CURRENCY} for storing your
+          data.
+        </li>
       </List>
 
       <Spacing size="var(--s-16)" />
