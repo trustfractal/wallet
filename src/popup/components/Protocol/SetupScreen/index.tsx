@@ -194,6 +194,10 @@ function SetupStep({ message }: { message: string }) {
         {message}...
       </Text>
 
+      <Text height={TextHeights.SMALL} size={TextSizes.SMALL}>
+        Please stay tuned, this might take a few minutes.
+      </Text>
+
       <Spacing />
 
       {showButton && <ResetButton />}
