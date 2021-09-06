@@ -195,7 +195,7 @@ function SetupStep({ message }: { message: string }) {
       </Text>
 
       <Text height={TextHeights.SMALL} size={TextSizes.SMALL}>
-        Please stay tuned, it might take a few minutes.
+        Please stay tuned, this might take a few minutes.
       </Text>
 
       <Spacing />
