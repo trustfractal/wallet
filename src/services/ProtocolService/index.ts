@@ -66,13 +66,14 @@ export default class ProtocolService {
     // Blue-green strategy handling migration of blockchain storage.
     try {
       // Will be long-term code.
-      const dataset =
-        await this.api.query.fractalMinting.idDatasets(this.address(), fractalId);
+      const dataset = await this.api.query.fractalMinting.idDatasets(
+        this.address(),
+        fractalId,
+      );
       return dataset.toHuman() as string | null;
     } catch (e) {
       // TODO(shelbyd): Delete this after rollout of storage change.
-      const dataset =
-        await this.api.query.fractalMinting.idDatasets(fractalId);
+      const dataset = await this.api.query.fractalMinting.idDatasets(fractalId);
       return dataset.toHuman() as string | null;
     }
   }
@@ -82,23 +83,26 @@ export default class ProtocolService {
     const txn = this.api.tx.fractalMinting.registerForMinting(null, proof);
 
     return new Promise(async (resolve, reject) => {
-      const unsub = await txn.signAndSend(this.signer, ({ events = [], status }) => {
-        console.log(`Extrinsic status: ${status}`);
-        if (!status.isFinalized) return;
+      const unsub = await txn.signAndSend(
+        this.signer,
+        ({ events = [], status }) => {
+          console.log(`Extrinsic status: ${status}`);
+          if (!status.isFinalized) return;
 
-        events.forEach(({ event: { data, method, section } }) => {
-          if (section !== 'system') return;
+          events.forEach(({ event: { data, method, section } }) => {
+            if (section !== "system") return;
 
-          if (method === 'ExtrinsicSuccess') {
-            resolve(status.asFinalized.toHuman() as string);
-          }
-          if (method === 'ExtrinsicFailed') {
-            reject(data);
-          }
-        });
+            if (method === "ExtrinsicSuccess") {
+              resolve(status.asFinalized.toHuman() as string);
+            }
+            if (method === "ExtrinsicFailed") {
+              reject(data);
+            }
+          });
 
-        unsub();
-      });
+          unsub();
+        },
+      );
     });
   }
 
