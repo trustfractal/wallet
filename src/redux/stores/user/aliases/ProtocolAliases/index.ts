@@ -6,6 +6,8 @@ import protocolActions, {
   protocolRegistrationTypes,
 } from "@redux/stores/user/reducers/protocol";
 
+import appActions from "@redux/stores/application/reducers/app";
+
 import Wallet from "@models/Wallet";
 import ProtocolService from "@services/ProtocolService";
 import { DataHost } from "@services/DataHost";
@@ -13,6 +15,7 @@ import storageService from "@services/StorageService";
 
 import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
 import UserStore from "@redux/stores/user";
+import ApplicationStore from "@redux/stores/application";
 
 export const createWallet = () => {
   const existingWallet = getWallet(UserStore.getStore().getState());
@@ -58,7 +61,10 @@ const registerWallet = (wallet: Wallet) => {
           protocolRegistrationTypes.MINTING_REGISTERED,
         ),
       );
+
       dispatch(protocolActions.setRegisteredForMinting(true));
+
+      ApplicationStore.getStore().dispatch(appActions.setWalletGenerated(true));
     } catch {
       dispatch(protocolActions.setRegistrationError(true));
     }

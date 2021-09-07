@@ -27,11 +27,30 @@ import {
 } from "@redux/stores/user/reducers/protocol";
 
 import {
+  reducer as metadataReducer,
+  restore as metadataRestore,
+  store as metadataStore,
+} from "@redux/stores/user/reducers/metadata";
+
+import {
   ERROR_DECRYPT_FAILED,
   ERROR_LOCAL_STATE_NOT_FOUND,
   ERROR_SALT_NOT_FOUND,
   ERROR_STORE_NOT_INITIALIZED,
 } from "./Errors";
+
+import { getLastMigration } from "@redux/stores/user/reducers/metadata/selectors";
+
+const runDataMigrations = (lastMigration, store) => {
+  switch (lastMigration) {
+    case "0.3.7":
+      setWalletGeneratedInAppStore(store);
+      break;
+
+    default:
+      setWalletGeneratedInAppStore(store);
+  }
+};
 
 export class UserStore {
   static instance = undefined;
@@ -89,7 +108,19 @@ export class UserStore {
       portName: UserStore.PORT_NAME,
     });
 
+    this._runDataMigrations();
+
     return this.storeInternal;
+  }
+
+  _runDataMigrations() {
+    // When the extension updates, we want to run data migrations.
+    // Some of these may only run when the encrypted user store is
+    // initialiased.
+
+    const state = getLastMigration(this.storeInternal.getState());
+
+    runDataMigrations(state);
   }
 
   static async connect() {
@@ -103,6 +134,7 @@ export class UserStore {
       credentials: credentialsReducer,
       requests: requestsReducer,
       protocol: protocolReducer,
+      metadata: metadataReducer,
     });
   }
 
@@ -177,6 +209,7 @@ export class UserStore {
       credentials: await credentialsRestore(deserializedState.credentials),
       requests: await requestsRestore(deserializedState.requests),
       protocol: await protocolRestore(deserializedState.protocol),
+      metadata: await metadataRestore(deserializedState.metadata),
     };
   }
 
@@ -185,6 +218,7 @@ export class UserStore {
       credentials: await credentialsStore(state.credentials),
       requests: await requestsStore(state.requests),
       protocol: await protocolStore(state.protocol),
+      metadata: await metadataStore(state.metadata),
     });
   }
 

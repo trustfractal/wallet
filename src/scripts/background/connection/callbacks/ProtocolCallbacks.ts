@@ -4,7 +4,10 @@ import { DataHost } from "@services/DataHost";
 import storageService from "@services/StorageService";
 import { MintingRegistrar } from "@services/MintingRegistrar";
 import environment from "@environment/index";
-import { getProtocolOptIn } from "@redux/stores/application/reducers/app/selectors";
+import {
+  getProtocolOptIn,
+  getWalletGenerated,
+} from "@redux/stores/application/reducers/app/selectors";
 import AppStore from "@redux/stores/application";
 
 export async function addWebpage([url]: [string]): Promise<void> {
@@ -17,6 +20,9 @@ export async function addWebpage([url]: [string]): Promise<void> {
       timestampMs: new Date().getTime(),
     },
   });
+
+  const walletGenerated = getWalletGenerated(AppStore.getStore().getState());
+  if (!walletGenerated) return;
 
   const sleep = environment.IS_DEV ? 5 : 30 * 60;
   await new MintingRegistrar(storageService, sleep).maybeTryRegister();

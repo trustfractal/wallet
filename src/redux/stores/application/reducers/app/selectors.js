@@ -24,3 +24,8 @@ export const getProtocolOptIn = createSelector(
   (state) => state.app,
   (app) => app.protocolOptIn,
 );
+
+export const getWalletGenerated = createSelector(
+  (state) => state.app,
+  (app) => app.walletGenerated,
+);

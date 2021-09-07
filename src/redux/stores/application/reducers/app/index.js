@@ -9,6 +9,7 @@ const types = mirrorCreator([
   "SET_VERSION",
   "SET_PROTOCOL_ENABLED",
   "SET_PROTOCOL_OPT_IN",
+  "SET_WALLET_GENERATED",
   "SET_POPUP_SIZE",
 ]);
 
@@ -20,6 +21,7 @@ export const creators = createActions(
   types.SET_VERSION,
   types.SET_PROTOCOL_ENABLED,
   types.SET_PROTOCOL_OPT_IN,
+  types.SET_WALLET_GENERATED,
   types.SET_POPUP_SIZE,
 );
 
@@ -29,6 +31,7 @@ export const initialState = {
   version: "",
   protocolOptIn: false,
   protocolEnabled: false,
+  walletGenerated: false,
 };
 
 export const reducer = handleActions(
@@ -58,6 +61,11 @@ export const reducer = handleActions(
         ...state,
         protocolOptIn,
       }),
+    [types.SET_WALLET_GENERATED]: (state, { payload: walletGenerated }) =>
+      Object.freeze({
+        ...state,
+        walletGenerated,
+      }),
   },
   initialState,
 );
@@ -74,6 +82,7 @@ export async function store(state) {
     setup: state.setup,
     protocolOptIn: state.protocolOptIn,
     protocolEnabled: state.protocolEnabled,
+    walletGenerated: state.walletGenerated,
   };
 }
 
