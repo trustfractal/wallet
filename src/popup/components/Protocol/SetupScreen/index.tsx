@@ -1,7 +1,6 @@
-import { Dispatch, AnyAction } from "redux";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import Wallet from "@models/Wallet";
 import Text, {
   TextHeights,
   TextSizes,
@@ -23,22 +22,10 @@ import {
 import Icon, { IconNames } from "@popup/components/common/Icon";
 import appActions from "@redux/stores/application/reducers/app";
 import { useAppDispatch } from "@redux/stores/application/context";
-import { useEffect, useState } from "react";
-
-interface SetupStepRouterProps {
-  registrationState?: string;
-  registrationErrored?: boolean;
-  wallet?: Wallet;
-  dispatch: Dispatch<AnyAction>;
-}
+import Logo from "@popup/components/common/Logo";
 
 interface ErrorProps {
   step?: string;
-}
-
-interface SuccessProps {
-  wallet?: Wallet;
-  dispatch: Dispatch<AnyAction>;
 }
 
 interface HeaderProps {
@@ -70,7 +57,7 @@ const HeaderContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--s-48) 0 var(--s-24);
+  padding: var(--s-38) 0 var(--s-24);
 `;
 
 const CTA = styled.div`
@@ -80,10 +67,24 @@ const CTA = styled.div`
   justify-content: center;
 `;
 
+const Link = styled.a`
+  cursor: pointer;
+  color: var(--c-orange);
+  text-decoration: underline;
+`;
+
 function Header({ logo }: HeaderProps) {
   return (
     <HeaderContainer>
       <Icon name={logo} />
+    </HeaderContainer>
+  );
+}
+
+function HeaderWithLogo() {
+  return (
+    <HeaderContainer>
+      <Logo />
     </HeaderContainer>
   );
 }
@@ -104,7 +105,48 @@ function ResetButton() {
   );
 }
 
-function Success({ wallet, dispatch }: SuccessProps) {
+function StartSetup() {
+  const dispatch = useUserDispatch();
+
+  const onCreate = () => {
+    dispatch(protocolActions.createWallet());
+  };
+
+  return (
+    <Container>
+      <HeaderWithLogo />
+
+      <Text
+        height={TextHeights.EXTRA_LARGE}
+        size={TextSizes.LARGE}
+        weight={TextWeights.BOLD}
+      >
+        You should only register a new identity if it isn't already associated
+        with an account. If you already have registered please recover your
+        account.
+      </Text>
+
+      <Spacing size="var(--s-26)" />
+
+      <CTA>
+        <Button onClick={onCreate}>Create</Button>
+      </CTA>
+
+      <Spacing size="var(--s-12)" />
+
+      <Subsubtitle>
+        If you need help on anything related to Fractal ID Wallet, please
+        contact us at{" "}
+        <Link href="mailto:support@fractal.id">support@fractal.id</Link>
+      </Subsubtitle>
+    </Container>
+  );
+}
+
+function Success() {
+  const wallet = useUserSelector(getWallet);
+  const dispatch = useUserDispatch();
+
   if (!wallet) return <></>;
 
   const onClick = () => {
@@ -207,12 +249,10 @@ function SetupStep({ message }: { message: string }) {
   );
 }
 
-function Router({
-  registrationState,
-  registrationErrored,
-  wallet,
-  dispatch,
-}: SetupStepRouterProps) {
+function Router() {
+  const registrationErrored = useUserSelector(hasRegistrationErrored);
+  const registrationState = useUserSelector(getRegistrationState);
+
   if (registrationErrored) return <Error step={registrationState} />;
 
   switch (registrationState) {
@@ -221,30 +261,16 @@ function Router({
     case protocolRegistrationTypes.IDENTITY_REGISTERED:
       return <SetupStep message={StatusMessages[registrationState]} />;
     case protocolRegistrationTypes.MINTING_REGISTERED:
-      return <Success wallet={wallet} dispatch={dispatch} />;
+      return <Success />;
     default:
-      return (
-        <SetupStep
-          message={StatusMessages[protocolRegistrationTypes.STARTED]}
-        />
-      );
+      return <StartSetup />;
   }
 }
 
 function SetupScreen() {
-  const registrationErrored = useUserSelector(hasRegistrationErrored);
-  const registrationState = useUserSelector(getRegistrationState);
-  const wallet = useUserSelector(getWallet);
-  const userDispatch = useUserDispatch();
-
   return (
     <Container>
-      <Router
-        registrationErrored={registrationErrored}
-        registrationState={registrationState}
-        wallet={wallet}
-        dispatch={userDispatch}
-      />
+      <Router />
     </Container>
   );
 }

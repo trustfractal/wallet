@@ -3,9 +3,7 @@ import styled from "styled-components";
 import Button from "@popup/components/common/Button";
 
 import { useAppDispatch } from "@redux/stores/application/context";
-import { useUserDispatch } from "@redux/stores/user/context";
 import appActions from "@redux/stores/application/reducers/app";
-import protocolActions from "@redux/stores/user/reducers/protocol";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 import Text, { TextWeights } from "@popup/components/common/Text";
 import Subtitle, { Subsubtitle } from "@popup/components/common/Subtitle";
@@ -59,11 +57,9 @@ const CTA = styled.div`
 
 function OptInForm() {
   const appDispatch = useAppDispatch();
-  const userDispatch = useUserDispatch();
 
   const onClick = async () => {
     appDispatch(appActions.setProtocolOptIn(true));
-    userDispatch(protocolActions.createWallet());
   };
 
   return (

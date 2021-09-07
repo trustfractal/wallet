@@ -8,6 +8,7 @@ import {
 import WalletScreen from "@popup/containers/WalletScreen";
 import AboutScreen from "@popup/containers/AboutScreen";
 import MnemonicScreen from "@popup/containers/MnemonicScreen";
+import ImportMnemonicScreen from "@popup/containers/ImportMnemonicScreen";
 
 import ConnectFractalScreen from "@popup/containers/ConnectFractalScreen";
 
@@ -20,6 +21,10 @@ const Routes = () => (
   <Router>
     <Switch>
       <Route path={RoutesPaths.ABOUT} component={AboutScreen} />
+      <Route
+        path={RoutesPaths.IMPORT_MNEMONIC}
+        component={ImportMnemonicScreen}
+      />
       <Route path={RoutesPaths.MNEMONIC} component={MnemonicScreen} />
       <Route
         path={RoutesPaths.CONNECT_FRACTAL}

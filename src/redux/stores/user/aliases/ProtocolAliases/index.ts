@@ -15,15 +15,25 @@ import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
 import UserStore from "@redux/stores/user";
 
 export const createWallet = () => {
+  const existingWallet = getWallet(UserStore.getStore().getState());
+  const wallet = existingWallet || Wallet.generate();
+
+  return registerWallet(wallet);
+};
+
+export const importWallet = ({ payload: mnemonic }: { payload: string }) => {
+  const wallet = Wallet.fromMnemonic(mnemonic);
+
+  return registerWallet(wallet);
+};
+
+const registerWallet = (wallet: Wallet) => {
   return async (dispatch: Dispatch<AnyAction>) => {
     dispatch(
       protocolActions.setRegistrationState(protocolRegistrationTypes.STARTED),
     );
 
-    const existingWallet = getWallet(UserStore.getStore().getState());
-    const wallet = existingWallet || Wallet.generate();
-
-    const protocol = await ProtocolService.create(wallet!.mnemonic);
+    const protocol = await ProtocolService.create(wallet.mnemonic);
     await protocol.saveSigner(storageService);
     await DataHost.instance().enable();
 
@@ -57,6 +67,7 @@ export const createWallet = () => {
 
 const Aliases = {
   [protocolTypes.CREATE_WALLET]: createWallet,
+  [protocolTypes.IMPORT_WALLET]: importWallet,
 };
 
 export default Aliases;

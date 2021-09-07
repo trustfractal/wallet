@@ -114,6 +114,9 @@ function MenuNavbar() {
 
   const credentials = useUserSelector(getCredentials);
   const registrationState = useUserSelector(getRegistrationState);
+  const protocolOptIn = useAppSelector(getProtocolOptIn);
+
+  const includeImportMnemonic = protocolOptIn && !registrationState;
 
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
@@ -122,7 +125,9 @@ function MenuNavbar() {
 
   const onClickMnemonic = () => history.push(RoutesPaths.MNEMONIC);
 
-  const menuItems = [
+  const onClickImportMnemonic = () => history.push(RoutesPaths.IMPORT_MNEMONIC);
+
+  let menuItems = [
     {
       label: "Export your data",
       icon: IconNames.EXPORT,
@@ -141,6 +146,13 @@ function MenuNavbar() {
       onClick: onClickAbout,
     },
   ];
+
+  if (includeImportMnemonic)
+    menuItems.splice(1, 0, {
+      label: "Import mnemonic",
+      icon: IconNames.IMPORT,
+      onClick: onClickImportMnemonic,
+    });
 
   return (
     <NavbarContainer>
@@ -343,7 +355,7 @@ export default function Navbar() {
 export const withNavBar =
   <P extends object>(Component: React.ComponentType<P>) =>
   (props: any) => {
-    const dispatch = useAppDispatch();
+    const appDispatch = useAppDispatch();
 
     const ref = React.createRef<HTMLDivElement>();
 
@@ -353,9 +365,9 @@ export const withNavBar =
         const height =
           Math.max(element.scrollHeight, element.offsetHeight) + 24;
 
-        dispatch(appActions.setPopupSize({ height }));
+        appDispatch(appActions.setPopupSize({ height }));
       }
-    }, [ref, dispatch]);
+    }, [ref, appDispatch]);
 
     return (
       <>
