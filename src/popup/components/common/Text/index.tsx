@@ -12,6 +12,7 @@ export enum TextHeights {
   SMALL = "var(--s-168)",
   MEDIUM = "var(--s-1875)",
   LARGE = "var(--s-23)",
+  EXTRA_LARGE = "var(--s-26)",
 }
 
 export enum TextWeights {

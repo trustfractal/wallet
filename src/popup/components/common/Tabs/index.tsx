@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import TabButton from "@popup/components/common/TabButton";
 
 import styled from "styled-components";
+import { useLocation } from "react-router";
 
 const RootContainer = styled.div``;
 const TabsButtonsContainer = styled.div`
@@ -25,8 +26,10 @@ export type TabsProps = {
 
 function Tabs(props: TabsProps & React.HTMLAttributes<HTMLDivElement>) {
   const { tabs, ...otherProps } = props;
+  const query = new URLSearchParams(useLocation().search);
+  const activeTab = query.get("activeTab") || tabs[0].id;
 
-  const [selected, setSelected] = useState(tabs[0].id);
+  const [selected, setSelected] = useState(activeTab);
 
   const getSelectedTab = () => {
     const { component: Component, props } = tabs.filter(
