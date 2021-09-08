@@ -49,37 +49,60 @@ export default class ProtocolService {
   }
 
   public async registerForMinting(): Promise<string | undefined> {
-    const dataHost = DataHost.instance();
-    const extensionProof = await dataHost.extensionProof();
-    if (extensionProof == null) return;
-    const [length, proof] = extensionProof;
+    const latestProof = await this.latestExtensionProof();
+    console.log(`Latest proof from chain ${latestProof}`);
 
-    const hash = await this.submitMintingExtrinsic(proof);
-    await dataHost.setLastProofLength(length);
-    return hash;
+    const dataHost = DataHost.instance();
+    const extensionProof = await dataHost.extensionProof(latestProof);
+    if (extensionProof == null) return;
+
+    return await this.submitMintingExtrinsic(extensionProof);
+  }
+
+  private async latestExtensionProof(): Promise<string | null> {
+    const fractalId = await this.registeredFractalId();
+    if (fractalId == null) return null;
+
+    // Blue-green strategy handling migration of blockchain storage.
+    try {
+      // Will be long-term code.
+      const dataset = await this.api.query.fractalMinting.idDatasets(
+        this.address(),
+        fractalId,
+      );
+      return dataset.toHuman() as string | null;
+    } catch (e) {
+      // TODO(shelbyd): Delete this after rollout of storage change.
+      const dataset = await this.api.query.fractalMinting.idDatasets(fractalId);
+      return dataset.toHuman() as string | null;
+    }
   }
 
   private async submitMintingExtrinsic(proof: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const txn = this.api.tx.fractalMinting.registerForMinting(null, proof);
-      txn.signAndSend(this.signer, (result) => {
-        if (result.status.isFinalized)
-          return resolve(txn.hash.toHuman() as string);
+    console.log(`Submitting proof ${proof}`);
+    const txn = this.api.tx.fractalMinting.registerForMinting(null, proof);
 
-        if (result.dispatchError) {
-          if (result.dispatchError.isModule) {
-            const decoded = this.api.registry.findMetaError(
-              result.dispatchError.asModule,
-            );
-            const { name, section } = decoded;
-            const error = `ProtocolService.registerForMinting error: ${section}.${name}`;
+    return new Promise(async (resolve, reject) => {
+      const unsub = await txn.signAndSend(
+        this.signer,
+        ({ events = [], status }) => {
+          console.log(`Extrinsic status: ${status}`);
+          if (!status.isFinalized) return;
 
-            console.error(error);
+          events.forEach(({ event: { data, method, section } }) => {
+            if (section !== "system") return;
 
-            reject(error);
-          }
-        }
-      });
+            if (method === "ExtrinsicSuccess") {
+              resolve(status.asFinalized.toHuman() as string);
+            }
+            if (method === "ExtrinsicFailed") {
+              reject(data);
+            }
+          });
+
+          unsub();
+        },
+      );
     });
   }
 
@@ -96,7 +119,7 @@ export default class ProtocolService {
     const keys = await this.api.query.fractalMinting.accountIds.keys(
       this.address(),
     );
-    if (keys.length === 0) return null;
+    if (keys.length !== 1) return null;
     const fractalId = keys[0].args[1];
     return fractalId as u64;
   }

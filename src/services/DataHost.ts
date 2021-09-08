@@ -58,7 +58,9 @@ export class DataHost {
     return this.array().iterBack();
   }
 
-  async extensionProof(): Promise<[number, string] | undefined> {
+  async extensionProof(
+    latestProof: string | null,
+  ): Promise<string | undefined> {
     const allItems = [];
     for await (let item of this.array().iter()) {
       allItems.push(item);
@@ -67,27 +69,15 @@ export class DataHost {
 
     const currentTree = buildTree(allItems.map((i) => JSON.stringify(i)));
 
-    const maybeLastProofLength = await this.metadata.getItem(
-      this.key("last_proof_index"),
-    );
-    if (maybeLastProofLength == null) {
-      return [allItems.length, hexPrefix(prune_balanced(currentTree)!)];
+    if (latestProof == null) {
+      return hexPrefix(prune_balanced(currentTree)!);
+    } else {
+      const previousTree = latestProof.includes("x")
+        ? latestProof.split("x")[1]
+        : latestProof;
+      const proof = strict_extension_proof(currentTree, previousTree);
+      return proof && hexPrefix(proof);
     }
-    const lastProofLength = parseInt(maybeLastProofLength);
-    if (lastProofLength === allItems.length) return;
-
-    const previousTree = buildTree(
-      allItems.slice(0, lastProofLength).map((i) => JSON.stringify(i)),
-    );
-    const proof = strict_extension_proof(currentTree, previousTree)!;
-    return [allItems.length, hexPrefix(proof)];
-  }
-
-  async setLastProofLength(length: number) {
-    await this.metadata.setItem(
-      this.key("last_proof_index"),
-      length.toString(),
-    );
   }
 }
 
