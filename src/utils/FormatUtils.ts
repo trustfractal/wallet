@@ -1,11 +1,12 @@
 import numeral from "numeral";
 
-export function formatNumber(number: number, format: string): string {
-  return numeral(number).format(format);
-}
+export function formatBalance(number: number, decimals = 4): string {
+  // check if number is gte one million
+  if (number >= 10 ** 6) {
+    return numeral(number).format(`0.${"0".repeat(decimals)}e+0`);
+  }
 
-export function getPercentage(available: number, total: number): number {
-  return Math.round((available / total) * 100);
+  return numeral(number).format(`0[.]${"0".repeat(decimals)}`);
 }
 
 export function capitalize(value: string): string {
