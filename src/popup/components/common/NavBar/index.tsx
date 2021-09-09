@@ -37,6 +37,8 @@ import { protocolRegistrationTypes } from "@redux/stores/user/reducers/protocol"
 
 import environment from "@environment/index";
 
+import { formatBalance } from "@utils/FormatUtils";
+
 const NavbarContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -105,8 +107,7 @@ const BalanceReservedLabel = styled.span`
   opacity: 0.6;
 `;
 
-const toHuman = (balance: Balance) =>
-  Number(balance.toBigInt() / BigInt("1000000000000"));
+const toHuman = (balance: Balance) => Number(balance.toBigInt()) / 10 ** 12;
 
 function MenuNavbar() {
   const history = useHistory();
@@ -174,7 +175,7 @@ function ProtocolReservedBalance({ reserved }: { reserved: Balance }) {
           weight={TextWeights.BOLD}
         >
           {isPositive ? "+" : "-"}
-          {reservedHuman}
+          {formatBalance(reservedHuman)}
         </Text>
       </BalanceReserved>
 
@@ -204,6 +205,8 @@ function ProtocolBalance({ balance }: { balance?: AccountData }) {
       </BalanceContainer>
     );
 
+  const freeHuman = toHuman(balance.free);
+
   return (
     <BalanceContainer>
       <BalanceTitleContainer>
@@ -223,7 +226,7 @@ function ProtocolBalance({ balance }: { balance?: AccountData }) {
               height={TextHeights.MEDIUM}
               weight={TextWeights.BOLD}
             >
-              {toHuman(balance.free)}
+              {formatBalance(freeHuman)}
             </Text>
           </BalanceFree>
 
