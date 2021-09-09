@@ -8,7 +8,6 @@ import { ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED } from "@background/Err
 import { IConnectionPorts, IPort } from "@pluginTypes/index";
 
 import WindowsService from "@services/WindowsService";
-import environment from "@environment/index";
 
 class Connection {
   private static instance?: Connection;
@@ -48,10 +47,6 @@ class Connection {
 
   public getConnectedPort(): Promise<IPort | undefined> {
     this.ensureConnectionIsInitialized();
-
-    if (environment.IS_DEV) {
-      return this.getActiveConnectionPort();
-    }
 
     return this.getFractalConnectionPort();
   }
