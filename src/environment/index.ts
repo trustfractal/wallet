@@ -15,7 +15,7 @@ const MAGURO_URL =
   "https://maguro.staging.sandbox.fractal.id";
 const PROTOCOL_RPC_ENDPOINT =
   process.env.REACT_APP_PROTOCOL_RPC_ENDPOINT ||
-  "wss://65380554.testnet.fractalprotocol.com";
+  "wss://nodes.testnet.fractalprotocol.com";
 
 const PROTOCOL_CURRENCY = process.env.REACT_APP_PROTOCOL_CURRENCY || "FCL";
 

@@ -66,7 +66,7 @@ export default class ProtocolService {
     // Blue-green strategy handling migration of blockchain storage.
     try {
       // Will be long-term code.
-      const dataset = await this.api.query.fractalMinting.idDatasets(
+      const dataset = await this.api.query.fractalMinting.accountIdDatasets(
         this.address(),
         fractalId,
       );
