@@ -431,7 +431,11 @@ class WindowsService {
       return this.createTab({ url });
     }
 
-    return this.redirectTab(activeTab.id, url);
+    if (activeTab.url?.includes("fractal.id")) {
+      return this.redirectTab(activeTab.id, url);
+    }
+
+    return this.createTab({ url });
   }
 }
 
