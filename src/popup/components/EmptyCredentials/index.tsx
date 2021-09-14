@@ -27,8 +27,7 @@ const ActionContainer = styled.div`
 `;
 
 function EmptyCredentials() {
-  const onNext = () =>
-    WindowsService.openTab(`${environment.FRACTAL_WEBSITE_URL}/credentials`);
+  const onNext = () => WindowsService.openTab(environment.JOURNEY_URL);
 
   return (
     <TopComponent>

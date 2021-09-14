@@ -9,10 +9,12 @@ const GOLDFISH_URL =
 const FRACTAL_WEBSITE_URL =
   process.env.REACT_APP_FRACTAL_WEBSITE_URL ||
   "https://staging.sandbox.fractal.id";
-
 const MAGURO_URL =
   process.env.REACT_APP_MAGURO_URL ||
   "https://maguro.staging.sandbox.fractal.id";
+const JOURNEY_URL =
+  process.env.REACT_APP_JOURNEY_URL ||
+  "https://staging.sandbox.fractal.id/kyc/liveness";
 const PROTOCOL_RPC_ENDPOINT =
   process.env.REACT_APP_PROTOCOL_RPC_ENDPOINT ||
   "wss://nodes.testnet.fractalprotocol.com";
@@ -26,6 +28,7 @@ const environment: Environment = {
   GOLDFISH_URL,
   FRACTAL_WEBSITE_URL,
   MAGURO_URL,
+  JOURNEY_URL,
   IS_DEV: NODE_ENV === "development",
   PROTOCOL_RPC_ENDPOINT,
   PROTOCOL_CURRENCY,
