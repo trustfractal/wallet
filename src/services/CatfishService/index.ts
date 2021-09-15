@@ -4,9 +4,11 @@ import {
   getBackendScopes,
 } from "@redux/stores/application/reducers/auth/selectors";
 import authActions from "@redux/stores/application/reducers/auth";
+import appActions from "@redux/stores/application/reducers/app";
 
 import Environment from "@environment/index";
 import HttpService from "@services/HttpService";
+import { ERRORS_CATFISH_TOKEN_EXPIRED } from "./Errors";
 
 export default class CatfishService {
   private static async callApi(
@@ -15,15 +17,23 @@ export default class CatfishService {
     body?: RequestInit["body"],
     headers?: RequestInit["headers"],
   ): Promise<any> {
-    return HttpService.call(
+    const response = await HttpService.call(
       `${Environment.CATFISH_URL}/${route}`,
       method,
       body,
       headers,
-    ).then((response: Response) => {
-      if (!response.ok) throw new Error(response.statusText);
-      else return response.json();
-    });
+    );
+
+    if (!response.ok) {
+      // check if catfish token has expired
+      if (response.status === 401) {
+        // ask user to connect with fractal wallet again
+        AppStore.getStore().dispatch(appActions.setSetup(false));
+        throw ERRORS_CATFISH_TOKEN_EXPIRED();
+      }
+    }
+
+    return response.json();
   }
 
   public static async refreshResourceServerToken() {
