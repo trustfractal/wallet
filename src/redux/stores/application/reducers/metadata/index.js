@@ -3,6 +3,11 @@ import { createActions, handleActions } from "redux-actions";
 
 const types = mirrorCreator(["SET_LAST_MIGRATION"]);
 
+export const LASTEST_MIGRATION = 1;
+export const MIGRATIONS = {
+  "0.3.7": 1,
+};
+
 export const creators = createActions(types.SET_LAST_MIGRATION);
 
 export const initialState = {

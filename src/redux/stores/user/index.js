@@ -21,16 +21,11 @@ import {
 } from "@redux/stores/user/reducers/requests";
 
 import {
+  protocolRegistrationTypes,
   reducer as protocolReducer,
   restore as protocolRestore,
   store as protocolStore,
 } from "@redux/stores/user/reducers/protocol";
-
-import {
-  reducer as metadataReducer,
-  restore as metadataRestore,
-  store as metadataStore,
-} from "@redux/stores/user/reducers/metadata";
 
 import {
   ERROR_DECRYPT_FAILED,
@@ -39,16 +34,30 @@ import {
   ERROR_STORE_NOT_INITIALIZED,
 } from "./Errors";
 
-import { getLastMigration } from "@redux/stores/user/reducers/metadata/selectors";
+import appActions from "@redux/stores/application/reducers/app";
+import { MIGRATIONS } from "@redux/stores/application/reducers/metadata";
+import { getLastMigration } from "@redux/stores/application/reducers/metadata/selectors";
 
-const runDataMigrations = (lastMigration, store) => {
-  switch (lastMigration) {
-    case "0.3.7":
-      setWalletGeneratedInAppStore(store);
-      break;
+const runDataMigrations = (userStore) => {
+  const lastMigration = getLastMigration(AppStore.getStore().getState());
 
-    default:
-      setWalletGeneratedInAppStore(store);
+  // Check if has to run version 0.3.7 data migration
+  if (lastMigration < MIGRATIONS["0.3.7"]) {
+    // Check if protocol state is completed
+    const registrationState = getRegistrationState(store.getState());
+
+    if (
+      registrationState === protocolRegistrationTypes.IDENTITY_REGISTERED ||
+      registrationState === protocolRegistrationTypes.MINTING_REGISTERED ||
+      registrationState === protocolRegistrationTypes.COMPLETED
+    ) {
+      AppStore.getStore().dispatch(appActions.setWalletGenerated(true));
+    }
+
+    // Update last migration value
+    AppStore.getStore().dispatch(
+      metadataActions.setLastMigration(MIGRATIONS["0.3.7"]),
+    );
   }
 };
 
@@ -118,9 +127,7 @@ export class UserStore {
     // Some of these may only run when the encrypted user store is
     // initialiased.
 
-    const state = getLastMigration(this.storeInternal.getState());
-
-    runDataMigrations(state);
+    runDataMigrations(this.storeInternal);
   }
 
   static async connect() {
@@ -134,7 +141,6 @@ export class UserStore {
       credentials: credentialsReducer,
       requests: requestsReducer,
       protocol: protocolReducer,
-      metadata: metadataReducer,
     });
   }
 
@@ -209,7 +215,6 @@ export class UserStore {
       credentials: await credentialsRestore(deserializedState.credentials),
       requests: await requestsRestore(deserializedState.requests),
       protocol: await protocolRestore(deserializedState.protocol),
-      metadata: await metadataRestore(deserializedState.metadata),
     };
   }
 
@@ -218,7 +223,6 @@ export class UserStore {
       credentials: await credentialsStore(state.credentials),
       requests: await requestsStore(state.requests),
       protocol: await protocolStore(state.protocol),
-      metadata: await metadataStore(state.metadata),
     });
   }
 

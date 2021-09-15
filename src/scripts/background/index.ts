@@ -1,6 +1,10 @@
 import AppStore from "@redux/stores/application";
 
 import appActions from "@redux/stores/application/reducers/app";
+import metadataActions, {
+  MIGRATIONS,
+  LASTEST_MIGRATION,
+} from "@redux/stores/application/reducers/metadata";
 
 import ContentScriptConnection from "@background/connection";
 
@@ -13,8 +17,6 @@ if (!environment.IS_DEV) {
   console.error = () => {};
 }
 
-const migrateData = () => {};
-
 (async () => {
   ContentScriptConnection.init();
   (await AppStore.init()).dispatch(appActions.startup());
@@ -24,9 +26,17 @@ const migrateData = () => {};
     (details: chrome.runtime.InstalledDetails) => {
       const { reason, previousVersion } = details;
 
+      // check if is a fresh install
+      if (reason === "install") {
+        AppStore.getStore().dispatch(
+          metadataActions.setLastMigration(LASTEST_MIGRATION),
+        );
+        return;
+      }
+
       // check if the reason is an update
       if (reason === "update") {
-        // check if previous version is lower than 0.1.0
+        // check if previous version is lower than 0.3.7
         const [major, minor, patch] = previousVersion!.split(".");
 
         if (Number.parseInt(major) > 0) {
@@ -41,8 +51,10 @@ const migrateData = () => {};
           return;
         }
 
-        // Run data migration for versions < 0.3.7
-        migrateData();
+        // Set latest migration to be exectuded when user store is unlocked
+        AppStore.getStore().dispatch(
+          metadataActions.setLastMigration(MIGRATIONS["0.3.7"] - 1),
+        );
       }
     },
   );
