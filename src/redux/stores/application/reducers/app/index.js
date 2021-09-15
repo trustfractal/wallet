@@ -1,6 +1,11 @@
 import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
+export const NETWORKS = {
+  MAINNET: "mainnet",
+  TESTNET: "testnet",
+};
+
 const types = mirrorCreator([
   "STARTUP",
   "SET_LAUNCHED",
@@ -11,6 +16,7 @@ const types = mirrorCreator([
   "SET_PROTOCOL_OPT_IN",
   "SET_WALLET_GENERATED",
   "SET_POPUP_SIZE",
+  "SET_NETWORK",
 ]);
 
 export const creators = createActions(
@@ -23,6 +29,7 @@ export const creators = createActions(
   types.SET_PROTOCOL_OPT_IN,
   types.SET_WALLET_GENERATED,
   types.SET_POPUP_SIZE,
+  types.SET_NETWORK,
 );
 
 export const initialState = {
@@ -32,6 +39,7 @@ export const initialState = {
   protocolOptIn: false,
   protocolEnabled: false,
   walletGenerated: false,
+  network: NETWORKS.TESTNET,
 };
 
 export const reducer = handleActions(
@@ -66,6 +74,11 @@ export const reducer = handleActions(
         ...state,
         walletGenerated,
       }),
+    [types.SET_NETWORK]: (state, { payload: network }) =>
+      Object.freeze({
+        ...state,
+        network,
+      }),
   },
   initialState,
 );
@@ -83,6 +96,7 @@ export async function store(state) {
     protocolOptIn: state.protocolOptIn,
     protocolEnabled: state.protocolEnabled,
     walletGenerated: state.walletGenerated,
+    network: state.network,
   };
 }
 

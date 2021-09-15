@@ -1,6 +1,6 @@
 import { createSelector } from "reselect";
 
-export const getLastMigration = createSelector(
+export const getMigrations = createSelector(
   (state) => state.metadata,
-  (metadata) => metadata.lastMigration,
+  (metadata) => metadata.migrations,
 );

@@ -1,25 +1,33 @@
 import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
-const types = mirrorCreator(["SET_LAST_MIGRATION"]);
+const types = mirrorCreator(["SET_MIGRATIONS", "ADD_MIGRATION"]);
 
-export const LASTEST_MIGRATION = 1;
 export const MIGRATIONS = {
-  "0.3.7": 1,
+  GENERATED_WALLET_MIGRATION: 1,
+  NETWORK_MAINNET_MIGRATION: 2,
 };
 
-export const creators = createActions(types.SET_LAST_MIGRATION);
+export const creators = createActions(
+  types.SET_MIGRATIONS,
+  types.ADD_MIGRATION,
+);
 
 export const initialState = {
-  lastMigration: null,
+  migrations: [],
 };
 
 export const reducer = handleActions(
   {
-    [types.SET_LAST_MIGRATION]: (state, { payload: lastMigration }) =>
+    [types.SET_MIGRATIONS]: (state, { payload: migrations }) =>
       Object.freeze({
         ...state,
-        lastMigration,
+        migrations,
+      }),
+    [types.ADD_MIGRATION]: (state, { payload: migration }) =>
+      Object.freeze({
+        ...state,
+        migrations: [...state.migrations, migration],
       }),
   },
   initialState,
@@ -34,7 +42,7 @@ export async function restore(state = {}) {
 
 export async function store(state) {
   return {
-    lastMigration: state.lastMigration,
+    migrations: state.migrations,
   };
 }
 

@@ -29,3 +29,8 @@ export const getWalletGenerated = createSelector(
   (state) => state.app,
   (app) => app.walletGenerated,
 );
+
+export const getNetwork = createSelector(
+  (state) => state.app,
+  (app) => app.network,
+);
