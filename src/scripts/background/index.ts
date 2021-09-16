@@ -28,7 +28,7 @@ chrome.runtime.onInstalled.addListener(
 
     // check if the reason is an update
     if (reason === "update") {
-      // check if previous version is lower than 0.3.7
+      // check if previous version is lower than 0.3.8
       const [major, minor, patch] = previousVersion!.split(".");
 
       if (Number.parseInt(major) > 0) {
@@ -39,7 +39,7 @@ chrome.runtime.onInstalled.addListener(
         return;
       }
 
-      if (Number.parseInt(patch) > 7) {
+      if (Number.parseInt(patch) > 8) {
         return;
       }
 
