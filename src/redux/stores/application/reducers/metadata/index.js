@@ -32,7 +32,9 @@ export const reducer = handleActions(
     [types.ADD_MIGRATION]: (state, { payload: migration }) =>
       Object.freeze({
         ...state,
-        migrations: [...state.migrations, migration],
+        migrations: state.migrations.includes(migration)
+          ? state.migrations
+          : [...state.migrations, migration],
       }),
   },
   initialState,

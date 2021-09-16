@@ -49,11 +49,6 @@ export const signUp = () => {
       ).toString();
       dispatch(authActions.setHashedPassword(hashedPassword));
 
-      // When the extension updates, we want to run data migrations.
-      // Some of these may only run when the encrypted user store is
-      // initialiased.
-      AppStore.getStore().dispatch(metadataActions.runMigrations());
-
       // reset register state
       dispatch(registerActions.resetRegister());
 

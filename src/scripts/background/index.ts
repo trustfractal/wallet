@@ -19,34 +19,34 @@ if (!environment.IS_DEV) {
 (async () => {
   ContentScriptConnection.init();
   (await AppStore.init()).dispatch(appActions.startup());
-
-  // Listen to extension install/update event
-  chrome.runtime.onInstalled.addListener(
-    (details: chrome.runtime.InstalledDetails) => {
-      const { reason, previousVersion } = details;
-
-      // check if the reason is an update
-      if (reason === "update") {
-        // check if previous version is lower than 0.3.7
-        const [major, minor, patch] = previousVersion!.split(".");
-
-        if (Number.parseInt(major) > 0) {
-          return;
-        }
-
-        if (Number.parseInt(minor) > 3) {
-          return;
-        }
-
-        if (Number.parseInt(patch) > 7) {
-          return;
-        }
-
-        // Add generated wallet data migration
-        AppStore.getStore().dispatch(
-          metadataActions.addMigration(MIGRATIONS.GENERATED_WALLET_MIGRATION),
-        );
-      }
-    },
-  );
 })();
+
+// Listen to extension install/update event
+chrome.runtime.onInstalled.addListener(
+  (details: chrome.runtime.InstalledDetails) => {
+    const { reason, previousVersion } = details;
+
+    // check if the reason is an update
+    if (reason === "update") {
+      // check if previous version is lower than 0.3.7
+      const [major, minor, patch] = previousVersion!.split(".");
+
+      if (Number.parseInt(major) > 0) {
+        return;
+      }
+
+      if (Number.parseInt(minor) > 3) {
+        return;
+      }
+
+      if (Number.parseInt(patch) > 7) {
+        return;
+      }
+
+      // Add generated wallet data migration
+      AppStore.getStore().dispatch(
+        metadataActions.addMigration(MIGRATIONS.GENERATED_WALLET_MIGRATION),
+      );
+    }
+  },
+);

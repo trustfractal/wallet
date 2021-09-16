@@ -32,7 +32,9 @@ export const runMigrations = () => {
       }
 
       // Remove migration from array
-      const index = migrations.findIndex(MIGRATIONS.GENERATED_WALLET_MIGRATION);
+      const index = migrations.findIndex(
+        (element: number) => element === MIGRATIONS.GENERATED_WALLET_MIGRATION,
+      );
       if (index >= 0) {
         migrations.splice(index, 1);
       }
@@ -41,17 +43,23 @@ export const runMigrations = () => {
     // Check if has to run network migration
     if (migrations.includes(MIGRATIONS.NETWORK_MAINNET_MIGRATION)) {
       // Clear user store
-      UserStore.dispatch(protocolActions.setMnemonic(null));
-      UserStore.dispatch(protocolActions.setRegisteredForMinting(false));
-      UserStore.dispatch(protocolActions.setRegistrationState(null));
-      UserStore.dispatch(protocolActions.setRegistrationError(false));
+      UserStore.getStore().dispatch(protocolActions.setMnemonic(null));
+      UserStore.getStore().dispatch(
+        protocolActions.setRegisteredForMinting(false),
+      );
+      UserStore.getStore().dispatch(protocolActions.setRegistrationState(null));
+      UserStore.getStore().dispatch(
+        protocolActions.setRegistrationError(false),
+      );
 
       // Clear app store
       AppStore.getStore().dispatch(appActions.setWalletGenerated(false));
       AppStore.getStore().dispatch(appActions.setProtocolOptIn(false));
 
       // Remove migration from array
-      const index = migrations.findIndex(MIGRATIONS.NETWORK_MAINNET_MIGRATION);
+      const index = migrations.findIndex(
+        (element: number) => element === MIGRATIONS.NETWORK_MAINNET_MIGRATION,
+      );
       if (index >= 0) {
         migrations.splice(index, 1);
       }

@@ -3,7 +3,9 @@ import appActions, {
   NETWORKS,
 } from "@redux/stores/application/reducers/app";
 import { getNetwork } from "@redux/stores/application/reducers/app/selectors";
-import { MIGRATIONS } from "@redux/stores/application/reducers/metadata";
+import metadataActions, {
+  MIGRATIONS,
+} from "@redux/stores/application/reducers/metadata";
 
 import CredentialsPolling from "@models/Polling/CredentialsPolling";
 import MaguroService from "@services/MaguroService";
@@ -34,7 +36,9 @@ export const startup = () => {
 
     // Check if needs to perform the mainnet launch data migration
     if (network === NETWORKS.MAINNET && previousNetwork === NETWORKS.TESTNET) {
-      dispatch(appActions.addMigration(MIGRATIONS.NETWORK_MAINNET_MIGRATION));
+      dispatch(
+        metadataActions.addMigration(MIGRATIONS.NETWORK_MAINNET_MIGRATION),
+      );
     }
 
     dispatch(appActions.setNetwork(network));
