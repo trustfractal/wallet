@@ -1,7 +1,11 @@
 import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
-const types = mirrorCreator(["SET_MIGRATIONS", "ADD_MIGRATION"]);
+const types = mirrorCreator([
+  "SET_MIGRATIONS",
+  "ADD_MIGRATION",
+  "RUN_MIGRATIONS",
+]);
 
 export const MIGRATIONS = {
   GENERATED_WALLET_MIGRATION: 1,
@@ -11,6 +15,7 @@ export const MIGRATIONS = {
 export const creators = createActions(
   types.SET_MIGRATIONS,
   types.ADD_MIGRATION,
+  types.RUN_MIGRATIONS,
 );
 
 export const initialState = {
@@ -45,5 +50,7 @@ export async function store(state) {
     migrations: state.migrations,
   };
 }
+
+export const metadataTypes = types;
 
 export default creators;

@@ -2,6 +2,7 @@ import { Action } from "redux-actions";
 
 import ContentScriptConnection from "@background/connection";
 
+import AppStore from "@redux/stores/application";
 import authActions, {
   authTypes,
 } from "@redux/stores/application/reducers/auth";
@@ -10,6 +11,7 @@ import registerActions from "@redux/stores/application/reducers/register";
 import { getRegisterPassword } from "@redux/stores/application/reducers/register/selectors";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 import { getHashedPassword } from "@redux/stores/application/reducers/auth/selectors";
+import metadataActions from "@redux/stores/application/reducers/metadata";
 
 import {
   AppStoreError,
@@ -46,6 +48,11 @@ export const signUp = () => {
         )
       ).toString();
       dispatch(authActions.setHashedPassword(hashedPassword));
+
+      // When the extension updates, we want to run data migrations.
+      // Some of these may only run when the encrypted user store is
+      // initialiased.
+      AppStore.getStore().dispatch(metadataActions.runMigrations());
 
       // reset register state
       dispatch(registerActions.resetRegister());
@@ -89,6 +96,11 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
         // get user credentials
         Store.getStore().dispatch(credentialsActions.fetchCredentials());
       }
+
+      // When the extension updates, we want to run data migrations.
+      // Some of these may only run when the encrypted user store is
+      // initialiased.
+      AppStore.getStore().dispatch(metadataActions.runMigrations());
 
       dispatch(authActions.signInSuccess());
     } catch (error) {
