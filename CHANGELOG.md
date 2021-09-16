@@ -59,3 +59,9 @@
 - Fix large balances not supported
 - Show the correct error message in inconsistent states
 - Update production and staging build environment defaults
+
+## version 0.3.8 (16.09.2021)
+
+- Fix bug when catfish token expires
+- Fix link button when user has no KYCs
+- Fix tab redirecting instead of opening a new
