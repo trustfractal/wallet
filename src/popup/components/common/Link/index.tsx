@@ -1,6 +1,11 @@
 import React from "react";
 
-import Text, { TextProps } from "@popup/components/common/Text";
+import Text, {
+  TextProps,
+  TextSizes,
+  TextHeights,
+  TextWeights,
+} from "@popup/components/common/Text";
 
 import styled from "styled-components";
 
@@ -12,6 +17,13 @@ const Root = styled.span`
 
 export type LinkProps = {
   onClick: () => void;
+};
+
+Link.defaultProps = {
+  size: TextSizes.MEDIUM,
+  height: TextHeights.MEDIUM,
+  weight: TextWeights.NORMAL,
+  span: false,
 };
 
 function Link(

@@ -6,6 +6,7 @@ import Title from "@popup/components/common/Title";
 import TopComponent from "@popup/components/common/TopComponent";
 import { withNavBar } from "@popup/components/common/NavBar";
 import Icon, { IconNames } from "@popup/components/common/Icon";
+import Link from "@popup/components/common/Link";
 
 const ContentContainer = styled.div`
   margin-top: var(--s-24);
@@ -26,10 +27,12 @@ const ActionContainer = styled.div`
 export type AboutProps = {
   version: string;
   onNext: () => void;
+  onClickFractalLink: () => void;
+  onClickFractalTelegram: () => void;
 };
 
 function About(props: AboutProps) {
-  const { onNext, version } = props;
+  const { onNext, onClickFractalLink, onClickFractalTelegram, version } = props;
 
   return (
     <TopComponent>
@@ -44,10 +47,19 @@ function About(props: AboutProps) {
           <br />
         </Text>
         <Text>
-          Fractal ID wallet is a browser credential that provides a mechanism to
-          store and share KYC credentials signed by Fractal, which websites will
-          be able to accept and verify on chain for compliance purposes, as an
-          alternative to our OAuth flow.
+          The Fractal Wallet is a browser extension that allows users to store
+          their validated decentralized identity (DID) credentials. Verification
+          checks can be completed on{" "}
+          <Link onClick={onClickFractalLink} span>
+            https://fractal.id/
+          </Link>
+          . Integrated with Fractal Protocol, the Fractal ID Wallet also logs
+          browsing activity locally in a privacy-preserving way and lets you
+          earn FCL through our community programs. Please follow our official
+          Telegram channel for more details:{" "}
+          <Link onClick={onClickFractalTelegram} span>
+            https://t.me/fractal_protocol
+          </Link>
         </Text>
         <Text>
           <br />
