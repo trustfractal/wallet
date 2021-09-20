@@ -78,7 +78,7 @@ function Login(props: LoginProps) {
           <Logo />
         </LogoContainer>
         <HeaderContainer>
-          <Title>Enter your password to login</Title>
+          <Title>Unlock Wallet</Title>
         </HeaderContainer>
         <InputContainer>
           <PasswordInput
@@ -102,7 +102,7 @@ function Login(props: LoginProps) {
         </ActionsContainer>
         <FooterContainer>
           <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-            If you need help on anything related to Fractal ID Wallet, please
+            If you need help on anything related to Fractal Wallet, please
             contact us at{" "}
             <Anchor link="mailto:support@fractal.id">support@fractal.id</Anchor>
             .

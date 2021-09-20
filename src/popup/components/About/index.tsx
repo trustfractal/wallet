@@ -38,7 +38,7 @@ function About(props: AboutProps) {
     <TopComponent>
       <ContentContainer>
         <Title>
-          Fractal ID Wallet{" "}
+          Fractal Wallet{" "}
           <Version>
             <Text>{`v${version}`}</Text>
           </Version>

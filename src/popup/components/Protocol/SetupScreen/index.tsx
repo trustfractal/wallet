@@ -122,7 +122,8 @@ function Success({ wallet, dispatch }: SuccessProps) {
         size={TextSizes.LARGE}
         weight={TextWeights.BOLD}
       >
-        We have created a Substrate address for you to receive minting rewards.
+        We have created a Fractal Protocol address for you to receive minting
+        rewards.
       </Text>
 
       <Spacing />

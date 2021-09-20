@@ -35,13 +35,13 @@ function EmptyCredentials() {
         <Icon name={IconNames.ROBOT} />
       </IconContainer>
       <ContentContainer>
-        <Title>You don't have a credential yet.</Title>
+        <Title>You have no credentials yet.</Title>
         <Text>
           <br />
         </Text>
         <Text>
-          Once you complete a valid KYC, your credentials will appear here
-          automatically.
+          Once you complete your journey in Fractal ID, your credentials will
+          appear here automatically.
         </Text>
       </ContentContainer>
       <ActionContainer>
