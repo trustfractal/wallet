@@ -7,6 +7,7 @@ import appActions from "@redux/stores/application/reducers/app";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 import Text, { TextWeights } from "@popup/components/common/Text";
 import Subtitle, { Subsubtitle } from "@popup/components/common/Subtitle";
+import TopComponent from "@popup/components/common/TopComponent";
 
 import environment from "@environment/index";
 
@@ -63,53 +64,57 @@ function OptInForm() {
   };
 
   return (
-    <Container>
-      <IconContainer>
-        <Icon name={IconNames.PROTOCOL} />
-      </IconContainer>
+    <TopComponent>
+      <Container>
+        <IconContainer>
+          <Icon name={IconNames.PROTOCOL} />
+        </IconContainer>
 
-      <Spacing />
+        <Spacing />
 
-      <Text weight={TextWeights.BOLD}>
-        Get ready for controlling and monetizing your own browsing data.
-      </Text>
+        <Text weight={TextWeights.BOLD}>
+          Get ready for controlling and monetizing your own browsing data.
+        </Text>
 
-      <Spacing />
+        <Spacing />
 
-      <Subtitle uppercase>Wallet functionality</Subtitle>
+        <Subtitle uppercase>Wallet functionality</Subtitle>
 
-      <Spacing size="var(--s-12)" />
+        <Spacing size="var(--s-12)" />
 
-      <List>
-        <li>Tracks and stores your browsing data.</li>
-        <li>The data is only stored on your local device. </li>
-        <li>Publishes a proof of your data provisioning activity on chain</li>
-        <li>
-          You get rewards in {environment.PROTOCOL_CURRENCY} for storing your
-          data.
-        </li>
-      </List>
+        <List>
+          <li>Tracks and stores your browsing data.</li>
+          <li>The data is only stored on your local device. </li>
+          <li>Publishes a proof of your data provisioning activity on chain</li>
+          <li>
+            You get rewards in {environment.PROTOCOL_CURRENCY} for storing your
+            data.
+          </li>
+        </List>
 
-      <Spacing size="var(--s-16)" />
+        <Spacing size="var(--s-16)" />
 
-      <Subsubtitle uppercase>By clicking “Opt In” you agree to our</Subsubtitle>
-
-      <a
-        href={`${environment.FRACTAL_WEBSITE_URL}/documents/mainnet-launch-special-user-agreement`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        <Subsubtitle underline uppercase>
-          Special Mainnet Launch User Agreement.
+        <Subsubtitle uppercase>
+          By clicking “Opt In” you agree to our
         </Subsubtitle>
-      </a>
 
-      <Spacing />
+        <a
+          href={`${environment.FRACTAL_WEBSITE_URL}/documents/mainnet-launch-special-user-agreement`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <Subsubtitle underline uppercase>
+            Special Mainnet Launch User Agreement.
+          </Subsubtitle>
+        </a>
 
-      <CTA>
-        <Button onClick={onClick}>Opt In</Button>
-      </CTA>
-    </Container>
+        <Spacing />
+
+        <CTA>
+          <Button onClick={onClick}>Opt In</Button>
+        </CTA>
+      </Container>
+    </TopComponent>
   );
 }
 
