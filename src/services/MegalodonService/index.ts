@@ -8,7 +8,7 @@ import HttpService from "@services/HttpService";
 
 const HTTP_TIMEOUT = 5 * 60 * 1000; // 5 minutes timeout
 
-export default class MaguroService {
+export default class MegalodonService {
   private static ensureAuthorization(
     headers: Record<string, string>,
   ): Record<string, string> {
@@ -41,7 +41,7 @@ export default class MaguroService {
     headers?: RequestInit["headers"],
   ): Promise<any> {
     const response = await HttpService.call(
-      `${Environment.MAGURO_URL}/${route}`,
+      `${Environment.MEGALODON_URL}/${route}`,
       method,
       body,
       headers,
@@ -54,7 +54,7 @@ export default class MaguroService {
         return CatfishService.refreshResourceServerToken().then(
           async (token) => {
             const response = await HttpService.call(
-              `${Environment.MAGURO_URL}/${route}`,
+              `${Environment.MEGALODON_URL}/${route}`,
               method,
               body,
               {
@@ -78,19 +78,7 @@ export default class MaguroService {
     return response.json();
   }
 
-  public static getCredentials() {
-    return this.callAuthorizedApi("credentials", "GET", null);
-  }
-
-  public static registerIdentity(address: string) {
-    return this.callAuthorizedApi(
-      "protocol/register_identity",
-      "POST",
-      JSON.stringify({ linked_address: address }),
-    );
-  }
-
-  public static getConfig() {
-    return this.callApi("config", "GET", null);
+  public static me() {
+    return this.callAuthorizedApi("users/me", "GET", null);
   }
 }

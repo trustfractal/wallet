@@ -10,8 +10,14 @@ export default class Credential
 {
   public id: string;
   public level: string;
+  public verificationCaseId: string;
 
-  public constructor(credential: ISDKCredential, id: string, level: string) {
+  public constructor(
+    credential: ISDKCredential,
+    id: string,
+    level: string,
+    verificationCaseId: string,
+  ) {
     super({
       properties: credential.properties,
       hashTree: credential.hashTree,
@@ -26,6 +32,7 @@ export default class Credential
 
     this.id = id;
     this.level = level;
+    this.verificationCaseId = verificationCaseId;
   }
 
   public serialize(): string {
@@ -41,6 +48,7 @@ export default class Credential
       issuerSignature: this.issuerSignature,
       id: this.id,
       level: this.level,
+      verificationCaseId: this.verificationCaseId,
     });
   }
 
@@ -57,6 +65,7 @@ export default class Credential
       issuerSignature,
       id,
       level,
+      verificationCaseId,
     } = JSON.parse(str);
 
     const obj = {
@@ -71,6 +80,6 @@ export default class Credential
       issuerSignature,
     };
 
-    return new Credential(obj, id, level);
+    return new Credential(obj, id, level, verificationCaseId);
   }
 }

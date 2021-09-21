@@ -89,7 +89,9 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
 
       if (setup) {
         // get user credentials
-        Store.getStore().dispatch(credentialsActions.fetchCredentials());
+        Store.getStore().dispatch(
+          credentialsActions.fetchCredentialsAndVerificationCases(),
+        );
       }
 
       // When the extension updates, we want to run data migrations.
@@ -138,7 +140,9 @@ export const connectFractal = () => {
       dispatch(authActions.setBackendSessions(sessions));
 
       // get user's credentials
-      Store.getStore().dispatch(credentialsActions.fetchCredentials());
+      Store.getStore().dispatch(
+        credentialsActions.fetchCredentialsAndVerificationCases(),
+      );
       dispatch(authActions.connectFractalSuccess());
     } catch (error) {
       console.error(error);

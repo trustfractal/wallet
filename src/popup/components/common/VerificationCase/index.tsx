@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { ICredential } from "@pluginTypes/index";
+import { IVerificationCase } from "@pluginTypes/index";
 
 import Text, {
   TextHeights,
@@ -40,26 +40,12 @@ const StatusContainer = styled.div`
   justify-content: flex-end;
 `;
 
-const NameBadgesContainer = styled.div`
-  display: flex;
-  margin-top: var(--s-12);
-`;
-const NameContainer = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-`;
-
-const LevelName = styled.div`
-  opacity: 0.6;
-`;
-
 const LevelIconContainer = styled.div`
   margin-right: var(--s-12);
+  opacity: 0.2;
 `;
 
-const CredentialWrapper = styled.div`
+const VerificationCaseWrapper = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -74,23 +60,16 @@ const Status = styled.div`
   display: flex;
   align-items: center;
 `;
-export type CredentialProps = {
-  credential: ICredential;
+export type VerificationCaseProps = {
+  verificationCase: IVerificationCase;
 };
 
-function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
-  const { credential } = props;
+function VerificationCase(
+  props: VerificationCaseProps & React.HTMLProps<HTMLDivElement>,
+) {
+  const { verificationCase } = props;
 
-  const {
-    properties: { full_name: name },
-  } = credential;
-
-  let hasName = true;
-  if (name === undefined || (name as String).length === 0) {
-    hasName = false;
-  }
-
-  const [level, ...addons] = credential.level.split("+");
+  const [level, ...addons] = verificationCase.level.split("+");
   let levelName;
 
   const addonsStr = addons.join(" + ");
@@ -106,7 +85,7 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
       <LevelIconContainer>
         <LevelIcon level={level} />
       </LevelIconContainer>
-      <CredentialWrapper>
+      <VerificationCaseWrapper>
         <LevelStatusContainer>
           <LevelContainer>
             <Text height={TextHeights.LARGE} weight={TextWeights.BOLD}>
@@ -117,27 +96,16 @@ function Credential(props: CredentialProps & React.HTMLProps<HTMLDivElement>) {
             <Status>
               <StatusName>
                 <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-                  Valid
+                  Pending
                 </Text>
               </StatusName>
-              <Icon name={IconNames.VALID} />
+              <Icon name={IconNames.PENDING} />
             </Status>
           </StatusContainer>
         </LevelStatusContainer>
-        <NameBadgesContainer>
-          <NameContainer>
-            {hasName && (
-              <LevelName>
-                <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-                  {name}
-                </Text>
-              </LevelName>
-            )}
-          </NameContainer>
-        </NameBadgesContainer>
-      </CredentialWrapper>
+      </VerificationCaseWrapper>
     </RootContainer>
   );
 }
 
-export default Credential;
+export default VerificationCase;
