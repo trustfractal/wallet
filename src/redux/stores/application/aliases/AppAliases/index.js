@@ -1,4 +1,11 @@
-import appActions, { appTypes } from "@redux/stores/application/reducers/app";
+import appActions, {
+  appTypes,
+  NETWORKS,
+} from "@redux/stores/application/reducers/app";
+import { getNetwork } from "@redux/stores/application/reducers/app/selectors";
+import metadataActions, {
+  MIGRATIONS,
+} from "@redux/stores/application/reducers/metadata";
 
 import CredentialsPolling from "@models/Polling/CredentialsPolling";
 import MaguroService from "@services/MaguroService";
@@ -9,7 +16,7 @@ import WindowsService, {
 } from "@services/WindowsService";
 
 export const startup = () => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     // start credentials status polling
     new CredentialsPolling().start();
 
@@ -17,12 +24,24 @@ export const startup = () => {
     // eslint-disable-next-line no-undef
     const { version } = chrome.runtime.getManifest();
 
-    const { protocol_enabled: protocolEnabled } =
+    const { protocol_enabled: protocolEnabled, network = NETWORKS.TESTNET } =
       await MaguroService.getConfig();
 
     dispatch(appActions.setVersion(version));
     dispatch(appActions.setProtocolEnabled(protocolEnabled));
     dispatch(appActions.setLaunched(true));
+
+    // Check for a network change
+    const previousNetwork = getNetwork(getState());
+
+    // Check if needs to perform the mainnet launch data migration
+    if (network === NETWORKS.MAINNET && previousNetwork === NETWORKS.TESTNET) {
+      dispatch(
+        metadataActions.addMigration(MIGRATIONS.NETWORK_MAINNET_MIGRATION),
+      );
+    }
+
+    dispatch(appActions.setNetwork(network));
   };
 };
 

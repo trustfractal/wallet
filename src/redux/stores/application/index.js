@@ -17,6 +17,11 @@ import {
   restore as authRestore,
   store as authStore,
 } from "@redux/stores/application/reducers/auth";
+import {
+  reducer as metadataReducer,
+  restore as metadataRestore,
+  store as metadataStore,
+} from "@redux/stores/application/reducers/metadata";
 import { reducer as registerReducer } from "@redux/stores/application/reducers/register";
 
 export class AppStore {
@@ -87,6 +92,7 @@ export class AppStore {
       app: appReducer,
       auth: authReducer,
       register: registerReducer,
+      metadata: metadataReducer,
     });
   }
 
@@ -118,6 +124,7 @@ export class AppStore {
     return {
       app: await appRestore(deserializedState.app),
       auth: await authRestore(deserializedState.auth),
+      metadata: await metadataRestore(deserializedState.metadata),
     };
   }
 
@@ -125,6 +132,7 @@ export class AppStore {
     return JSON.stringify({
       app: await appStore(state.app),
       auth: await authStore(state.auth),
+      metadata: await metadataStore(state.metadata),
     });
   }
 
