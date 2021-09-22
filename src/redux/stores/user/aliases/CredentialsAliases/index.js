@@ -10,12 +10,16 @@ import VerificationCase from "@models/VerificationCase";
 import VerificationCasesCollection from "@models/VerificationCase/VerificationCasesCollection";
 
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
+import protocolActions, {
+  protocolRegistrationTypes,
+} from "@redux/stores/user/reducers/protocol";
+import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selectors";
 
 import MaguroService from "@services/MaguroService";
 import MegalodonService from "@services/MegalodonService";
 
 export const fetchCredentialsAndVerificationCases = () => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     const setup = isSetup(AppStore.getStore().getState());
 
     if (!setup) return;
@@ -68,6 +72,26 @@ export const fetchCredentialsAndVerificationCases = () => {
     dispatch(
       credentialsActions.setVerificationCases(formattedVerificationCases),
     );
+
+    // Check registration type
+    const registrationState = getRegistrationState(getState());
+
+    if (registrationState === protocolRegistrationTypes.MISSING_CREDENTIAL) {
+      const filteredCredentials = credentials.filter(
+        (credential) =>
+          credential.level.includes("liveness") ||
+          credential.level.includes("protocol"),
+      );
+
+      if (filteredCredentials.length > 0) {
+        dispatch(
+          protocolActions.setRegistrationState(
+            protocolRegistrationTypes.ADDRESS_GENERATED,
+          ),
+        );
+        dispatch(protocolActions.createWallet());
+      }
+    }
   };
 };
 

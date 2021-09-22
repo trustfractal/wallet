@@ -25,6 +25,8 @@ import appActions from "@redux/stores/application/reducers/app";
 import { useAppDispatch } from "@redux/stores/application/context";
 import Logo from "@popup/components/common/Logo";
 
+import EmptyValidCredentials from "../EmptyValidCredentials";
+
 interface ErrorProps {
   step?: string;
 }
@@ -258,8 +260,10 @@ function Router() {
   if (registrationErrored) return <Error step={registrationState} />;
 
   switch (registrationState) {
-    case protocolRegistrationTypes.STARTED:
+    case protocolRegistrationTypes.MISSING_CREDENTIAL:
+      return <EmptyValidCredentials />;
     case protocolRegistrationTypes.ADDRESS_GENERATED:
+    case protocolRegistrationTypes.STARTED:
     case protocolRegistrationTypes.IDENTITY_REGISTERED:
       return <SetupStep message={StatusMessages[registrationState]} />;
     case protocolRegistrationTypes.MINTING_REGISTERED:
