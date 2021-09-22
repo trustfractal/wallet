@@ -262,8 +262,8 @@ function Router() {
   switch (registrationState) {
     case protocolRegistrationTypes.MISSING_CREDENTIAL:
       return <EmptyValidCredentials />;
-    case protocolRegistrationTypes.ADDRESS_GENERATED:
     case protocolRegistrationTypes.STARTED:
+    case protocolRegistrationTypes.ADDRESS_GENERATED:
     case protocolRegistrationTypes.IDENTITY_REGISTERED:
       return <SetupStep message={StatusMessages[registrationState]} />;
     case protocolRegistrationTypes.MINTING_REGISTERED:

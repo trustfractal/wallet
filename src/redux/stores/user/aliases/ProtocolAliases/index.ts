@@ -35,7 +35,7 @@ export const importWallet = ({ payload: mnemonic }: { payload: string }) => {
   };
 };
 
-export const registerWallet = async (wallet: Wallet) => {
+const registerWallet = async (wallet: Wallet) => {
   // Check registration type
   const previousRegistrationState = getRegistrationState(
     UserStore.getStore().getState(),
