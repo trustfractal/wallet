@@ -95,12 +95,12 @@ function OptInForm() {
       <Subsubtitle uppercase>By clicking “Opt In” you agree to our</Subsubtitle>
 
       <a
-        href={`${environment.FRACTAL_WEBSITE_URL}/documents/testnet-launch-special-user-agreement`}
+        href={`${environment.FRACTAL_WEBSITE_URL}/documents/mainnet-launch-special-user-agreement`}
         target="_blank"
         rel="noreferrer"
       >
         <Subsubtitle underline uppercase>
-          Special Testnet Launch User Agreement.
+          Special Mainnet Launch User Agreement.
         </Subsubtitle>
       </a>
 

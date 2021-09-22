@@ -75,7 +75,7 @@ function Register(props: RegisterProps) {
   const minLength = 8;
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [hint, setHint] = useState(`Minimum of ${minLength} chars`);
+  const [hint, setHint] = useState(`Minimum length: ${minLength}`);
 
   const onClick = () => {
     if (arePasswordsValidAndEquals && !loading) {
@@ -105,7 +105,7 @@ function Register(props: RegisterProps) {
       return;
     }
 
-    setHint(`Minimum of ${minLength} chars`);
+    setHint(`Minimum length: ${minLength}`);
   };
   const onChangeConfirmPassword = ({
     target: { value },
@@ -120,15 +120,15 @@ function Register(props: RegisterProps) {
           <Logo />
         </LogoContainer>
         <HeaderContainer>
-          <Title>Welcome to the Fractal Identity Wallet</Title>
-          <Text>Please start by creating your password</Text>
+          <Title>Welcome to the Fractal Wallet</Title>
+          <Text>Please start by choosing a password</Text>
         </HeaderContainer>
         <InputsContainer>
           <InputContainer>
             <PasswordInput
               id="new_password"
               name="value"
-              label="Create a password"
+              label="Choose a password"
               hint={hint}
               minLength={minLength}
               value={newPassword}
@@ -185,7 +185,6 @@ function Register(props: RegisterProps) {
                   <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
                     Note
                   </Text>
-
                   <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
                     Your password is used to unlock{" "}
                     <Text
@@ -194,15 +193,13 @@ function Register(props: RegisterProps) {
                       weight={TextWeights.BOLD}
                       span
                     >
-                      your Fractal ID Wallet
-                    </Text>{" "}
-                    and we don’t have access to it.
+                      your Fractal Wallet
+                    </Text>
+                    . Please keep it safe: Fractal doesn't have access to it.
                   </Text>
-
                   <Text size={TextSizes.SMALL}>
                     <br />
                   </Text>
-
                   <Text
                     size={TextSizes.SMALL}
                     height={TextHeights.SMALL}
@@ -211,11 +208,9 @@ function Register(props: RegisterProps) {
                     If you forget your password, you’ll lose the ability to use
                     the wallet.
                   </Text>
-
                   <Text size={TextSizes.SMALL}>
                     <br />
                   </Text>
-
                   <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
                     By creating a wallet, you agree to our{" "}
                     <Link

@@ -129,13 +129,13 @@ function MenuNavbar() {
 
   let menuItems = [
     {
-      label: "Export your data",
+      label: "Export your credentials",
       icon: IconNames.EXPORT,
       onClick: onClickExport,
       disabled: credentials.length === 0,
     },
     {
-      label: "Backup mnemonic",
+      label: "Backup protocol wallet",
       icon: IconNames.IMPORT,
       onClick: onClickMnemonic,
       disabled: registrationState !== protocolRegistrationTypes.COMPLETED,
@@ -271,13 +271,13 @@ function ProtocolNavbar() {
 
   const menuItems = [
     {
-      label: "Export your data",
+      label: "Export your credentials",
       icon: IconNames.EXPORT,
       onClick: onClickExport,
       disabled: credentials.length === 0,
     },
     {
-      label: "Backup mnemonic",
+      label: "Backup protocol wallet",
       icon: IconNames.IMPORT,
       onClick: onClickMnemonic,
       disabled: registrationState !== protocolRegistrationTypes.COMPLETED,

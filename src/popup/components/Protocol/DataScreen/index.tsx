@@ -55,7 +55,7 @@ const Spacing = styled.div`
 function Address({ wallet }: AddressProps) {
   return (
     <AddressContainer>
-      <Text weight={TextWeights.BOLD}>FCL Address:</Text>
+      <Text weight={TextWeights.BOLD}>Export your credentials:</Text>
 
       <LineWithCopy>
         <Text size={TextSizes.SMALL} height={TextHeights.SMALL} span>
