@@ -19,6 +19,17 @@ export const getProtocolVerificationCases = createSelector(
     ),
 );
 
+export const getPendingOrContactedProtocolVerificationCases = createSelector(
+  (state) => state.credentials,
+  (credentials) =>
+    VerificationCasesCollection.parse(credentials.verificationCases).filter(
+      ({ status, level }) =>
+        level.split("+").includes("protocol") &&
+        (status === VerificationCaseStatus.PENDING ||
+          status === VerificationCaseStatus.CONTACTED),
+    ),
+);
+
 export const getApprovedProtocolVerificationCases = createSelector(
   (state) => state.credentials,
   (credentials) =>
