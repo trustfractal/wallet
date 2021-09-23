@@ -7,6 +7,7 @@ const types = mirrorCreator([
   "SET_REGISTRATION_STATE",
   "SET_REGISTRATION_ERROR",
   "CREATE_WALLET",
+  "RESUME_WALLET_CREATION",
   "IMPORT_WALLET",
 ]);
 
@@ -25,6 +26,7 @@ export const creators = createActions(
   types.SET_REGISTRATION_STATE,
   types.SET_REGISTRATION_ERROR,
   types.CREATE_WALLET,
+  types.RESUME_WALLET_CREATION,
   types.IMPORT_WALLET,
 );
 

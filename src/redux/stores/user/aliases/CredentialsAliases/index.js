@@ -7,6 +7,7 @@ import credentialsActions, {
 import Credential from "@models/Credential";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import VerificationCase from "@models/VerificationCase";
+import VerificationCaseStatus from "@models/VerificationCase/status";
 import VerificationCasesCollection from "@models/VerificationCase/VerificationCasesCollection";
 
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
@@ -77,10 +78,10 @@ export const fetchCredentialsAndVerificationCases = () => {
     const registrationState = getRegistrationState(getState());
 
     if (registrationState === protocolRegistrationTypes.MISSING_CREDENTIAL) {
-      const filteredCredentials = credentials.filter(
-        (credential) =>
-          credential.level.includes("liveness") ||
-          credential.level.includes("protocol"),
+      const filteredCredentials = formattedVerificationCases.filter(
+        (vc) =>
+          vc.status === VerificationCaseStatus.APPROVED &&
+          vc.level.split("+").includes("protocol"),
       );
 
       if (filteredCredentials.length > 0) {
@@ -89,7 +90,7 @@ export const fetchCredentialsAndVerificationCases = () => {
             protocolRegistrationTypes.ADDRESS_GENERATED,
           ),
         );
-        dispatch(protocolActions.createWallet());
+        dispatch(protocolActions.resumeWalletCreation());
       }
     }
   };

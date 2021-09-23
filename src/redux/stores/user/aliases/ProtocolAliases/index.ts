@@ -10,7 +10,7 @@ import ProtocolService from "@services/ProtocolService";
 import { DataHost } from "@services/DataHost";
 import storageService from "@services/StorageService";
 
-import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+import { getApprovedProtocolVerificationCases } from "@redux/stores/user/reducers/credentials/selectors";
 import {
   getWallet,
   getRegistrationState,
@@ -22,6 +22,14 @@ export const createWallet = () => {
   return () => {
     const existingWallet = getWallet(UserStore.getStore().getState());
     const wallet = existingWallet || Wallet.generate();
+
+    return registerWallet(wallet);
+  };
+};
+
+export const resumeWalletCreation = () => {
+  return () => {
+    const wallet = getWallet(UserStore.getStore().getState());
 
     return registerWallet(wallet);
   };
@@ -57,14 +65,11 @@ const registerWallet = async (wallet: Wallet) => {
   }
 
   // Check if has valid credentials
-  const credentials = getCredentials(UserStore.getStore().getState());
-  const filteredCredentials = credentials.filter(
-    (credential) =>
-      credential.level.includes("liveness") ||
-      credential.level.includes("protocol"),
+  const filteredVerificationCases = getApprovedProtocolVerificationCases(
+    UserStore.getStore().getState(),
   );
 
-  if (filteredCredentials.length === 0) {
+  if (filteredVerificationCases.length === 0) {
     UserStore.getStore().dispatch(
       protocolActions.setRegistrationState(
         protocolRegistrationTypes.MISSING_CREDENTIAL,
@@ -139,6 +144,7 @@ const registerIdentity = async (wallet: Wallet, protocol?: ProtocolService) => {
 
 const Aliases = {
   [protocolTypes.CREATE_WALLET]: createWallet,
+  [protocolTypes.RESUME_WALLET_CREATION]: resumeWalletCreation,
   [protocolTypes.IMPORT_WALLET]: importWallet,
 };
 

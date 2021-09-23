@@ -25,7 +25,8 @@ import appActions from "@redux/stores/application/reducers/app";
 import { useAppDispatch } from "@redux/stores/application/context";
 import Logo from "@popup/components/common/Logo";
 
-import EmptyValidCredentials from "../EmptyValidCredentials";
+import NoProtocolVerificationCase from "@popup/components/NoProtocolVerificationCase";
+import { getProtocolVerificationCases } from "@redux/stores/user/reducers/credentials/selectors";
 
 interface ErrorProps {
   step?: string;
@@ -111,9 +112,7 @@ function ResetButton() {
 function StartSetup() {
   const dispatch = useUserDispatch();
 
-  const onCreate = () => {
-    dispatch(protocolActions.createWallet());
-  };
+  const onCreate = () => dispatch(protocolActions.createWallet());
 
   return (
     <Container>
@@ -261,7 +260,7 @@ function Router() {
 
   switch (registrationState) {
     case protocolRegistrationTypes.MISSING_CREDENTIAL:
-      return <EmptyValidCredentials />;
+      return <NoProtocolVerificationCase />;
     case protocolRegistrationTypes.STARTED:
     case protocolRegistrationTypes.ADDRESS_GENERATED:
     case protocolRegistrationTypes.IDENTITY_REGISTERED:

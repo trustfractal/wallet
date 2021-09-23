@@ -20,6 +20,7 @@ import environment from "@environment/index";
 
 // @ts-ignore
 import Copy from "@assets/copy.svg";
+import { IVerificationCase } from "@pluginTypes/plugin";
 
 const IconContainer = styled.div`
   display: flex;
@@ -84,7 +85,7 @@ function Address({ wallet }: AddressProps) {
   );
 }
 
-function EmptyValidCredentials() {
+function NoProtocolVerificationCase() {
   const wallet = useUserSelector(getWallet);
 
   const onNext = () => WindowsService.openTab(environment.JOURNEY_URL);
@@ -113,4 +114,4 @@ function EmptyValidCredentials() {
   );
 }
 
-export default EmptyValidCredentials;
+export default NoProtocolVerificationCase;
