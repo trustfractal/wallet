@@ -65,3 +65,10 @@
 - Fix bug when catfish token expires
 - Fix link button when user has no KYCs
 - Fix tab redirecting instead of opening a new
+
+## version 0.4.0 (23.09.2021)
+
+- Copy updates
+- Add import mnemonics
+- Add pending verification cases to credentials tab
+- Add protocol KYC check on protocol opt-in process
