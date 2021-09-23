@@ -4,6 +4,8 @@ import credentialsActions, {
   credentialsTypes,
 } from "@redux/stores/user/reducers/credentials";
 
+import profileActions from "@redux/stores/user/reducers/profile";
+
 import Credential from "@models/Credential";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import VerificationCase from "@models/VerificationCase";
@@ -46,8 +48,11 @@ export const fetchCredentialsAndVerificationCases = () => {
     dispatch(credentialsActions.setCredentials(credentials));
 
     // fetch verification cases
-    const { verification_cases: verificationCases } =
-      await MegalodonService.me();
+    const {
+      verification_cases: verificationCases,
+      phones: phoneNumbers,
+      emails,
+    } = await MegalodonService.me();
 
     const formattedVerificationCases = verificationCases.reduce(
       (
@@ -73,6 +78,9 @@ export const fetchCredentialsAndVerificationCases = () => {
     dispatch(
       credentialsActions.setVerificationCases(formattedVerificationCases),
     );
+
+    dispatch(profileActions.setEmails(emails));
+    dispatch(profileActions.setPhoneNumbers(phoneNumbers));
 
     // Check registration type
     const registrationState = getRegistrationState(getState());

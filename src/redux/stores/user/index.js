@@ -27,6 +27,12 @@ import {
 } from "@redux/stores/user/reducers/protocol";
 
 import {
+  reducer as profileReducer,
+  restore as profileRestore,
+  store as profileStore,
+} from "@redux/stores/user/reducers/profile";
+
+import {
   ERROR_DECRYPT_FAILED,
   ERROR_LOCAL_STATE_NOT_FOUND,
   ERROR_SALT_NOT_FOUND,
@@ -103,6 +109,7 @@ export class UserStore {
       credentials: credentialsReducer,
       requests: requestsReducer,
       protocol: protocolReducer,
+      profile: profileReducer,
     });
   }
 
@@ -177,6 +184,7 @@ export class UserStore {
       credentials: await credentialsRestore(deserializedState.credentials),
       requests: await requestsRestore(deserializedState.requests),
       protocol: await protocolRestore(deserializedState.protocol),
+      profile: await profileRestore(deserializedState.profile),
     };
   }
 
@@ -185,6 +193,7 @@ export class UserStore {
       credentials: await credentialsStore(state.credentials),
       requests: await requestsStore(state.requests),
       protocol: await protocolStore(state.protocol),
+      profile: await profileStore(state.profile),
     });
   }
 
