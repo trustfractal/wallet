@@ -8,7 +8,7 @@
     "@polkadot/api": "^5.4.1",
     "@polkadot/util": "^7.1.2",
     "@polkadot/util-crypto": "^7.1.2",
-    "@trustfractal/sdk": "^0.5.0",
+    "@trustfractal/sdk": "^0.5.2",
     "bfj": "^7.0.2",
     "camelcase": "^6.1.0",
     "css-loader": "4.3.0",

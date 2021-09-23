@@ -1,9 +1,10 @@
 import { createSelector } from "reselect";
 
+import { KYCTypes } from "@trustfractal/sdk";
+
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import VerificationCaseStatus from "@models/VerificationCase/status";
 import VerificationCasesCollection from "@models/VerificationCase/VerificationCasesCollection";
-import KYCTypes from "@models/KYCTypes";
 
 export const getCredentials = createSelector(
   (state) => state.credentials,
