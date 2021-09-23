@@ -6,4 +6,5 @@ export interface ICredential extends ISerializable, ICredentialSDK {
   id: string;
   level: string;
   verificationCaseId: string;
+  createdAt: number;
 }

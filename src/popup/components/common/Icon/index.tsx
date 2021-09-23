@@ -6,6 +6,7 @@ const { default: Check } = require("@assets/check.svg");
 const { default: ChevronRight } = require("@assets/chevron-right.svg");
 const { default: ChevronLeft } = require("@assets/chevron-left.svg");
 const { default: ChevronDown } = require("@assets/chevron-down.svg");
+const { default: Contacted } = require("@assets/contacted.svg");
 const { default: Eye } = require("@assets/eye.svg");
 const { default: EyeSlash } = require("@assets/eye-slash.svg");
 const { default: LogoName } = require("@assets/logo-name.svg");
@@ -28,6 +29,8 @@ const { default: MenuActive } = require("@assets/menu-active.svg");
 const { default: MenuInactive } = require("@assets/menu-inactive.svg");
 const { default: Export } = require("@assets/export.svg");
 const { default: Import } = require("@assets/import.svg");
+const { default: Issuing } = require("@assets/issuing.svg");
+const { default: Unknown } = require("@assets/unknown.svg");
 const { default: RequestAccepted } = require("@assets/request-accepted.svg");
 const { default: RequestPending } = require("@assets/request-pending.svg");
 const { default: RequestDeclined } = require("@assets/request-declined.svg");
@@ -62,6 +65,7 @@ export enum IconNames {
   CHEVRON_RIGHT = "chevron-right",
   CHEVRON_LEFT = "chevron-left",
   CHEVRON_DOWN = "chevron-down",
+  CONTACTED = "contacted",
   EYE = "eye",
   EYE_SLASH = "eye-slash",
   LOGO = "logo",
@@ -85,6 +89,8 @@ export enum IconNames {
   MENU_INACTIVE = "menu-inactive",
   EXPORT = "export",
   IMPORT = "import",
+  ISSUING = "issuing",
+  UNKNOWN = "unknown",
   REQUEST_ACCEPTED = "request-accepted",
   REQUEST_PENDING = "request-pending",
   REQUEST_DECLINED = "request-declined",
@@ -104,13 +110,14 @@ const Icons: Record<string, any> = {
   [IconNames.CHEVRON_RIGHT]: ChevronRight,
   [IconNames.CHEVRON_LEFT]: ChevronLeft,
   [IconNames.CHEVRON_DOWN]: ChevronDown,
+  [IconNames.CONNECTED]: Connected,
   [IconNames.EYE]: Eye,
   [IconNames.EYE_SLASH]: EyeSlash,
   [IconNames.LOGO_NAME]: LogoName,
   [IconNames.LOGO]: Logo,
   [IconNames.LOGO_SMALL]: LogoSmall,
   [IconNames.SUCCESS]: Success,
-  [IconNames.CONNECTED]: Connected,
+  [IconNames.CONTACTED]: Contacted,
   [IconNames.ROBOT]: Robot,
   [IconNames.CHECK_OUTLINE]: CheckOutline,
   [IconNames.ID_BASIC_SMALL]: IDBasicSmall,
@@ -126,6 +133,8 @@ const Icons: Record<string, any> = {
   [IconNames.MENU_INACTIVE]: MenuInactive,
   [IconNames.EXPORT]: Export,
   [IconNames.IMPORT]: Import,
+  [IconNames.ISSUING]: Issuing,
+  [IconNames.UNKNOWN]: Unknown,
   [IconNames.REQUEST_ACCEPTED]: RequestAccepted,
   [IconNames.REQUEST_PENDING]: RequestPending,
   [IconNames.REQUEST_DECLINED]: RequestDeclined,

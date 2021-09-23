@@ -12,7 +12,7 @@ import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
 import {
   getCredentials,
-  getPendingSupportedVerificationCases,
+  getUpcomingCredentials,
 } from "@redux/stores/user/reducers/credentials/selectors";
 import { getPendingRequests } from "@redux/stores/user/reducers/requests/selectors";
 
@@ -20,9 +20,7 @@ function WalletScreen() {
   const history = useHistory();
 
   const credentials = useUserSelector(getCredentials);
-  const pendingVerificationCases = useUserSelector(
-    getPendingSupportedVerificationCases,
-  );
+  const upcomingCredentials = useUserSelector(getUpcomingCredentials);
   const requests = useUserSelector(getPendingRequests);
   const setup = useAppSelector(isSetup);
 
@@ -32,8 +30,8 @@ function WalletScreen() {
     return null;
   }
 
-  // check if has credentials
-  if (credentials.length === 0 && pendingVerificationCases.length === 0)
+  // check if has credentials or verification cases
+  if (credentials.length === 0 && upcomingCredentials.length === 0)
     return <HomeScreen credentials={EmptyCredentials} />;
 
   // check if requests

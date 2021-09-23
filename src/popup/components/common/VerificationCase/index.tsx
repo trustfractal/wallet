@@ -9,6 +9,7 @@ import Text, {
 } from "@popup/components/common/Text";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 import LevelIcon from "@popup/components/common/LevelIcon";
+import VerificationCaseStatus from "@models/VerificationCase/status";
 
 const RootContainer = styled.div`
   display: flex;
@@ -80,6 +81,29 @@ function VerificationCase(
     levelName = `ID Plus + ${addonsStr}`;
   }
 
+  let statusIcon, statusName;
+
+  switch (verificationCase.status) {
+    case VerificationCaseStatus.PENDING:
+      statusIcon = IconNames.PENDING;
+      statusName = "Under review";
+      break;
+
+    case VerificationCaseStatus.CONTACTED:
+      statusIcon = IconNames.CONTACTED;
+      statusName = "Action required";
+      break;
+
+    case VerificationCaseStatus.ISSUING:
+      statusIcon = IconNames.ISSUING;
+      statusName = "Generating credential";
+      break;
+
+    default:
+      statusIcon = IconNames.UNKNOWN;
+      statusName = "";
+  }
+
   return (
     <RootContainer>
       <LevelIconContainer>
@@ -96,10 +120,10 @@ function VerificationCase(
             <Status>
               <StatusName>
                 <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-                  Pending
+                  {statusName}
                 </Text>
               </StatusName>
-              <Icon name={IconNames.PENDING} />
+              <Icon name={statusIcon} />
             </Status>
           </StatusContainer>
         </LevelStatusContainer>

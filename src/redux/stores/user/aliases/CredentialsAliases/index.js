@@ -8,7 +8,6 @@ import Credential from "@models/Credential";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import VerificationCase from "@models/VerificationCase";
 import VerificationCasesCollection from "@models/VerificationCase/VerificationCasesCollection";
-import VerificationCaseStatus from "@models/VerificationCase/status";
 
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
@@ -32,6 +31,7 @@ export const fetchCredentialsAndVerificationCases = () => {
           `${credential.verification_case_id}:${credential.level}`,
           credential.level,
           credential.verification_case_id,
+          new Date(credential.created_at).getTime(),
         ),
       );
 
@@ -45,23 +45,17 @@ export const fetchCredentialsAndVerificationCases = () => {
       await MegalodonService.me();
 
     const formattedVerificationCases = verificationCases.reduce(
-      (memo, { id, client_id, level, status, credential }) => {
-        let vcStatus = VerificationCaseStatus.PENDING;
-
-        if (status === "done") {
-          switch (credential) {
-            case "approved":
-              vcStatus = VerificationCaseStatus.APPROVED;
-              break;
-
-            case "rejected":
-              vcStatus = VerificationCaseStatus.REJECT;
-              break;
-
-            default:
-              break;
-          }
-        }
+      (
+        memo,
+        { id, client_id, level, status, credential, journey_completed },
+      ) => {
+        let vcStatus = VerificationCase.getStatus(
+          id,
+          status,
+          credential,
+          journey_completed,
+          credentials,
+        );
 
         memo.push(new VerificationCase(id, client_id, level, vcStatus));
 

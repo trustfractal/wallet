@@ -10,12 +10,14 @@ export const getCredentials = createSelector(
   (credentials) => CredentialsCollection.parse(credentials.credentials),
 );
 
-export const getPendingSupportedVerificationCases = createSelector(
+export const getUpcomingCredentials = createSelector(
   (state) => state.credentials,
   (credentials) =>
     VerificationCasesCollection.parse(credentials.verificationCases).filter(
       ({ status, level }) =>
+        KYCTypes.isSupported(level) &&
         status === VerificationCaseStatus.PENDING &&
-        KYCTypes.isSupported(level),
+        status === VerificationCaseStatus.CONTACTED &&
+        status === VerificationCaseStatus.ISSUING,
     ),
 );
