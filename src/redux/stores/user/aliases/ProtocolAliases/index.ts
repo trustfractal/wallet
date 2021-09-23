@@ -29,7 +29,8 @@ export const createWallet = () => {
 
 export const resumeWalletCreation = () => {
   return () => {
-    const wallet = getWallet(UserStore.getStore().getState());
+    const existingWallet = getWallet(UserStore.getStore().getState());
+    const wallet = existingWallet || Wallet.generate();
 
     return registerWallet(wallet);
   };

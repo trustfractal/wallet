@@ -20,7 +20,6 @@ import environment from "@environment/index";
 
 // @ts-ignore
 import Copy from "@assets/copy.svg";
-import { IVerificationCase } from "@pluginTypes/plugin";
 
 const IconContainer = styled.div`
   display: flex;
@@ -97,7 +96,10 @@ function NoProtocolVerificationCase() {
       </IconContainer>
       <ContentContainer>
         <Title>You haven’t verified your identity yet.</Title>
-        <Text>To earn FCL start by providing a valid liveness.</Text>
+        <Text>
+          To earn {environment.PROTOCOL_CURRENCY} start by providing a valid
+          liveness.
+        </Text>
         {wallet && wallet.address && <Address wallet={wallet} />}
       </ContentContainer>
       <ActionContainer>

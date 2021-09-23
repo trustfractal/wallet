@@ -25,8 +25,7 @@ import appActions from "@redux/stores/application/reducers/app";
 import { useAppDispatch } from "@redux/stores/application/context";
 import Logo from "@popup/components/common/Logo";
 
-import NoProtocolVerificationCase from "@popup/components/NoProtocolVerificationCase";
-import { getProtocolVerificationCases } from "@redux/stores/user/reducers/credentials/selectors";
+import NoProtocolVerificationCase from "@popup/components/Protocol/NoProtocolVerificationCase";
 
 interface ErrorProps {
   step?: string;
