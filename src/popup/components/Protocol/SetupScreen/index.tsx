@@ -9,6 +9,7 @@ import Text, {
 
 import { Subsubtitle } from "@popup/components/common/Subtitle";
 import Button from "@popup/components/common/Button";
+import TopComponent from "@popup/components/common/TopComponent";
 
 import protocolActions, {
   protocolRegistrationTypes,
@@ -23,6 +24,8 @@ import Icon, { IconNames } from "@popup/components/common/Icon";
 import appActions from "@redux/stores/application/reducers/app";
 import { useAppDispatch } from "@redux/stores/application/context";
 import Logo from "@popup/components/common/Logo";
+
+import NoProtocolVerificationCase from "@popup/components/Protocol/NoProtocolVerificationCase";
 
 interface ErrorProps {
   step?: string;
@@ -108,9 +111,7 @@ function ResetButton() {
 function StartSetup() {
   const dispatch = useUserDispatch();
 
-  const onCreate = () => {
-    dispatch(protocolActions.createWallet());
-  };
+  const onCreate = () => dispatch(protocolActions.createWallet());
 
   return (
     <Container>
@@ -257,6 +258,8 @@ function Router() {
   if (registrationErrored) return <Error step={registrationState} />;
 
   switch (registrationState) {
+    case protocolRegistrationTypes.MISSING_CREDENTIAL:
+      return <NoProtocolVerificationCase />;
     case protocolRegistrationTypes.STARTED:
     case protocolRegistrationTypes.ADDRESS_GENERATED:
     case protocolRegistrationTypes.IDENTITY_REGISTERED:
@@ -270,9 +273,11 @@ function Router() {
 
 function SetupScreen() {
   return (
-    <Container>
-      <Router />
-    </Container>
+    <TopComponent>
+      <Container>
+        <Router />
+      </Container>
+    </TopComponent>
   );
 }
 

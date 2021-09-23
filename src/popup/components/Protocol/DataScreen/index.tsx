@@ -9,6 +9,7 @@ import Text, {
   TextSizes,
   TextWeights,
 } from "@popup/components/common/Text";
+import TopComponent from "@popup/components/common/TopComponent";
 
 // @ts-ignore
 import Copy from "@assets/copy.svg";
@@ -74,11 +75,13 @@ function DataScreen() {
   if (!wallet || !wallet.address) return <></>;
 
   return (
-    <Container>
-      <WebpageViews />
-      <Spacing />
-      <Address wallet={wallet} />
-    </Container>
+    <TopComponent>
+      <Container>
+        <WebpageViews />
+        <Spacing />
+        <Address wallet={wallet} />
+      </Container>
+    </TopComponent>
   );
 }
 

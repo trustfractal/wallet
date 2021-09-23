@@ -1,6 +1,3 @@
-import { Dispatch } from "react";
-import { AnyAction } from "redux";
-
 import protocolActions, {
   protocolTypes,
   protocolRegistrationTypes,
@@ -13,66 +10,142 @@ import ProtocolService from "@services/ProtocolService";
 import { DataHost } from "@services/DataHost";
 import storageService from "@services/StorageService";
 
-import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
+import { getApprovedProtocolVerificationCases } from "@redux/stores/user/reducers/credentials/selectors";
+import {
+  getWallet,
+  getRegistrationState,
+} from "@redux/stores/user/reducers/protocol/selectors";
 import UserStore from "@redux/stores/user";
 import ApplicationStore from "@redux/stores/application";
 
 export const createWallet = () => {
-  const existingWallet = getWallet(UserStore.getStore().getState());
-  const wallet = existingWallet || Wallet.generate();
+  return () => {
+    const existingWallet = getWallet(UserStore.getStore().getState());
+    const wallet = existingWallet || Wallet.generate();
 
-  return registerWallet(wallet);
+    return registerWallet(wallet);
+  };
+};
+
+export const resumeWalletCreation = () => {
+  return () => {
+    const existingWallet = getWallet(UserStore.getStore().getState());
+    const wallet = existingWallet || Wallet.generate();
+
+    return registerWallet(wallet);
+  };
 };
 
 export const importWallet = ({ payload: mnemonic }: { payload: string }) => {
-  const wallet = Wallet.fromMnemonic(mnemonic);
+  return () => {
+    const wallet = Wallet.fromMnemonic(mnemonic);
 
-  return registerWallet(wallet);
+    return registerWallet(wallet);
+  };
 };
 
-const registerWallet = (wallet: Wallet) => {
-  return async (dispatch: Dispatch<AnyAction>) => {
-    dispatch(
-      protocolActions.setRegistrationState(protocolRegistrationTypes.STARTED),
-    );
+const registerWallet = async (wallet: Wallet) => {
+  // Check registration type
+  const previousRegistrationState = getRegistrationState(
+    UserStore.getStore().getState(),
+  );
 
-    const protocol = await ProtocolService.create(wallet.mnemonic);
+  let protocol: ProtocolService | undefined;
+
+  if (
+    previousRegistrationState === null ||
+    previousRegistrationState === protocolRegistrationTypes.STARTED
+  ) {
+    try {
+      protocol = await generateAddress(wallet);
+    } catch {
+      UserStore.getStore().dispatch(protocolActions.setRegistrationError(true));
+      UserStore.getStore().dispatch(protocolActions.setRegistrationState(null));
+      return;
+    }
+  }
+
+  // Check if has valid credentials
+  const filteredVerificationCases = getApprovedProtocolVerificationCases(
+    UserStore.getStore().getState(),
+  );
+
+  if (filteredVerificationCases.length === 0) {
+    UserStore.getStore().dispatch(
+      protocolActions.setRegistrationState(
+        protocolRegistrationTypes.MISSING_CREDENTIAL,
+      ),
+    );
+    return;
+  }
+
+  try {
+    await registerIdentity(wallet, protocol);
+  } catch {
+    UserStore.getStore().dispatch(protocolActions.setRegistrationError(true));
+    UserStore.getStore().dispatch(
+      protocolActions.setRegistrationState(
+        protocolRegistrationTypes.ADDRESS_GENERATED,
+      ),
+    );
+  }
+};
+
+const generateAddress = async (wallet: Wallet): Promise<ProtocolService> => {
+  UserStore.getStore().dispatch(
+    protocolActions.setRegistrationState(protocolRegistrationTypes.STARTED),
+  );
+
+  const protocol = await ProtocolService.create(wallet.mnemonic);
+  await protocol.saveSigner(storageService);
+  await DataHost.instance().enable();
+
+  UserStore.getStore().dispatch(protocolActions.setMnemonic(wallet.mnemonic));
+  UserStore.getStore().dispatch(
+    protocolActions.setRegistrationState(
+      protocolRegistrationTypes.ADDRESS_GENERATED,
+    ),
+  );
+
+  return protocol;
+};
+
+const registerIdentity = async (wallet: Wallet, protocol?: ProtocolService) => {
+  UserStore.getStore().dispatch(protocolActions.setMnemonic(wallet.mnemonic));
+  UserStore.getStore().dispatch(
+    protocolActions.setRegistrationState(
+      protocolRegistrationTypes.ADDRESS_GENERATED,
+    ),
+  );
+
+  if (!protocol) {
+    protocol = await ProtocolService.create(wallet.mnemonic);
     await protocol.saveSigner(storageService);
     await DataHost.instance().enable();
+  }
 
-    try {
-      dispatch(protocolActions.setMnemonic(wallet.mnemonic));
-      dispatch(
-        protocolActions.setRegistrationState(
-          protocolRegistrationTypes.ADDRESS_GENERATED,
-        ),
-      );
+  await protocol.ensureIdentityRegistered();
 
-      await protocol.ensureIdentityRegistered();
+  UserStore.getStore().dispatch(
+    protocolActions.setRegistrationState(
+      protocolRegistrationTypes.IDENTITY_REGISTERED,
+    ),
+  );
 
-      dispatch(
-        protocolActions.setRegistrationState(
-          protocolRegistrationTypes.IDENTITY_REGISTERED,
-        ),
-      );
+  UserStore.getStore().dispatch(
+    protocolActions.setRegistrationState(
+      protocolRegistrationTypes.MINTING_REGISTERED,
+    ),
+  );
 
-      dispatch(
-        protocolActions.setRegistrationState(
-          protocolRegistrationTypes.MINTING_REGISTERED,
-        ),
-      );
+  UserStore.getStore().dispatch(protocolActions.setRegisteredForMinting(true));
 
-      dispatch(protocolActions.setRegisteredForMinting(true));
-
-      ApplicationStore.getStore().dispatch(appActions.setWalletGenerated(true));
-    } catch {
-      dispatch(protocolActions.setRegistrationError(true));
-    }
-  };
+  ApplicationStore.getStore().dispatch(appActions.setWalletGenerated(true));
 };
 
 const Aliases = {
   [protocolTypes.CREATE_WALLET]: createWallet,
+  [protocolTypes.RESUME_WALLET_CREATION]: resumeWalletCreation,
   [protocolTypes.IMPORT_WALLET]: importWallet,
 };
 

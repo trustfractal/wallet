@@ -1,5 +1,3 @@
-import TopComponent from "@popup/components/common/TopComponent";
-
 import { useAppSelector } from "@redux/stores/application/context";
 import { getProtocolOptIn } from "@redux/stores/application/reducers/app/selectors";
 import { useUserSelector } from "@redux/stores/user/context";
@@ -12,15 +10,7 @@ import SetupScreen from "./SetupScreen";
 import DataScreen from "./DataScreen";
 import OptInForm from "./OptInForm";
 
-interface RegistrationRouterProps {
-  protocolOptIn: boolean;
-  registrationState: string;
-}
-
-function RegistrationRouter({
-  protocolOptIn,
-  registrationState,
-}: RegistrationRouterProps) {
+function renderProtocol(protocolOptIn: boolean, registrationState: string) {
   if (!protocolOptIn) return <OptInForm />;
 
   if (registrationState === protocolRegistrationTypes.COMPLETED)
@@ -34,14 +24,9 @@ function Protocol() {
   const registrationState = useUserSelector(getRegistrationState);
 
   return (
-    <TopComponent>
-      <ProtocolProvider>
-        <RegistrationRouter
-          protocolOptIn={protocolOptIn}
-          registrationState={registrationState}
-        />
-      </ProtocolProvider>
-    </TopComponent>
+    <ProtocolProvider>
+      {renderProtocol(protocolOptIn, registrationState)}
+    </ProtocolProvider>
   );
 }
 
