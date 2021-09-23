@@ -14,6 +14,7 @@ import Anchor from "@popup/components/common/Anchor";
 
 import { useUserSelector } from "@redux/stores/user/context";
 import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
+import { getPendingOrContactedProtocolVerificationCases } from "@redux/stores/user/reducers/credentials/selectors";
 
 import WindowsService from "@services/WindowsService";
 import environment from "@environment/index";
@@ -34,6 +35,7 @@ const ContentContainer = styled.div`
 `;
 const ActionContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: var(--s-24) 0;
@@ -63,6 +65,9 @@ const LineWithCopy = styled.div`
     }
   }
 `;
+const InfoContainer = styled.div`
+  margin-bottom: var(--s-8);
+`;
 
 interface AddressProps {
   wallet: Wallet;
@@ -84,10 +89,45 @@ function Address({ wallet }: AddressProps) {
   );
 }
 
-function NoProtocolVerificationCase() {
-  const wallet = useUserSelector(getWallet);
+function renderAction(hasPendingVerificationCases: boolean) {
+  if (hasPendingVerificationCases) {
+    const onNext = () =>
+      WindowsService.openTab(`${environment.FRACTAL_WEBSITE_URL}/credentials`);
+
+    return (
+      <ActionContainer>
+        <InfoContainer>
+          <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+            Your identity verification is still{" "}
+            <Text
+              size={TextSizes.SMALL}
+              height={TextHeights.SMALL}
+              weight={TextWeights.BOLD}
+              span
+            >
+              pending
+            </Text>
+            .
+          </Text>
+        </InfoContainer>
+        <Button onClick={onNext}>Go to Fractal</Button>
+      </ActionContainer>
+    );
+  }
 
   const onNext = () => WindowsService.openTab(environment.JOURNEY_URL);
+
+  return (
+    <ActionContainer>
+      <Button onClick={onNext}>Verify Identity</Button>
+    </ActionContainer>
+  );
+}
+
+function NoProtocolVerificationCase() {
+  const wallet = useUserSelector(getWallet);
+  const hasPendingVerificationCases =
+    useUserSelector(getPendingOrContactedProtocolVerificationCases).length > 0;
 
   return (
     <>
@@ -102,9 +142,7 @@ function NoProtocolVerificationCase() {
         </Text>
         {wallet && wallet.address && <Address wallet={wallet} />}
       </ContentContainer>
-      <ActionContainer>
-        <Button onClick={onNext}>Verify Identity</Button>
-      </ActionContainer>
+      {renderAction(hasPendingVerificationCases)}
       <FooterContainer>
         <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
           If you need help on anything related to Fractal ID Wallet, please
