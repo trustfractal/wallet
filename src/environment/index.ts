@@ -15,6 +15,9 @@ const MAGURO_URL =
 const JOURNEY_URL =
   process.env.REACT_APP_JOURNEY_URL ||
   "https://staging.sandbox.fractal.id/kyc/liveness";
+const MEGALODON_URL =
+  process.env.REACT_APP_MEGALODON_URL ||
+  "https://resource.staging.sandbox.fractal.id";
 const PROTOCOL_RPC_ENDPOINT =
   process.env.REACT_APP_PROTOCOL_RPC_ENDPOINT ||
   "wss://nodes.testnet.fractalprotocol.com";
@@ -29,6 +32,7 @@ const environment: Environment = {
   FRACTAL_WEBSITE_URL,
   MAGURO_URL,
   JOURNEY_URL,
+  MEGALODON_URL,
   IS_DEV: NODE_ENV === "development",
   PROTOCOL_RPC_ENDPOINT,
   PROTOCOL_CURRENCY,

@@ -6,5 +6,6 @@ export * from "./Environment";
 export * from "./InpageProvider";
 export * from "./Request";
 export * from "./Transaction";
+export * from "./VerificationCase";
 export * from "./Watcher";
 export * from "./Window";

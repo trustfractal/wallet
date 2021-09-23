@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { withNavBar } from "@popup/components/common/NavBar";
 import Tabs from "@popup/components/common/Tabs";
 import Protocol from "@popup/components/Protocol";
+import Credentials from "@popup/components/Credentials";
 import MaguroService from "@services/MaguroService";
 
 import {
@@ -12,11 +13,7 @@ import {
 import { getProtocolEnabled } from "@redux/stores/application/reducers/app/selectors";
 import appActions from "@redux/stores/application/reducers/app";
 
-interface HomeScreenProps {
-  credentials: (props: any) => JSX.Element;
-}
-
-function HomeScreen({ credentials }: HomeScreenProps) {
+function HomeScreen() {
   const protocolEnabledConfig = useAppSelector(getProtocolEnabled);
   const appDispatch = useAppDispatch();
 
@@ -39,7 +36,7 @@ function HomeScreen({ credentials }: HomeScreenProps) {
       id: "credentials-tab",
       label: "Credentials",
       props: {},
-      component: credentials,
+      component: Credentials,
     },
     {
       id: "protocol-tab",
