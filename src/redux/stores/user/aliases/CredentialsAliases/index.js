@@ -9,7 +9,6 @@ import profileActions from "@redux/stores/user/reducers/profile";
 import Credential from "@models/Credential";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import VerificationCase from "@models/VerificationCase";
-import VerificationCaseStatus from "@models/VerificationCase/status";
 import VerificationCasesCollection from "@models/VerificationCase/VerificationCasesCollection";
 
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
@@ -87,11 +86,8 @@ export const fetchCredentialsAndVerificationCases = () => {
     const registrationState = getRegistrationState(getState());
 
     if (registrationState === protocolRegistrationTypes.MISSING_CREDENTIAL) {
-      const filteredCredentials = formattedVerificationCases.filter(
-        (vc) =>
-          vc.level.split("+").includes("protocol") &&
-          vc.status === VerificationCaseStatus.APPROVED,
-      );
+      const filteredCredentials =
+        formattedVerificationCases.filterApprovedProtocolVerificationCases();
 
       if (filteredCredentials.length > 0) {
         dispatch(

@@ -59,7 +59,7 @@ export default class VerificationCase
     journey_completed: boolean;
     credentials: ICredential[];
   }): VerificationCaseStatus {
-    const isProtocolVC = level.split("+").includes("protocol");
+    const isProtocolVC = VerificationCase.isProtocolLevel(level);
 
     if (status === "done") {
       if (credential === "approved") {
@@ -103,5 +103,9 @@ export default class VerificationCase
       statusOrder.indexOf(vcStatusA as VerificationCaseStatus) -
       statusOrder.indexOf(vcStatusB as VerificationCaseStatus)
     );
+  }
+
+  public static isProtocolLevel(level: string) {
+    return level.split("+").includes("protocol");
   }
 }
