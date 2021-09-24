@@ -12,9 +12,12 @@ const FRACTAL_WEBSITE_URL =
 const MAGURO_URL =
   process.env.REACT_APP_MAGURO_URL ||
   "https://maguro.staging.sandbox.fractal.id";
-const JOURNEY_URL =
-  process.env.REACT_APP_JOURNEY_URL ||
+const LIVENESS_JOURNEY_URL =
+  process.env.REACT_APP_LIVENESS_JOURNEY_URL ||
   "https://staging.sandbox.fractal.id/kyc/liveness";
+const PROTOCOL_JOURNEY_URL =
+  process.env.REACT_APP_PROTOCOL_JOURNEY_URL ||
+  "https://staging.sandbox.fractal.id/kyc/protocol";
 const MEGALODON_URL =
   process.env.REACT_APP_MEGALODON_URL ||
   "https://resource.staging.sandbox.fractal.id";
@@ -31,7 +34,8 @@ const environment: Environment = {
   GOLDFISH_URL,
   FRACTAL_WEBSITE_URL,
   MAGURO_URL,
-  JOURNEY_URL,
+  LIVENESS_JOURNEY_URL,
+  PROTOCOL_JOURNEY_URL,
   MEGALODON_URL,
   IS_DEV: NODE_ENV === "development",
   PROTOCOL_RPC_ENDPOINT,

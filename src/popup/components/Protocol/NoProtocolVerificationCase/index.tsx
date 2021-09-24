@@ -12,6 +12,10 @@ import Title from "@popup/components/common/Title";
 import Logo from "@popup/components/common/Logo";
 import Anchor from "@popup/components/common/Anchor";
 
+import { NETWORKS } from "@redux/stores/application/reducers/app";
+import { useAppSelector } from "@redux/stores/application/context";
+import { getNetwork } from "@redux/stores/application/reducers/app/selectors";
+
 import { useUserSelector } from "@redux/stores/user/context";
 import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
 import { getPendingOrContactedProtocolVerificationCases } from "@redux/stores/user/reducers/credentials/selectors";
@@ -89,10 +93,19 @@ function Address({ wallet }: AddressProps) {
   );
 }
 
-function renderAction(hasPendingVerificationCases: boolean) {
+function renderAction(
+  hasPendingVerificationCases: boolean,
+  isMainNet: boolean,
+) {
   if (hasPendingVerificationCases) {
-    const onNext = () =>
-      WindowsService.openTab(`${environment.FRACTAL_WEBSITE_URL}/credentials`);
+    const onNext = () => {
+      // if network is mainnet link to /protocol otherwise link to /
+      let link = environment.FRACTAL_WEBSITE_URL;
+
+      if (isMainNet) link += `/protocol`;
+
+      WindowsService.openTab(link);
+    };
 
     return (
       <ActionContainer>
@@ -115,7 +128,7 @@ function renderAction(hasPendingVerificationCases: boolean) {
     );
   }
 
-  const onNext = () => WindowsService.openTab(environment.JOURNEY_URL);
+  const onNext = () => WindowsService.openTab(environment.PROTOCOL_JOURNEY_URL);
 
   return (
     <ActionContainer>
@@ -125,9 +138,12 @@ function renderAction(hasPendingVerificationCases: boolean) {
 }
 
 function NoProtocolVerificationCase() {
+  const network = useAppSelector(getNetwork);
   const wallet = useUserSelector(getWallet);
   const hasPendingVerificationCases =
     useUserSelector(getPendingOrContactedProtocolVerificationCases).length > 0;
+
+  const isMainNet = network === NETWORKS.MAINNET;
 
   return (
     <>
@@ -142,7 +158,7 @@ function NoProtocolVerificationCase() {
         </Text>
         {wallet && wallet.address && <Address wallet={wallet} />}
       </ContentContainer>
-      {renderAction(hasPendingVerificationCases)}
+      {renderAction(hasPendingVerificationCases, isMainNet)}
       <FooterContainer>
         <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
           If you need help on anything related to Fractal ID Wallet, please
