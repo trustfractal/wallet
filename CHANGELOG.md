@@ -81,3 +81,9 @@
 ## version 0.4.2 (24.09.2021)
 
 - Fix get verification case status for protocol KYCs
+
+## version 0.4.3 (24.09.2021)
+
+- Fix pending verification cases not showing
+- Add window popup resize to login and register screens
+- Fix popup window to only open when native popup is closed
