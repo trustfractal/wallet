@@ -87,7 +87,7 @@ export const fetchCredentialsAndVerificationCases = () => {
 
     if (registrationState === protocolRegistrationTypes.MISSING_CREDENTIAL) {
       const filteredCredentials =
-        formattedVerificationCases.filterProtocolVerificationCases();
+        formattedVerificationCases.filterApprovedProtocolVerificationCases();
 
       if (filteredCredentials.length > 0) {
         dispatch(
