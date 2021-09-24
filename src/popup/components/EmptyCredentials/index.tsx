@@ -27,7 +27,7 @@ const ActionContainer = styled.div`
 `;
 
 function EmptyCredentials() {
-  const onNext = () => WindowsService.openTab(environment.JOURNEY_URL);
+  const onNext = () => WindowsService.openTab(environment.LIVENESS_JOURNEY_URL);
 
   return (
     <TopComponent>

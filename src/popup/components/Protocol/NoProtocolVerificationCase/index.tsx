@@ -115,7 +115,7 @@ function renderAction(hasPendingVerificationCases: boolean) {
     );
   }
 
-  const onNext = () => WindowsService.openTab(environment.JOURNEY_URL);
+  const onNext = () => WindowsService.openTab(environment.PROTOCOL_JOURNEY_URL);
 
   return (
     <ActionContainer>
