@@ -353,7 +353,10 @@ export default function Navbar() {
 }
 
 export const withNavBar =
-  <P extends object>(Component: React.ComponentType<P>) =>
+  <P extends object>(
+    Component: React.ComponentType<P>,
+    withNavBarComponent = true,
+  ) =>
   (props: any) => {
     const appDispatch = useAppDispatch();
 
@@ -372,7 +375,7 @@ export const withNavBar =
     return (
       <>
         <RootContainer ref={ref}>
-          <Navbar />
+          {withNavBarComponent && <Navbar />}
           <Component {...(props as P)} />
         </RootContainer>
       </>

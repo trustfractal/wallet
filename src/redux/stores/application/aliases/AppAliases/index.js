@@ -45,24 +45,23 @@ export const startup = () => {
   };
 };
 
-export const setPopupSize = ({ payload: { width, height } }) => {
+export const setPopupSize = ({
+  payload: {
+    width = PopupSizesValues[PopupSizes.SMALL].width,
+    height = PopupSizesValues[PopupSizes.SMALL].height,
+  },
+}) => {
   return async () => {
     const popup = await WindowsService.getPopup();
     let popupWidth = width;
     let popupHeight = height;
 
     if (popup) {
-      if (
-        width !== undefined &&
-        width < PopupSizesValues[PopupSizes.SMALL].width
-      ) {
+      if (width < PopupSizesValues[PopupSizes.SMALL].width) {
         popupWidth = PopupSizesValues[PopupSizes.SMALL].width;
       }
 
-      if (
-        height !== undefined &&
-        height < PopupSizesValues[PopupSizes.SMALL].height
-      ) {
+      if (height < PopupSizesValues[PopupSizes.SMALL].height) {
         popupHeight = PopupSizesValues[PopupSizes.SMALL].height;
       }
 

@@ -9,6 +9,8 @@ import Logo from "@popup/components/common/Logo";
 import Anchor from "@popup/components/common/Anchor";
 import Text, { TextSizes, TextHeights } from "@popup/components/common/Text";
 
+import { withNavBar } from "@popup/components/common/NavBar";
+
 const RootContainer = styled.div`
   padding-top: var(--s-24);
 `;
@@ -113,4 +115,4 @@ function Login(props: LoginProps) {
   );
 }
 
-export default Login;
+export default withNavBar(Login, false);
