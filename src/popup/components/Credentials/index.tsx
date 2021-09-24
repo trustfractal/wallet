@@ -4,6 +4,7 @@ import Credential from "@popup/components/common/Credential";
 import VerificationCase from "@popup/components/common/VerificationCase";
 import History from "@popup/components/common/History";
 import TopComponent from "@popup/components/common/TopComponent";
+import EmptyCredentials from "@popup/components/EmptyCredentials";
 import Text, {
   TextHeights,
   TextSizes,
@@ -34,6 +35,10 @@ function Credentials() {
   const requests = useUserSelector(getRequests);
   const credentials = useUserSelector(getCredentials);
   const upcomingCredentials = useUserSelector(getUpcomingCredentials);
+
+  // check if has credentials or verification cases
+  if (credentials.length === 0 && upcomingCredentials.length === 0)
+    return <EmptyCredentials />;
 
   const getCredentialRequests = (id: string) =>
     requests.filter((request) => request.request.credential!.id === id);
