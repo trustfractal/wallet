@@ -59,13 +59,14 @@ export const fetchCredentialsAndVerificationCases = () => {
         memo,
         { id, client_id, level, status, credential, journey_completed },
       ) => {
-        let vcStatus = VerificationCase.getStatus(
+        let vcStatus = VerificationCase.getStatus({
           id,
+          level,
           status,
           credential,
           journey_completed,
           credentials,
-        );
+        });
 
         memo.push(new VerificationCase(id, client_id, level, vcStatus));
 
@@ -88,8 +89,8 @@ export const fetchCredentialsAndVerificationCases = () => {
     if (registrationState === protocolRegistrationTypes.MISSING_CREDENTIAL) {
       const filteredCredentials = formattedVerificationCases.filter(
         (vc) =>
-          vc.status === VerificationCaseStatus.APPROVED &&
-          vc.level.split("+").includes("protocol"),
+          vc.level.split("+").includes("protocol") &&
+          vc.status === VerificationCaseStatus.APPROVED,
       );
 
       if (filteredCredentials.length > 0) {

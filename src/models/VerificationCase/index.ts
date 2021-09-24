@@ -44,21 +44,35 @@ export default class VerificationCase
     });
   }
 
-  public static getStatus(
-    id: string,
-    status: "done" | "pending" | "contacted",
-    credential: "approved" | "rejected",
-    journey_completed: boolean,
-    credentials: ICredential[],
-  ): VerificationCaseStatus {
+  public static getStatus({
+    id,
+    level,
+    status,
+    credential,
+    journey_completed,
+    credentials,
+  }: {
+    id: string;
+    level: string;
+    status: "done" | "pending" | "contacted";
+    credential: "approved" | "rejected";
+    journey_completed: boolean;
+    credentials: ICredential[];
+  }): VerificationCaseStatus {
+    const isProtocolVC = level.split("+").includes("protocol");
+
     if (status === "done") {
       if (credential === "approved") {
+        // check if it's a protocol vc
+        if (isProtocolVC) {
+          return VerificationCaseStatus.APPROVED;
+        }
         // check if a credential has already been issued for this approved verification case
-        if (!credentials.find((item) => item.verificationCaseId === id)) {
-          return VerificationCaseStatus.ISSUING;
+        if (!!credentials.find((item) => item.verificationCaseId === id)) {
+          return VerificationCaseStatus.APPROVED;
         }
 
-        return VerificationCaseStatus.APPROVED;
+        return VerificationCaseStatus.ISSUING;
       } else if (credential === "rejected") {
         return VerificationCaseStatus.REJECTED;
       }

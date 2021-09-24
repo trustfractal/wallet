@@ -35,8 +35,8 @@ export const getApprovedProtocolVerificationCases = createSelector(
   (credentials) =>
     VerificationCasesCollection.parse(credentials.verificationCases).filter(
       ({ status, level }) =>
-        status === VerificationCaseStatus.APPROVED &&
-        level.split("+").includes("protocol"),
+        level.split("+").includes("protocol") &&
+        status === VerificationCaseStatus.APPROVED,
     ),
 );
 
