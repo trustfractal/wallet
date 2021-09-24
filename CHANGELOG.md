@@ -77,3 +77,7 @@
 
 - Fix empty credentials page
 - Fix journey links
+
+## version 0.4.2 (24.09.2021)
+
+- Fix get verification case status for protocol KYCs
