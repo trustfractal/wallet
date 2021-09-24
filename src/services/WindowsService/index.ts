@@ -199,6 +199,10 @@ class WindowsService {
     return windows;
   }
 
+  async isNativePopupOpen() {
+    return chrome.extension.getViews({ type: "popup" }).length > 0;
+  }
+
   async createPopup(
     size: PopupSizes = PopupSizes.SMALL,
   ): Promise<chrome.windows.Window | undefined> {
@@ -208,6 +212,12 @@ class WindowsService {
     if (popup) {
       // bring focus to existing chrome popup
       await this.focusWindow(popup.id);
+      return;
+    }
+
+    // check native popup is open
+    const isOpen = await this.isNativePopupOpen();
+    if (isOpen) {
       return;
     }
 
