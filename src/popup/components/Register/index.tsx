@@ -15,6 +15,8 @@ import Icon, { IconNames } from "@popup/components/common/Icon";
 import Logo from "@popup/components/common/Logo";
 import Link from "@popup/components/common/Link";
 
+import { withNavBar } from "@popup/components/common/NavBar";
+
 const RootContainer = styled.div`
   padding: var(--s-24) 0px;
   .fade-enter {
@@ -244,4 +246,4 @@ function Register(props: RegisterProps) {
   );
 }
 
-export default Register;
+export default withNavBar(Register, false);
