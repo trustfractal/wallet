@@ -1,9 +1,6 @@
 import { createSelector } from "reselect";
 
-import { KYCTypes } from "@trustfractal/sdk";
-
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
-import VerificationCaseStatus from "@models/VerificationCase/status";
 import VerificationCasesCollection from "@models/VerificationCase/VerificationCasesCollection";
 
 export const getCredentials = createSelector(
@@ -14,40 +11,31 @@ export const getCredentials = createSelector(
 export const getProtocolVerificationCases = createSelector(
   (state) => state.credentials,
   (credentials) =>
-    VerificationCasesCollection.parse(credentials.verificationCases).filter(
-      ({ level }) => level.split("+").includes("protocol"),
-    ),
+    VerificationCasesCollection.parse(
+      credentials.verificationCases,
+    ).filterProtocolVerificationCases(),
 );
 
 export const getPendingOrContactedProtocolVerificationCases = createSelector(
   (state) => state.credentials,
   (credentials) =>
-    VerificationCasesCollection.parse(credentials.verificationCases).filter(
-      ({ status, level }) =>
-        level.split("+").includes("protocol") &&
-        (status === VerificationCaseStatus.PENDING ||
-          status === VerificationCaseStatus.CONTACTED),
-    ),
+    VerificationCasesCollection.parse(
+      credentials.verificationCases,
+    ).filterPendingOrContactedProtocolVerificationCases(),
 );
 
 export const getApprovedProtocolVerificationCases = createSelector(
   (state) => state.credentials,
   (credentials) =>
-    VerificationCasesCollection.parse(credentials.verificationCases).filter(
-      ({ status, level }) =>
-        level.split("+").includes("protocol") &&
-        status === VerificationCaseStatus.APPROVED,
-    ),
+    VerificationCasesCollection.parse(
+      credentials.verificationCases,
+    ).filterApprovedProtocolVerificationCases(),
 );
 
 export const getUpcomingCredentials = createSelector(
   (state) => state.credentials,
   (credentials) =>
-    VerificationCasesCollection.parse(credentials.verificationCases).filter(
-      ({ status, level }) =>
-        KYCTypes.isSupported(level) &&
-        status === VerificationCaseStatus.PENDING &&
-        status === VerificationCaseStatus.CONTACTED &&
-        status === VerificationCaseStatus.ISSUING,
-    ),
+    VerificationCasesCollection.parse(
+      credentials.verificationCases,
+    ).filterPendingOrContactedOrIssuingSupportedVerificationCases(),
 );
