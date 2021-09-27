@@ -28,6 +28,7 @@ const { default: FractalEthToken } = require("@assets/fractal-eth-token.svg");
 const { default: MenuActive } = require("@assets/menu-active.svg");
 const { default: MenuInactive } = require("@assets/menu-inactive.svg");
 const { default: Export } = require("@assets/export.svg");
+const { default: Refresh } = require("@assets/refresh.svg");
 const { default: Import } = require("@assets/import.svg");
 const { default: Issuing } = require("@assets/issuing.svg");
 const { default: Unknown } = require("@assets/unknown.svg");
@@ -91,6 +92,7 @@ export enum IconNames {
   IMPORT = "import",
   ISSUING = "issuing",
   UNKNOWN = "unknown",
+  REFRESH = "refresh",
   REQUEST_ACCEPTED = "request-accepted",
   REQUEST_PENDING = "request-pending",
   REQUEST_DECLINED = "request-declined",
@@ -135,6 +137,7 @@ const Icons: Record<string, any> = {
   [IconNames.IMPORT]: Import,
   [IconNames.ISSUING]: Issuing,
   [IconNames.UNKNOWN]: Unknown,
+  [IconNames.REFRESH]: Refresh,
   [IconNames.REQUEST_ACCEPTED]: RequestAccepted,
   [IconNames.REQUEST_PENDING]: RequestPending,
   [IconNames.REQUEST_DECLINED]: RequestDeclined,
