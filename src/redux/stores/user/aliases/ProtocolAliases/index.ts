@@ -17,6 +17,7 @@ import {
 } from "@redux/stores/user/reducers/protocol/selectors";
 import UserStore from "@redux/stores/user";
 import ApplicationStore from "@redux/stores/application";
+import { isLivenessEnabled } from "@redux/stores/application/reducers/app/selectors";
 
 export const createWallet = () => {
   return () => {
@@ -65,18 +66,24 @@ const registerWallet = async (wallet: Wallet) => {
     }
   }
 
-  // Check if has valid credentials
-  const filteredVerificationCases = getApprovedProtocolVerificationCases(
-    UserStore.getStore().getState(),
+  const livenessCheck = isLivenessEnabled(
+    ApplicationStore.getStore().getState(),
   );
 
-  if (filteredVerificationCases.length === 0) {
-    UserStore.getStore().dispatch(
-      protocolActions.setRegistrationState(
-        protocolRegistrationTypes.MISSING_CREDENTIAL,
-      ),
+  if (livenessCheck) {
+    // Check if has valid credentials
+    const filteredVerificationCases = getApprovedProtocolVerificationCases(
+      UserStore.getStore().getState(),
     );
-    return;
+
+    if (filteredVerificationCases.length === 0) {
+      UserStore.getStore().dispatch(
+        protocolActions.setRegistrationState(
+          protocolRegistrationTypes.MISSING_CREDENTIAL,
+        ),
+      );
+      return;
+    }
   }
 
   try {

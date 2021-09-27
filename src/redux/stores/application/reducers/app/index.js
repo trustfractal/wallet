@@ -17,6 +17,7 @@ const types = mirrorCreator([
   "SET_WALLET_GENERATED",
   "SET_POPUP_SIZE",
   "SET_NETWORK",
+  "SET_LIVENESS_CHECK_ENABLED",
 ]);
 
 export const creators = createActions(
@@ -30,6 +31,7 @@ export const creators = createActions(
   types.SET_WALLET_GENERATED,
   types.SET_POPUP_SIZE,
   types.SET_NETWORK,
+  types.SET_LIVENESS_CHECK_ENABLED,
 );
 
 export const initialState = {
@@ -39,6 +41,7 @@ export const initialState = {
   protocolOptIn: false,
   protocolEnabled: false,
   walletGenerated: false,
+  livenessEnabled: false,
   network: NETWORKS.TESTNET,
 };
 
@@ -79,6 +82,11 @@ export const reducer = handleActions(
         ...state,
         network,
       }),
+    [types.SET_LIVENESS_CHECK_ENABLED]: (state, { payload: livenessEnabled }) =>
+      Object.freeze({
+        ...state,
+        livenessEnabled,
+      }),
   },
   initialState,
 );
@@ -95,6 +103,7 @@ export async function store(state) {
     setup: state.setup,
     protocolOptIn: state.protocolOptIn,
     protocolEnabled: state.protocolEnabled,
+    livenessEnabled: state.livenessEnabled,
     walletGenerated: state.walletGenerated,
     network: state.network,
   };
