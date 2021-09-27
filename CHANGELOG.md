@@ -87,3 +87,7 @@
 - Fix pending verification cases not showing
 - Add window popup resize to login and register screens
 - Fix popup window to only open when native popup is closed
+
+## version 0.4.4 (27.09.2021)
+
+- Add refresh button
