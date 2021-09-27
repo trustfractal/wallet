@@ -9,7 +9,8 @@ import {
 import { useUserSelector } from "@redux/stores/user/context";
 import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
 
-import ProtocolService from ".";
+import { ProtocolService } from ".";
+import { getProtocolService } from "@services/Factory";
 
 interface Props {
   children: ReactNode;
@@ -25,7 +26,7 @@ export const ProtocolProvider = ({ children }: Props) => {
   useEffect(() => {
     if (!isReady && wallet) {
       const setupService = async () => {
-        const service = await ProtocolService.create(wallet!.publicKey);
+        const service = await getProtocolService(wallet.mnemonic);
         setProtocol(service);
         setIsReady(true);
       };

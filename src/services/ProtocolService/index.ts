@@ -1,9 +1,10 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
-import { u64 } from "@polkadot/types";
 import { Keyring } from "@polkadot/keyring";
+import { u64 } from "@polkadot/types";
+
 import type { KeyringPair } from "@polkadot/keyring/types";
 import type { AccountData } from "@polkadot/types/interfaces";
-import { DataHost } from "@services/DataHost";
+import { getDataHost } from "@services/Factory";
 import MaguroService from "@services/MaguroService";
 import { Storage } from "@utils/StorageArray";
 
@@ -13,35 +14,9 @@ import types from "./types";
 
 export * from "./context";
 
-export default class ProtocolService {
+export class ProtocolService {
   public api: ApiPromise;
   public signer: KeyringPair;
-
-  public static async create(uri: string): Promise<ProtocolService> {
-    const keyring = new Keyring({ type: "sr25519" });
-    const signer = keyring.addFromUri(uri);
-
-    return await ProtocolService.withSigner(signer);
-  }
-
-  private static async withSigner(signer: KeyringPair) {
-    let api;
-    try {
-      const url = (await MaguroService.getConfig()).blockchain_url;
-      const provider = new WsProvider(url);
-      api = await ApiPromise.create({ provider, types });
-    } catch (e) {
-      console.error(e);
-      const provider = new WsProvider(Environment.PROTOCOL_RPC_ENDPOINT);
-      api = await ApiPromise.create({ provider, types });
-    }
-
-    return new ProtocolService(api, signer);
-  }
-
-  public async disconnect() {
-    await this.api.disconnect();
-  }
 
   public constructor(api: ApiPromise, signer: KeyringPair) {
     this.api = api;
@@ -52,7 +27,7 @@ export default class ProtocolService {
     const latestProof = await this.latestExtensionProof();
     console.log(`Latest proof from chain ${latestProof}`);
 
-    const dataHost = DataHost.instance();
+    const dataHost = getDataHost();
     const extensionProof = await dataHost.extensionProof(latestProof);
     if (extensionProof == null) return;
 
@@ -154,6 +129,13 @@ export default class ProtocolService {
     );
   }
 
+  static async saveSignerMnemonic(storage: Storage, mnemonic: string) {
+    const keyring = new Keyring({ type: "sr25519" });
+    const signer = keyring.addFromUri(mnemonic);
+
+    await storage.setItem("protocol/signer", JSON.stringify(signer.toJson()));
+  }
+
   static async fromStorage(storage: Storage) {
     const maybeSigner = await storage.getItem("protocol/signer");
     if (maybeSigner == null)
@@ -164,5 +146,20 @@ export default class ProtocolService {
     const signer = keyring.addFromJson(parsedSigner);
     signer.unlock();
     return await ProtocolService.withSigner(signer);
+  }
+
+  private static async withSigner(signer: KeyringPair) {
+    let api;
+    try {
+      const url = (await MaguroService.getConfig()).blockchain_url;
+      const provider = new WsProvider(url);
+      api = await ApiPromise.create({ provider, types });
+    } catch (e) {
+      console.error(e);
+      const provider = new WsProvider(Environment.PROTOCOL_RPC_ENDPOINT);
+      api = await ApiPromise.create({ provider, types });
+    }
+
+    return new ProtocolService(api, signer);
   }
 }

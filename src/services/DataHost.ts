@@ -1,6 +1,4 @@
 import { Storage, StorageArray } from "@utils/StorageArray";
-import storageService from "@services/StorageService";
-
 import {
   build,
   extend_multiple,
@@ -9,15 +7,6 @@ import {
 } from "@vendor/merklex-js/merklex_js";
 
 export class DataHost {
-  private static _instance?: DataHost;
-
-  static instance() {
-    if (DataHost._instance == null) {
-      DataHost._instance = new DataHost(storageService, storageService);
-    }
-    return DataHost._instance;
-  }
-
   constructor(
     private readonly metadata: Storage,
     private readonly sensitive: Storage,

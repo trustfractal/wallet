@@ -1,9 +1,6 @@
 import ConnectionTypes from "@models/Connection/types";
 
-import { DataHost } from "@services/DataHost";
-import storageService from "@services/StorageService";
-import { MintingRegistrar } from "@services/MintingRegistrar";
-import environment from "@environment/index";
+import { getMintingRegistrar, getDataHost } from "@services/Factory";
 import {
   getProtocolOptIn,
   getWalletGenerated,
@@ -14,7 +11,7 @@ export async function addWebpage([url]: [string]): Promise<void> {
   const optedIn = getProtocolOptIn(AppStore.getStore().getState());
   if (!optedIn) return;
 
-  await DataHost.instance().storeFact({
+  await getDataHost().storeFact({
     pageView: {
       url,
       timestampMs: new Date().getTime(),
@@ -24,8 +21,7 @@ export async function addWebpage([url]: [string]): Promise<void> {
   const walletGenerated = getWalletGenerated(AppStore.getStore().getState());
   if (!walletGenerated) return;
 
-  const sleep = environment.IS_DEV ? 5 : 30 * 60;
-  await new MintingRegistrar(storageService, sleep).maybeTryRegister();
+  await getMintingRegistrar().maybeTryRegister();
 }
 
 const Callbacks = {

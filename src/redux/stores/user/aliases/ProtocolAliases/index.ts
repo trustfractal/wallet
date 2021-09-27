@@ -1,23 +1,23 @@
-import protocolActions, {
-  protocolTypes,
-  protocolRegistrationTypes,
-} from "@redux/stores/user/reducers/protocol";
-
-import appActions from "@redux/stores/application/reducers/app";
-
 import Wallet from "@models/Wallet";
-import ProtocolService from "@services/ProtocolService";
-import { DataHost } from "@services/DataHost";
-import storageService from "@services/StorageService";
-
-import { getApprovedProtocolVerificationCases } from "@redux/stores/user/reducers/credentials/selectors";
-import {
-  getWallet,
-  getRegistrationState,
-} from "@redux/stores/user/reducers/protocol/selectors";
-import UserStore from "@redux/stores/user";
 import ApplicationStore from "@redux/stores/application";
+import appActions from "@redux/stores/application/reducers/app";
 import { isLivenessEnabled } from "@redux/stores/application/reducers/app/selectors";
+import UserStore from "@redux/stores/user";
+import { getApprovedProtocolVerificationCases } from "@redux/stores/user/reducers/credentials/selectors";
+import protocolActions, {
+  protocolRegistrationTypes,
+  protocolTypes,
+} from "@redux/stores/user/reducers/protocol";
+import {
+  getRegistrationState,
+  getWallet,
+} from "@redux/stores/user/reducers/protocol/selectors";
+import {
+  getDataHost,
+  getProtocolService,
+  getStorageService,
+} from "@services/Factory";
+import { ProtocolService } from "@services/ProtocolService";
 
 export const createWallet = () => {
   return () => {
@@ -58,7 +58,8 @@ const registerWallet = async (wallet: Wallet) => {
     previousRegistrationState === protocolRegistrationTypes.STARTED
   ) {
     try {
-      protocol = await generateAddress(wallet);
+      await generateAddress(wallet);
+      protocol = await getProtocolService();
     } catch {
       UserStore.getStore().dispatch(protocolActions.setRegistrationError(true));
       UserStore.getStore().dispatch(protocolActions.setRegistrationState(null));
@@ -98,14 +99,16 @@ const registerWallet = async (wallet: Wallet) => {
   }
 };
 
-const generateAddress = async (wallet: Wallet): Promise<ProtocolService> => {
+const generateAddress = async (wallet: Wallet) => {
   UserStore.getStore().dispatch(
     protocolActions.setRegistrationState(protocolRegistrationTypes.STARTED),
   );
 
-  const protocol = await ProtocolService.create(wallet.mnemonic);
-  await protocol.saveSigner(storageService);
-  await DataHost.instance().enable();
+  await ProtocolService.saveSignerMnemonic(
+    getStorageService(),
+    wallet.mnemonic,
+  );
+  await getDataHost().enable();
 
   UserStore.getStore().dispatch(protocolActions.setMnemonic(wallet.mnemonic));
   UserStore.getStore().dispatch(
@@ -113,8 +116,6 @@ const generateAddress = async (wallet: Wallet): Promise<ProtocolService> => {
       protocolRegistrationTypes.ADDRESS_GENERATED,
     ),
   );
-
-  return protocol;
 };
 
 const registerIdentity = async (wallet: Wallet, protocol?: ProtocolService) => {
@@ -126,9 +127,9 @@ const registerIdentity = async (wallet: Wallet, protocol?: ProtocolService) => {
   );
 
   if (!protocol) {
-    protocol = await ProtocolService.create(wallet.mnemonic);
-    await protocol.saveSigner(storageService);
-    await DataHost.instance().enable();
+    protocol = await getProtocolService(wallet.mnemonic);
+    await protocol.saveSigner(getStorageService());
+    await getDataHost().enable();
   }
 
   await protocol.ensureIdentityRegistered();

@@ -1,4 +1,4 @@
-import ProtocolService from "@services/ProtocolService";
+import { getProtocolService } from "@services/Factory";
 import { Storage, withLock } from "@utils/StorageArray";
 
 export class MintingRegistrar {
@@ -18,7 +18,7 @@ export class MintingRegistrar {
     if (!shouldCheck) return;
 
     await withLock(this.storage, "minting_registrar/lock", async () => {
-      const protocol = await ProtocolService.fromStorage(this.storage);
+      const protocol = await getProtocolService();
       await protocol.ensureIdentityRegistered();
       const isRegistered = await protocol.isRegisteredForMinting();
       if (isRegistered) {
@@ -33,7 +33,6 @@ export class MintingRegistrar {
         "minting_registrar/last_check",
         now.toString(),
       );
-      await protocol.disconnect();
     });
   }
 }

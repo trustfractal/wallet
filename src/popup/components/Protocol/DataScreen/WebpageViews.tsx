@@ -8,7 +8,7 @@ import Text, {
 
 import Icon, { IconNames } from "@popup/components/common/Icon";
 import LevelIcon from "@popup/components/common/LevelIcon";
-import { DataHost } from "@services/DataHost";
+import { getDataHost } from "@services/Factory";
 import { MouseEventHandler, useEffect, useState } from "react";
 
 interface PageView {
@@ -176,7 +176,7 @@ function LatestWebpage() {
 
   useEffect(() => {
     (async () => {
-      const iterContainer = DataHost.instance().iterBack();
+      const iterContainer = getDataHost().iterBack();
       const iter = iterContainer[Symbol.asyncIterator]();
 
       setItem(await iter.next());
@@ -326,7 +326,7 @@ function WebpageHistoryList() {
     (async () => {
       const toShow = [];
 
-      for await (let page of DataHost.instance().iterBack()) {
+      for await (let page of getDataHost().iterBack()) {
         toShow.push(page.pageView);
         if (toShow.length >= 4) break;
       }
