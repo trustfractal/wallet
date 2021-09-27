@@ -34,3 +34,8 @@ export const getNetwork = createSelector(
   (state) => state.app,
   (app) => app.network,
 );
+
+export const isLivenessEnabled = createSelector(
+  (state) => state.app,
+  (app) => app.livenessEnabled,
+);

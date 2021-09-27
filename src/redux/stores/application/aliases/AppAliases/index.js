@@ -24,11 +24,15 @@ export const startup = () => {
     // eslint-disable-next-line no-undef
     const { version } = chrome.runtime.getManifest();
 
-    const { protocol_enabled: protocolEnabled, network = NETWORKS.TESTNET } =
-      await MaguroService.getConfig();
+    const {
+      protocol_enabled: protocolEnabled,
+      network = NETWORKS.TESTNET,
+      liveness_check_enabled: livenessCheckEnabled,
+    } = await MaguroService.getConfig();
 
     dispatch(appActions.setVersion(version));
     dispatch(appActions.setProtocolEnabled(protocolEnabled));
+    dispatch(appActions.setLivenessCheckEnabled(livenessCheckEnabled));
     dispatch(appActions.setLaunched(true));
 
     // Check for a network change
