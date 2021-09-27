@@ -8,7 +8,8 @@ import {
   useAppSelector,
 } from "@redux/stores/application/context";
 import appActions from "@redux/stores/application/reducers/app";
-import { useUserSelector } from "@redux/stores/user/context";
+import { useUserDispatch, useUserSelector } from "@redux/stores/user/context";
+import credentialsActions from "@redux/stores/user/reducers/credentials";
 
 import {
   getProtocolOptIn,
@@ -111,6 +112,7 @@ const toHuman = (balance: Balance) => Number(balance.toBigInt()) / 10 ** 12;
 
 function MenuNavbar() {
   const history = useHistory();
+  const dispatch = useUserDispatch();
 
   const credentials = useUserSelector(getCredentials);
   const registrationState = useUserSelector(getRegistrationState);
@@ -120,6 +122,9 @@ function MenuNavbar() {
 
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
+
+  const onClickRefresh = () =>
+    dispatch(credentialsActions.fetchCredentialsAndVerificationCases());
 
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
@@ -139,6 +144,11 @@ function MenuNavbar() {
       icon: IconNames.IMPORT,
       onClick: onClickMnemonic,
       disabled: registrationState !== protocolRegistrationTypes.COMPLETED,
+    },
+    {
+      label: "Refresh",
+      icon: IconNames.REFRESH,
+      onClick: onClickRefresh,
     },
     {
       label: "About",
@@ -253,6 +263,8 @@ function ProtocolBalance({ balance }: { balance?: AccountData }) {
 }
 
 function ProtocolNavbar() {
+  const dispatch = useUserDispatch();
+
   const [balance, setBalance] = useState<AccountData>();
   const wallet = useUserSelector(getWallet);
   const protocol = useProtocol();
@@ -264,6 +276,9 @@ function ProtocolNavbar() {
 
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
+
+  const onClickRefresh = () =>
+    dispatch(credentialsActions.fetchCredentialsAndVerificationCases());
 
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
@@ -281,6 +296,11 @@ function ProtocolNavbar() {
       icon: IconNames.IMPORT,
       onClick: onClickMnemonic,
       disabled: registrationState !== protocolRegistrationTypes.COMPLETED,
+    },
+    {
+      label: "Refresh",
+      icon: IconNames.REFRESH,
+      onClick: onClickRefresh,
     },
     {
       label: "About",
