@@ -1,3 +1,4 @@
+import AppStore from "@redux/stores/application";
 import appActions, {
   appTypes,
   NETWORKS,
@@ -6,6 +7,9 @@ import { getNetwork } from "@redux/stores/application/reducers/app/selectors";
 import metadataActions, {
   MIGRATIONS,
 } from "@redux/stores/application/reducers/metadata";
+
+import UserStore from "@redux/stores/user";
+import credentialsActions from "@redux/stores/user/reducers/credentials";
 
 import CredentialsPolling from "@models/Polling/CredentialsPolling";
 import MaguroService from "@services/MaguroService";
@@ -16,36 +20,19 @@ import WindowsService, {
 } from "@services/WindowsService";
 
 export const startup = () => {
-  return async (dispatch, getState) => {
+  return async (dispatch) => {
     // start credentials status polling
     new CredentialsPolling().start();
 
     // get app version
     // eslint-disable-next-line no-undef
     const { version } = chrome.runtime.getManifest();
-
-    const {
-      protocol_enabled: protocolEnabled,
-      network = NETWORKS.TESTNET,
-      liveness_check_enabled: livenessCheckEnabled,
-    } = await MaguroService.getConfig();
-
     dispatch(appActions.setVersion(version));
-    dispatch(appActions.setProtocolEnabled(protocolEnabled));
-    dispatch(appActions.setLivenessCheckEnabled(livenessCheckEnabled));
+
+    // fetch maguro's config
+    await fetchConfig()();
+
     dispatch(appActions.setLaunched(true));
-
-    // Check for a network change
-    const previousNetwork = getNetwork(getState());
-
-    // Check if needs to perform the mainnet launch data migration
-    if (network === NETWORKS.MAINNET && previousNetwork === NETWORKS.TESTNET) {
-      dispatch(
-        metadataActions.addMigration(MIGRATIONS.NETWORK_MAINNET_MIGRATION),
-      );
-    }
-
-    dispatch(appActions.setNetwork(network));
   };
 };
 
@@ -74,9 +61,56 @@ export const setPopupSize = ({
   };
 };
 
+export const fetchConfig = () => {
+  return async () => {
+    const {
+      protocol_enabled: protocolEnabled,
+      network = NETWORKS.TESTNET,
+      liveness_check_enabled: livenessCheckEnabled,
+    } = await MaguroService.getConfig();
+
+    AppStore.getStore().dispatch(
+      appActions.setProtocolEnabled(protocolEnabled),
+    );
+    AppStore.getStore().dispatch(
+      appActions.setLivenessCheckEnabled(livenessCheckEnabled),
+    );
+
+    // Check for a network change
+    const previousNetwork = getNetwork(AppStore.getStore().getState());
+
+    // Check if needs to perform the mainnet launch data migration
+    if (network === NETWORKS.MAINNET && previousNetwork === NETWORKS.TESTNET) {
+      AppStore.getStore().dispatch(
+        metadataActions.addMigration(MIGRATIONS.NETWORK_MAINNET_MIGRATION),
+      );
+
+      // Check if user store is initialized, a.k.a, user has logged in
+      // to automatically run the migration
+      const isInitialized = await UserStore.isInitialized();
+      if (isInitialized) {
+        AppStore.getStore().dispatch(metadataActions.runMigrations());
+      }
+    }
+
+    AppStore.getStore().dispatch(appActions.setNetwork(network));
+  };
+};
+
+export const refresh = () => {
+  return async () => {
+    AppStore.getStore().dispatch(appActions.fetchConfig());
+    UserStore.getStore().dispatch(
+      credentialsActions.fetchCredentialsAndVerificationCases(),
+    );
+  };
+};
+
 const Aliases = {
   [appTypes.STARTUP]: startup,
   [appTypes.SET_POPUP_SIZE]: setPopupSize,
+  [appTypes.FETCH_CONFIG]: fetchConfig,
+  [appTypes.REFRESH]: refresh,
 };
 
 export default Aliases;

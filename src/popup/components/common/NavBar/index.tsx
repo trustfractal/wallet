@@ -8,8 +8,7 @@ import {
   useAppSelector,
 } from "@redux/stores/application/context";
 import appActions from "@redux/stores/application/reducers/app";
-import { useUserDispatch, useUserSelector } from "@redux/stores/user/context";
-import credentialsActions from "@redux/stores/user/reducers/credentials";
+import { useUserSelector } from "@redux/stores/user/context";
 
 import {
   getProtocolOptIn,
@@ -112,7 +111,7 @@ const toHuman = (balance: Balance) => Number(balance.toBigInt()) / 10 ** 12;
 
 function MenuNavbar() {
   const history = useHistory();
-  const dispatch = useUserDispatch();
+  const appDispatch = useAppDispatch();
 
   const credentials = useUserSelector(getCredentials);
   const registrationState = useUserSelector(getRegistrationState);
@@ -123,8 +122,7 @@ function MenuNavbar() {
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
 
-  const onClickRefresh = () =>
-    dispatch(credentialsActions.fetchCredentialsAndVerificationCases());
+  const onClickRefresh = () => appDispatch(appActions.refresh());
 
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
@@ -263,7 +261,7 @@ function ProtocolBalance({ balance }: { balance?: AccountData }) {
 }
 
 function ProtocolNavbar() {
-  const dispatch = useUserDispatch();
+  const appDispatch = useAppDispatch();
 
   const [balance, setBalance] = useState<AccountData>();
   const wallet = useUserSelector(getWallet);
@@ -277,8 +275,7 @@ function ProtocolNavbar() {
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
 
-  const onClickRefresh = () =>
-    dispatch(credentialsActions.fetchCredentialsAndVerificationCases());
+  const onClickRefresh = () => appDispatch(appActions.refresh());
 
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
