@@ -18,6 +18,8 @@ const types = mirrorCreator([
   "SET_POPUP_SIZE",
   "SET_NETWORK",
   "SET_LIVENESS_CHECK_ENABLED",
+  "FETCH_CONFIG",
+  "REFRESH",
 ]);
 
 export const creators = createActions(
@@ -32,6 +34,8 @@ export const creators = createActions(
   types.SET_POPUP_SIZE,
   types.SET_NETWORK,
   types.SET_LIVENESS_CHECK_ENABLED,
+  types.FETCH_CONFIG,
+  types.REFRESH,
 );
 
 export const initialState = {
