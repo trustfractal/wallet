@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useAppSelector } from "@redux/stores/application/context";
 import { useUserSelector } from "@redux/stores/user/context";
 import { protocolRegistrationTypes } from "@redux/stores/user/reducers/protocol";
 import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selectors";

@@ -2,8 +2,6 @@ import styled from "styled-components";
 
 import Button from "@popup/components/common/Button";
 
-import { useAppDispatch } from "@redux/stores/application/context";
-import appActions from "@redux/stores/application/reducers/app";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 import Text, { TextWeights } from "@popup/components/common/Text";
 import Subtitle, { Subsubtitle } from "@popup/components/common/Subtitle";
