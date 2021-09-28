@@ -52,35 +52,23 @@ export async function getProtocolService(mnemonic?: string) {
     protocolFailed = false;
 
     protocol = (async () => {
-      try {
-        let signer = await ProtocolService.signerFromStorage(
-          getStorageService(),
-        );
-        return new ProtocolService(
-          getApi(),
-          signer,
-          getMaguroService(),
-          getDataHost(),
-        );
-      } catch (e) {
-        if (mnemonic != null) {
-          await ProtocolService.saveSignerMnemonic(
-            getStorageService(),
-            mnemonic,
-          );
-          let signer = await ProtocolService.signerFromStorage(
-            getStorageService(),
-          );
-          return new ProtocolService(
-            getApi(),
-            signer,
-            getMaguroService(),
-            getDataHost(),
-          );
+      let signer;
+      if (mnemonic == null) {
+        try {
+          signer = await ProtocolService.signerFromStorage(getStorageService());
+        } catch (e) {
+          protocolFailed = true;
+          signer = null;
         }
-        protocolFailed = true;
-        throw e;
+      } else {
+        signer = ProtocolService.signerFromMnemonic(mnemonic);
       }
+      return new ProtocolService(
+        getApi(),
+        signer,
+        getMaguroService(),
+        getDataHost(),
+      );
     })();
   }
 

@@ -13,7 +13,7 @@ export * from "./context";
 export class ProtocolService {
   constructor(
     private readonly api: Promise<ApiPromise>,
-    private readonly signer: KeyringPair,
+    private readonly signer: KeyringPair | null,
     private readonly maguro: MaguroService,
     private readonly dataHost: DataHost,
   ) {}
@@ -57,7 +57,7 @@ export class ProtocolService {
 
     return new Promise(async (resolve, reject) => {
       const unsub = await txn.signAndSend(
-        this.signer,
+        this.requireSigner(),
         ({ events = [], status }) => {
           console.log(`Extrinsic status: ${status}`);
           if (!status.isFinalized) return;
@@ -77,6 +77,14 @@ export class ProtocolService {
         },
       );
     });
+  }
+
+  private requireSigner(): KeyringPair {
+    if (this.signer == null) {
+      throw new Error("Method requires signer to be defined");
+    } else {
+      return this.signer;
+    }
   }
 
   public async isRegisteredForMinting(): Promise<boolean> {
@@ -112,7 +120,7 @@ export class ProtocolService {
   }
 
   public address() {
-    return this.signer.address;
+    return this.requireSigner().address;
   }
 
   public async getBalance(accountId: string): Promise<AccountData> {
@@ -124,15 +132,20 @@ export class ProtocolService {
   async saveSigner(storage: Storage) {
     await storage.setItem(
       "protocol/signer",
-      JSON.stringify(this.signer.toJson()),
+      JSON.stringify(this.requireSigner().toJson()),
     );
   }
 
-  static async saveSignerMnemonic(storage: Storage, mnemonic: string) {
+  static signerFromMnemonic(mnemonic: string) {
     const keyring = new Keyring({ type: "sr25519" });
-    const signer = keyring.addFromUri(mnemonic);
+    return keyring.addFromUri(mnemonic);
+  }
 
-    await storage.setItem("protocol/signer", JSON.stringify(signer.toJson()));
+  static async saveSignerMnemonic(storage: Storage, mnemonic: string) {
+    await storage.setItem(
+      "protocol/signer",
+      JSON.stringify(ProtocolService.signerFromMnemonic(mnemonic).toJson()),
+    );
   }
 
   static async signerFromStorage(storage: Storage) {
