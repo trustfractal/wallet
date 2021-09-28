@@ -4,10 +4,13 @@ import { getBackendMegalodonSession } from "@redux/stores/application/reducers/a
 import CatfishService from "@services/CatfishService";
 import HttpService from "@services/HttpService";
 import { MissingLiveness } from "@services/ProtocolOptIn";
+import { Storage } from "@utils/StorageArray";
 
 const HTTP_TIMEOUT = 5 * 60 * 1000; // 5 minutes timeout
 
 export class MaguroService {
+  constructor(private readonly storage: Storage) {}
+
   private async ensureAuthorization(
     headers: Record<string, string>,
   ): Promise<Record<string, string>> {
@@ -98,7 +101,24 @@ export class MaguroService {
   }
 
   public async getConfig() {
-    return await this.callApi("config", "GET", null);
+    const json = await this.storage.getItem("maguro/config-cache");
+    if (json == null) return await this.directGetConfig();
+
+    const cached = JSON.parse(json);
+    if (cached.validUntil < new Date().getTime())
+      return await this.directGetConfig();
+
+    return cached.data;
+  }
+
+  private async directGetConfig() {
+    const fromApi = await this.callApi("config", "GET", null);
+    const toCache = {
+      validUntil: new Date().getTime() + 5 * 60 * 1000,
+      data: fromApi,
+    };
+    await this.storage.setItem("maguro/config-cache", JSON.stringify(toCache));
+    return fromApi;
   }
 
   public async currentNetwork(): Promise<string> {

@@ -66,7 +66,7 @@ export function getProtocolService(mnemonic?: string) {
 let maguro: MaguroService;
 export function getMaguroService() {
   if (maguro === undefined) {
-    maguro = new MaguroService();
+    maguro = new MaguroService(getStorageService());
   }
   return maguro;
 }
