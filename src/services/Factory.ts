@@ -95,7 +95,9 @@ export function getWindowsService() {
 let protocolOptIn: ProtocolOptIn;
 export function getProtocolOptIn() {
   if (protocolOptIn === undefined) {
-    protocolOptIn = new ProtocolOptIn();
+    protocolOptIn = new ProtocolOptIn(getStorageService(), getMaguroService(),
+                                      getProtocolService(), getWindowsService(),
+                                      environment.LIVENESS_JOURNEY_URL);
   }
   return protocolOptIn;
 }

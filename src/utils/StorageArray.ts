@@ -1,6 +1,7 @@
 export interface Storage {
   setItem(key: string, value: string): Promise<void>;
   getItem(key: string): Promise<string | undefined>;
+  hasItem(key: string): Promise<boolean>;
   removeItem(key: string): Promise<void>;
 }
 
@@ -22,6 +23,10 @@ class PrefixStorage {
     return await this.base.getItem(this.key(key));
   }
 
+  async hasItem(key: string): Promise<boolean> {
+    return await this.base.hasItem(this.key(key));
+  }
+
   async removeItem(key: string) {
     await this.base.removeItem(this.key(key));
   }
@@ -38,6 +43,10 @@ class StringifyStorage {
     const value = await this.base.getItem(key);
     if (value == null) return null;
     return JSON.parse(value);
+  }
+
+  async hasItem(key: string): Promise<boolean> {
+    return this.base.hasItem(key);
   }
 
   async removeItem(key: string) {

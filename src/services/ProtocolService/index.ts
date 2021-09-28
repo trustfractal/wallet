@@ -129,6 +129,12 @@ export class ProtocolService {
     return data;
   }
 
+  public addressForMnemonic(mnemonic: string): string {
+    const keyring = new Keyring({type : "sr25519"});
+    const signer = keyring.addFromUri(mnemonic);
+    return signer.address;
+  }
+
   async saveSigner(storage: Storage) {
     await storage.setItem(
       "protocol/signer",

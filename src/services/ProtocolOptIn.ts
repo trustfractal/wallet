@@ -9,7 +9,7 @@ export class ProtocolOptIn {
   constructor(
       private readonly storage: Storage,
       private readonly maguro: MaguroService,
-      private readonly protocol: ProtocolService,
+      private readonly protocol: Promise<ProtocolService>,
       private readonly windows: WindowsService,
       private readonly livenessUrl: string,
   ) {}
@@ -33,8 +33,8 @@ export class ProtocolOptIn {
   private async tryRegisterIdentity(onMissingLiveness?: () => Promise<void>) {
     const mnemonic = await this.storage.getItem('opt-in/mnemonic');
     try {
-      await this.maguro.registerIdentity(
-          this.protocol.addressForMnemonic(mnemonic));
+      const address = (await this.protocol).addressForMnemonic(mnemonic!);
+      await this.maguro.registerIdentity(address);
       await this.storage.setItem('opt-in/liveness-complete', 'true');
     } catch (e) {
       if (!(e instanceof MissingLiveness)) {
