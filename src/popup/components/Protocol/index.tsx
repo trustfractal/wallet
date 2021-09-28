@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
-import { useUserSelector } from "@redux/stores/user/context";
-import { protocolRegistrationTypes } from "@redux/stores/user/reducers/protocol";
-import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selectors";
 
 import { getProtocolOptIn } from "@services/Factory";
 import { ProtocolProvider } from "@services/ProtocolService/";
 
-import SetupScreen from "./SetupScreen";
 import DataScreen from "./DataScreen";
 import OptInForm from "./OptInForm";
 import MnemonicPicker from "./MnemonicPicker";
@@ -23,20 +19,15 @@ function ProtocolState() {
     }
   );
 
-  const registrationState = useUserSelector(getRegistrationState);
-
   if (!optedIn) {
     return <OptInForm onOptIn={() => setOptedIn(true)} />;
   }
   if (!serviceOptedIn) {
     const optInWithMnemonic = async (mnemonic: string) => {
       await getProtocolOptIn().optIn(mnemonic);
+      setServiceOptedIn(true);
     };
     return <MnemonicPicker onMnemonicPicked={optInWithMnemonic} />;
-  }
-
-  if (registrationState !== protocolRegistrationTypes.COMPLETED) {
-    return <SetupScreen />;
   }
 
   return <DataScreen />;
