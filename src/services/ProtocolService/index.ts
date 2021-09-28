@@ -114,7 +114,7 @@ export class ProtocolService {
     console.log("Identity successfully registered");
   }
 
-  private async isIdentityRegistered(): Promise<boolean> {
+  public async isIdentityRegistered(): Promise<boolean> {
     const fractalId = await this.registeredFractalId();
     return fractalId != null;
   }
