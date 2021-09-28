@@ -20,7 +20,7 @@ import { useUserSelector } from "@redux/stores/user/context";
 import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
 import { getPendingOrContactedProtocolVerificationCases } from "@redux/stores/user/reducers/credentials/selectors";
 
-import {getWindowsService} from "@services/Factory";
+import { getWindowsService } from "@services/Factory";
 import environment from "@environment/index";
 
 // @ts-ignore
@@ -128,7 +128,8 @@ function renderAction(
     );
   }
 
-  const onNext = () => getWindowsService().openTab(environment.PROTOCOL_JOURNEY_URL);
+  const onNext = () =>
+    getWindowsService().openTab(environment.PROTOCOL_JOURNEY_URL);
 
   return (
     <ActionContainer>

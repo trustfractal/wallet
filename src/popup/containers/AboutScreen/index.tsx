@@ -8,7 +8,7 @@ import About from "@popup/components/About";
 
 import RoutesPaths from "@popup/routes/paths";
 
-import {getWindowsService} from "@services/Factory";
+import { getWindowsService } from "@services/Factory";
 
 import environment from "@environment/index";
 

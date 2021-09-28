@@ -13,7 +13,7 @@ import {
 
 import Register from "@popup/components/Register";
 
-import {getWindowsService} from "@services/Factory";
+import { getWindowsService } from "@services/Factory";
 
 import environment from "@environment/index";
 

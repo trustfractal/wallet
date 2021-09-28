@@ -1,6 +1,6 @@
 import { chrome } from "jest-chrome";
 
-import {StorageService} from "@services/StorageService";
+import { StorageService } from "@services/StorageService";
 import {
   ERROR_HAS_ITEM,
   ERROR_GET_ITEM,

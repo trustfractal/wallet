@@ -3,16 +3,16 @@ import {
   ERROR_LOGIN_WINDOW_CLOSED,
   ERROR_LOGIN_WINDOW_OPEN,
 } from "@models/Connection/Errors";
-import {IMiddleware} from "@pluginTypes/index";
-import {authWatcher, setupWatcher} from "@redux/middlewares/watchers";
+import { IMiddleware } from "@pluginTypes/index";
+import { authWatcher, setupWatcher } from "@redux/middlewares/watchers";
 import AppStore from "@redux/stores/application";
-import {isSetup} from "@redux/stores/application/reducers/app/selectors";
+import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 import {
   isLoggedIn,
   isRegistered,
 } from "@redux/stores/application/reducers/auth/selectors";
-import {getWindowsService} from '@services/Factory';
-import {PopupSizes} from "@services/WindowsService";
+import { getWindowsService } from "@services/Factory";
+import { PopupSizes } from "@services/WindowsService";
 
 function loginFlow(): Promise<void> {
   return new Promise(async (resolve, reject) => {
@@ -68,9 +68,9 @@ function loginFlow(): Promise<void> {
 
     // register listener
     const subscribed = authWatcher.listenForLogin(
-        onLoginSuccess,
-        onLoginFailed,
-        onTimeout,
+      onLoginSuccess,
+      onLoginFailed,
+      onTimeout,
     );
     unlisten = subscribed.unlisten;
   });
@@ -132,9 +132,9 @@ function setupFlow(): Promise<void> {
 
     // register listener
     const subscribed = setupWatcher.listenForSetup(
-        onSetupSuccess,
-        onSetupFailed,
-        onTimeout,
+      onSetupSuccess,
+      onSetupFailed,
+      onTimeout,
     );
     unlisten = subscribed.unlisten;
   });

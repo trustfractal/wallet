@@ -7,7 +7,7 @@ import { getPendingRequests } from "@redux/stores/user/reducers/requests/selecto
 
 import RoutesPaths from "@popup/routes/paths";
 
-import {getWindowsService} from "@services/Factory";
+import { getWindowsService } from "@services/Factory";
 
 function RequestsIndexScreen() {
   const history = useHistory();

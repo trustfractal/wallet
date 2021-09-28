@@ -7,7 +7,7 @@ import { ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED } from "@background/Err
 
 import { IConnectionPorts, IPort } from "@pluginTypes/index";
 
-import {getWindowsService} from "@services/Factory";
+import { getWindowsService } from "@services/Factory";
 
 class Connection {
   private static instance?: Connection;
