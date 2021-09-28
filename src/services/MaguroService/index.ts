@@ -10,7 +10,7 @@ const HTTP_TIMEOUT = 5 * 60 * 1000; // 5 minutes timeout
 export class MaguroService {
   private async ensureAuthorization(
     headers: Record<string, string>,
-  ): Record<string, string> {
+  ): Promise<Record<string, string>> {
     if (headers["authorization"]) return headers;
 
     await appStore.init();
