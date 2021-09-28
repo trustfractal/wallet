@@ -21,7 +21,7 @@ export class ProtocolOptIn {
   }
 
   async hasCompletedLiveness() {
-    return this.storage.hasItem("opt-in/liveness-complete");
+    return (await this.protocol).isIdentityRegistered();
   }
 
   async optIn(mnemonic: string) {
@@ -43,7 +43,6 @@ export class ProtocolOptIn {
     try {
       const address = (await this.protocol).addressForMnemonic(mnemonic!);
       await this.maguro.registerIdentity(address);
-      await this.storage.setItem("opt-in/liveness-complete", "true");
     } catch (e) {
       if (!(e instanceof MissingLiveness)) {
         throw e;
