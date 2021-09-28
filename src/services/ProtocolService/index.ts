@@ -130,7 +130,7 @@ export class ProtocolService {
   }
 
   public addressForMnemonic(mnemonic: string): string {
-    const keyring = new Keyring({type : "sr25519"});
+    const keyring = new Keyring({ type: "sr25519" });
     const signer = keyring.addFromUri(mnemonic);
     return signer.address;
   }

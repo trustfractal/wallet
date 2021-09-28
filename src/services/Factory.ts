@@ -3,11 +3,11 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import { DataHost } from "@services/DataHost";
 import { MaguroService } from "@services/MaguroService";
 import { MintingRegistrar } from "@services/MintingRegistrar";
+import { ProtocolOptIn } from "@services/ProtocolOptIn";
 import { ProtocolService } from "@services/ProtocolService";
 import types from "@services/ProtocolService/types";
 import { StorageService } from "@services/StorageService";
 import { WindowsService } from "@services/WindowsService";
-import {ProtocolOptIn} from '@services/ProtocolOptIn';
 
 let storageService: StorageService;
 export function getStorageService() {
@@ -95,9 +95,13 @@ export function getWindowsService() {
 let protocolOptIn: ProtocolOptIn;
 export function getProtocolOptIn() {
   if (protocolOptIn === undefined) {
-    protocolOptIn = new ProtocolOptIn(getStorageService(), getMaguroService(),
-                                      getProtocolService(), getWindowsService(),
-                                      environment.LIVENESS_JOURNEY_URL);
+    protocolOptIn = new ProtocolOptIn(
+      getStorageService(),
+      getMaguroService(),
+      getProtocolService(),
+      getWindowsService(),
+      environment.LIVENESS_JOURNEY_URL,
+    );
   }
   return protocolOptIn;
 }
