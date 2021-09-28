@@ -100,7 +100,7 @@ export function getProtocolOptIn() {
       getMaguroService(),
       getProtocolService(),
       getWindowsService(),
-      environment.LIVENESS_JOURNEY_URL,
+      environment.PROTOCOL_JOURNEY_URL,
     );
 
     protocolOptIn.postOptInCallbacks.push(async () => {
