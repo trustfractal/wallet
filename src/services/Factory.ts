@@ -1,8 +1,11 @@
 import environment from "@environment/index";
-import { DataHost } from "@services/DataHost";
-import { MintingRegistrar } from "@services/MintingRegistrar";
-import { ProtocolService } from "@services/ProtocolService";
-import { StorageService } from "@services/StorageService";
+import {ApiPromise, WsProvider} from "@polkadot/api";
+import {DataHost} from "@services/DataHost";
+import {MaguroService} from '@services/MaguroService';
+import {MintingRegistrar} from "@services/MintingRegistrar";
+import {ProtocolService} from "@services/ProtocolService";
+import types from "@services/ProtocolService/types";
+import {StorageService} from "@services/StorageService";
 
 let storageService: StorageService;
 export function getStorageService() {
@@ -29,6 +32,18 @@ export function getDataHost() {
   return dataHost;
 }
 
+async function getApi() {
+  try {
+    const url = (await getMaguroService().getConfig()).blockchain_url;
+    const provider = new WsProvider(url);
+    return await ApiPromise.create({provider, types});
+  } catch (e) {
+    console.error(e);
+    const provider = new WsProvider(environment.PROTOCOL_RPC_ENDPOINT);
+    return await ApiPromise.create({provider, types});
+  }
+}
+
 let protocolFailed = false;
 let protocol: Promise<ProtocolService>;
 export async function getProtocolService(mnemonic?: string) {
@@ -37,14 +52,18 @@ export async function getProtocolService(mnemonic?: string) {
 
     protocol = (async () => {
       try {
-        return await ProtocolService.fromStorage(getStorageService());
+        let signer = await ProtocolService.signerFromStorage(getStorageService());
+        return new ProtocolService(getApi(), signer, getMaguroService(),
+                                   getDataHost());
       } catch (e) {
         if (mnemonic != null) {
           await ProtocolService.saveSignerMnemonic(
-            getStorageService(),
-            mnemonic,
+              getStorageService(),
+              mnemonic,
           );
-          return await ProtocolService.fromStorage(getStorageService());
+          let signer = await ProtocolService.signerFromStorage(getStorageService());
+          return new ProtocolService(getApi(), signer, getMaguroService(),
+                                     getDataHost());
         }
         protocolFailed = true;
         throw e;
@@ -53,4 +72,12 @@ export async function getProtocolService(mnemonic?: string) {
   }
 
   return await protocol;
+}
+
+let maguro: MaguroService;
+export function getMaguroService() {
+  if (maguro === undefined) {
+    maguro = new MaguroService();
+  }
+  return maguro;
 }

@@ -17,7 +17,7 @@ import protocolActions, {
 } from "@redux/stores/user/reducers/protocol";
 import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selectors";
 
-import MaguroService from "@services/MaguroService";
+import {MaguroService} from "@services/MaguroService";
 import MegalodonService from "@services/MegalodonService";
 
 export const fetchCredentialsAndVerificationCases = () => {

@@ -1,109 +1,110 @@
-import { ApiPromise, WsProvider } from "@polkadot/api";
-import { Keyring } from "@polkadot/keyring";
-import { u64 } from "@polkadot/types";
+import {ApiPromise} from "@polkadot/api";
+import {Keyring} from "@polkadot/keyring";
+import {u64} from "@polkadot/types";
 
-import type { KeyringPair } from "@polkadot/keyring/types";
-import type { AccountData } from "@polkadot/types/interfaces";
-import { getDataHost } from "@services/Factory";
-import MaguroService from "@services/MaguroService";
-import { Storage } from "@utils/StorageArray";
-
-import Environment from "@environment/index";
-
-import types from "./types";
+import type {KeyringPair} from "@polkadot/keyring/types";
+import type {AccountData} from "@polkadot/types/interfaces";
+import {MaguroService} from "@services/MaguroService";
+import {DataHost} from '@services/DataHost';
+import {Storage} from "@utils/StorageArray";
 
 export * from "./context";
 
 export class ProtocolService {
-  public api: ApiPromise;
-  public signer: KeyringPair;
+  constructor(
+      private readonly api: Promise<ApiPromise>,
+      private readonly signer: KeyringPair,
+      private readonly maguro: MaguroService,
+      private readonly dataHost: DataHost,
+  ) {}
 
-  public constructor(api: ApiPromise, signer: KeyringPair) {
-    this.api = api;
-    this.signer = signer;
-  }
-
-  public async registerForMinting(): Promise<string | undefined> {
+  public async registerForMinting(): Promise<string|undefined> {
     const latestProof = await this.latestExtensionProof();
     console.log(`Latest proof from chain ${latestProof}`);
 
-    const dataHost = getDataHost();
-    const extensionProof = await dataHost.extensionProof(latestProof);
-    if (extensionProof == null) return;
+    const extensionProof = await this.dataHost.extensionProof(latestProof);
+    if (extensionProof == null)
+      return;
 
     return await this.submitMintingExtrinsic(extensionProof);
   }
 
-  private async latestExtensionProof(): Promise<string | null> {
+  private async latestExtensionProof(): Promise<string|null> {
     const fractalId = await this.registeredFractalId();
-    if (fractalId == null) return null;
+    if (fractalId == null)
+      return null;
 
     // Blue-green strategy handling migration of blockchain storage.
     try {
       // Will be long-term code.
-      const dataset = await this.api.query.fractalMinting.accountIdDatasets(
-        this.address(),
-        fractalId,
+      const dataset = await (await this.api).query.fractalMinting.accountIdDatasets(
+          this.address(),
+          fractalId,
       );
       return dataset.toHuman() as string | null;
     } catch (e) {
       // TODO(shelbyd): Delete this after rollout of storage change.
-      const dataset = await this.api.query.fractalMinting.idDatasets(fractalId);
+      const dataset = await (await this.api).query.fractalMinting.idDatasets(fractalId);
       return dataset.toHuman() as string | null;
     }
   }
 
   private async submitMintingExtrinsic(proof: string): Promise<string> {
     console.log(`Submitting proof ${proof}`);
-    const txn = this.api.tx.fractalMinting.registerForMinting(null, proof);
+    const txn = (await this.api).tx.fractalMinting.registerForMinting(null, proof);
 
     return new Promise(async (resolve, reject) => {
       const unsub = await txn.signAndSend(
-        this.signer,
-        ({ events = [], status }) => {
-          console.log(`Extrinsic status: ${status}`);
-          if (!status.isFinalized) return;
+          this.signer,
+          ({events = [], status}) => {
+            console.log(`Extrinsic status: ${status}`);
+            if (!status.isFinalized)
+              return;
 
-          events.forEach(({ event: { data, method, section } }) => {
-            if (section !== "system") return;
+            events.forEach(({event : {data, method, section}}) => {
+              if (section !== "system")
+                return;
 
-            if (method === "ExtrinsicSuccess") {
-              resolve(status.asFinalized.toHuman() as string);
-            }
-            if (method === "ExtrinsicFailed") {
-              reject(data);
-            }
-          });
+              if (method === "ExtrinsicSuccess") {
+                resolve(status.asFinalized.toHuman() as string);
+              }
+              if (method === "ExtrinsicFailed") {
+                reject(data);
+              }
+            });
 
-          unsub();
-        },
+            unsub();
+          },
       );
     });
   }
 
   public async isRegisteredForMinting(): Promise<boolean> {
     const fractalId = await this.registeredFractalId();
-    if (fractalId == null) return false;
+    if (fractalId == null)
+      return false;
 
     const storageSize =
-      await this.api.query.fractalMinting.nextMintingRewards.size(fractalId);
+        await (await this.api).query.fractalMinting.nextMintingRewards.size(fractalId);
     return storageSize.toNumber() !== 0;
   }
 
-  private async registeredFractalId(): Promise<u64 | null> {
-    const keys = await this.api.query.fractalMinting.accountIds.keys(
-      this.address(),
+  private async registeredFractalId(): Promise<u64|null> {
+    const keys = await (await this.api).query.fractalMinting.accountIds.keys(
+        this.address(),
     );
-    if (keys.length !== 1) return null;
+    if (keys.length !== 1)
+      return null;
     const fractalId = keys[0].args[1];
     return fractalId as u64;
   }
 
   public async ensureIdentityRegistered(): Promise<void> {
-    if (await this.isIdentityRegistered()) return;
+    if (await this.isIdentityRegistered())
+      return;
 
     console.log("Identity is not registered, trying to register");
-    await MaguroService.registerIdentity(this.address());
+    await this.maguro.registerIdentity(this.address());
     console.log("Identity successfully registered");
   }
 
@@ -112,54 +113,37 @@ export class ProtocolService {
     return fractalId != null;
   }
 
-  public address() {
-    return this.signer.address;
-  }
+  public address() { return this.signer.address; }
 
   public async getBalance(accountId: string): Promise<AccountData> {
-    const { data } = await this.api.query.system.account(accountId);
+    const {data} = await (await this.api).query.system.account(accountId);
 
     return data;
   }
 
   async saveSigner(storage: Storage) {
     await storage.setItem(
-      "protocol/signer",
-      JSON.stringify(this.signer.toJson()),
+        "protocol/signer",
+        JSON.stringify(this.signer.toJson()),
     );
   }
 
   static async saveSignerMnemonic(storage: Storage, mnemonic: string) {
-    const keyring = new Keyring({ type: "sr25519" });
+    const keyring = new Keyring({type : "sr25519"});
     const signer = keyring.addFromUri(mnemonic);
 
     await storage.setItem("protocol/signer", JSON.stringify(signer.toJson()));
   }
 
-  static async fromStorage(storage: Storage) {
+  static async signerFromStorage(storage: Storage) {
     const maybeSigner = await storage.getItem("protocol/signer");
     if (maybeSigner == null)
       throw new Error("No signer in the provided storage");
     const parsedSigner = JSON.parse(maybeSigner);
 
-    const keyring = new Keyring({ type: "sr25519" });
+    const keyring = new Keyring({type : "sr25519"});
     const signer = keyring.addFromJson(parsedSigner);
     signer.unlock();
-    return await ProtocolService.withSigner(signer);
-  }
-
-  private static async withSigner(signer: KeyringPair) {
-    let api;
-    try {
-      const url = (await MaguroService.getConfig()).blockchain_url;
-      const provider = new WsProvider(url);
-      api = await ApiPromise.create({ provider, types });
-    } catch (e) {
-      console.error(e);
-      const provider = new WsProvider(Environment.PROTOCOL_RPC_ENDPOINT);
-      api = await ApiPromise.create({ provider, types });
-    }
-
-    return new ProtocolService(api, signer);
+    return signer;
   }
 }
