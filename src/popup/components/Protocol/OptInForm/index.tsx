@@ -54,7 +54,7 @@ const CTA = styled.div`
   justify-content: center;
 `;
 
-function OptInForm({onOptIn}: {onOptIn: () => void}) {
+function OptInForm({ onOptIn }: { onOptIn: () => void }) {
   return (
     <TopComponent>
       <Container>
