@@ -13,7 +13,9 @@ export class MaguroService {
   ): Promise<Record<string, string>> {
     if (headers["authorization"]) return headers;
 
-    await appStore.init();
+    if (appStore.getStore() == null) {
+      await appStore.init();
+    }
     const token = getBackendMegalodonSession(appStore.getStore().getState());
 
     headers["authorization"] = `Bearer ${token}`;
