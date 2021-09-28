@@ -46,34 +46,21 @@ async function getApi() {
   }
 }
 
-let protocolFailed = false;
-let protocol: Promise<ProtocolService>;
-export async function getProtocolService(mnemonic?: string) {
-  if (protocol === undefined || protocolFailed) {
-    protocolFailed = false;
-
-    protocol = (async () => {
-      let signer;
-      if (mnemonic == null) {
-        try {
-          signer = await ProtocolService.signerFromStorage(getStorageService());
-        } catch (e) {
-          protocolFailed = true;
-          signer = null;
-        }
-      } else {
-        signer = ProtocolService.signerFromMnemonic(mnemonic);
-      }
-      return new ProtocolService(
-        getApi(),
-        signer,
-        getMaguroService(),
-        getDataHost(),
-      );
-    })();
+let protocol: ProtocolService;
+export function getProtocolService(mnemonic?: string) {
+  if (protocol === undefined) {
+    const signer = mnemonic
+      ? ProtocolService.signerFromMnemonic(mnemonic)
+      : null;
+    protocol = new ProtocolService(
+      getApi(),
+      signer,
+      getMaguroService(),
+      getDataHost(),
+    );
   }
 
-  return await protocol;
+  return protocol;
 }
 
 let maguro: MaguroService;
@@ -103,8 +90,19 @@ export function getProtocolOptIn() {
       environment.PROTOCOL_JOURNEY_URL,
     );
 
+    protocolOptIn.getMnemonic().then(async (mnemonic) => {
+      if (mnemonic) {
+        getProtocolService().signer =
+          ProtocolService.signerFromMnemonic(mnemonic);
+      }
+    });
+
     protocolOptIn.postOptInCallbacks.push(async () => {
       await getDataHost().enable();
+    });
+    protocolOptIn.postOptInCallbacks.push(async (mnemonic) => {
+      getProtocolService().signer =
+        ProtocolService.signerFromMnemonic(mnemonic);
     });
   }
   return protocolOptIn;

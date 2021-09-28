@@ -28,7 +28,9 @@ describe("ProtocolOptIn", () => {
 
     const storage = deps.storage || new MockStorage();
 
-    const maguro = deps.maguro || createSpyObj(["registerIdentity"]);
+    const maguro =
+      deps.maguro || createSpyObj(["registerIdentity", "currentNetwork"]);
+    maguro.currentNetwork.mockImplementation(() => "testnet");
     maguro.missingLiveness = () => {
       maguro.registerIdentity.mockImplementation(() => {
         throw new MissingLiveness();
@@ -140,6 +142,16 @@ describe("ProtocolOptIn", () => {
       await optIn.postOptInLiveness();
 
       expect(windows.openTab).toHaveBeenCalledWith(livenessUrl);
+    });
+  });
+
+  describe("re-opting in", () => {
+    it("is not opted-in when active network changes", async () => {
+      const { maguro, optIn } = graph();
+      await optIn.optIn("some mnemonic");
+
+      maguro.currentNetwork.mockImplementation(() => "mainnet");
+      expect(await optIn.isOptedIn()).toEqual(false);
     });
   });
 });

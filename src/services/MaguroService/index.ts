@@ -97,7 +97,11 @@ export class MaguroService {
     }
   }
 
-  public getConfig() {
-    return this.callApi("config", "GET", null);
+  public async getConfig() {
+    return await this.callApi("config", "GET", null);
+  }
+
+  public async currentNetwork(): Promise<string> {
+    return (await this.getConfig()).network;
   }
 }
