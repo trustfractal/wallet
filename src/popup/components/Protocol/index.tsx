@@ -14,7 +14,7 @@ import OptInForm from "./OptInForm";
 function ProtocolState() {
   const [optedIn, setOptedIn] = useState(false);
 
-  useEffect(async () => {
+  useAsyncEffect(async () => {
     const optedIn = await getProtocolOptIn().isOptedIn();
     if (optedIn) setOptedIn(true);
   });
@@ -30,6 +30,12 @@ function ProtocolState() {
   }
 
   return <DataScreen />;
+}
+
+function useAsyncEffect(cb: () => Promise<void>) {
+  useEffect(() => {
+    cb();
+  });
 }
 
 function Protocol() {
