@@ -13,10 +13,10 @@ function ProtocolState() {
 
   useAsync(
     async () => await getProtocolOptIn().isOptedIn(),
-    optedIn => {
+    (optedIn) => {
       if (optedIn) setOptedIn(true);
       setServiceOptedIn(optedIn);
-    }
+    },
   );
 
   if (!optedIn) {
@@ -36,10 +36,12 @@ function ProtocolState() {
 function useAsync<T>(asyncFn: () => Promise<T>, onSuccess: (t: T) => void) {
   useEffect(() => {
     let isActive = true;
-    asyncFn().then(data => {
+    asyncFn().then((data) => {
       if (isActive) onSuccess(data);
     });
-    return () => { isActive = false };
+    return () => {
+      isActive = false;
+    };
   }, [asyncFn, onSuccess]);
 }
 

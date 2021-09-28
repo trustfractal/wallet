@@ -54,7 +54,11 @@ const Link = styled.a`
   text-decoration: underline;
 `;
 
-export default function MnemonicPicker({onMnemonicPicked}: {onMnemonicPicked: (mnemonic: string) => void}) {
+export default function MnemonicPicker({
+  onMnemonicPicked,
+}: {
+  onMnemonicPicked: (mnemonic: string) => void;
+}) {
   const onCtaClicked = () => {
     onMnemonicPicked(mnemonicGenerate());
   };
