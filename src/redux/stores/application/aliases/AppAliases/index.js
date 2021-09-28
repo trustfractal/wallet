@@ -8,9 +8,10 @@ import metadataActions, {
 } from "@redux/stores/application/reducers/metadata";
 
 import CredentialsPolling from "@models/Polling/CredentialsPolling";
-import {MaguroService} from "@services/MaguroService";
+import { MaguroService } from "@services/MaguroService";
 
-import WindowsService, {
+import {
+  WindowsService,
   PopupSizes,
   PopupSizesValues,
 } from "@services/WindowsService";

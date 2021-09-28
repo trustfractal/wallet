@@ -41,17 +41,8 @@ export const PopupSizesValues: Record<
   },
 };
 
-class WindowsService {
-  private static instance: WindowsService;
+export class WindowsService {
   private popupId?: number;
-
-  public static getInstance(): WindowsService {
-    if (!WindowsService.instance) {
-      WindowsService.instance = new WindowsService();
-    }
-
-    return WindowsService.instance;
-  }
 
   createWindow(
     config: chrome.windows.CreateData = {},
@@ -448,7 +439,3 @@ class WindowsService {
     return this.createTab({ url });
   }
 }
-
-const windows: WindowsService = WindowsService.getInstance();
-
-export default windows;

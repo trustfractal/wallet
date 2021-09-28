@@ -6,6 +6,7 @@ import {MintingRegistrar} from "@services/MintingRegistrar";
 import {ProtocolService} from "@services/ProtocolService";
 import types from "@services/ProtocolService/types";
 import {StorageService} from "@services/StorageService";
+import {WindowsService} from '@services/WindowsService';
 
 let storageService: StorageService;
 export function getStorageService() {
@@ -52,7 +53,8 @@ export async function getProtocolService(mnemonic?: string) {
 
     protocol = (async () => {
       try {
-        let signer = await ProtocolService.signerFromStorage(getStorageService());
+        let signer =
+            await ProtocolService.signerFromStorage(getStorageService());
         return new ProtocolService(getApi(), signer, getMaguroService(),
                                    getDataHost());
       } catch (e) {
@@ -61,7 +63,8 @@ export async function getProtocolService(mnemonic?: string) {
               getStorageService(),
               mnemonic,
           );
-          let signer = await ProtocolService.signerFromStorage(getStorageService());
+          let signer =
+              await ProtocolService.signerFromStorage(getStorageService());
           return new ProtocolService(getApi(), signer, getMaguroService(),
                                      getDataHost());
         }
@@ -80,4 +83,12 @@ export function getMaguroService() {
     maguro = new MaguroService();
   }
   return maguro;
+}
+
+let windows: WindowsService;
+export function getWindowsService() {
+  if (windows === undefined) {
+    windows = new WindowsService();
+  }
+  return windows;
 }
