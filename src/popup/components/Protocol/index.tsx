@@ -1,31 +1,41 @@
+import { useState, useEffect } from "react";
 import { useAppSelector } from "@redux/stores/application/context";
-import { getProtocolOptIn } from "@redux/stores/application/reducers/app/selectors";
 import { useUserSelector } from "@redux/stores/user/context";
 import { protocolRegistrationTypes } from "@redux/stores/user/reducers/protocol";
 import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selectors";
 
+import { getProtocolOptIn } from "@services/Factory";
 import { ProtocolProvider } from "@services/ProtocolService/";
 
 import SetupScreen from "./SetupScreen";
 import DataScreen from "./DataScreen";
 import OptInForm from "./OptInForm";
 
-function renderProtocol(protocolOptIn: boolean, registrationState: string) {
-  if (!protocolOptIn) return <OptInForm />;
+function ProtocolState() {
+  const [optedIn, setOptedIn] = useState(false);
 
-  if (registrationState === protocolRegistrationTypes.COMPLETED)
-    return <DataScreen />;
+  useEffect(async () => {
+    const optedIn = await getProtocolOptIn().isOptedIn();
+    if (optedIn) setOptedIn(true);
+  });
 
-  return <SetupScreen />;
+  const registrationState = useUserSelector(getRegistrationState);
+
+  if (!optedIn) {
+    return <OptInForm onOptIn={() => setOptedIn(true)} />;
+  }
+
+  if (registrationState !== protocolRegistrationTypes.COMPLETED) {
+    return <SetupScreen />;
+  }
+
+  return <DataScreen />;
 }
 
 function Protocol() {
-  const protocolOptIn = useAppSelector(getProtocolOptIn);
-  const registrationState = useUserSelector(getRegistrationState);
-
   return (
     <ProtocolProvider>
-      {renderProtocol(protocolOptIn, registrationState)}
+      <ProtocolState />
     </ProtocolProvider>
   );
 }

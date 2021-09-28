@@ -56,13 +56,7 @@ const CTA = styled.div`
   justify-content: center;
 `;
 
-function OptInForm() {
-  const appDispatch = useAppDispatch();
-
-  const onClick = async () => {
-    appDispatch(appActions.setProtocolOptIn(true));
-  };
-
+function OptInForm({onOptIn}: {onOptIn: () => void}) {
   return (
     <TopComponent>
       <Container>
@@ -111,7 +105,7 @@ function OptInForm() {
         <Spacing />
 
         <CTA>
-          <Button onClick={onClick}>Opt In</Button>
+          <Button onClick={onOptIn}>Opt In</Button>
         </CTA>
       </Container>
     </TopComponent>
