@@ -7,6 +7,7 @@ import { ProtocolService } from "@services/ProtocolService";
 import types from "@services/ProtocolService/types";
 import { StorageService } from "@services/StorageService";
 import { WindowsService } from "@services/WindowsService";
+import {ProtocolOptIn} from '@services/ProtocolOptIn';
 
 let storageService: StorageService;
 export function getStorageService() {
@@ -89,4 +90,12 @@ export function getWindowsService() {
     windows = new WindowsService();
   }
   return windows;
+}
+
+let protocolOptIn: ProtocolOptIn;
+export function getProtocolOptIn() {
+  if (protocolOptIn === undefined) {
+    protocolOptIn = new ProtocolOptIn();
+  }
+  return protocolOptIn;
 }
