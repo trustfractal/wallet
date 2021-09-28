@@ -6,6 +6,8 @@ import { Storage } from "@utils/StorageArray";
 export class MissingLiveness extends Error {}
 
 export class ProtocolOptIn {
+  public postOptInCallbacks: Array<() => Promise<void>> = [];
+
   constructor(
     private readonly storage: Storage,
     private readonly maguro: MaguroService,
@@ -24,6 +26,9 @@ export class ProtocolOptIn {
 
   async optIn(mnemonic: string) {
     await this.storage.setItem("opt-in/mnemonic", mnemonic);
+    for (const cb of this.postOptInCallbacks) {
+      await cb();
+    }
     await this.tryRegisterIdentity();
   }
 

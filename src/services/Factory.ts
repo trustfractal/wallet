@@ -102,6 +102,10 @@ export function getProtocolOptIn() {
       getWindowsService(),
       environment.LIVENESS_JOURNEY_URL,
     );
+
+    protocolOptIn.postOptInCallbacks.push(async () => {
+      await getDataHost().enable();
+    });
   }
   return protocolOptIn;
 }
