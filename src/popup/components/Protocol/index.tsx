@@ -9,19 +9,30 @@ import { ProtocolProvider } from "@services/ProtocolService/";
 import SetupScreen from "./SetupScreen";
 import DataScreen from "./DataScreen";
 import OptInForm from "./OptInForm";
+import MnemonicPicker from "./MnemonicPicker";
 
 function ProtocolState() {
   const [optedIn, setOptedIn] = useState(false);
+  const [serviceOptedIn, setServiceOptedIn] = useState(false);
 
-  useAsyncEffect(async () => {
-    const optedIn = await getProtocolOptIn().isOptedIn();
-    if (optedIn) setOptedIn(true);
-  });
+  useAsync(
+    async () => await getProtocolOptIn().isOptedIn(),
+    optedIn => {
+      if (optedIn) setOptedIn(true);
+      setServiceOptedIn(optedIn);
+    }
+  );
 
   const registrationState = useUserSelector(getRegistrationState);
 
   if (!optedIn) {
     return <OptInForm onOptIn={() => setOptedIn(true)} />;
+  }
+  if (!serviceOptedIn) {
+    const optInWithMnemonic = async (mnemonic: string) => {
+      await getProtocolOptIn().optIn(mnemonic);
+    };
+    return <MnemonicPicker onMnemonicPicked={optInWithMnemonic} />;
   }
 
   if (registrationState !== protocolRegistrationTypes.COMPLETED) {
@@ -31,10 +42,14 @@ function ProtocolState() {
   return <DataScreen />;
 }
 
-function useAsyncEffect(cb: () => Promise<void>) {
+function useAsync<T>(asyncFn: () => Promise<T>, onSuccess: (t: T) => void) {
   useEffect(() => {
-    cb();
-  });
+    let isActive = true;
+    asyncFn().then(data => {
+      if (isActive) onSuccess(data);
+    });
+    return () => { isActive = false };
+  }, [asyncFn, onSuccess]);
 }
 
 function Protocol() {
