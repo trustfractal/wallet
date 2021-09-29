@@ -341,8 +341,11 @@ export default function Navbar() {
 
   useEffect(() => {
     const checkBalance = async () => {
-      const balance = await getProtocolService().getBalance();
-      setBalance(balance);
+      try {
+        const balance = await getProtocolService().getBalance();
+        setBalance(balance);
+      } catch {
+      }
     };
     checkBalance();
     const interval = setInterval(checkBalance, 30 * 1000);

@@ -12,7 +12,7 @@ import { NoLiveness } from "./NoLiveness";
 function ProtocolState() {
   const [pageOverride, setPageOverride] = useState<JSX.Element | null>(null);
 
-  const [optedIn, setOptedIn] = useState<boolean | undefined>();
+  const [optedIn, setOptedIn] = useState(false);
   const [serviceOptedIn, setServiceOptedIn] = useState<boolean | undefined>();
   const [completedLiveness, setCompletedLiveness] = useState<
     boolean | undefined
@@ -64,7 +64,7 @@ function ProtocolState() {
     return pageOverride;
   }
 
-  if ([optedIn, serviceOptedIn, completedLiveness].some((v) => v == null)) {
+  if ([serviceOptedIn, completedLiveness].some((v) => v == null)) {
     return <></>;
   }
 
