@@ -35,6 +35,7 @@ module.exports = {
     "^\\@contracts(.*)$": "<rootDir>/src/contracts/$1",
     "^\\@utils(.*)$": "<rootDir>/src/utils/$1",
     "^\\@pluginTypes(.*)$": "<rootDir>/src/types/$1",
+    "^\\@vendor(.*)$": "<rootDir>/src/vendor/$1",
   },
   moduleFileExtensions: [
     "web.js",

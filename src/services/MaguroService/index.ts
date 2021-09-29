@@ -1,18 +1,22 @@
 import Environment from "@environment/index";
-import AppStore from "@redux/stores/application";
+import appStore from "@redux/stores/application";
 import { getBackendMegalodonSession } from "@redux/stores/application/reducers/auth/selectors";
 import CatfishService from "@services/CatfishService";
 import HttpService from "@services/HttpService";
+import { MissingLiveness } from "@services/ProtocolOptIn";
 
 const HTTP_TIMEOUT = 5 * 60 * 1000; // 5 minutes timeout
 
 export class MaguroService {
-  private ensureAuthorization(
+  private async ensureAuthorization(
     headers: Record<string, string>,
-  ): Record<string, string> {
+  ): Promise<Record<string, string>> {
     if (headers["authorization"]) return headers;
 
-    const token = getBackendMegalodonSession(AppStore.getStore().getState());
+    if (appStore.getStore() == null) {
+      await appStore.init();
+    }
+    const token = getBackendMegalodonSession(appStore.getStore().getState());
 
     headers["authorization"] = `Bearer ${token}`;
     headers["content-type"] = "application/json";
@@ -26,10 +30,10 @@ export class MaguroService {
     body?: RequestInit["body"],
     headers?: RequestInit["headers"],
   ): Promise<any> {
-    const headersWithAuth = this.ensureAuthorization(
+    const headersWithAuth = await this.ensureAuthorization(
       (headers as Record<string, string>) || {},
     );
-    return this.callApi(route, method, body, headersWithAuth);
+    return await this.callApi(route, method, body, headersWithAuth);
   }
 
   private async callApi(
@@ -49,43 +53,48 @@ export class MaguroService {
     if (!response.ok) {
       // check if megalodon token has expired
       if (response.status === 401) {
-        return CatfishService.refreshResourceServerToken().then(
-          async (token) => {
-            const response = await HttpService.call(
-              `${Environment.MAGURO_URL}/${route}`,
-              method,
-              body,
-              {
-                ...headers,
-                authorization: `Bearer ${token}`,
-              },
-            );
-
-            if (!response.ok) {
-              throw new Error(response.statusText);
-            }
-
-            return response.json();
+        const token = await CatfishService.refreshResourceServerToken();
+        const response = await HttpService.call(
+          `${Environment.MAGURO_URL}/${route}`,
+          method,
+          body,
+          {
+            ...headers,
+            authorization: `Bearer ${token}`,
           },
         );
+
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+
+        return response.json();
       }
 
-      throw new Error(response.statusText);
+      throw await response.json();
     }
 
-    return response.json();
+    return await response.json();
   }
 
   public getCredentials() {
     return this.callAuthorizedApi("credentials", "GET", null);
   }
 
-  public registerIdentity(address: string) {
-    return this.callAuthorizedApi(
-      "protocol/register_identity",
-      "POST",
-      JSON.stringify({ linked_address: address }),
-    );
+  public async registerIdentity(address: string) {
+    try {
+      return await this.callAuthorizedApi(
+        "protocol/register_identity",
+        "POST",
+        JSON.stringify({ linked_address: address }),
+      );
+    } catch (e) {
+      if (e.error === "missing_liveness") {
+        throw new MissingLiveness();
+      } else {
+        throw e;
+      }
+    }
   }
 
   public getConfig() {

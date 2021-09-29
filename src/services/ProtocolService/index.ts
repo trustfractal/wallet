@@ -114,7 +114,7 @@ export class ProtocolService {
     console.log("Identity successfully registered");
   }
 
-  private async isIdentityRegistered(): Promise<boolean> {
+  public async isIdentityRegistered(): Promise<boolean> {
     const fractalId = await this.registeredFractalId();
     return fractalId != null;
   }
@@ -127,6 +127,12 @@ export class ProtocolService {
     const { data } = await (await this.api).query.system.account(accountId);
 
     return data;
+  }
+
+  public addressForMnemonic(mnemonic: string): string {
+    const keyring = new Keyring({ type: "sr25519" });
+    const signer = keyring.addFromUri(mnemonic);
+    return signer.address;
   }
 
   async saveSigner(storage: Storage) {

@@ -3,6 +3,7 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import { DataHost } from "@services/DataHost";
 import { MaguroService } from "@services/MaguroService";
 import { MintingRegistrar } from "@services/MintingRegistrar";
+import { ProtocolOptIn } from "@services/ProtocolOptIn";
 import { ProtocolService } from "@services/ProtocolService";
 import types from "@services/ProtocolService/types";
 import { StorageService } from "@services/StorageService";
@@ -89,4 +90,22 @@ export function getWindowsService() {
     windows = new WindowsService();
   }
   return windows;
+}
+
+let protocolOptIn: ProtocolOptIn;
+export function getProtocolOptIn() {
+  if (protocolOptIn === undefined) {
+    protocolOptIn = new ProtocolOptIn(
+      getStorageService(),
+      getMaguroService(),
+      getProtocolService(),
+      getWindowsService(),
+      environment.PROTOCOL_JOURNEY_URL,
+    );
+
+    protocolOptIn.postOptInCallbacks.push(async () => {
+      await getDataHost().enable();
+    });
+  }
+  return protocolOptIn;
 }
