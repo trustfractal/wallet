@@ -49,7 +49,7 @@ function ProtocolState() {
 
   const doLiveness = async () => {
     try {
-      setPageOverride(<SetupInProgress onRetry={doLiveness}/>);
+      setPageOverride(<SetupInProgress onRetry={doLiveness} />);
       await getProtocolOptIn().postOptInLiveness();
       setPageOverride(null);
     } catch (e) {

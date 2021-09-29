@@ -1,10 +1,7 @@
 import styled from "styled-components";
 
 import Button from "@popup/components/common/Button";
-import Text, {
-  TextSizes,
-  TextHeights,
-} from "@popup/components/common/Text";
+import Text, { TextSizes, TextHeights } from "@popup/components/common/Text";
 import Title from "@popup/components/common/Title";
 import Logo from "@popup/components/common/Logo";
 import Anchor from "@popup/components/common/Anchor";
@@ -37,7 +34,7 @@ const FooterContainer = styled.div`
   text-align: left;
 `;
 
-export function NoLiveness({onClick}: {onClick: () => void}) {
+export function NoLiveness({ onClick }: { onClick: () => void }) {
   return (
     <>
       <IconContainer>
