@@ -7,12 +7,14 @@ import DataScreen from "./DataScreen";
 import OptInForm from "./OptInForm";
 import MnemonicPicker from "./MnemonicPicker";
 import { SetupSuccess, SetupInProgress, SetupError } from "./SetupScreen";
+import { NoLiveness } from "./NoLiveness";
 
 function ProtocolState() {
   const [pageOverride, setPageOverride] = useState<JSX.Element | null>(null);
 
   const [optedIn, setOptedIn] = useState(false);
   const [serviceOptedIn, setServiceOptedIn] = useState(false);
+  const [completedLiveness, setCompletedLiveness] = useState(false);
 
   useAsync(
     async () => await getProtocolOptIn().isOptedIn(),
@@ -20,6 +22,11 @@ function ProtocolState() {
       if (optedIn) setOptedIn(true);
       setServiceOptedIn(optedIn);
     },
+  );
+
+  useAsync(
+    async () => await getProtocolOptIn().hasCompletedLiveness(),
+    setCompletedLiveness,
   );
 
   const optInWithMnemonic = async (mnemonic: string) => {
@@ -40,6 +47,17 @@ function ProtocolState() {
     }
   };
 
+  const doLiveness = async () => {
+    try {
+      setPageOverride(<SetupInProgress onRetry={doLiveness} />);
+      await getProtocolOptIn().postOptInLiveness();
+      setPageOverride(null);
+    } catch (e) {
+      console.error(e);
+      setPageOverride(<SetupError onRetry={doLiveness} />);
+    }
+  };
+
   if (pageOverride != null) {
     return pageOverride;
   }
@@ -49,6 +67,9 @@ function ProtocolState() {
   }
   if (!serviceOptedIn) {
     return <MnemonicPicker onMnemonicPicked={optInWithMnemonic} />;
+  }
+  if (!completedLiveness) {
+    return <NoLiveness onClick={doLiveness} />;
   }
 
   return <DataScreen />;
