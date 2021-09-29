@@ -7,7 +7,7 @@ on:
 
   pull_request:
     branches:
-      - '*'
+      - dev
     types: [opened, synchronize]
     ignore-paths:
       - "*.md"
@@ -46,6 +46,7 @@ jobs:
 
   build-plugin:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'
     needs: test-plugin
     container: node:14.16.0
 
