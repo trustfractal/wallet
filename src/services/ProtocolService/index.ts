@@ -124,7 +124,9 @@ export class ProtocolService {
   }
 
   public async getBalance(): Promise<AccountData> {
-    const { data } = await (await this.api).query.system.account(this.address());
+    const { data } = await (
+      await this.api
+    ).query.system.account(this.address());
 
     return data;
   }

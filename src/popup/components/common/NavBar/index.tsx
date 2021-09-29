@@ -29,9 +29,7 @@ import { exportFile } from "@utils/FileUtils";
 
 import RoutesPaths from "@popup/routes/paths";
 import { getProtocolService } from "@services/Factory";
-import {
-  getRegistrationState,
-} from "@redux/stores/user/reducers/protocol/selectors";
+import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selectors";
 import { protocolRegistrationTypes } from "@redux/stores/user/reducers/protocol";
 
 import environment from "@environment/index";
@@ -259,7 +257,7 @@ function ProtocolBalance({ balance }: { balance?: AccountData }) {
   );
 }
 
-function ProtocolNavbar({balance}: {balance: AccountData}) {
+function ProtocolNavbar({ balance }: { balance: AccountData }) {
   const appDispatch = useAppDispatch();
 
   const history = useHistory();

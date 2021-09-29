@@ -59,13 +59,14 @@ export function getProtocolService(mnemonic?: string) {
       getDataHost(),
     );
 
-    getProtocolOptIn().getMnemonic().then(async (mnemonic) => {
-      if (mnemonic) {
-        getProtocolService().signer =
-          ProtocolService.signerFromMnemonic(mnemonic);
-      }
-    });
-
+    getProtocolOptIn()
+      .getMnemonic()
+      .then(async (mnemonic) => {
+        if (mnemonic) {
+          getProtocolService().signer =
+            ProtocolService.signerFromMnemonic(mnemonic);
+        }
+      });
   }
 
   return protocol;
