@@ -83,7 +83,7 @@ const LivenessContainer = styled.div`
 `;
 
 function AddLiveness() {
-  const [hasLiveness, setHasLiveness] = useState(false);
+  const [hasLiveness, setHasLiveness] = useState(true);
 
   useEffect(() => {
     (async () => {
