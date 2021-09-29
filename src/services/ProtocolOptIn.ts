@@ -39,16 +39,27 @@ export class ProtocolOptIn {
 
   async optIn(mnemonic: string) {
     await this.storage.setItem(await this.mnemonicKey(), mnemonic);
-    for (const cb of this.postOptInCallbacks) {
+    await this.runCallbacks(mnemonic);
+    await this.tryRegisterIdentity();
+  }
+
+  private async runCallbacks(mnemonic: string) {
+    while (this.postOptInCallbacks.length > 0) {
+      const cb = this.postOptInCallbacks.shift()!;
       await cb(mnemonic);
     }
-    await this.tryRegisterIdentity();
   }
 
   async postOptInLiveness() {
     await this.tryRegisterIdentity(async () => {
       await this.windows.openTab(this.livenessUrl);
     });
+  }
+
+  async checkOptIn() {
+    const mnemonic = await this.getMnemonic();
+    if (mnemonic == null) return;
+    await this.runCallbacks(mnemonic);
   }
 
   private async tryRegisterIdentity(onMissingLiveness?: () => Promise<void>) {
