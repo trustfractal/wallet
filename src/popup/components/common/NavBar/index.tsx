@@ -340,10 +340,13 @@ export default function Navbar() {
   const [balance, setBalance] = useState<AccountData>();
 
   useEffect(() => {
-    (async () => {
+    const checkBalance = async () => {
       const balance = await getProtocolService().getBalance();
       setBalance(balance);
-    })();
+    };
+    checkBalance();
+    const interval = setInterval(checkBalance, 30 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   if (balance) {

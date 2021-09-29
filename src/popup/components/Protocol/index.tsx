@@ -12,9 +12,9 @@ import { NoLiveness } from "./NoLiveness";
 function ProtocolState() {
   const [pageOverride, setPageOverride] = useState<JSX.Element | null>(null);
 
-  const [optedIn, setOptedIn] = useState(false);
-  const [serviceOptedIn, setServiceOptedIn] = useState(false);
-  const [completedLiveness, setCompletedLiveness] = useState(false);
+  const [optedIn, setOptedIn] = useState<boolean|undefined>();
+  const [serviceOptedIn, setServiceOptedIn] = useState<boolean|undefined>();
+  const [completedLiveness, setCompletedLiveness] = useState<boolean|undefined>();
 
   useAsync(
     async () => await getProtocolOptIn().isOptedIn(),
@@ -60,6 +60,10 @@ function ProtocolState() {
 
   if (pageOverride != null) {
     return pageOverride;
+  }
+
+  if ([optedIn, serviceOptedIn, completedLiveness].some(v => v == null)) {
+    return <></>;
   }
 
   if (!optedIn) {
