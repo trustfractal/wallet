@@ -155,11 +155,11 @@ describe("ProtocolOptIn", () => {
     });
   });
 
-  describe('checkOptIn', () => {
-    it('calls callbacks if opted in from another instance', async () => {
+  describe("checkOptIn", () => {
+    it("calls callbacks if opted in from another instance", async () => {
       const { storage, optIn } = graph();
-      const { optIn: otherOptIn } = graph({storage});
-      await otherOptIn.optIn('some mnemonic');
+      const { optIn: otherOptIn } = graph({ storage });
+      await otherOptIn.optIn("some mnemonic");
 
       const cb = jest.fn();
       optIn.postOptInCallbacks.push(cb);
@@ -168,10 +168,10 @@ describe("ProtocolOptIn", () => {
       expect(cb).toHaveBeenCalled();
     });
 
-    it('does not call callbacks if already called', async () => {
+    it("does not call callbacks if already called", async () => {
       const { storage, optIn } = graph();
-      const { optIn: otherOptIn } = graph({storage});
-      await otherOptIn.optIn('some mnemonic');
+      const { optIn: otherOptIn } = graph({ storage });
+      await otherOptIn.optIn("some mnemonic");
 
       const cb = jest.fn();
       optIn.postOptInCallbacks.push(cb);
