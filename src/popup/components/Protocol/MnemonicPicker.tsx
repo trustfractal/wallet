@@ -72,7 +72,7 @@ export default function MnemonicPicker({
 
   useEffect(() => {
     const service = getRecoverMnemonicService();
-    service.onShowPage = show => {
+    service.onShowPage = (show) => {
       setShowRecoverPage(show);
     };
     service.showInMenu();
@@ -80,7 +80,12 @@ export default function MnemonicPicker({
   });
 
   if (showRecoverPage) {
-    return <ImportMnemonicScreen onMnemonic={onMnemonicPicked} onCancel={() => setShowRecoverPage(false)} />
+    return (
+      <ImportMnemonicScreen
+        onMnemonic={onMnemonicPicked}
+        onCancel={() => setShowRecoverPage(false)}
+      />
+    );
   }
 
   return (

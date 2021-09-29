@@ -69,7 +69,7 @@ export interface ImportProps {
   onCancel: () => void;
 }
 
-function Import({onMnemonic, onCancel}: ImportProps) {
+function Import({ onMnemonic, onCancel }: ImportProps) {
   const [mnemonic, setMnemonic] = useState<string | null>(null);
   const [address, setAddress] = useState<string | null>(null);
 
@@ -129,9 +129,7 @@ function Import({onMnemonic, onCancel}: ImportProps) {
         <Spacing size="var(--s-12)" />
 
         <Subsubtitle underline>
-          <ClickableText onClick={onCancel}>
-            Create new instead
-          </ClickableText>
+          <ClickableText onClick={onCancel}>Create new instead</ClickableText>
         </Subsubtitle>
       </Container>
     </Container>

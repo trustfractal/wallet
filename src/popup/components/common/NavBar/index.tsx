@@ -25,7 +25,10 @@ import Menu from "@popup/components/common/Menu";
 import { exportFile } from "@utils/FileUtils";
 
 import RoutesPaths from "@popup/routes/paths";
-import { getProtocolService, getRecoverMnemonicService } from "@services/Factory";
+import {
+  getProtocolService,
+  getRecoverMnemonicService,
+} from "@services/Factory";
 import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selectors";
 import { protocolRegistrationTypes } from "@redux/stores/user/reducers/protocol";
 
@@ -119,7 +122,8 @@ function MenuNavbar() {
 
   const onClickMnemonic = () => history.push(RoutesPaths.MNEMONIC);
 
-  const onClickImportMnemonic = () => getRecoverMnemonicService().showRecoverPage();
+  const onClickImportMnemonic = () =>
+    getRecoverMnemonicService().showRecoverPage();
 
   let menuItems = [
     {
@@ -148,8 +152,8 @@ function MenuNavbar() {
 
   const [showRecover, setShowRecover] = useState(false);
   useEffect(() => {
-    getRecoverMnemonicService().onShowInMenu = show => {
-      console.log('show', show);
+    getRecoverMnemonicService().onShowInMenu = (show) => {
+      console.log("show", show);
       setShowRecover(show);
     };
   });
