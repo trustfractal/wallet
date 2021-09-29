@@ -1,6 +1,14 @@
 import styled from "styled-components";
 
-import {Icon, IconNames, Subtitle, Subsubtitle, BoldText, VerticalSequence, Cta} from  "@popup/components/Protocol/common";
+import {
+  Icon,
+  IconNames,
+  Subtitle,
+  Subsubtitle,
+  BoldText,
+  VerticalSequence,
+  Cta,
+} from "@popup/components/Protocol/common";
 
 import environment from "@environment/index";
 
@@ -47,8 +55,7 @@ export function OptInForm({ onOptIn }: { onOptIn: () => void }) {
       </List>
 
       <Subsubtitle uppercase center>
-        By clicking “Opt In” you agree to our{' '}
-
+        By clicking “Opt In” you agree to our{" "}
         <a
           href={`${environment.FRACTAL_WEBSITE_URL}/documents/mainnet-launch-special-user-agreement`}
           target="_blank"

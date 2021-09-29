@@ -4,7 +4,7 @@ import { getProtocolOptIn } from "@services/Factory";
 import TopComponent from "@popup/components/common/TopComponent";
 
 import DataScreen from "./DataScreen";
-import {OptInForm} from "./OptInForm";
+import { OptInForm } from "./OptInForm";
 import MnemonicPicker from "./MnemonicPicker";
 import { SetupSuccess, SetupInProgress, SetupError } from "./SetupScreen";
 import { NoLiveness } from "./NoLiveness";
@@ -12,9 +12,11 @@ import { NoLiveness } from "./NoLiveness";
 function ProtocolState() {
   const [pageOverride, setPageOverride] = useState<JSX.Element | null>(null);
 
-  const [optedIn, setOptedIn] = useState<boolean|undefined>();
-  const [serviceOptedIn, setServiceOptedIn] = useState<boolean|undefined>();
-  const [completedLiveness, setCompletedLiveness] = useState<boolean|undefined>();
+  const [optedIn, setOptedIn] = useState<boolean | undefined>();
+  const [serviceOptedIn, setServiceOptedIn] = useState<boolean | undefined>();
+  const [completedLiveness, setCompletedLiveness] = useState<
+    boolean | undefined
+  >();
 
   useAsync(
     async () => await getProtocolOptIn().isOptedIn(),
@@ -62,7 +64,7 @@ function ProtocolState() {
     return pageOverride;
   }
 
-  if ([optedIn, serviceOptedIn, completedLiveness].some(v => v == null)) {
+  if ([optedIn, serviceOptedIn, completedLiveness].some((v) => v == null)) {
     return <></>;
   }
 

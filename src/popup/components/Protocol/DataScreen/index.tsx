@@ -2,7 +2,12 @@ import styled from "styled-components";
 
 import { useState, useEffect } from "react";
 import { getProtocolOptIn } from "@services/Factory";
-import { Subsubtitle, Text, BoldText, VerticalSequence } from "@popup/components/Protocol/common";
+import {
+  Subsubtitle,
+  Text,
+  BoldText,
+  VerticalSequence,
+} from "@popup/components/Protocol/common";
 
 import Wallet from "@models/Wallet";
 import Button from "@popup/components/common/Button";
@@ -43,9 +48,7 @@ function Address({ wallet }: AddressProps) {
       <BoldText>Your Address</BoldText>
 
       <LineWithCopy>
-        <Subsubtitle>
-          {wallet.address}
-        </Subsubtitle>
+        <Subsubtitle>{wallet.address}</Subsubtitle>
 
         <Copy onClick={() => navigator.clipboard.writeText(wallet.address)} />
       </LineWithCopy>

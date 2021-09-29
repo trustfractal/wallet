@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 
-import { Subtitle, Subsubtitle, Title, Cta, Icon, IconNames, VerticalSequence } from "@popup/components/Protocol/common";
+import {
+  Subtitle,
+  Subsubtitle,
+  Title,
+  Cta,
+  Icon,
+  IconNames,
+  VerticalSequence,
+} from "@popup/components/Protocol/common";
 
 export function SetupSuccess({ onContinue }: { onContinue: () => void }) {
   return (

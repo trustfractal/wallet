@@ -1,8 +1,15 @@
-import { Cta, Title, BoldText, Icon, IconNames, VerticalSequence } from "@popup/components/Protocol/common";
+import {
+  Cta,
+  Title,
+  BoldText,
+  Icon,
+  IconNames,
+  VerticalSequence,
+} from "@popup/components/Protocol/common";
 
 import environment from "@environment/index";
 
-export function NoLiveness({onClick}: {onClick: () => void}) {
+export function NoLiveness({ onClick }: { onClick: () => void }) {
   return (
     <VerticalSequence>
       <Icon name={IconNames.PROTOCOL} />

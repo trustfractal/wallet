@@ -2,7 +2,13 @@ import { mnemonicGenerate } from "@polkadot/util-crypto";
 
 import { useEffect, useState } from "react";
 
-import { Cta, Icon, IconNames, BoldText, VerticalSequence } from "@popup/components/Protocol/common";
+import {
+  Cta,
+  Icon,
+  IconNames,
+  BoldText,
+  VerticalSequence,
+} from "@popup/components/Protocol/common";
 
 import ImportMnemonicScreen from "@popup/containers/ImportMnemonicScreen";
 

@@ -27,7 +27,7 @@ const RootParagraph = styled.p<TextProps>`
       font-size: ${props.size};
       line-height: ${props.height};
       font-weight: ${props.weight};
-      text-align: ${props.center ? 'center' : 'inherit'};
+      text-align: ${props.center ? "center" : "inherit"};
     `}
 `;
 
@@ -37,7 +37,7 @@ const RootSpan = styled.span<TextProps>`
       font-size: ${props.size};
       line-height: ${props.height};
       font-weight: ${props.weight};
-      text-align: ${props.center ? 'center' : 'inherit'};
+      text-align: ${props.center ? "center" : "inherit"};
     `}
 `;
 

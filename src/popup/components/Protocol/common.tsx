@@ -5,7 +5,10 @@ import Text, { TextWeights } from "@popup/components/common/Text";
 import { Subsubtitle } from "@popup/components/common/Subtitle";
 
 export { default as Text, TextWeights } from "@popup/components/common/Text";
-export { default as Subtitle, Subsubtitle } from "@popup/components/common/Subtitle";
+export {
+  default as Subtitle,
+  Subsubtitle,
+} from "@popup/components/common/Subtitle";
 export { default as Icon, IconNames } from "@popup/components/common/Icon";
 export { default as Input } from "@popup/components/common/Input";
 export { default as Title } from "@popup/components/common/Title";
@@ -35,7 +38,7 @@ export function VerticalSequence(props: React.HTMLProps<HTMLDivElement>) {
     <Container>
       {props.children}
 
-      <Subsubtitle center style={{alignSelf: 'flex-end'}}>
+      <Subsubtitle center style={{ alignSelf: "flex-end" }}>
         If you need help on anything related to Fractal ID Wallet, please
         contact us at{" "}
         <Link href="mailto:support@fractal.id">support@fractal.id</Link>
@@ -46,16 +49,22 @@ export function VerticalSequence(props: React.HTMLProps<HTMLDivElement>) {
 
 export function Cta(props: React.HTMLProps<HTMLButtonElement>) {
   return (
-    <Button
-        disabled={props.disabled}
-        onClick={props.onClick}>
+    <Button disabled={props.disabled} onClick={props.onClick}>
       {props.children}
     </Button>
   );
 }
 
-export function BoldText({children, center}: {children: React.ReactNode, center?: boolean}) {
+export function BoldText({
+  children,
+  center,
+}: {
+  children: React.ReactNode;
+  center?: boolean;
+}) {
   return (
-    <Text weight={TextWeights.BOLD} center={center}>{children}</Text>
+    <Text weight={TextWeights.BOLD} center={center}>
+      {children}
+    </Text>
   );
 }

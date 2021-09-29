@@ -1,7 +1,15 @@
 import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 
-import { Input, Text, BoldText, Cta, VerticalSequence, Icon, IconNames } from "@popup/components/Protocol/common";
+import {
+  Input,
+  Text,
+  BoldText,
+  Cta,
+  VerticalSequence,
+  Icon,
+  IconNames,
+} from "@popup/components/Protocol/common";
 
 import {
   encodeAddress,
@@ -52,35 +60,31 @@ function Import({ onMnemonic, onCancel }: ImportProps) {
     <VerticalSequence>
       <Icon name={IconNames.PROTOCOL} />
 
-      <BoldText>
-        Enter your mnemonic to recover your wallet.
-      </BoldText>
+      <BoldText>Enter your mnemonic to recover your wallet.</BoldText>
 
       <Input
-          onChange={onChange}
-          placeholder="Enter your mnemonic"
-          style={{alignSelf: 'stretch'}}
+        onChange={onChange}
+        placeholder="Enter your mnemonic"
+        style={{ alignSelf: "stretch" }}
       />
 
-      <Cta disabled={mnemonic == null} onClick={onClick}>Recover</Cta>
+      <Cta disabled={mnemonic == null} onClick={onClick}>
+        Recover
+      </Cta>
 
       {address && <Subsubtitle>Your address is</Subsubtitle>}
 
       {address && <Text>{address}</Text>}
 
       <Subsubtitle underline>
-        <ClickableText onClick={onCancel}>
-          Back to Create New
-        </ClickableText>
+        <ClickableText onClick={onCancel}>Back to Create New</ClickableText>
       </Subsubtitle>
     </VerticalSequence>
   );
 }
 
 function ImportMnemonicScreen(props: ImportProps) {
-  return (
-    <Import {...props} />
-  );
+  return <Import {...props} />;
 }
 
 export default ImportMnemonicScreen;
