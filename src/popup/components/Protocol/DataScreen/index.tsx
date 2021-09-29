@@ -1,9 +1,10 @@
 import styled from "styled-components";
 
-import { useUserSelector } from "@redux/stores/user/context";
-import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
+import { useState, useEffect } from "react";
+import { getProtocolOptIn } from "@services/Factory";
 
 import Wallet from "@models/Wallet";
+import Button from "@popup/components/common/Button";
 import Text, {
   TextHeights,
   TextSizes,
@@ -25,12 +26,17 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  margin: -8px 0;
+  > * {
+    margin: 8px 0;
+  }
 `;
 
 const AddressContainer = styled.div`
   display: flex;
   flex-direction: column;
-  text-align: center;
+  align-items: center;
 `;
 
 const LineWithCopy = styled.div`
@@ -56,7 +62,7 @@ const Spacing = styled.div`
 function Address({ wallet }: AddressProps) {
   return (
     <AddressContainer>
-      <Text weight={TextWeights.BOLD}>Export your credentials:</Text>
+      <Text weight={TextWeights.BOLD}>Your Address</Text>
 
       <LineWithCopy>
         <Text size={TextSizes.SMALL} height={TextHeights.SMALL} span>
@@ -69,14 +75,52 @@ function Address({ wallet }: AddressProps) {
   );
 }
 
+const LivenessContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+function AddLiveness() {
+  const [hasLiveness, setHasLiveness] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setHasLiveness(await getProtocolOptIn().hasCompletedLiveness());
+    })();
+  });
+
+  if (hasLiveness) return <></>;
+
+  const postOptInLiveness = async () => {
+    await getProtocolOptIn().postOptInLiveness();
+  };
+
+  return (
+    <LivenessContainer>
+      <Text>Add liveness to unlock minting rewards:</Text>
+      <Button onClick={postOptInLiveness}>Add Liveness</Button>
+    </LivenessContainer>
+  );
+}
+
 function DataScreen() {
-  const wallet = useUserSelector(getWallet);
+  const [wallet, setWallet] = useState<Wallet>();
+
+  useEffect(() => {
+    (async () => {
+      const mnemonic = await getProtocolOptIn().getMnemonic();
+      if (mnemonic) setWallet(Wallet.fromMnemonic(mnemonic));
+    })();
+  });
 
   if (!wallet || !wallet.address) return <></>;
 
   return (
     <TopComponent>
       <Container>
+        <AddLiveness />
         <WebpageViews />
         <Spacing />
         <Address wallet={wallet} />

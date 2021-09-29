@@ -1,40 +1,48 @@
 import { useState, useEffect } from "react";
-import { useUserSelector } from "@redux/stores/user/context";
-import { protocolRegistrationTypes } from "@redux/stores/user/reducers/protocol";
-import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selectors";
 
 import { getProtocolOptIn } from "@services/Factory";
 import { ProtocolProvider } from "@services/ProtocolService/";
 
-import SetupScreen from "./SetupScreen";
 import DataScreen from "./DataScreen";
 import OptInForm from "./OptInForm";
+import MnemonicPicker from "./MnemonicPicker";
 
 function ProtocolState() {
   const [optedIn, setOptedIn] = useState(false);
+  const [serviceOptedIn, setServiceOptedIn] = useState(false);
 
-  useAsyncEffect(async () => {
-    const optedIn = await getProtocolOptIn().isOptedIn();
-    if (optedIn) setOptedIn(true);
-  });
-
-  const registrationState = useUserSelector(getRegistrationState);
+  useAsync(
+    async () => await getProtocolOptIn().isOptedIn(),
+    (optedIn) => {
+      if (optedIn) setOptedIn(true);
+      setServiceOptedIn(optedIn);
+    },
+  );
 
   if (!optedIn) {
     return <OptInForm onOptIn={() => setOptedIn(true)} />;
   }
-
-  if (registrationState !== protocolRegistrationTypes.COMPLETED) {
-    return <SetupScreen />;
+  if (!serviceOptedIn) {
+    const optInWithMnemonic = async (mnemonic: string) => {
+      await getProtocolOptIn().optIn(mnemonic);
+      setServiceOptedIn(true);
+    };
+    return <MnemonicPicker onMnemonicPicked={optInWithMnemonic} />;
   }
 
   return <DataScreen />;
 }
 
-function useAsyncEffect(cb: () => Promise<void>) {
+function useAsync<T>(asyncFn: () => Promise<T>, onSuccess: (t: T) => void) {
   useEffect(() => {
-    cb();
-  });
+    let isActive = true;
+    asyncFn().then((data) => {
+      if (isActive) onSuccess(data);
+    });
+    return () => {
+      isActive = false;
+    };
+  }, [asyncFn, onSuccess]);
 }
 
 function Protocol() {

@@ -24,6 +24,10 @@ export class ProtocolOptIn {
     return (await this.protocol).isIdentityRegistered();
   }
 
+  async getMnemonic() {
+    return await this.storage.getItem("opt-in/mnemonic");
+  }
+
   async optIn(mnemonic: string) {
     await this.storage.setItem("opt-in/mnemonic", mnemonic);
     for (const cb of this.postOptInCallbacks) {
