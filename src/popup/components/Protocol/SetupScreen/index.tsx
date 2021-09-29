@@ -9,37 +9,12 @@ import Text, {
 
 import { Subsubtitle } from "@popup/components/common/Subtitle";
 import Button from "@popup/components/common/Button";
-import TopComponent from "@popup/components/common/TopComponent";
 
-import protocolActions, {
-  protocolRegistrationTypes,
-} from "@redux/stores/user/reducers/protocol";
-import { useUserDispatch, useUserSelector } from "@redux/stores/user/context";
-import {
-  getWallet,
-  getRegistrationState,
-  hasRegistrationErrored,
-} from "@redux/stores/user/reducers/protocol/selectors";
 import Icon, { IconNames } from "@popup/components/common/Icon";
-import appActions from "@redux/stores/application/reducers/app";
-import { useAppDispatch } from "@redux/stores/application/context";
-import Logo from "@popup/components/common/Logo";
-
-import NoProtocolVerificationCase from "@popup/components/Protocol/NoProtocolVerificationCase";
-
-interface ErrorProps {
-  step?: string;
-}
 
 interface HeaderProps {
   logo: string;
 }
-
-const StatusMessages = {
-  [protocolRegistrationTypes.STARTED]: "Generating address",
-  [protocolRegistrationTypes.ADDRESS_GENERATED]: "Registering identity",
-  [protocolRegistrationTypes.IDENTITY_REGISTERED]: "Registering for minting",
-};
 
 const Container = styled.div`
   width: 100%;
@@ -70,12 +45,6 @@ const CTA = styled.div`
   justify-content: center;
 `;
 
-const Link = styled.a`
-  cursor: pointer;
-  color: var(--c-orange);
-  text-decoration: underline;
-`;
-
 function Header({ logo }: HeaderProps) {
   return (
     <HeaderContainer>
@@ -84,23 +53,7 @@ function Header({ logo }: HeaderProps) {
   );
 }
 
-function HeaderWithLogo() {
-  return (
-    <HeaderContainer>
-      <Logo />
-    </HeaderContainer>
-  );
-}
-
-function ResetButton() {
-  const userDispatch = useUserDispatch();
-  const appDispatch = useAppDispatch();
-  const onClick = () => {
-    userDispatch(protocolActions.setRegistrationState(undefined));
-    userDispatch(protocolActions.setRegistrationError(false));
-    appDispatch(appActions.setProtocolOptIn(false));
-  };
-
+function ResetButton({ onClick }: { onClick: () => void }) {
   return (
     <CTA>
       <Button onClick={onClick}>Restart</Button>
@@ -108,54 +61,7 @@ function ResetButton() {
   );
 }
 
-function StartSetup() {
-  const dispatch = useUserDispatch();
-
-  const onCreate = () => dispatch(protocolActions.createWallet());
-
-  return (
-    <Container>
-      <HeaderWithLogo />
-
-      <Text
-        height={TextHeights.EXTRA_LARGE}
-        size={TextSizes.LARGE}
-        weight={TextWeights.BOLD}
-      >
-        You should only register a new identity if it isn't already associated
-        with an account. If you already have registered please recover your
-        account.
-      </Text>
-
-      <Spacing size="var(--s-26)" />
-
-      <CTA>
-        <Button onClick={onCreate}>Create</Button>
-      </CTA>
-
-      <Spacing size="var(--s-12)" />
-
-      <Subsubtitle>
-        If you need help on anything related to Fractal ID Wallet, please
-        contact us at{" "}
-        <Link href="mailto:support@fractal.id">support@fractal.id</Link>
-      </Subsubtitle>
-    </Container>
-  );
-}
-
-function Success() {
-  const wallet = useUserSelector(getWallet);
-  const dispatch = useUserDispatch();
-
-  if (!wallet) return <></>;
-
-  const onClick = () => {
-    dispatch(
-      protocolActions.setRegistrationState(protocolRegistrationTypes.COMPLETED),
-    );
-  };
-
+export function SetupSuccess({ onContinue }: { onContinue: () => void }) {
   return (
     <Container>
       <Header logo={IconNames.PROTOCOL_SETUP_SUCCESS} />
@@ -169,18 +75,10 @@ function Success() {
         rewards.
       </Text>
 
-      <Spacing />
-
-      <Subsubtitle>Your address</Subsubtitle>
-
-      <Spacing size="var(--s-6)" />
-
-      <Text>{wallet.address}</Text>
-
       <Spacing size="var(--s-12)" />
 
       <CTA>
-        <Button onClick={onClick}>Got it</Button>
+        <Button onClick={onContinue}>Continue</Button>
       </CTA>
 
       <Spacing size="var(--s-12)" />
@@ -190,10 +88,7 @@ function Success() {
   );
 }
 
-function Error({ step }: ErrorProps) {
-  const statusMessage = step && StatusMessages[step];
-  const message = statusMessage ? ` while ${statusMessage.toLowerCase()}` : "";
-
+export function SetupError({ onRetry }: { onRetry: () => void }) {
   return (
     <Container>
       <Header logo={IconNames.PROTOCOL_SETUP_FAILURE} />
@@ -203,17 +98,17 @@ function Error({ step }: ErrorProps) {
         size={TextSizes.LARGE}
         weight={TextWeights.BOLD}
       >
-        Something went wrong{message}.
+        Something went wrong.
       </Text>
 
       <Spacing />
 
-      <ResetButton />
+      <ResetButton onClick={onRetry} />
     </Container>
   );
 }
 
-function SetupStep({ message }: { message: string }) {
+export function SetupInProgress({ onRetry }: { onRetry: () => void }) {
   const [showButton, setShowButton] = useState<boolean>();
 
   useEffect(() => {
@@ -235,7 +130,7 @@ function SetupStep({ message }: { message: string }) {
         size={TextSizes.LARGE}
         weight={TextWeights.BOLD}
       >
-        {message}...
+        Setting up a few things...
       </Text>
 
       <Text height={TextHeights.SMALL} size={TextSizes.SMALL}>
@@ -244,43 +139,9 @@ function SetupStep({ message }: { message: string }) {
 
       <Spacing />
 
-      {showButton && <ResetButton />}
+      {showButton && <ResetButton onClick={onRetry} />}
 
       <Spacing />
     </Container>
   );
 }
-
-function Router() {
-  const registrationErrored = useUserSelector(hasRegistrationErrored);
-  const registrationState = useUserSelector(getRegistrationState);
-
-  if (registrationErrored) return <Error step={registrationState} />;
-
-  switch (registrationState) {
-    case protocolRegistrationTypes.MISSING_CREDENTIAL:
-      return <NoProtocolVerificationCase />;
-    case protocolRegistrationTypes.STARTED:
-    case protocolRegistrationTypes.ADDRESS_GENERATED:
-    case protocolRegistrationTypes.IDENTITY_REGISTERED:
-      return <SetupStep message={StatusMessages[registrationState]} />;
-    case protocolRegistrationTypes.MINTING_REGISTERED:
-      return <Success />;
-    default:
-      return <StartSetup />;
-  }
-}
-
-function SetupScreen() {
-  return (
-    <TopComponent>
-      <Container>
-        <Router />
-      </Container>
-    </TopComponent>
-  );
-}
-
-SetupScreen.defaultProps = {};
-
-export default SetupScreen;

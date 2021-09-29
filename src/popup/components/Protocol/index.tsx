@@ -6,8 +6,11 @@ import { ProtocolProvider } from "@services/ProtocolService/";
 import DataScreen from "./DataScreen";
 import OptInForm from "./OptInForm";
 import MnemonicPicker from "./MnemonicPicker";
+import { SetupSuccess, SetupInProgress, SetupError } from "./SetupScreen";
 
 function ProtocolState() {
+  const [pageOverride, setPageOverride] = useState<JSX.Element | null>(null);
+
   const [optedIn, setOptedIn] = useState(false);
   const [serviceOptedIn, setServiceOptedIn] = useState(false);
 
@@ -19,14 +22,32 @@ function ProtocolState() {
     },
   );
 
+  const optInWithMnemonic = async (mnemonic: string) => {
+    try {
+      setPageOverride(
+        <SetupInProgress onRetry={() => optInWithMnemonic(mnemonic)} />,
+      );
+      await getProtocolOptIn().optIn(mnemonic);
+      setServiceOptedIn(true);
+      setPageOverride(
+        <SetupSuccess onContinue={() => setPageOverride(null)} />,
+      );
+    } catch (e) {
+      console.error(e);
+      setPageOverride(
+        <SetupError onRetry={() => optInWithMnemonic(mnemonic)} />,
+      );
+    }
+  };
+
+  if (pageOverride != null) {
+    return pageOverride;
+  }
+
   if (!optedIn) {
     return <OptInForm onOptIn={() => setOptedIn(true)} />;
   }
   if (!serviceOptedIn) {
-    const optInWithMnemonic = async (mnemonic: string) => {
-      await getProtocolOptIn().optIn(mnemonic);
-      setServiceOptedIn(true);
-    };
     return <MnemonicPicker onMnemonicPicked={optInWithMnemonic} />;
   }
 
