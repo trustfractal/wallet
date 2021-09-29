@@ -1,7 +1,12 @@
 import ConnectionTypes from "@models/Connection/types";
-import { getDataHost, getMintingRegistrar } from "@services/Factory";
+import {
+  getProtocolOptIn,
+  getDataHost,
+  getMintingRegistrar,
+} from "@services/Factory";
 
 export async function addWebpage([url]: [string]): Promise<void> {
+  await getProtocolOptIn().checkOptIn();
   await getDataHost().storeFact({
     pageView: {
       url,

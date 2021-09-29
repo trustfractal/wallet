@@ -154,4 +154,31 @@ describe("ProtocolOptIn", () => {
       expect(await optIn.isOptedIn()).toEqual(false);
     });
   });
+
+  describe("checkOptIn", () => {
+    it("calls callbacks if opted in from another instance", async () => {
+      const { storage, optIn } = graph();
+      const { optIn: otherOptIn } = graph({ storage });
+      await otherOptIn.optIn("some mnemonic");
+
+      const cb = jest.fn();
+      optIn.postOptInCallbacks.push(cb);
+      await optIn.checkOptIn();
+
+      expect(cb).toHaveBeenCalled();
+    });
+
+    it("does not call callbacks if already called", async () => {
+      const { storage, optIn } = graph();
+      const { optIn: otherOptIn } = graph({ storage });
+      await otherOptIn.optIn("some mnemonic");
+
+      const cb = jest.fn();
+      optIn.postOptInCallbacks.push(cb);
+      await optIn.checkOptIn();
+      await optIn.checkOptIn();
+
+      expect(cb.mock.calls.length).toEqual(1);
+    });
+  });
 });
