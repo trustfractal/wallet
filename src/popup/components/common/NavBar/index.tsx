@@ -153,7 +153,6 @@ function MenuNavbar() {
   const [showRecover, setShowRecover] = useState(false);
   useEffect(() => {
     getRecoverMnemonicService().onShowInMenu = (show) => {
-      console.log("show", show);
       setShowRecover(show);
     };
   });
