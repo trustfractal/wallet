@@ -113,7 +113,7 @@ function DataScreen() {
       const mnemonic = await getProtocolOptIn().getMnemonic();
       if (mnemonic) setWallet(Wallet.fromMnemonic(mnemonic));
     })();
-  });
+  }, []);
 
   if (!wallet || !wallet.address) return <></>;
 
