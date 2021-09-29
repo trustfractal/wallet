@@ -53,7 +53,7 @@ function Header({ logo }: HeaderProps) {
   );
 }
 
-function ResetButton({onClick}: {onClick: () => void}) {
+function ResetButton({ onClick }: { onClick: () => void }) {
   return (
     <CTA>
       <Button onClick={onClick}>Restart</Button>
@@ -61,7 +61,7 @@ function ResetButton({onClick}: {onClick: () => void}) {
   );
 }
 
-export function SetupSuccess({onContinue}: {onContinue: () => void}) {
+export function SetupSuccess({ onContinue }: { onContinue: () => void }) {
   return (
     <Container>
       <Header logo={IconNames.PROTOCOL_SETUP_SUCCESS} />
@@ -88,7 +88,7 @@ export function SetupSuccess({onContinue}: {onContinue: () => void}) {
   );
 }
 
-export function SetupError({onRetry}: {onRetry: () => void}) {
+export function SetupError({ onRetry }: { onRetry: () => void }) {
   return (
     <Container>
       <Header logo={IconNames.PROTOCOL_SETUP_FAILURE} />
@@ -108,7 +108,7 @@ export function SetupError({onRetry}: {onRetry: () => void}) {
   );
 }
 
-export function SetupInProgress({onRetry}: {onRetry: () => void}) {
+export function SetupInProgress({ onRetry }: { onRetry: () => void }) {
   const [showButton, setShowButton] = useState<boolean>();
 
   useEffect(() => {
@@ -139,7 +139,7 @@ export function SetupInProgress({onRetry}: {onRetry: () => void}) {
 
       <Spacing />
 
-      {showButton && <ResetButton onClick={onRetry}/>}
+      {showButton && <ResetButton onClick={onRetry} />}
 
       <Spacing />
     </Container>
