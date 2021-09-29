@@ -6,32 +6,37 @@ import { Storage } from "@utils/StorageArray";
 export class MissingLiveness extends Error {}
 
 export class ProtocolOptIn {
-  public postOptInCallbacks: Array<() => Promise<void>> = [];
+  public postOptInCallbacks: Array<(mnemonic: string) => Promise<void>> = [];
 
   constructor(
     private readonly storage: Storage,
     private readonly maguro: MaguroService,
-    private readonly protocol: Promise<ProtocolService>,
+    private readonly protocol: ProtocolService,
     private readonly windows: WindowsService,
     private readonly livenessUrl: string,
   ) {}
 
   async isOptedIn() {
-    return await this.storage.hasItem("opt-in/mnemonic");
+    return await this.storage.hasItem(await this.mnemonicKey());
+  }
+
+  private async mnemonicKey() {
+    const network = await this.maguro.currentNetwork();
+    return `opt-in/${network}/mnemonic`;
   }
 
   async hasCompletedLiveness() {
-    return (await this.protocol).isIdentityRegistered();
+    return await this.protocol.isIdentityRegistered();
   }
 
   async getMnemonic() {
-    return await this.storage.getItem("opt-in/mnemonic");
+    return await this.storage.getItem(await this.mnemonicKey());
   }
 
   async optIn(mnemonic: string) {
-    await this.storage.setItem("opt-in/mnemonic", mnemonic);
+    await this.storage.setItem(await this.mnemonicKey(), mnemonic);
     for (const cb of this.postOptInCallbacks) {
-      await cb();
+      await cb(mnemonic);
     }
     await this.tryRegisterIdentity();
   }
@@ -43,9 +48,9 @@ export class ProtocolOptIn {
   }
 
   private async tryRegisterIdentity(onMissingLiveness?: () => Promise<void>) {
-    const mnemonic = await this.storage.getItem("opt-in/mnemonic");
+    const mnemonic = await this.storage.getItem(await this.mnemonicKey());
     try {
-      const address = (await this.protocol).addressForMnemonic(mnemonic!);
+      const address = this.protocol.addressForMnemonic(mnemonic!);
       await this.maguro.registerIdentity(address);
     } catch (e) {
       if (!(e instanceof MissingLiveness)) {

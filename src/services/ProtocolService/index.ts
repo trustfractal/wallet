@@ -13,7 +13,7 @@ export * from "./context";
 export class ProtocolService {
   constructor(
     private readonly api: Promise<ApiPromise>,
-    private readonly signer: KeyringPair | null,
+    public signer: KeyringPair | null,
     private readonly maguro: MaguroService,
     private readonly dataHost: DataHost,
   ) {}
