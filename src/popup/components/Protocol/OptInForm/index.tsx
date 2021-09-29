@@ -2,8 +2,6 @@ import styled from "styled-components";
 
 import Button from "@popup/components/common/Button";
 
-import { useAppDispatch } from "@redux/stores/application/context";
-import appActions from "@redux/stores/application/reducers/app";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 import Text, { TextWeights } from "@popup/components/common/Text";
 import Subtitle, { Subsubtitle } from "@popup/components/common/Subtitle";
@@ -56,13 +54,7 @@ const CTA = styled.div`
   justify-content: center;
 `;
 
-function OptInForm() {
-  const appDispatch = useAppDispatch();
-
-  const onClick = async () => {
-    appDispatch(appActions.setProtocolOptIn(true));
-  };
-
+function OptInForm({ onOptIn }: { onOptIn: () => void }) {
   return (
     <TopComponent>
       <Container>
@@ -111,7 +103,7 @@ function OptInForm() {
         <Spacing />
 
         <CTA>
-          <Button onClick={onClick}>Opt In</Button>
+          <Button onClick={onOptIn}>Opt In</Button>
         </CTA>
       </Container>
     </TopComponent>
