@@ -344,8 +344,7 @@ export default function Navbar() {
       try {
         const balance = await getProtocolService().getBalance();
         setBalance(balance);
-      } catch {
-      }
+      } catch {}
     };
     checkBalance();
     const interval = setInterval(checkBalance, 30 * 1000);
