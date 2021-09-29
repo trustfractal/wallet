@@ -17,7 +17,7 @@ const LIVENESS_JOURNEY_URL =
   "https://staging.sandbox.fractal.id/kyc/liveness";
 const PROTOCOL_JOURNEY_URL =
   process.env.REACT_APP_PROTOCOL_JOURNEY_URL ||
-  "https://staging.sandbox.fractal.id/kyc/protocol";
+  "https://staging.sandbox.fractal.id/authorize?client_id=7bSJYDc0ywg9ml377DIk45-tjUxdHgVt-MJC6So56Ho&redirect_uri=https%3A%2F%2Fstaging.sandbox.fractal.id%2Fprotocol&response_type=code&scope=verification.protocol%3Aread";
 const MEGALODON_URL =
   process.env.REACT_APP_MEGALODON_URL ||
   "https://resource.staging.sandbox.fractal.id";
