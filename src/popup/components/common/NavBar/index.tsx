@@ -10,10 +10,7 @@ import {
 import appActions from "@redux/stores/application/reducers/app";
 import { useUserSelector } from "@redux/stores/user/context";
 
-import {
-  getProtocolOptIn,
-  isSetup,
-} from "@redux/stores/application/reducers/app/selectors";
+import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
@@ -28,7 +25,10 @@ import Menu from "@popup/components/common/Menu";
 import { exportFile } from "@utils/FileUtils";
 
 import RoutesPaths from "@popup/routes/paths";
-import { getProtocolService } from "@services/Factory";
+import {
+  getProtocolService,
+  getRecoverMnemonicService,
+} from "@services/Factory";
 import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selectors";
 import { protocolRegistrationTypes } from "@redux/stores/user/reducers/protocol";
 
@@ -112,9 +112,6 @@ function MenuNavbar() {
 
   const credentials = useUserSelector(getCredentials);
   const registrationState = useUserSelector(getRegistrationState);
-  const protocolOptIn = useAppSelector(getProtocolOptIn);
-
-  const includeImportMnemonic = protocolOptIn && !registrationState;
 
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
@@ -125,7 +122,8 @@ function MenuNavbar() {
 
   const onClickMnemonic = () => history.push(RoutesPaths.MNEMONIC);
 
-  const onClickImportMnemonic = () => history.push(RoutesPaths.IMPORT_MNEMONIC);
+  const onClickImportMnemonic = () =>
+    getRecoverMnemonicService().showRecoverPage();
 
   let menuItems = [
     {
@@ -152,12 +150,21 @@ function MenuNavbar() {
     },
   ];
 
-  if (includeImportMnemonic)
+  const [showRecover, setShowRecover] = useState(false);
+  useEffect(() => {
+    getRecoverMnemonicService().onShowInMenu = (show) => {
+      console.log("show", show);
+      setShowRecover(show);
+    };
+  });
+
+  if (showRecover) {
     menuItems.splice(1, 0, {
       label: "Import mnemonic",
       icon: IconNames.IMPORT,
       onClick: onClickImportMnemonic,
     });
+  }
 
   return (
     <NavbarContainer>

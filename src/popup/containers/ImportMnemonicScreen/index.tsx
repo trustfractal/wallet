@@ -1,5 +1,4 @@
 import { ChangeEvent, useState } from "react";
-import { useHistory } from "react-router";
 import styled from "styled-components";
 
 import {
@@ -7,11 +6,6 @@ import {
   mnemonicToMiniSecret,
   schnorrkelKeypairFromSeed,
 } from "@polkadot/util-crypto";
-
-import RoutesPaths from "@popup/routes/paths";
-
-import protocolActions from "@redux/stores/user/reducers/protocol";
-import { useUserDispatch } from "@redux/stores/user/context";
 
 import Text, {
   TextHeights,
@@ -24,8 +18,6 @@ import { Subsubtitle } from "@popup/components/common/Subtitle";
 import Button from "@popup/components/common/Button";
 import Logo from "@popup/components/common/Logo";
 import Input from "@popup/components/common/Input";
-
-import { ProtocolProvider } from "@services/ProtocolService/";
 
 const Container = styled.div`
   width: 100%;
@@ -72,21 +64,19 @@ function HeaderWithLogo() {
   );
 }
 
-function Import() {
-  const dispatch = useUserDispatch();
-  const history = useHistory();
+export interface ImportProps {
+  onMnemonic: (mnemonic: string) => void;
+  onCancel: () => void;
+}
+
+function Import({ onMnemonic, onCancel }: ImportProps) {
   const [mnemonic, setMnemonic] = useState<string | null>(null);
   const [address, setAddress] = useState<string | null>(null);
-  const [enabled, setEnabled] = useState<boolean>(false);
-
-  const goToProtocolTab = () =>
-    history.push(`${RoutesPaths.WALLET}?activeTab=protocol-tab`);
 
   const onClick = () => {
     if (!mnemonic) return;
 
-    dispatch(protocolActions.importWallet(mnemonic));
-    goToProtocolTab();
+    onMnemonic(mnemonic);
   };
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -97,11 +87,9 @@ function Import() {
 
       setMnemonic(e.target.value);
       setAddress(address);
-      setEnabled(true);
     } catch (e) {
       setMnemonic(null);
       setAddress(null);
-      setEnabled(false);
     }
   };
 
@@ -125,7 +113,7 @@ function Import() {
         <Spacing />
 
         <CTA>
-          <Button disabled={!enabled} onClick={onClick}>
+          <Button disabled={mnemonic == null} onClick={onClick}>
             Recover my wallet
           </Button>
         </CTA>
@@ -141,21 +129,17 @@ function Import() {
         <Spacing size="var(--s-12)" />
 
         <Subsubtitle underline>
-          <ClickableText onClick={goToProtocolTab}>
-            Create new instead
-          </ClickableText>
+          <ClickableText onClick={onCancel}>Create new instead</ClickableText>
         </Subsubtitle>
       </Container>
     </Container>
   );
 }
 
-function ImportMnemonicScreen() {
+function ImportMnemonicScreen(props: ImportProps) {
   return (
     <TopComponent>
-      <ProtocolProvider>
-        <Import />
-      </ProtocolProvider>
+      <Import {...props} />
     </TopComponent>
   );
 }

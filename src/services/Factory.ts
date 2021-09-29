@@ -8,6 +8,7 @@ import { ProtocolService } from "@services/ProtocolService";
 import types from "@services/ProtocolService/types";
 import { StorageService } from "@services/StorageService";
 import { WindowsService } from "@services/WindowsService";
+import { RecoverMnemonicService } from "@services/RecoverMnemonicService";
 
 let storageService: StorageService;
 export function getStorageService() {
@@ -108,4 +109,12 @@ export function getProtocolOptIn() {
     });
   }
   return protocolOptIn;
+}
+
+let recoverMnemonicService: RecoverMnemonicService;
+export function getRecoverMnemonicService() {
+  if (recoverMnemonicService == null) {
+    recoverMnemonicService = new RecoverMnemonicService();
+  }
+  return recoverMnemonicService;
 }

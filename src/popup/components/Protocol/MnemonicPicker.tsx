@@ -1,15 +1,20 @@
 import { mnemonicGenerate } from "@polkadot/util-crypto";
 
+import { useEffect, useState } from "react";
+
 import styled from "styled-components";
 
 import Logo from "@popup/components/common/Logo";
 import { Subsubtitle } from "@popup/components/common/Subtitle";
 import Button from "@popup/components/common/Button";
+import ImportMnemonicScreen from "@popup/containers/ImportMnemonicScreen";
 import Text, {
   TextHeights,
   TextSizes,
   TextWeights,
 } from "@popup/components/common/Text";
+
+import { getRecoverMnemonicService } from "@services/Factory";
 
 const Container = styled.div`
   width: 100%;
@@ -62,6 +67,26 @@ export default function MnemonicPicker({
   const onCtaClicked = () => {
     onMnemonicPicked(mnemonicGenerate());
   };
+
+  const [showRecoverPage, setShowRecoverPage] = useState(false);
+
+  useEffect(() => {
+    const service = getRecoverMnemonicService();
+    service.onShowPage = (show) => {
+      setShowRecoverPage(show);
+    };
+    service.showInMenu();
+    return () => service.dontShowInMenu();
+  });
+
+  if (showRecoverPage) {
+    return (
+      <ImportMnemonicScreen
+        onMnemonic={onMnemonicPicked}
+        onCancel={() => setShowRecoverPage(false)}
+      />
+    );
+  }
 
   return (
     <Container>
