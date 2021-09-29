@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { withNavBar } from "@popup/components/common/NavBar";
 import Tabs from "@popup/components/common/Tabs";
-import Protocol from "@popup/components/Protocol";
+import { Protocol } from "@popup/components/Protocol";
 import Credentials from "@popup/components/Credentials";
 import { getMaguroService } from "@services/Factory";
 

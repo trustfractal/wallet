@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
 import { getProtocolOptIn } from "@services/Factory";
-import { ProtocolProvider } from "@services/ProtocolService/";
+import TopComponent from "@popup/components/common/TopComponent";
 
 import DataScreen from "./DataScreen";
-import OptInForm from "./OptInForm";
+import {OptInForm} from "./OptInForm";
 import MnemonicPicker from "./MnemonicPicker";
 import { SetupSuccess, SetupInProgress, SetupError } from "./SetupScreen";
 import { NoLiveness } from "./NoLiveness";
@@ -87,14 +87,10 @@ function useAsync<T>(asyncFn: () => Promise<T>, onSuccess: (t: T) => void) {
   }, [asyncFn, onSuccess]);
 }
 
-function Protocol() {
+export function Protocol() {
   return (
-    <ProtocolProvider>
+    <TopComponent>
       <ProtocolState />
-    </ProtocolProvider>
+    </TopComponent>
   );
 }
-
-Protocol.defaultProps = {};
-
-export default Protocol;

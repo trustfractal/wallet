@@ -7,6 +7,7 @@ const Root = styled.h2`
   line-height: var(--s-23);
   font-weight: bold;
   margin-bottom: var(--s-12);
+  text-align: center;
 `;
 
 function Title(props: React.HTMLProps<HTMLHeadingElement>) {
