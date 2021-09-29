@@ -2,51 +2,22 @@ import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 
 import {
+  Input,
+  Text,
+  BoldText,
+  Cta,
+  VerticalSequence,
+  Icon,
+  IconNames,
+} from "@popup/components/Protocol/common";
+
+import {
   encodeAddress,
   mnemonicToMiniSecret,
   schnorrkelKeypairFromSeed,
 } from "@polkadot/util-crypto";
 
-import Text, {
-  TextHeights,
-  TextSizes,
-  TextWeights,
-} from "@popup/components/common/Text";
-
-import TopComponent from "@popup/components/common/TopComponent";
 import { Subsubtitle } from "@popup/components/common/Subtitle";
-import Button from "@popup/components/common/Button";
-import Logo from "@popup/components/common/Logo";
-import Input from "@popup/components/common/Input";
-
-const Container = styled.div`
-  width: 100%;
-  height: 100%;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-`;
-
-const Spacing = styled.div<{ size?: string }>`
-  margin-bottom: ${(props) => props.size || "var(--s-20)"};
-`;
-
-const HeaderContainer = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--s-38) 0 var(--s-24);
-`;
-
-const CTA = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-`;
 
 const ClickableText = styled.button`
   outline: none;
@@ -55,14 +26,6 @@ const ClickableText = styled.button`
   padding: 0;
   color: inherit;
 `;
-
-function HeaderWithLogo() {
-  return (
-    <HeaderContainer>
-      <Logo />
-    </HeaderContainer>
-  );
-}
 
 export interface ImportProps {
   onMnemonic: (mnemonic: string) => void;
@@ -94,54 +57,34 @@ function Import({ onMnemonic, onCancel }: ImportProps) {
   };
 
   return (
-    <Container>
-      <Container>
-        <HeaderWithLogo />
+    <VerticalSequence>
+      <Icon name={IconNames.PROTOCOL} />
 
-        <Text
-          height={TextHeights.EXTRA_LARGE}
-          size={TextSizes.LARGE}
-          weight={TextWeights.BOLD}
-        >
-          Enter your mnemonic to recover your wallet.
-        </Text>
+      <BoldText>Enter your mnemonic to recover your wallet.</BoldText>
 
-        <Spacing />
+      <Input
+        onChange={onChange}
+        placeholder="Enter your mnemonic"
+        style={{ alignSelf: "stretch" }}
+      />
 
-        <Input onChange={onChange} placeholder="Enter your mnemonic" />
+      <Cta disabled={mnemonic == null} onClick={onClick}>
+        Recover
+      </Cta>
 
-        <Spacing />
+      {address && <Subsubtitle>Your address is</Subsubtitle>}
 
-        <CTA>
-          <Button disabled={mnemonic == null} onClick={onClick}>
-            Recover my wallet
-          </Button>
-        </CTA>
+      {address && <Text>{address}</Text>}
 
-        <Spacing size="var(--s-12)" />
-
-        {address && <Subsubtitle>Your address is</Subsubtitle>}
-
-        <Spacing size="var(--s-3)" />
-
-        {address && <Text>{address}</Text>}
-
-        <Spacing size="var(--s-12)" />
-
-        <Subsubtitle underline>
-          <ClickableText onClick={onCancel}>Create new instead</ClickableText>
-        </Subsubtitle>
-      </Container>
-    </Container>
+      <Subsubtitle underline>
+        <ClickableText onClick={onCancel}>Back to Create New</ClickableText>
+      </Subsubtitle>
+    </VerticalSequence>
   );
 }
 
 function ImportMnemonicScreen(props: ImportProps) {
-  return (
-    <TopComponent>
-      <Import {...props} />
-    </TopComponent>
-  );
+  return <Import {...props} />;
 }
 
 export default ImportMnemonicScreen;

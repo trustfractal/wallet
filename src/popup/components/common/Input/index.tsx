@@ -118,7 +118,7 @@ function Input(
   };
 
   return (
-    <Root>
+    <Root style={otherProps.style}>
       {hasLabel && (
         <LabelContainer active={active}>
           <Text

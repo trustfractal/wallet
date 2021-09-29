@@ -26,7 +26,11 @@ export class ProtocolOptIn {
   }
 
   async hasCompletedLiveness() {
-    return await this.protocol.isIdentityRegistered();
+    try {
+      return await this.protocol.isIdentityRegistered();
+    } catch {
+      return false;
+    }
   }
 
   async getMnemonic() {

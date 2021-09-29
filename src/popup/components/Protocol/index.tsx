@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
 import { getProtocolOptIn } from "@services/Factory";
-import { ProtocolProvider } from "@services/ProtocolService/";
+import TopComponent from "@popup/components/common/TopComponent";
 
 import DataScreen from "./DataScreen";
-import OptInForm from "./OptInForm";
+import { OptInForm } from "./OptInForm";
 import MnemonicPicker from "./MnemonicPicker";
 import { SetupSuccess, SetupInProgress, SetupError } from "./SetupScreen";
 import { NoLiveness } from "./NoLiveness";
@@ -13,8 +13,10 @@ function ProtocolState() {
   const [pageOverride, setPageOverride] = useState<JSX.Element | null>(null);
 
   const [optedIn, setOptedIn] = useState(false);
-  const [serviceOptedIn, setServiceOptedIn] = useState(false);
-  const [completedLiveness, setCompletedLiveness] = useState(false);
+  const [serviceOptedIn, setServiceOptedIn] = useState<boolean | undefined>();
+  const [completedLiveness, setCompletedLiveness] = useState<
+    boolean | undefined
+  >();
 
   useAsync(
     async () => await getProtocolOptIn().isOptedIn(),
@@ -62,6 +64,10 @@ function ProtocolState() {
     return pageOverride;
   }
 
+  if ([serviceOptedIn, completedLiveness].some((v) => v == null)) {
+    return <></>;
+  }
+
   if (!optedIn) {
     return <OptInForm onOptIn={() => setOptedIn(true)} />;
   }
@@ -87,14 +93,10 @@ function useAsync<T>(asyncFn: () => Promise<T>, onSuccess: (t: T) => void) {
   }, [asyncFn, onSuccess]);
 }
 
-function Protocol() {
+export function Protocol() {
   return (
-    <ProtocolProvider>
+    <TopComponent>
       <ProtocolState />
-    </ProtocolProvider>
+    </TopComponent>
   );
 }
-
-Protocol.defaultProps = {};
-
-export default Protocol;

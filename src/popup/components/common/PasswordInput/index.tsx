@@ -48,7 +48,7 @@ function PasswordInput(
 
   return (
     <Root>
-      <Input type={type} style={{ width: "80%" }} {...otherProps} />
+      <Input type={type} {...otherProps} />
       <IconContainer onClick={toggleVisibility}>
         <Icon name={icon} />
       </IconContainer>
