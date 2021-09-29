@@ -58,6 +58,15 @@ export function getProtocolService(mnemonic?: string) {
       getMaguroService(),
       getDataHost(),
     );
+
+    getProtocolOptIn()
+      .getMnemonic()
+      .then(async (mnemonic) => {
+        if (mnemonic) {
+          getProtocolService().signer =
+            ProtocolService.signerFromMnemonic(mnemonic);
+        }
+      });
   }
 
   return protocol;
@@ -89,13 +98,6 @@ export function getProtocolOptIn() {
       getWindowsService(),
       environment.PROTOCOL_JOURNEY_URL,
     );
-
-    protocolOptIn.getMnemonic().then(async (mnemonic) => {
-      if (mnemonic) {
-        getProtocolService().signer =
-          ProtocolService.signerFromMnemonic(mnemonic);
-      }
-    });
 
     protocolOptIn.postOptInCallbacks.push(async () => {
       await getDataHost().enable();

@@ -123,8 +123,10 @@ export class ProtocolService {
     return this.requireSigner().address;
   }
 
-  public async getBalance(accountId: string): Promise<AccountData> {
-    const { data } = await (await this.api).query.system.account(accountId);
+  public async getBalance(): Promise<AccountData> {
+    const { data } = await (
+      await this.api
+    ).query.system.account(this.address());
 
     return data;
   }

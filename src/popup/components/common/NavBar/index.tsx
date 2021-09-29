@@ -28,11 +28,8 @@ import Menu from "@popup/components/common/Menu";
 import { exportFile } from "@utils/FileUtils";
 
 import RoutesPaths from "@popup/routes/paths";
-import { ProtocolProvider, useProtocol } from "@services/ProtocolService";
-import {
-  getRegistrationState,
-  getWallet,
-} from "@redux/stores/user/reducers/protocol/selectors";
+import { getProtocolService } from "@services/Factory";
+import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selectors";
 import { protocolRegistrationTypes } from "@redux/stores/user/reducers/protocol";
 
 import environment from "@environment/index";
@@ -260,12 +257,8 @@ function ProtocolBalance({ balance }: { balance?: AccountData }) {
   );
 }
 
-function ProtocolNavbar() {
+function ProtocolNavbar({ balance }: { balance: AccountData }) {
   const appDispatch = useAppDispatch();
-
-  const [balance, setBalance] = useState<AccountData>();
-  const wallet = useUserSelector(getWallet);
-  const protocol = useProtocol();
 
   const history = useHistory();
 
@@ -306,17 +299,6 @@ function ProtocolNavbar() {
     },
   ];
 
-  useEffect(() => {
-    if (!protocol || !wallet) return;
-
-    const fetchBalance = async () => {
-      const accountBalance = await protocol.getBalance(wallet!.address);
-      setBalance(accountBalance);
-    };
-
-    fetchBalance();
-  }, [protocol, wallet]);
-
   return (
     <NavbarContainer>
       <LogoContainer>
@@ -348,18 +330,18 @@ function LogoNavbar() {
 
 export default function Navbar() {
   const setup = useAppSelector(isSetup);
-  const protocolOptIn = useAppSelector(getProtocolOptIn);
-  const registrationState = useUserSelector(getRegistrationState);
 
-  if (
-    protocolOptIn &&
-    registrationState === protocolRegistrationTypes.COMPLETED
-  ) {
-    return (
-      <ProtocolProvider>
-        <ProtocolNavbar />
-      </ProtocolProvider>
-    );
+  const [balance, setBalance] = useState<AccountData>();
+
+  useEffect(() => {
+    (async () => {
+      const balance = await getProtocolService().getBalance();
+      setBalance(balance);
+    })();
+  }, []);
+
+  if (balance) {
+    return <ProtocolNavbar balance={balance} />;
   }
 
   if (setup) {
