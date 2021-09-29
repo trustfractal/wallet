@@ -68,7 +68,7 @@ export const fetchConfig = () => {
       protocol_enabled: protocolEnabled,
       network = NETWORKS.TESTNET,
       liveness_check_enabled: livenessCheckEnabled,
-    } = await MaguroService.getConfig();
+    } = await getMaguroService().getConfig();
 
     AppStore.getStore().dispatch(
       appActions.setProtocolEnabled(protocolEnabled),
