@@ -13,7 +13,7 @@ import {
 
 import Register from "@popup/components/Register";
 
-import WindowsService from "@services/WindowsService";
+import { getWindowsService } from "@services/Factory";
 
 import environment from "@environment/index";
 
@@ -24,11 +24,11 @@ function RegisterScreen() {
   const signUpError = useAppSelector(getSignUpError);
 
   const onClickTerms = () =>
-    WindowsService.createTab({
+    getWindowsService().createTab({
       url: `${environment.FRACTAL_WEBSITE_URL}/documents/end-user-agreement`,
     });
   const onClickPrivacyPolicy = () =>
-    WindowsService.createTab({
+    getWindowsService().createTab({
       url: `${environment.FRACTAL_WEBSITE_URL}/documents/privacy-policy`,
     });
 

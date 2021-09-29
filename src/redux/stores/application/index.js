@@ -2,7 +2,7 @@ import { createStore, combineReducers, applyMiddleware } from "redux";
 import { Store, alias, wrapStore } from "webext-redux";
 import thunk from "redux-thunk";
 
-import StorageService from "@services/StorageService";
+import { getStorageService } from "@services/Factory";
 
 import aliases from "@redux/stores/application/aliases";
 import watchers from "@redux/middlewares/watchers";
@@ -106,11 +106,11 @@ export class AppStore {
   }
 
   static getStoredState(ifNull = undefined) {
-    return StorageService.getItem(AppStore.STATE_ALIAS, ifNull);
+    return getStorageService().getItem(AppStore.STATE_ALIAS, ifNull);
   }
 
   static setStoredState(state) {
-    return StorageService.setItem(AppStore.STATE_ALIAS, state);
+    return getStorageService().setItem(AppStore.STATE_ALIAS, state);
   }
 
   static async serializeAndStore(state) {

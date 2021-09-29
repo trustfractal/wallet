@@ -1,17 +1,16 @@
-import { chrome } from "jest-chrome";
-
-import WindowsService from "@services/WindowsService";
+import { WindowsService } from "@services/WindowsService";
 import {
-  ERROR_CREATE_WINDOW,
-  ERROR_GET_CURRENT_WINDOW,
-  ERROR_GET_ALL_WINDOWS,
   ERROR_CLOSE_WINDOW,
-  ERROR_GET_WINDOW,
-  ERROR_GET_TAB,
-  ERROR_UPDATE_TAB,
-  ERROR_QUERY_TABS,
   ERROR_CREATE_TAB,
+  ERROR_CREATE_WINDOW,
+  ERROR_GET_ALL_WINDOWS,
+  ERROR_GET_CURRENT_WINDOW,
+  ERROR_GET_TAB,
+  ERROR_GET_WINDOW,
+  ERROR_QUERY_TABS,
+  ERROR_UPDATE_TAB,
 } from "@services/WindowsService/Errors";
+import { chrome } from "jest-chrome";
 
 describe("Unit Windows Service", () => {
   describe("createWindow()", () => {
@@ -41,7 +40,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      const result = await WindowsService.createWindow();
+      const result = await new WindowsService().createWindow();
 
       // Assert
       const expectedResult = returnedWindow;
@@ -80,7 +79,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execute and Assert
-      await expect(WindowsService.createWindow()).rejects.toThrow(
+      await expect(new WindowsService().createWindow()).rejects.toThrow(
         ERROR_CREATE_WINDOW(lastError),
       );
     });
@@ -112,7 +111,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      const result = await WindowsService.getCurrentWindow();
+      const result = await new WindowsService().getCurrentWindow();
 
       // Assert
       const expectedResult = returnedWindow;
@@ -151,7 +150,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execute and Assert
-      await expect(WindowsService.getCurrentWindow()).rejects.toThrow(
+      await expect(new WindowsService().getCurrentWindow()).rejects.toThrow(
         ERROR_GET_CURRENT_WINDOW(lastError),
       );
     });
@@ -185,7 +184,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      const result = await WindowsService.getAllWindows();
+      const result = await new WindowsService().getAllWindows();
 
       // Assert
       const expectedResult = returnedWindows;
@@ -226,7 +225,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execute and Assert
-      await expect(WindowsService.getAllWindows()).rejects.toThrow(
+      await expect(new WindowsService().getAllWindows()).rejects.toThrow(
         ERROR_GET_ALL_WINDOWS(lastError),
       );
     });
@@ -247,7 +246,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      await WindowsService.closeWindow(windowId);
+      await new WindowsService().closeWindow(windowId);
 
       // Assert
       expect(chrome.windows.remove).toHaveBeenCalled();
@@ -270,7 +269,7 @@ describe("Unit Windows Service", () => {
       });
 
       // Execute and Assert
-      await expect(WindowsService.closeWindow(windowId)).rejects.toThrow(
+      await expect(new WindowsService().closeWindow(windowId)).rejects.toThrow(
         ERROR_CLOSE_WINDOW(lastError),
       );
     });
@@ -308,7 +307,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      await WindowsService.closeCurrentWindow();
+      await new WindowsService().closeCurrentWindow();
 
       // Assert
       expect(chrome.windows.getCurrent).toHaveBeenCalled();
@@ -349,7 +348,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      await WindowsService.closeAllWindows();
+      await new WindowsService().closeAllWindows();
 
       // Assert
       expect(chrome.windows.getAll).toHaveBeenCalled();
@@ -386,7 +385,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      const result = await WindowsService.createTab({
+      const result = await new WindowsService().createTab({
         url: "http://test.unit",
       });
 
@@ -431,7 +430,7 @@ describe("Unit Windows Service", () => {
 
       // Execute and Assert
       await expect(
-        WindowsService.createTab({
+        new WindowsService().createTab({
           url: "http://test.unit",
         }),
       ).rejects.toThrow(ERROR_CREATE_TAB(lastError));
@@ -466,7 +465,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      const result = await WindowsService.getAllWindows();
+      const result = await new WindowsService().getAllWindows();
 
       // Assert
       const expectedResult = returnedWindows;
@@ -509,7 +508,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      await WindowsService.closeAllPopups();
+      await new WindowsService().closeAllPopups();
 
       // Assert
       expect(chrome.windows.getAll).toHaveBeenCalled();
@@ -549,7 +548,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      const result = await WindowsService.getWindow(windowId);
+      const result = await new WindowsService().getWindow(windowId);
 
       // Assert
       const expectedResult = returnedWindow;
@@ -593,7 +592,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execute and Assert
-      await expect(WindowsService.getWindow(windowId)).rejects.toThrow(
+      await expect(new WindowsService().getWindow(windowId)).rejects.toThrow(
         ERROR_GET_WINDOW(lastError, windowId),
       );
     });
@@ -626,7 +625,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      const result = await WindowsService.getTab(windowId);
+      const result = await new WindowsService().getTab(windowId);
 
       // Assert
       const expectedResult = returnedTab;
@@ -665,7 +664,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execute and Assert
-      await expect(WindowsService.getTab(windowId)).rejects.toThrow(
+      await expect(new WindowsService().getTab(windowId)).rejects.toThrow(
         ERROR_GET_TAB(lastError, windowId),
       );
     });
@@ -703,7 +702,10 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      const result = await WindowsService.updateTab(windowId, configProperties);
+      const result = await new WindowsService().updateTab(
+        windowId,
+        configProperties,
+      );
 
       // Assert
       const expectedResult = returnedTab;
@@ -748,7 +750,7 @@ describe("Unit Windows Service", () => {
 
       // Execute and Assert
       await expect(
-        WindowsService.updateTab(windowId, configProperties),
+        new WindowsService().updateTab(windowId, configProperties),
       ).rejects.toThrow(ERROR_UPDATE_TAB(lastError, windowId));
     });
   });
@@ -787,7 +789,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      const result = await WindowsService.queryTabs(queryInfo);
+      const result = await new WindowsService().queryTabs(queryInfo);
 
       // Assert
       const expectedResult = returnedTabs;
@@ -832,7 +834,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execute and Assert
-      await expect(WindowsService.queryTabs(queryInfo)).rejects.toThrow(
+      await expect(new WindowsService().queryTabs(queryInfo)).rejects.toThrow(
         ERROR_QUERY_TABS(lastError),
       );
     });
@@ -891,7 +893,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      const result = await WindowsService.getActiveTabs();
+      const result = await new WindowsService().getActiveTabs();
 
       // Assert
       const expectedResult = returnedTabs;
@@ -932,7 +934,7 @@ describe("Unit Windows Service", () => {
       );
 
       // Execture
-      const result = await WindowsService.getActiveTabs();
+      const result = await new WindowsService().getActiveTabs();
 
       // Assert
       expect(result).toHaveLength(0);

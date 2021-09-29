@@ -6,7 +6,7 @@ import Title from "@popup/components/common/Title";
 import TopComponent from "@popup/components/common/TopComponent";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 
-import WindowsService from "@services/WindowsService";
+import { getWindowsService } from "@services/Factory";
 import environment from "@environment/index";
 
 const IconContainer = styled.div`
@@ -27,7 +27,8 @@ const ActionContainer = styled.div`
 `;
 
 function EmptyCredentials() {
-  const onNext = () => WindowsService.openTab(environment.LIVENESS_JOURNEY_URL);
+  const onNext = () =>
+    getWindowsService().openTab(environment.LIVENESS_JOURNEY_URL);
 
   return (
     <TopComponent>

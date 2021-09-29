@@ -2,7 +2,7 @@ import { createStore, combineReducers, applyMiddleware } from "redux";
 import { Store, alias, wrapStore } from "webext-redux";
 import thunk from "redux-thunk";
 
-import StorageService from "@services/StorageService";
+import { getStorageService } from "@services/Factory";
 import CryptoUtils from "@utils/CryptoUtils";
 
 import aliases from "@redux/stores/user/aliases";
@@ -129,19 +129,19 @@ export class UserStore {
   }
 
   static getStoredSalt() {
-    return StorageService.getItem(UserStore.SALT_ALIAS);
+    return getStorageService().getItem(UserStore.SALT_ALIAS);
   }
 
   static setStoredSalt(alias) {
-    return StorageService.setItem(UserStore.SALT_ALIAS, alias);
+    return getStorageService().setItem(UserStore.SALT_ALIAS, alias);
   }
 
   static getStoredState() {
-    return StorageService.getItem(UserStore.STATE_ALIAS);
+    return getStorageService().getItem(UserStore.STATE_ALIAS);
   }
 
   static setStoredState(state) {
-    return StorageService.setItem(UserStore.STATE_ALIAS, state);
+    return getStorageService().setItem(UserStore.STATE_ALIAS, state);
   }
 
   static async getHashedPassword(password) {

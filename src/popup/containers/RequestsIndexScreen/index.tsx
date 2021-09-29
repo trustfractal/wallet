@@ -7,7 +7,7 @@ import { getPendingRequests } from "@redux/stores/user/reducers/requests/selecto
 
 import RoutesPaths from "@popup/routes/paths";
 
-import WindowsService from "@services/WindowsService";
+import { getWindowsService } from "@services/Factory";
 
 function RequestsIndexScreen() {
   const history = useHistory();
@@ -15,7 +15,7 @@ function RequestsIndexScreen() {
   const requests = useUserSelector(getPendingRequests);
 
   const closeAndRedirect = async () => {
-    await WindowsService.closeAllPopups();
+    await getWindowsService().closeAllPopups();
     history.push(RoutesPaths.WALLET);
   };
 

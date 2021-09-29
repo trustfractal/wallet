@@ -1,30 +1,22 @@
-import { v4 as uuidv4 } from "uuid";
-
-import UserStore from "@redux/stores/user";
-
-import CredentialsCollection from "@models/Credential/CredentialsCollection";
-import AuthMiddleware from "@models/Connection/middlewares/AuthMiddleware";
-import ConnectionTypes from "@models/Connection/types";
-
-import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
-
-import requestsActions from "@redux/stores/user/reducers/requests";
-
-import { requestsWatcher } from "@redux/middlewares/watchers";
-
 import { ERROR_CREDENTIALS_NOT_FOUND } from "@background/Errors";
-
 import {
+  ERROR_VERIFICATION_REQUEST_DECLINED,
   ERROR_VERIFICATION_REQUEST_INVALID_FIELDS,
   ERROR_VERIFICATION_REQUEST_TIME_OUT,
-  ERROR_VERIFICATION_REQUEST_DECLINED,
   ERROR_VERIFICATION_REQUEST_WINDOW_OPEN,
 } from "@background/Errors";
-
-import WindowsService, { PopupSizes } from "@services/WindowsService";
-
-import { IVerificationRequest } from "@pluginTypes/plugin";
+import AuthMiddleware from "@models/Connection/middlewares/AuthMiddleware";
+import ConnectionTypes from "@models/Connection/types";
+import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import VerificationRequest from "@models/VerificationRequest";
+import { IVerificationRequest } from "@pluginTypes/plugin";
+import { requestsWatcher } from "@redux/middlewares/watchers";
+import UserStore from "@redux/stores/user";
+import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
+import requestsActions from "@redux/stores/user/reducers/requests";
+import { getWindowsService } from "@services/Factory";
+import { PopupSizes } from "@services/WindowsService";
+import { v4 as uuidv4 } from "uuid";
 
 export const getVerificationRequest = ([level, requester, fields = {}]: [
   string,
@@ -68,7 +60,7 @@ export const getVerificationRequest = ([level, requester, fields = {}]: [
       );
 
       // open popup on a new window
-      const window = await WindowsService.createPopup(PopupSizes.MEDIUM);
+      const window = await getWindowsService().createPopup(PopupSizes.MEDIUM);
 
       if (!window) {
         reject(ERROR_VERIFICATION_REQUEST_WINDOW_OPEN());
@@ -87,7 +79,7 @@ export const getVerificationRequest = ([level, requester, fields = {}]: [
 
       const onTimeout = async () => {
         // close request popup
-        WindowsService.closeWindow(window.id);
+        getWindowsService().closeWindow(window.id);
 
         await UserStore.getStore().dispatch(
           requestsActions.declineVerificationRequest({

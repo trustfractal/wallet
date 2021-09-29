@@ -6,19 +6,7 @@ import {
   ERROR_CLEAR,
 } from "./Errors";
 
-class StorageService {
-  private static instance: StorageService;
-
-  private constructor() {}
-
-  public static getInstance(): StorageService {
-    if (!StorageService.instance) {
-      StorageService.instance = new StorageService();
-    }
-
-    return StorageService.instance;
-  }
-
+export class StorageService {
   hasItem(key: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       chrome.storage.local.get([key], (items: { [key: string]: string }) => {
@@ -84,7 +72,3 @@ class StorageService {
     });
   }
 }
-
-const storage: StorageService = StorageService.getInstance();
-
-export default storage;

@@ -4,7 +4,7 @@ import { withNavBar } from "@popup/components/common/NavBar";
 import Tabs from "@popup/components/common/Tabs";
 import Protocol from "@popup/components/Protocol";
 import Credentials from "@popup/components/Credentials";
-import MaguroService from "@services/MaguroService";
+import { getMaguroService } from "@services/Factory";
 
 import {
   useAppDispatch,
@@ -25,7 +25,7 @@ function HomeScreen() {
     (async () => {
       if (protocolEnabled) return;
 
-      const config = await MaguroService.getConfig();
+      const config = await getMaguroService().getConfig();
       setProtocolEnabled(config.protocol_enabled);
       appDispatch(appActions.setProtocolEnabled(config.protocol_enabled));
     })();

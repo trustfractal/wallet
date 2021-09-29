@@ -1,6 +1,6 @@
 import { chrome } from "jest-chrome";
 
-import StorageService from "@services/StorageService";
+import { StorageService } from "@services/StorageService";
 import {
   ERROR_HAS_ITEM,
   ERROR_GET_ITEM,
@@ -26,7 +26,7 @@ describe("Unit Storage Service", () => {
       );
 
       // Execture
-      const result = await StorageService.hasItem(key);
+      const result = await new StorageService().hasItem(key);
 
       // Assert
       const expectedResult = true;
@@ -44,7 +44,7 @@ describe("Unit Storage Service", () => {
       );
 
       // Execute
-      const result = await StorageService.hasItem(key);
+      const result = await new StorageService().hasItem(key);
 
       // Assert
       const expectedResult = false;
@@ -71,7 +71,7 @@ describe("Unit Storage Service", () => {
       );
 
       // Execute and Assert
-      await expect(StorageService.hasItem(key)).rejects.toThrow(
+      await expect(new StorageService().hasItem(key)).rejects.toThrow(
         ERROR_HAS_ITEM(lastError, key),
       );
     });
@@ -94,7 +94,7 @@ describe("Unit Storage Service", () => {
       );
 
       // Execute
-      const result = await StorageService.getItem(key);
+      const result = await new StorageService().getItem(key);
 
       // Assert
       const expectedResult = value;
@@ -112,7 +112,7 @@ describe("Unit Storage Service", () => {
       );
 
       // Execute
-      const result = await StorageService.getItem(key);
+      const result = await new StorageService().getItem(key);
 
       // Assert
       const expectedResult = undefined;
@@ -131,7 +131,7 @@ describe("Unit Storage Service", () => {
       );
 
       // Execute
-      const result = await StorageService.getItem(key, defaultValue);
+      const result = await new StorageService().getItem(key, defaultValue);
 
       // Assert
       const expectedResult = defaultValue;
@@ -158,7 +158,7 @@ describe("Unit Storage Service", () => {
       );
 
       // Execute and Assert
-      await expect(StorageService.getItem(key)).rejects.toThrow(
+      await expect(new StorageService().getItem(key)).rejects.toThrow(
         ERROR_GET_ITEM(lastError, key),
       );
     });
@@ -179,7 +179,7 @@ describe("Unit Storage Service", () => {
       );
 
       // Execute
-      await StorageService.setItem(key, value);
+      await new StorageService().setItem(key, value);
 
       // Assert
       expect(chrome.storage.local.set).toHaveBeenCalled();
@@ -205,7 +205,7 @@ describe("Unit Storage Service", () => {
       );
 
       // Execute and Assert
-      await expect(StorageService.setItem(key, value)).rejects.toThrow(
+      await expect(new StorageService().setItem(key, value)).rejects.toThrow(
         ERROR_SET_ITEM(lastError, key, value),
       );
     });
@@ -225,7 +225,7 @@ describe("Unit Storage Service", () => {
       );
 
       // Execute
-      await StorageService.removeItem(key);
+      await new StorageService().removeItem(key);
 
       // Assert
       expect(chrome.storage.local.remove).toHaveBeenCalled();
@@ -250,7 +250,7 @@ describe("Unit Storage Service", () => {
       );
 
       // Execute and Assert
-      await expect(StorageService.removeItem(key)).rejects.toThrow(
+      await expect(new StorageService().removeItem(key)).rejects.toThrow(
         ERROR_REMOVE_ITEM(lastError, key),
       );
     });
@@ -267,7 +267,7 @@ describe("Unit Storage Service", () => {
       });
 
       // Execute
-      await StorageService.clear();
+      await new StorageService().clear();
 
       // Assert
       expect(chrome.storage.local.clear).toHaveBeenCalled();
@@ -288,7 +288,7 @@ describe("Unit Storage Service", () => {
       });
 
       // Execute and Assert
-      await expect(StorageService.clear()).rejects.toThrow(
+      await expect(new StorageService().clear()).rejects.toThrow(
         ERROR_CLEAR(lastError),
       );
     });

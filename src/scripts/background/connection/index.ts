@@ -7,7 +7,7 @@ import { ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED } from "@background/Err
 
 import { IConnectionPorts, IPort } from "@pluginTypes/index";
 
-import WindowsService from "@services/WindowsService";
+import { getWindowsService } from "@services/Factory";
 
 class Connection {
   private static instance?: Connection;
@@ -55,7 +55,7 @@ class Connection {
     this.ensureConnectionIsInitialized();
 
     // get current active tab
-    const fractalTabs = await WindowsService.getFractalTabs();
+    const fractalTabs = await getWindowsService().getFractalTabs();
 
     if (fractalTabs.length === 0) return;
 
@@ -77,7 +77,7 @@ class Connection {
     this.ensureConnectionIsInitialized();
 
     // get current active tab
-    const activeTabs = await WindowsService.getActiveTabs();
+    const activeTabs = await getWindowsService().getActiveTabs();
 
     if (activeTabs.length === 0) return;
 

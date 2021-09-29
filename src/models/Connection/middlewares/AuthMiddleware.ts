@@ -1,18 +1,18 @@
+import {
+  ERROR_LOGIN_TIMEOUT,
+  ERROR_LOGIN_WINDOW_CLOSED,
+  ERROR_LOGIN_WINDOW_OPEN,
+} from "@models/Connection/Errors";
 import { IMiddleware } from "@pluginTypes/index";
 import { authWatcher, setupWatcher } from "@redux/middlewares/watchers";
-
 import AppStore from "@redux/stores/application";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 import {
   isLoggedIn,
   isRegistered,
 } from "@redux/stores/application/reducers/auth/selectors";
-import WindowsService, { PopupSizes } from "@services/WindowsService";
-import {
-  ERROR_LOGIN_WINDOW_OPEN,
-  ERROR_LOGIN_TIMEOUT,
-  ERROR_LOGIN_WINDOW_CLOSED,
-} from "@models/Connection/Errors";
+import { getWindowsService } from "@services/Factory";
+import { PopupSizes } from "@services/WindowsService";
 
 function loginFlow(): Promise<void> {
   return new Promise(async (resolve, reject) => {
@@ -26,7 +26,7 @@ function loginFlow(): Promise<void> {
       size = PopupSizes.SMALL;
     }
 
-    const window = await WindowsService.createPopup(size);
+    const window = await getWindowsService().createPopup(size);
 
     if (window === undefined) {
       reject(ERROR_LOGIN_WINDOW_OPEN());
@@ -46,7 +46,7 @@ function loginFlow(): Promise<void> {
       resolved = true;
 
       // close login popup
-      await WindowsService.closeWindow(window!.id);
+      await getWindowsService().closeWindow(window!.id);
 
       // resolve promise
       resolve();
@@ -60,7 +60,7 @@ function loginFlow(): Promise<void> {
       resolved = true;
 
       // close login popup
-      await WindowsService.closeWindow(window!.id);
+      await getWindowsService().closeWindow(window!.id);
 
       // resolve promise
       reject(ERROR_LOGIN_TIMEOUT());
@@ -89,7 +89,7 @@ function setupFlow(): Promise<void> {
     }
 
     // create normal popup to setup
-    const window = await WindowsService.createPopup(size);
+    const window = await getWindowsService().createPopup(size);
 
     if (window === undefined) {
       reject(ERROR_LOGIN_WINDOW_OPEN());
@@ -109,7 +109,7 @@ function setupFlow(): Promise<void> {
       resolved = true;
 
       // close setup popup
-      await WindowsService.closeWindow(window.id);
+      await getWindowsService().closeWindow(window.id);
 
       // resolve promise
       resolve();
@@ -124,7 +124,7 @@ function setupFlow(): Promise<void> {
       resolved = true;
 
       // close setup popup
-      await WindowsService.closeWindow(window.id);
+      await getWindowsService().closeWindow(window.id);
 
       // resolve promise
       reject(ERROR_LOGIN_TIMEOUT());

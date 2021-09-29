@@ -17,7 +17,7 @@ import protocolActions, {
 } from "@redux/stores/user/reducers/protocol";
 import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selectors";
 
-import MaguroService from "@services/MaguroService";
+import { getMaguroService } from "@services/Factory";
 import MegalodonService from "@services/MegalodonService";
 
 export const fetchCredentialsAndVerificationCases = () => {
@@ -28,7 +28,7 @@ export const fetchCredentialsAndVerificationCases = () => {
 
     // fetch credentials
     const { credentials: userCredentials } =
-      await MaguroService.getCredentials();
+      await getMaguroService().getCredentials();
 
     const credentials = userCredentials.reduce((memo, credential) => {
       memo.push(

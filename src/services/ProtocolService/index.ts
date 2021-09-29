@@ -1,59 +1,28 @@
-import { ApiPromise, WsProvider } from "@polkadot/api";
-import { u64 } from "@polkadot/types";
+import { ApiPromise } from "@polkadot/api";
 import { Keyring } from "@polkadot/keyring";
+import { u64 } from "@polkadot/types";
+
 import type { KeyringPair } from "@polkadot/keyring/types";
 import type { AccountData } from "@polkadot/types/interfaces";
+import { MaguroService } from "@services/MaguroService";
 import { DataHost } from "@services/DataHost";
-import MaguroService from "@services/MaguroService";
 import { Storage } from "@utils/StorageArray";
-
-import Environment from "@environment/index";
-
-import types from "./types";
 
 export * from "./context";
 
-export default class ProtocolService {
-  public api: ApiPromise;
-  public signer: KeyringPair;
-
-  public static async create(uri: string): Promise<ProtocolService> {
-    const keyring = new Keyring({ type: "sr25519" });
-    const signer = keyring.addFromUri(uri);
-
-    return await ProtocolService.withSigner(signer);
-  }
-
-  private static async withSigner(signer: KeyringPair) {
-    let api;
-    try {
-      const url = (await MaguroService.getConfig()).blockchain_url;
-      const provider = new WsProvider(url);
-      api = await ApiPromise.create({ provider, types });
-    } catch (e) {
-      console.error(e);
-      const provider = new WsProvider(Environment.PROTOCOL_RPC_ENDPOINT);
-      api = await ApiPromise.create({ provider, types });
-    }
-
-    return new ProtocolService(api, signer);
-  }
-
-  public async disconnect() {
-    await this.api.disconnect();
-  }
-
-  public constructor(api: ApiPromise, signer: KeyringPair) {
-    this.api = api;
-    this.signer = signer;
-  }
+export class ProtocolService {
+  constructor(
+    private readonly api: Promise<ApiPromise>,
+    private readonly signer: KeyringPair | null,
+    private readonly maguro: MaguroService,
+    private readonly dataHost: DataHost,
+  ) {}
 
   public async registerForMinting(): Promise<string | undefined> {
     const latestProof = await this.latestExtensionProof();
     console.log(`Latest proof from chain ${latestProof}`);
 
-    const dataHost = DataHost.instance();
-    const extensionProof = await dataHost.extensionProof(latestProof);
+    const extensionProof = await this.dataHost.extensionProof(latestProof);
     if (extensionProof == null) return;
 
     return await this.submitMintingExtrinsic(extensionProof);
@@ -66,25 +35,29 @@ export default class ProtocolService {
     // Blue-green strategy handling migration of blockchain storage.
     try {
       // Will be long-term code.
-      const dataset = await this.api.query.fractalMinting.accountIdDatasets(
-        this.address(),
-        fractalId,
-      );
+      const dataset = await (
+        await this.api
+      ).query.fractalMinting.accountIdDatasets(this.address(), fractalId);
       return dataset.toHuman() as string | null;
     } catch (e) {
       // TODO(shelbyd): Delete this after rollout of storage change.
-      const dataset = await this.api.query.fractalMinting.idDatasets(fractalId);
+      const dataset = await (
+        await this.api
+      ).query.fractalMinting.idDatasets(fractalId);
       return dataset.toHuman() as string | null;
     }
   }
 
   private async submitMintingExtrinsic(proof: string): Promise<string> {
     console.log(`Submitting proof ${proof}`);
-    const txn = this.api.tx.fractalMinting.registerForMinting(null, proof);
+    const txn = (await this.api).tx.fractalMinting.registerForMinting(
+      null,
+      proof,
+    );
 
     return new Promise(async (resolve, reject) => {
       const unsub = await txn.signAndSend(
-        this.signer,
+        this.requireSigner(),
         ({ events = [], status }) => {
           console.log(`Extrinsic status: ${status}`);
           if (!status.isFinalized) return;
@@ -106,19 +79,28 @@ export default class ProtocolService {
     });
   }
 
+  private requireSigner(): KeyringPair {
+    if (this.signer == null) {
+      throw new Error("Method requires signer to be defined");
+    } else {
+      return this.signer;
+    }
+  }
+
   public async isRegisteredForMinting(): Promise<boolean> {
     const fractalId = await this.registeredFractalId();
     if (fractalId == null) return false;
 
-    const storageSize =
-      await this.api.query.fractalMinting.nextMintingRewards.size(fractalId);
+    const storageSize = await (
+      await this.api
+    ).query.fractalMinting.nextMintingRewards.size(fractalId);
     return storageSize.toNumber() !== 0;
   }
 
   private async registeredFractalId(): Promise<u64 | null> {
-    const keys = await this.api.query.fractalMinting.accountIds.keys(
-      this.address(),
-    );
+    const keys = await (
+      await this.api
+    ).query.fractalMinting.accountIds.keys(this.address());
     if (keys.length !== 1) return null;
     const fractalId = keys[0].args[1];
     return fractalId as u64;
@@ -128,7 +110,7 @@ export default class ProtocolService {
     if (await this.isIdentityRegistered()) return;
 
     console.log("Identity is not registered, trying to register");
-    await MaguroService.registerIdentity(this.address());
+    await this.maguro.registerIdentity(this.address());
     console.log("Identity successfully registered");
   }
 
@@ -138,11 +120,11 @@ export default class ProtocolService {
   }
 
   public address() {
-    return this.signer.address;
+    return this.requireSigner().address;
   }
 
   public async getBalance(accountId: string): Promise<AccountData> {
-    const { data } = await this.api.query.system.account(accountId);
+    const { data } = await (await this.api).query.system.account(accountId);
 
     return data;
   }
@@ -150,11 +132,23 @@ export default class ProtocolService {
   async saveSigner(storage: Storage) {
     await storage.setItem(
       "protocol/signer",
-      JSON.stringify(this.signer.toJson()),
+      JSON.stringify(this.requireSigner().toJson()),
     );
   }
 
-  static async fromStorage(storage: Storage) {
+  static signerFromMnemonic(mnemonic: string) {
+    const keyring = new Keyring({ type: "sr25519" });
+    return keyring.addFromUri(mnemonic);
+  }
+
+  static async saveSignerMnemonic(storage: Storage, mnemonic: string) {
+    await storage.setItem(
+      "protocol/signer",
+      JSON.stringify(ProtocolService.signerFromMnemonic(mnemonic).toJson()),
+    );
+  }
+
+  static async signerFromStorage(storage: Storage) {
     const maybeSigner = await storage.getItem("protocol/signer");
     if (maybeSigner == null)
       throw new Error("No signer in the provided storage");
@@ -163,6 +157,6 @@ export default class ProtocolService {
     const keyring = new Keyring({ type: "sr25519" });
     const signer = keyring.addFromJson(parsedSigner);
     signer.unlock();
-    return await ProtocolService.withSigner(signer);
+    return signer;
   }
 }

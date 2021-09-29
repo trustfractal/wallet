@@ -8,7 +8,7 @@ import About from "@popup/components/About";
 
 import RoutesPaths from "@popup/routes/paths";
 
-import WindowsService from "@services/WindowsService";
+import { getWindowsService } from "@services/Factory";
 
 import environment from "@environment/index";
 
@@ -18,11 +18,11 @@ function AboutScreen() {
 
   const onNext = () => history.push(RoutesPaths.WALLET);
   const onClickFractalLink = () =>
-    WindowsService.createTab({
+    getWindowsService().createTab({
       url: environment.FRACTAL_WEBSITE_URL,
     });
   const onClickFractalTelegram = () =>
-    WindowsService.createTab({
+    getWindowsService().createTab({
       url: "https://t.me/fractal_protocol",
     });
 

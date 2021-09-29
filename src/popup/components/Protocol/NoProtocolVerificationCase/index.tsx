@@ -20,7 +20,7 @@ import { useUserSelector } from "@redux/stores/user/context";
 import { getWallet } from "@redux/stores/user/reducers/protocol/selectors";
 import { getPendingOrContactedProtocolVerificationCases } from "@redux/stores/user/reducers/credentials/selectors";
 
-import WindowsService from "@services/WindowsService";
+import { getWindowsService } from "@services/Factory";
 import environment from "@environment/index";
 
 // @ts-ignore
@@ -104,7 +104,7 @@ function renderAction(
 
       if (isMainNet) link += `/protocol`;
 
-      WindowsService.openTab(link);
+      getWindowsService().openTab(link);
     };
 
     return (
@@ -128,7 +128,8 @@ function renderAction(
     );
   }
 
-  const onNext = () => WindowsService.openTab(environment.PROTOCOL_JOURNEY_URL);
+  const onNext = () =>
+    getWindowsService().openTab(environment.PROTOCOL_JOURNEY_URL);
 
   return (
     <ActionContainer>

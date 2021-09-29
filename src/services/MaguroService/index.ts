@@ -1,15 +1,13 @@
+import Environment from "@environment/index";
 import AppStore from "@redux/stores/application";
 import { getBackendMegalodonSession } from "@redux/stores/application/reducers/auth/selectors";
-
-import Environment from "@environment/index";
-
 import CatfishService from "@services/CatfishService";
 import HttpService from "@services/HttpService";
 
 const HTTP_TIMEOUT = 5 * 60 * 1000; // 5 minutes timeout
 
-export default class MaguroService {
-  private static ensureAuthorization(
+export class MaguroService {
+  private ensureAuthorization(
     headers: Record<string, string>,
   ): Record<string, string> {
     if (headers["authorization"]) return headers;
@@ -22,7 +20,7 @@ export default class MaguroService {
     return headers;
   }
 
-  private static async callAuthorizedApi(
+  private async callAuthorizedApi(
     route: string,
     method: RequestInit["method"] = "GET",
     body?: RequestInit["body"],
@@ -34,7 +32,7 @@ export default class MaguroService {
     return this.callApi(route, method, body, headersWithAuth);
   }
 
-  private static async callApi(
+  private async callApi(
     route: string,
     method: RequestInit["method"] = "GET",
     body?: RequestInit["body"],
@@ -78,11 +76,11 @@ export default class MaguroService {
     return response.json();
   }
 
-  public static getCredentials() {
+  public getCredentials() {
     return this.callAuthorizedApi("credentials", "GET", null);
   }
 
-  public static registerIdentity(address: string) {
+  public registerIdentity(address: string) {
     return this.callAuthorizedApi(
       "protocol/register_identity",
       "POST",
@@ -90,7 +88,7 @@ export default class MaguroService {
     );
   }
 
-  public static getConfig() {
+  public getConfig() {
     return this.callApi("config", "GET", null);
   }
 }

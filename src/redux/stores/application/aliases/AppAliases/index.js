@@ -12,12 +12,9 @@ import UserStore from "@redux/stores/user";
 import credentialsActions from "@redux/stores/user/reducers/credentials";
 
 import CredentialsPolling from "@models/Polling/CredentialsPolling";
-import MaguroService from "@services/MaguroService";
+import { getMaguroService, getWindowsService } from "@services/Factory";
 
-import WindowsService, {
-  PopupSizes,
-  PopupSizesValues,
-} from "@services/WindowsService";
+import { PopupSizes, PopupSizesValues } from "@services/WindowsService";
 
 export const startup = () => {
   return async (dispatch) => {
@@ -43,7 +40,7 @@ export const setPopupSize = ({
   },
 }) => {
   return async () => {
-    const popup = await WindowsService.getPopup();
+    const popup = await getWindowsService().getPopup();
     let popupWidth = width;
     let popupHeight = height;
 
@@ -56,7 +53,11 @@ export const setPopupSize = ({
         popupHeight = PopupSizesValues[PopupSizes.SMALL].height;
       }
 
-      await WindowsService.updateWindowSize(popup.id, popupWidth, popupHeight);
+      await getWindowsService().updateWindowSize(
+        popup.id,
+        popupWidth,
+        popupHeight,
+      );
     }
   };
 };
@@ -67,7 +68,7 @@ export const fetchConfig = () => {
       protocol_enabled: protocolEnabled,
       network = NETWORKS.TESTNET,
       liveness_check_enabled: livenessCheckEnabled,
-    } = await MaguroService.getConfig();
+    } = await getMaguroService().getConfig();
 
     AppStore.getStore().dispatch(
       appActions.setProtocolEnabled(protocolEnabled),
