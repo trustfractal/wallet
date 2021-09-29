@@ -15,7 +15,7 @@ export function SetupSuccess({ onContinue }: { onContinue: () => void }) {
     <VerticalSequence>
       <Icon name={IconNames.PROTOCOL_SETUP_SUCCESS} />
 
-      <Title>Successfully Opted In</Title>
+      <Title>You joined the Fractal Protocol!</Title>
 
       <Cta onClick={onContinue}>Continue</Cta>
 
