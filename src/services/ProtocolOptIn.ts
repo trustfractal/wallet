@@ -8,6 +8,8 @@ export class MissingLiveness extends Error {}
 export class ProtocolOptIn {
   public postOptInCallbacks: Array<(mnemonic: string) => Promise<void>> = [];
 
+  private completedLivenessOverride = false;
+
   constructor(
     private readonly storage: Storage,
     private readonly maguro: MaguroService,
@@ -26,6 +28,8 @@ export class ProtocolOptIn {
   }
 
   async hasCompletedLiveness() {
+    if (this.completedLivenessOverride) return true;
+
     try {
       return await this.protocol.isIdentityRegistered();
     } catch {
@@ -67,6 +71,7 @@ export class ProtocolOptIn {
     try {
       const address = this.protocol.addressForMnemonic(mnemonic!);
       await this.maguro.registerIdentity(address);
+      this.completedLivenessOverride = true;
     } catch (e) {
       if (!(e instanceof MissingLiveness)) {
         throw e;
