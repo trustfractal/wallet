@@ -104,8 +104,6 @@ const BalanceReservedLabel = styled.span`
   opacity: 0.6;
 `;
 
-const toHuman = (balance: Balance) => Number(balance.toBigInt()) / 10 ** 12;
-
 function MenuNavbar() {
   const history = useHistory();
   const appDispatch = useAppDispatch();
@@ -182,6 +180,8 @@ function MenuNavbar() {
   );
 }
 
+const toHuman = (balance: Balance) => Number(balance.toBigInt()) / 10 ** 12;
+
 function ProtocolReservedBalance({ reserved }: { reserved: Balance }) {
   const reservedHuman = toHuman(reserved);
 
@@ -211,23 +211,7 @@ function ProtocolReservedBalance({ reserved }: { reserved: Balance }) {
   );
 }
 
-function ProtocolBalance({ balance }: { balance?: AccountData }) {
-  if (!balance)
-    return (
-      <BalanceContainer>
-        <BalanceTitleContainer>
-          <Text
-            size={TextSizes.SMALL}
-            height={TextHeights.SMALL}
-            weight={TextWeights.BOLD}
-          >
-            BALANCE
-          </Text>
-        </BalanceTitleContainer>
-        <BalanceTextContainer>Fetching balance...</BalanceTextContainer>
-      </BalanceContainer>
-    );
-
+function ProtocolBalance({ balance }: { balance: AccountData }) {
   const freeHuman = toHuman(balance.free);
 
   return (
