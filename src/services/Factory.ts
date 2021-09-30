@@ -9,6 +9,7 @@ import types from "@services/ProtocolService/types";
 import { StorageService } from "@services/StorageService";
 import { WindowsService } from "@services/WindowsService";
 import { RecoverMnemonicService } from "@services/RecoverMnemonicService";
+import { UserAlerts } from "@popup/Alerts";
 
 let storageService: StorageService;
 export function getStorageService() {
@@ -117,4 +118,12 @@ export function getRecoverMnemonicService() {
     recoverMnemonicService = new RecoverMnemonicService();
   }
   return recoverMnemonicService;
+}
+
+let userAlerts: UserAlerts;
+export function getUserAlerts() {
+  if (userAlerts == null) {
+    userAlerts = new UserAlerts();
+  }
+  return userAlerts;
 }

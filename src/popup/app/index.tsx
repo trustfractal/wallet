@@ -3,6 +3,7 @@ import LoginScreen from "@popup/containers/LoginScreen";
 import RegisterScreen from "@popup/containers/RegisterScreen";
 
 import Routes from "@popup/routes";
+import { AlertsDisplay } from "@popup/Alerts";
 
 import { useAppSelector } from "@redux/stores/application/context";
 import { UserContextProvider } from "@redux/stores/user/context";
@@ -32,6 +33,7 @@ function App() {
 
   return (
     <UserContextProvider>
+      <AlertsDisplay />
       <Routes />
     </UserContextProvider>
   );

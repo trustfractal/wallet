@@ -30,6 +30,7 @@ import {
   getProtocolService,
   getRecoverMnemonicService,
   getProtocolOptIn,
+  getUserAlerts,
 } from "@services/Factory";
 
 import environment from "@environment/index";
@@ -180,6 +181,7 @@ function exportMnemonic(mnemonic: string|null) {
     icon: IconNames.IMPORT,
     onClick: async () => {
       await navigator.clipboard.writeText(mnemonic!);
+      getUserAlerts().send('Mnemonic copied to clipboard!');
     },
     disabled: mnemonic == null,
   };
