@@ -23,14 +23,14 @@ import { IconNames } from "@popup/components/common/Icon";
 import Menu from "@popup/components/common/Menu";
 
 import { exportFile } from "@utils/FileUtils";
+import { useLoadedState } from "@utils/ReactHooks";
 
 import RoutesPaths from "@popup/routes/paths";
 import {
   getProtocolService,
   getRecoverMnemonicService,
+  getProtocolOptIn,
 } from "@services/Factory";
-import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selectors";
-import { protocolRegistrationTypes } from "@redux/stores/user/reducers/protocol";
 
 import environment from "@environment/index";
 
@@ -109,7 +109,6 @@ function MenuNavbar() {
   const appDispatch = useAppDispatch();
 
   const credentials = useUserSelector(getCredentials);
-  const registrationState = useUserSelector(getRegistrationState);
 
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
@@ -118,10 +117,10 @@ function MenuNavbar() {
 
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
-  const onClickMnemonic = () => history.push(RoutesPaths.MNEMONIC);
-
   const onClickImportMnemonic = () =>
     getRecoverMnemonicService().showRecoverPage();
+
+  const mnemonic = useLoadedState(async () => await getProtocolOptIn().getMnemonic());
 
   let menuItems = [
     {
@@ -130,12 +129,7 @@ function MenuNavbar() {
       onClick: onClickExport,
       disabled: credentials.length === 0,
     },
-    {
-      label: "Backup protocol wallet",
-      icon: IconNames.IMPORT,
-      onClick: onClickMnemonic,
-      disabled: registrationState !== protocolRegistrationTypes.COMPLETED,
-    },
+    exportMnemonic(mnemonic.value || null),
     {
       label: "Refresh",
       icon: IconNames.REFRESH,
@@ -178,6 +172,17 @@ function MenuNavbar() {
       <Menu items={menuItems} />
     </NavbarContainer>
   );
+}
+
+function exportMnemonic(mnemonic: string|null) {
+  return {
+    label: "Backup protocol wallet",
+    icon: IconNames.IMPORT,
+    onClick: async () => {
+      await navigator.clipboard.writeText(mnemonic!);
+    },
+    disabled: mnemonic == null,
+  };
 }
 
 const toHuman = (balance: Balance) => Number(balance.toBigInt()) / 10 ** 12;
@@ -253,7 +258,6 @@ function ProtocolNavbar({ balance }: { balance: AccountData }) {
   const history = useHistory();
 
   const credentials = useUserSelector(getCredentials);
-  const registrationState = useUserSelector(getRegistrationState);
 
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
@@ -262,7 +266,7 @@ function ProtocolNavbar({ balance }: { balance: AccountData }) {
 
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
-  const onClickMnemonic = () => history.push(RoutesPaths.MNEMONIC);
+  const mnemonic = useLoadedState(async () => await getProtocolOptIn().getMnemonic());
 
   const menuItems = [
     {
@@ -271,12 +275,7 @@ function ProtocolNavbar({ balance }: { balance: AccountData }) {
       onClick: onClickExport,
       disabled: credentials.length === 0,
     },
-    {
-      label: "Backup protocol wallet",
-      icon: IconNames.IMPORT,
-      onClick: onClickMnemonic,
-      disabled: registrationState !== protocolRegistrationTypes.COMPLETED,
-    },
+    exportMnemonic(mnemonic.value || null),
     {
       label: "Refresh",
       icon: IconNames.REFRESH,
