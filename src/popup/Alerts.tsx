@@ -41,7 +41,6 @@ const AlertMessage = styled.div`
   }
 `;
 
-
 export function AlertsDisplay() {
   const [message, setMessage] = useState<string>();
 

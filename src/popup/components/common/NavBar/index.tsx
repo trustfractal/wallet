@@ -121,7 +121,9 @@ function MenuNavbar() {
   const onClickImportMnemonic = () =>
     getRecoverMnemonicService().showRecoverPage();
 
-  const mnemonic = useLoadedState(async () => await getProtocolOptIn().getMnemonic());
+  const mnemonic = useLoadedState(
+    async () => await getProtocolOptIn().getMnemonic(),
+  );
 
   let menuItems = [
     {
@@ -175,13 +177,13 @@ function MenuNavbar() {
   );
 }
 
-function exportMnemonic(mnemonic: string|null) {
+function exportMnemonic(mnemonic: string | null) {
   return {
     label: "Backup protocol wallet",
     icon: IconNames.IMPORT,
     onClick: async () => {
       await navigator.clipboard.writeText(mnemonic!);
-      getUserAlerts().send('Mnemonic copied to clipboard!');
+      getUserAlerts().send("Mnemonic copied to clipboard!");
     },
     disabled: mnemonic == null,
   };
@@ -268,7 +270,9 @@ function ProtocolNavbar({ balance }: { balance: AccountData }) {
 
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
-  const mnemonic = useLoadedState(async () => await getProtocolOptIn().getMnemonic());
+  const mnemonic = useLoadedState(
+    async () => await getProtocolOptIn().getMnemonic(),
+  );
 
   const menuItems = [
     {

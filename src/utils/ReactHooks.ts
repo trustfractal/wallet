@@ -20,10 +20,10 @@ export function useLoadedState<T>(loader: () => Promise<T>): Loading<T> {
 }
 
 interface Loading<T> {
-  isLoading: boolean,
-  value: T|null,
+  isLoading: boolean;
+  value: T | null;
 
-  unwrapOrDefault<U>(def: U): T|U;
+  unwrapOrDefault<U>(def: U): T | U;
 }
 
 class IsLoading<T> implements Loading<T> {
