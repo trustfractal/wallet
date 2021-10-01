@@ -10,7 +10,7 @@ const types = mirrorCreator([
   "SET_REQUESTS",
 ]);
 
-export const creators = createActions(
+const creators = createActions(
   types.ADD_VERIFICATION_REQUEST,
   types.ACCEPT_VERIFICATION_REQUEST,
   types.DECLINE_VERIFICATION_REQUEST,
@@ -19,7 +19,7 @@ export const creators = createActions(
   types.SET_REQUESTS,
 );
 
-export const initialState = {
+const initialState = {
   requests: "[]",
 };
 

@@ -15,7 +15,7 @@ const Root = styled.span`
   text-decoration: underline;
 `;
 
-export type LinkProps = {
+type LinkProps = {
   onClick: () => void;
 };
 

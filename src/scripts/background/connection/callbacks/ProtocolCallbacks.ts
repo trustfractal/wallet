@@ -5,7 +5,7 @@ import {
   getMintingRegistrar,
 } from "@services/Factory";
 
-export async function addWebpage([url]: [string]): Promise<void> {
+async function addWebpage([url]: [string]): Promise<void> {
   await getProtocolOptIn().checkOptIn();
   await getDataHost().storeFact({
     pageView: {

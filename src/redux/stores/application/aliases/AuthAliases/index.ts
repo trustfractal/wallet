@@ -30,7 +30,7 @@ import credentialsActions from "@redux/stores/user/reducers/credentials";
 import FractalWebpageMiddleware from "@models/Connection/middlewares/FractalWebpageMiddleware";
 import ConnectionTypes from "@models/Connection/types";
 
-export const signUp = () => {
+const signUp = () => {
   return async (dispatch: (arg: Action<any>) => void, getState: () => any) => {
     dispatch(authActions.signUpPending());
 
@@ -60,7 +60,7 @@ export const signUp = () => {
   };
 };
 
-export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
+const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
   return async (dispatch: (arg: Action<any>) => void, getState: () => any) => {
     dispatch(authActions.signInPending());
 
@@ -111,7 +111,7 @@ export const signIn = ({ payload: attemptedPassword }: { payload: string }) => {
   };
 };
 
-export const connectFractal = () => {
+const connectFractal = () => {
   return async (dispatch: (arg: Action<any>) => void, _getState: () => any) => {
     dispatch(authActions.connectFractalPending());
 

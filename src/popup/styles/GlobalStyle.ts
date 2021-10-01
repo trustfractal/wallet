@@ -3,7 +3,7 @@ import { css, createGlobalStyle } from "styled-components";
 import { reset } from "./ResetStyle";
 import { normalize } from "./NormalizeStyle";
 
-export const global = css`
+const global = css`
   ${reset}
   ${normalize}
   :root {

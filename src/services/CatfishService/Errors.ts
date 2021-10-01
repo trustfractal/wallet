@@ -1,8 +1,8 @@
-export enum ErrorCode {
+enum ErrorCode {
   ERRORS_CATFISH_TOKEN_EXPIRED = 8000,
 }
 
-export class CatfishServiceError extends Error {
+class CatfishServiceError extends Error {
   public errorCode: ErrorCode;
 
   public constructor(errorCode: ErrorCode, message: string) {

@@ -10,7 +10,7 @@ import {
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 import ConnectionStatus from "@models/Connection/ConnectionStatus";
 
-export const verifyConnection = () =>
+const verifyConnection = () =>
   new Promise((resolve, reject) => {
     try {
       const { version } = chrome.runtime.getManifest();

@@ -90,7 +90,7 @@ const ActivityContainer = styled.div`
   }
 `;
 
-export type HistoryProps = {
+type HistoryProps = {
   requests: IRequest[];
 };
 

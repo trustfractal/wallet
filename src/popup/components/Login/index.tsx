@@ -41,7 +41,7 @@ const InputContainer = styled.div`
   margin-bottom: calc(var(--s-32) + var(--s-6));
 `;
 
-export type LoginProps = {
+type LoginProps = {
   loading: boolean;
   onNext: (password: string) => void;
   error: string;

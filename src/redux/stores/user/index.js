@@ -206,6 +206,6 @@ export class UserStore {
   }
 }
 
-export const store = UserStore.getInstance();
+const store = UserStore.getInstance();
 
 export default store;

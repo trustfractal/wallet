@@ -1,7 +1,6 @@
 import { useState, useEffect, createContext } from "react";
 import {
   Provider as ReduxProvider,
-  createStoreHook,
   createDispatchHook,
   createSelectorHook,
 } from "react-redux";
@@ -10,7 +9,7 @@ import LoadingScreen from "@popup/containers/LoadingScreen";
 
 import { AppStore } from "@redux/stores/application";
 
-export const AppContext = createContext(null);
+const AppContext = createContext(null);
 
 export const AppContextProvider = ({ children }) => {
   const [store, setStore] = useState();
@@ -38,6 +37,5 @@ export const AppContextProvider = ({ children }) => {
   );
 };
 
-export const useAppStore = createStoreHook(AppContext);
 export const useAppDispatch = createDispatchHook(AppContext);
 export const useAppSelector = createSelectorHook(AppContext);

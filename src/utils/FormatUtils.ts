@@ -9,7 +9,7 @@ export function formatBalance(number: number, decimals = 4): string {
   return numeral(number).format(`0[.]${"0".repeat(decimals)}`);
 }
 
-export function capitalize(value: string): string {
+function capitalize(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 

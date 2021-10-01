@@ -1,4 +1,4 @@
-export enum ErrorCode {
+enum ErrorCode {
   ERROR_CONTENT_SCRIPT_CONNECTION_NOT_INITIALIZED = 5000,
   ERROR_VERIFICATION_REQUEST_DECLINED = 5002,
   ERROR_VERIFICATION_REQUEST_TIME_OUT = 5003,
@@ -8,7 +8,7 @@ export enum ErrorCode {
   ERROR_VERIFICATION_REQUEST_INVALID_FIELDS = 5007,
 }
 
-export class BackgroundScriptError extends Error {
+class BackgroundScriptError extends Error {
   public errorCode: ErrorCode;
 
   public constructor(errorCode: ErrorCode, message: string) {
@@ -53,14 +53,6 @@ export const ERROR_VERIFICATION_REQUEST_WINDOW_OPEN =
     return new BackgroundScriptError(
       ErrorCode.ERROR_VERIFICATION_REQUEST_WINDOW_OPEN,
       `BackgroundScript: Could not create verification request window`,
-    );
-  };
-
-export const ERROR_VERIFICATION_REQUEST_WINDOW_CLOSED =
-  (): BackgroundScriptError => {
-    return new BackgroundScriptError(
-      ErrorCode.ERROR_VERIFICATION_REQUEST_WINDOW_CLOSED,
-      `BackgroundScript: Verification request window was closed`,
     );
   };
 

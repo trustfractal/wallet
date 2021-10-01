@@ -16,7 +16,7 @@ const IconContainer = styled.div`
   cursor: pointer;
 `;
 
-export type PasswordInputProps = {
+type PasswordInputProps = {
   defaultVisible: boolean;
 };
 

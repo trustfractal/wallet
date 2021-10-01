@@ -91,7 +91,7 @@ export function getMaguroService() {
 }
 
 let catfish: CatfishService;
-export function getCatfishService() {
+function getCatfishService() {
   if (catfish === undefined) {
     catfish = new CatfishService(getFractalAccountConnector());
   }

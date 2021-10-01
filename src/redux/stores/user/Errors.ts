@@ -1,11 +1,11 @@
-export enum ErrorCode {
+enum ErrorCode {
   ERROR_STORE_NOT_INITIALIZED = 6000,
   ERROR_SALT_NOT_FOUND = 6001,
   ERROR_LOCAL_STATE_NOT_FOUND = 6002,
   ERROR_DECRYPT_FAILED = 6003,
 }
 
-export class UserStoreError extends Error {
+class UserStoreError extends Error {
   public errorCode: ErrorCode;
 
   public constructor(errorCode: ErrorCode, message: string) {

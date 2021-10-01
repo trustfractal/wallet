@@ -9,7 +9,7 @@ const Root = styled.a`
   font-weight: normal;
 `;
 
-export type AnchorProps = {
+type AnchorProps = {
   link: string;
 };
 

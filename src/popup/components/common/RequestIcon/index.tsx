@@ -25,7 +25,7 @@ const IconContainer = styled.div`
   align-items: center;
 `;
 
-export type RequestIconProps = {
+type RequestIconProps = {
   requester: string;
   status: string;
 };

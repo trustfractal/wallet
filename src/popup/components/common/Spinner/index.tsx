@@ -78,7 +78,7 @@ const Root = styled.p<SpinnerProps>`
   }
 `;
 
-export type SpinnerProps = {
+type SpinnerProps = {
   alternative: boolean;
 };
 

@@ -61,7 +61,8 @@ const Status = styled.div`
   display: flex;
   align-items: center;
 `;
-export type VerificationCaseProps = {
+
+type VerificationCaseProps = {
   verificationCase: IVerificationCase;
 };
 

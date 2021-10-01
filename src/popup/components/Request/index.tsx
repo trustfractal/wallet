@@ -182,7 +182,7 @@ const TextContainer = styled.div`
   padding-bottom: var(--s-48);
 `;
 
-export type RequestsProps = {
+type RequestsProps = {
   request: IRequest;
   credentials: CredentialsCollection;
   onAccept: (
@@ -194,7 +194,7 @@ export type RequestsProps = {
   onNext: () => void;
 };
 
-export type CredentialProps = {
+type CredentialProps = {
   credential: ICredential;
 };
 

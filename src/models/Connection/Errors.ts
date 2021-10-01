@@ -1,4 +1,4 @@
-export enum ErrorCode {
+enum ErrorCode {
   ERROR_HANDLE_MESSAGE = 7000,
   ERROR_HANDLE_RESPONSE = 7001,
   ERROR_HANDLE_INVOKATION = 7002,
@@ -11,7 +11,7 @@ export enum ErrorCode {
   ERROR_USER_NOT_LOGGED_IN = 7010,
 }
 
-export class ConnectionError extends Error {
+class ConnectionError extends Error {
   public errorCode: ErrorCode;
 
   public constructor(errorCode: ErrorCode, message: string) {
@@ -62,20 +62,6 @@ export const ERROR_LOGIN_TIMEOUT = (): ConnectionError => {
   return new ConnectionError(
     ErrorCode.ERROR_LOGIN_TIMEOUT,
     "Connection: login has reached the timeout",
-  );
-};
-
-export const ERROR_NO_SENDER = (): ConnectionError => {
-  return new ConnectionError(
-    ErrorCode.ERROR_NO_SENDER,
-    "Connection: could't get the sender",
-  );
-};
-
-export const ERROR_NO_ACTIVE_TAB = (): ConnectionError => {
-  return new ConnectionError(
-    ErrorCode.ERROR_NO_ACTIVE_TAB,
-    "Connection: could not get the active tab connection",
   );
 };
 

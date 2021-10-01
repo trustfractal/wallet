@@ -18,7 +18,7 @@ import { getWindowsService } from "@services/Factory";
 import { PopupSizes } from "@services/WindowsService";
 import { v4 as uuidv4 } from "uuid";
 
-export const getVerificationRequest = ([level, requester, fields = {}]: [
+const getVerificationRequest = ([level, requester, fields = {}]: [
   string,
   string,
   Record<string, boolean>,

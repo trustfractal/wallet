@@ -21,7 +21,7 @@ const types = mirrorCreator([
   "CONNECT_FRACTAL_SUCCESS",
 ]);
 
-export const creators = createActions(
+const creators = createActions(
   types.SET_HASHED_PASSWORD,
   types.SET_BACKEND_SESSIONS,
   types.SET_BACKEND_CATFISH_SESSION,
@@ -41,7 +41,7 @@ export const creators = createActions(
   types.CONNECT_FRACTAL_SUCCESS,
 );
 
-export const initialState = {
+const initialState = {
   signIn: {
     success: false,
     loading: false,

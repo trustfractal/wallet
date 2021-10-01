@@ -22,7 +22,7 @@ const types = mirrorCreator([
   "REFRESH",
 ]);
 
-export const creators = createActions(
+const creators = createActions(
   types.STARTUP,
   types.SET_LAUNCHED,
   types.SET_SETUP,
@@ -38,7 +38,7 @@ export const creators = createActions(
   types.REFRESH,
 );
 
-export const initialState = {
+const initialState = {
   launched: false,
   setup: false,
   version: "",

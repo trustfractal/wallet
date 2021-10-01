@@ -19,7 +19,7 @@ import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selec
 
 import { getMaguroService, getMegalodonService } from "@services/Factory";
 
-export const fetchCredentialsAndVerificationCases = () => {
+const fetchCredentialsAndVerificationCases = () => {
   return async (dispatch, getState) => {
     const setup = isSetup(AppStore.getStore().getState());
 

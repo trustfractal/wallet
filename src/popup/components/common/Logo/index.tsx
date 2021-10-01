@@ -28,7 +28,7 @@ export enum LogoSizes {
   MEDIUM = "medium",
 }
 
-export type LogoProps = {
+type LogoProps = {
   clickable?: boolean;
   width?: string;
   height?: string;

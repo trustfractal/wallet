@@ -12,13 +12,13 @@ export const MIGRATIONS = {
   NETWORK_MAINNET_MIGRATION: 2,
 };
 
-export const creators = createActions(
+const creators = createActions(
   types.SET_MIGRATIONS,
   types.ADD_MIGRATION,
   types.RUN_MIGRATIONS,
 );
 
-export const initialState = {
+const initialState = {
   migrations: [],
 };
 
