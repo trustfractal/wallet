@@ -1,25 +1,25 @@
 import Environment from "@environment/index";
-import appStore from "@redux/stores/application";
-import { getBackendMegalodonSession } from "@redux/stores/application/reducers/auth/selectors";
-import CatfishService from "@services/CatfishService";
+import { CatfishService } from "@services/CatfishService";
 import HttpService from "@services/HttpService";
 import { MissingLiveness } from "@services/ProtocolOptIn";
 import { Storage } from "@utils/StorageArray";
+import { FractalAccountConnector } from "@services/FractalAccount";
 
 const HTTP_TIMEOUT = 5 * 60 * 1000; // 5 minutes timeout
 
 export class MaguroService {
-  constructor(private readonly storage: Storage) {}
+  constructor(
+    private readonly storage: Storage,
+    private readonly fractalAccount: FractalAccountConnector,
+    private readonly catfish: CatfishService,
+  ) {}
 
   private async ensureAuthorization(
     headers: Record<string, string>,
   ): Promise<Record<string, string>> {
     if (headers["authorization"]) return headers;
 
-    if (appStore.getStore() == null) {
-      await appStore.init();
-    }
-    const token = getBackendMegalodonSession(appStore.getStore().getState());
+    const token = this.fractalAccount.getMegalodonToken();
 
     headers["authorization"] = `Bearer ${token}`;
     headers["content-type"] = "application/json";
@@ -56,7 +56,7 @@ export class MaguroService {
     if (!response.ok) {
       // check if megalodon token has expired
       if (response.status === 401) {
-        const token = await CatfishService.refreshResourceServerToken();
+        const token = await this.catfish.refreshResourceServerToken();
         const response = await HttpService.call(
           `${Environment.MAGURO_URL}/${route}`,
           method,

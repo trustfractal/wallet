@@ -2,6 +2,7 @@ import { MaguroService } from "@services/MaguroService";
 import { ProtocolService } from "@services/ProtocolService";
 import { WindowsService } from "@services/WindowsService";
 import { Storage } from "@utils/StorageArray";
+import { NotConnectedError } from "@services/FractalAccount";
 
 export class MissingLiveness extends Error {}
 
@@ -73,12 +74,18 @@ export class ProtocolOptIn {
       await this.maguro.registerIdentity(address);
       this.completedLivenessOverride = true;
     } catch (e) {
-      if (!(e instanceof MissingLiveness)) {
-        throw e;
+      if (e instanceof MissingLiveness) {
+        if (onMissingLiveness != null) {
+          await onMissingLiveness();
+        }
+        return;
       }
-      if (onMissingLiveness != null) {
-        await onMissingLiveness();
+
+      if (e instanceof NotConnectedError) {
+        return;
       }
+
+      throw e;
     }
   }
 }

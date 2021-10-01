@@ -1,17 +1,12 @@
-import AppStore from "@redux/stores/application";
-import {
-  getBackendCatfishSession,
-  getBackendScopes,
-} from "@redux/stores/application/reducers/auth/selectors";
-import authActions from "@redux/stores/application/reducers/auth";
-import appActions from "@redux/stores/application/reducers/app";
-
 import Environment from "@environment/index";
 import HttpService from "@services/HttpService";
 import { ERRORS_CATFISH_TOKEN_EXPIRED } from "./Errors";
+import { FractalAccountConnector } from "@services/FractalAccount";
 
-export default class CatfishService {
-  private static async callApi(
+export class CatfishService {
+  constructor(private readonly fractalAccount: FractalAccountConnector) {}
+
+  private async callApi(
     route: string,
     method: RequestInit["method"] = "GET",
     body?: RequestInit["body"],
@@ -28,7 +23,7 @@ export default class CatfishService {
       // check if catfish token has expired
       if (response.status === 401) {
         // ask user to connect with fractal wallet again
-        AppStore.getStore().dispatch(appActions.setSetup(false));
+        this.fractalAccount.clearTokens();
         throw ERRORS_CATFISH_TOKEN_EXPIRED();
       }
     }
@@ -36,27 +31,24 @@ export default class CatfishService {
     return response.json();
   }
 
-  public static async refreshResourceServerToken() {
-    const token = getBackendCatfishSession(AppStore.getStore().getState());
+  public async refreshResourceServerToken() {
+    const token = this.fractalAccount.getCatfishToken();
 
     const { user_id } = await this.callApi("account/me", "GET", null, {
       authorization: `Bearer ${token}`,
     });
 
-    const { access_token } = await CatfishService.resourceServerAccessToken({
+    const { access_token } = await this.resourceServerAccessToken({
       username: user_id,
     });
 
-    // update token
-    AppStore.getStore().dispatch(
-      authActions.setBackendMegalodonSession(access_token),
-    );
+    this.fractalAccount.setMegalodonToken(access_token);
     return access_token;
   }
 
-  public static resourceServerAccessToken({ username }: { username: string }) {
-    const token = getBackendCatfishSession(AppStore.getStore().getState());
-    const scopes = getBackendScopes(AppStore.getStore().getState());
+  public resourceServerAccessToken({ username }: { username: string }) {
+    const token = this.fractalAccount.getCatfishToken();
+    const scopes = this.fractalAccount.getScopes();
 
     return this.callApi(
       "oauth/token",

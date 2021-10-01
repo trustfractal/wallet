@@ -9,6 +9,7 @@ import ConnectionTypes from "@models/Connection/types";
 
 import { injectScript } from "./injector";
 import ConnectionNames from "@models/Connection/names";
+import { getMultiContext } from "@services/Factory";
 
 import environment from "@environment/index";
 
@@ -41,6 +42,4 @@ backgroundConnection.invoke(ConnectionTypes.WEBPAGE_VIEW, [
   window.location.toString(),
 ]);
 
-if (window.location.toString().match(`^${environment.FRACTAL_WEBSITE_URL}`)) {
-  backgroundConnection.invoke(ConnectionTypes.SETUP_PLUGIN_BACKGROUND);
-}
+getMultiContext().inInjectedScript();

@@ -6,6 +6,7 @@ import metadataActions, {
 } from "@redux/stores/application/reducers/metadata";
 
 import ContentScriptConnection from "@background/connection";
+import { getMultiContext } from "@services/Factory";
 
 import environment from "@environment/index";
 
@@ -20,6 +21,8 @@ if (!environment.IS_DEV) {
   ContentScriptConnection.init();
   (await AppStore.init()).dispatch(appActions.startup());
 })();
+
+getMultiContext().inBackground();
 
 // Listen to extension install/update event
 chrome.runtime.onInstalled.addListener(
