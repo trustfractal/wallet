@@ -76,6 +76,7 @@
     "optimize-css-assets-webpack-plugin": "5.0.4",
     "pnp-webpack-plugin": "1.6.4",
     "prettier": "^2.4.1",
+    "react-app-polyfill": "^2.0.0",
     "terser-webpack-plugin": "4.2.3",
     "webpack": "4.44.2",
     "webpack-dev-server": "3.11.0",
