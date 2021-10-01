@@ -29,10 +29,7 @@ function decryption(data: string, secret: CryptoInput): string | null {
   return decryptSymmetricStr(JSON.parse(data), secret);
 }
 
-function passwordHashing(
-  password: string,
-  salt: string,
-): Promise<Uint8Array> {
+function passwordHashing(password: string, salt: string): Promise<Uint8Array> {
   const N = 1024;
   const r = 8;
   const p = 1;

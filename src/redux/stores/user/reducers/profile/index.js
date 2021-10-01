@@ -3,10 +3,7 @@ import { createActions, handleActions } from "redux-actions";
 
 const types = mirrorCreator(["SET_EMAILS", "SET_PHONE_NUMBERS"]);
 
-const creators = createActions(
-  types.SET_EMAILS,
-  types.SET_PHONE_NUMBERS,
-);
+const creators = createActions(types.SET_EMAILS, types.SET_PHONE_NUMBERS);
 
 const initialState = {
   emails: "[]",
