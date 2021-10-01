@@ -17,7 +17,7 @@ const Root = styled.div<{
   `}
 `;
 
-export type TopComponentProps = {
+type TopComponentProps = {
   paddingTop: string;
   paddingBottom: string;
   paddingLeft: string;

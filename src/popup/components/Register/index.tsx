@@ -63,7 +63,7 @@ const ActionContainer = styled.div`
   justify-content: center;
 `;
 
-export type RegisterProps = {
+type RegisterProps = {
   loading: boolean;
   onNext: (password: string) => void;
   onClickTerms: () => void;

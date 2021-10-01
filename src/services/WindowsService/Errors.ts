@@ -1,4 +1,4 @@
-export enum ErrorCode {
+enum ErrorCode {
   ERROR_CREATE_WINDOW = 2000,
   ERROR_GET_CURRENT_WINDOW = 2001,
   ERROR_GET_WINDOW = 2002,
@@ -15,7 +15,7 @@ export enum ErrorCode {
   ERROR_UPDATE_WINDOW_SIZE = 2013,
 }
 
-export class WindowsServiceError extends Error {
+class WindowsServiceError extends Error {
   public errorCode: ErrorCode;
   public errorChrome: chrome.runtime.LastError;
 

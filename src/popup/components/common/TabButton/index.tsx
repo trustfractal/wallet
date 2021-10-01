@@ -56,7 +56,7 @@ const ComingSoonContainer = styled.span`
   color: var(--c-white);
 `;
 
-export type TabButtonProps = {
+type TabButtonProps = {
   disabled: boolean;
   selected: boolean;
   label: string;

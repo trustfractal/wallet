@@ -19,7 +19,7 @@ import {
 } from "@services/Factory";
 import { ProtocolService } from "@services/ProtocolService";
 
-export const createWallet = () => {
+const createWallet = () => {
   return () => {
     const existingWallet = getWallet(UserStore.getStore().getState());
     const wallet = existingWallet || Wallet.generate();
@@ -28,7 +28,7 @@ export const createWallet = () => {
   };
 };
 
-export const resumeWalletCreation = () => {
+const resumeWalletCreation = () => {
   return () => {
     const existingWallet = getWallet(UserStore.getStore().getState());
     const wallet = existingWallet || Wallet.generate();
@@ -37,7 +37,7 @@ export const resumeWalletCreation = () => {
   };
 };
 
-export const importWallet = ({ payload: mnemonic }: { payload: string }) => {
+const importWallet = ({ payload: mnemonic }: { payload: string }) => {
   return () => {
     const wallet = Wallet.fromMnemonic(mnemonic);
 

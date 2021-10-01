@@ -8,22 +8,6 @@ export const getCredentials = createSelector(
   (credentials) => CredentialsCollection.parse(credentials.credentials),
 );
 
-export const getProtocolVerificationCases = createSelector(
-  (state) => state.credentials,
-  (credentials) =>
-    VerificationCasesCollection.parse(
-      credentials.verificationCases,
-    ).filterProtocolVerificationCases(),
-);
-
-export const getPendingOrContactedProtocolVerificationCases = createSelector(
-  (state) => state.credentials,
-  (credentials) =>
-    VerificationCasesCollection.parse(
-      credentials.verificationCases,
-    ).filterPendingOrContactedProtocolVerificationCases(),
-);
-
 export const getApprovedProtocolVerificationCases = createSelector(
   (state) => state.credentials,
   (credentials) =>

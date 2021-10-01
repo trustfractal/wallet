@@ -24,7 +24,7 @@ const ActionContainer = styled.div`
   padding: var(--s-24) 0;
 `;
 
-export type AboutProps = {
+type AboutProps = {
   version: string;
   onNext: () => void;
   onClickFractalLink: () => void;

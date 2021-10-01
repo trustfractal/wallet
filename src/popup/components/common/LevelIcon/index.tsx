@@ -64,7 +64,7 @@ export enum LevelIconSizes {
   MEDIUM = "medium",
 }
 
-export type LevelIconProps = {
+type LevelIconProps = {
   level: string;
   size?: LevelIconSizes;
 };

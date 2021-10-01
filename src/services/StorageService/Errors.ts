@@ -1,4 +1,4 @@
-export enum ErrorCode {
+enum ErrorCode {
   ERROR_HAS_ITEM = 1000,
   ERROR_GET_ITEM = 1001,
   ERROR_SET_ITEM = 1002,
@@ -6,7 +6,7 @@ export enum ErrorCode {
   ERROR_CLEAR = 1003,
 }
 
-export class StorageServiceError extends Error {
+class StorageServiceError extends Error {
   public errorCode: ErrorCode;
   public errorChrome: chrome.runtime.LastError;
 

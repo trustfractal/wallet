@@ -1,9 +1,9 @@
-export enum ErrorCode {
+enum ErrorCode {
   ERROR_INPAGE_PROVIDER_NOT_INITIALIZED = 4000,
   ERROR_EXTENSION_CONNECTION_NOT_INITIALIZED = 4001,
 }
 
-export class InpageProviderError extends Error {
+class InpageProviderError extends Error {
   public errorCode: ErrorCode;
 
   public constructor(errorCode: ErrorCode, message: string) {

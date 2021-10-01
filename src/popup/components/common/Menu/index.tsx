@@ -91,16 +91,16 @@ const IconContainer = styled.div`
   margin-right: var(--s-12);
 `;
 
-export type Item = {
+type Item = {
   label: string;
   icon: string;
   onClick: () => void;
   disabled?: boolean;
 };
 
-export type MenuItem = Item | Item[];
+type MenuItem = Item | Item[];
 
-export type MenuProps = {
+type MenuProps = {
   items: MenuItem[];
 };
 

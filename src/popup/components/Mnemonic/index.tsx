@@ -42,7 +42,7 @@ const Spacing = styled.div`
   margin-bottom: var(--s-20);
 `;
 
-export type MnemonicProps = {
+type MnemonicProps = {
   onNext: () => void;
 };
 

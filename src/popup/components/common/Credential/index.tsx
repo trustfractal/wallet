@@ -74,7 +74,8 @@ const Status = styled.div`
   display: flex;
   align-items: center;
 `;
-export type CredentialProps = {
+
+type CredentialProps = {
   credential: ICredential;
 };
 

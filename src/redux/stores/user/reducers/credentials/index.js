@@ -7,13 +7,13 @@ const types = mirrorCreator([
   "FETCH_CREDENTIALS_AND_VERIFICATION_CASES",
 ]);
 
-export const creators = createActions(
+const creators = createActions(
   types.SET_CREDENTIALS,
   types.SET_VERIFICATION_CASES,
   types.FETCH_CREDENTIALS_AND_VERIFICATION_CASES,
 );
 
-export const initialState = {
+const initialState = {
   credentials: "[]",
   verificationCases: "[]",
 };

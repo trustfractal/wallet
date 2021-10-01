@@ -295,7 +295,7 @@ function Header() {
   return <LogoHeader />;
 }
 
-export default function Navbar() {
+function Navbar() {
   return (
     <NavbarContainer>
       <Header />

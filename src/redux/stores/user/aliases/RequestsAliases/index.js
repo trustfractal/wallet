@@ -10,7 +10,7 @@ import RequestsTypes from "@models/Request/types";
 import VerificationRequest from "@models/VerificationRequest";
 import RequestsStatus from "@models/Request/status";
 
-export const addVerificationRequest = ({
+const addVerificationRequest = ({
   payload: { id, requester, request: serializedVerificationRequest },
 }) => {
   return async (dispatch, getState) => {
@@ -38,7 +38,7 @@ export const addVerificationRequest = ({
   };
 };
 
-export const acceptVerificationRequest = ({
+const acceptVerificationRequest = ({
   payload: { id, credential: serializedCredential, properties },
 }) => {
   return async (dispatch, getState) => {
@@ -76,7 +76,7 @@ export const acceptVerificationRequest = ({
   };
 };
 
-export const declineVerificationRequest = ({
+const declineVerificationRequest = ({
   payload: { id, credential: serializedCredential },
 }) => {
   return async (dispatch, getState) => {

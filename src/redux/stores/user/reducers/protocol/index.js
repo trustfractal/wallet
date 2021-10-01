@@ -20,7 +20,7 @@ const registrationTypes = {
   COMPLETED: "COMPLETED",
 };
 
-export const creators = createActions(
+const creators = createActions(
   types.SET_MNEMONIC,
   types.SET_REGISTERED_FOR_MINTING,
   types.SET_REGISTRATION_STATE,
@@ -30,7 +30,7 @@ export const creators = createActions(
   types.IMPORT_WALLET,
 );
 
-export const initialState = {
+const initialState = {
   mnemonic: null,
   isRegisteredForMinting: false,
   registrationState: null,

@@ -18,21 +18,18 @@ import {
 import { scrypt } from "scrypt-js";
 import nacl from "tweetnacl";
 
-export function encryption(
+function encryption(
   message: string,
   secret: CryptoInput,
 ): EncryptedSymmetricString {
   return encryptSymmetricAsStr(message, secret);
 }
 
-export function decryption(data: string, secret: CryptoInput): string | null {
+function decryption(data: string, secret: CryptoInput): string | null {
   return decryptSymmetricStr(JSON.parse(data), secret);
 }
 
-export function passwordHashing(
-  password: string,
-  salt: string,
-): Promise<Uint8Array> {
+function passwordHashing(password: string, salt: string): Promise<Uint8Array> {
   const N = 1024;
   const r = 8;
   const p = 1;
@@ -40,11 +37,11 @@ export function passwordHashing(
   return scrypt(coToUInt8(password), coToUInt8(salt), N, r, p, dkLen);
 }
 
-export function getRandomBytes(length = 24): string {
+function getRandomBytes(length = 24): string {
   return u8aToHex(nacl.randomBytes(length));
 }
 
-export function coToUInt8(
+function coToUInt8(
   input: CryptoInput | null | undefined,
   hexAsString = false,
 ): Uint8Array {
@@ -54,7 +51,7 @@ export function coToUInt8(
   return u8aToU8a(input);
 }
 
-export function encryptSymmetricAsStr(
+function encryptSymmetricAsStr(
   message: CryptoInput,
   secret: CryptoInput,
   inputNonce?: CryptoInput,
@@ -69,7 +66,7 @@ export function encryptSymmetricAsStr(
   return { encrypted, nonce };
 }
 
-export function decryptSymmetricStr(
+function decryptSymmetricStr(
   data: EncryptedSymmetric | EncryptedSymmetricString,
   secret: CryptoInput,
 ): string | null {

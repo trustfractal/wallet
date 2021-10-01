@@ -8,8 +8,6 @@ import { MaguroService } from "@services/MaguroService";
 import { DataHost } from "@services/DataHost";
 import { Storage } from "@utils/StorageArray";
 
-export * from "./context";
-
 export class ProtocolService {
   constructor(
     private readonly api: Promise<ApiPromise>,

@@ -20,7 +20,7 @@ type TabType = {
   disabled?: boolean;
 };
 
-export type TabsProps = {
+type TabsProps = {
   tabs: TabType[];
 };
 

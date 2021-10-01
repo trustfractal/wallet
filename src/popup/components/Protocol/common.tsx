@@ -4,7 +4,7 @@ import Button from "@popup/components/common/Button";
 import Text, { TextWeights } from "@popup/components/common/Text";
 import { Subsubtitle } from "@popup/components/common/Subtitle";
 
-export { default as Text, TextWeights } from "@popup/components/common/Text";
+export { default as Text } from "@popup/components/common/Text";
 export {
   default as Subtitle,
   Subsubtitle,

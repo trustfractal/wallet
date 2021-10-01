@@ -12,7 +12,7 @@ import metadataActions, {
 import { metadataTypes } from "@redux/stores/application/reducers/metadata";
 import { getMigrations } from "@redux/stores/application/reducers/metadata/selectors";
 
-export const runMigrations = () => {
+const runMigrations = () => {
   return async () => {
     const migrations = getMigrations(AppStore.getStore().getState());
 

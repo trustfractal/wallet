@@ -152,7 +152,7 @@ const Icons: Record<string, any> = {
   [IconNames.PROTOCOL_SETUP_PENDING]: ProtocolSetupPending,
 };
 
-export type IconProps = {
+type IconProps = {
   name: string;
   clickable: boolean;
   width?: string;

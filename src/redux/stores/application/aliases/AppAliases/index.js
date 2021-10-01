@@ -16,7 +16,7 @@ import { getMaguroService, getWindowsService } from "@services/Factory";
 
 import { PopupSizes, PopupSizesValues } from "@services/WindowsService";
 
-export const startup = () => {
+const startup = () => {
   return async (dispatch) => {
     // start credentials status polling
     new CredentialsPolling().start();
@@ -33,7 +33,7 @@ export const startup = () => {
   };
 };
 
-export const setPopupSize = ({
+const setPopupSize = ({
   payload: {
     width = PopupSizesValues[PopupSizes.SMALL].width,
     height = PopupSizesValues[PopupSizes.SMALL].height,
@@ -62,7 +62,7 @@ export const setPopupSize = ({
   };
 };
 
-export const fetchConfig = () => {
+const fetchConfig = () => {
   return async () => {
     const {
       protocol_enabled: protocolEnabled,
@@ -98,7 +98,7 @@ export const fetchConfig = () => {
   };
 };
 
-export const refresh = () => {
+const refresh = () => {
   return async () => {
     AppStore.getStore().dispatch(appActions.fetchConfig());
     UserStore.getStore().dispatch(

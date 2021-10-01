@@ -27,7 +27,7 @@ const ClickableText = styled.button`
   color: inherit;
 `;
 
-export interface ImportProps {
+interface ImportProps {
   onMnemonic: (mnemonic: string) => void;
   onCancel: () => void;
 }
