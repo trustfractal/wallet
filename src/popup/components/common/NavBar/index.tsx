@@ -3,14 +3,9 @@ import { useHistory } from "react-router";
 import styled from "styled-components";
 import type { AccountData, Balance } from "@polkadot/types/interfaces";
 
-import {
-  useAppDispatch,
-  useAppSelector,
-} from "@redux/stores/application/context";
+import { useAppDispatch } from "@redux/stores/application/context";
 import appActions from "@redux/stores/application/reducers/app";
 import { useUserSelector } from "@redux/stores/user/context";
-
-import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 
 import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
@@ -40,11 +35,19 @@ import { formatBalance } from "@utils/FormatUtils";
 const NavbarContainer = styled.div`
   display: flex;
   flex-direction: row;
-
+  justify-content: space-between;
   align-items: center;
+
   padding: var(--s-19) var(--s-24);
 
   border-bottom: 1px solid var(--c-orange);
+`;
+
+const HeaderContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
 `;
 
 const LogoContainer = styled.div`
@@ -105,10 +108,9 @@ const BalanceReservedLabel = styled.span`
   opacity: 0.6;
 `;
 
-function MenuNavbar() {
+function DropdownMenu() {
   const history = useHistory();
   const appDispatch = useAppDispatch();
-
   const credentials = useUserSelector(getCredentials);
 
   const onClickExport = async () =>
@@ -160,21 +162,7 @@ function MenuNavbar() {
     });
   }
 
-  return (
-    <NavbarContainer>
-      <LogoContainer>
-        <Logo size={LogoSizes.SMALL} />
-      </LogoContainer>
-      <Text
-        size={TextSizes.LARGE}
-        height={TextHeights.LARGE}
-        weight={TextWeights.BOLD}
-      >
-        Fractal Wallet
-      </Text>
-      <Menu items={menuItems} />
-    </NavbarContainer>
-  );
+  return <Menu items={menuItems} />;
 }
 
 function exportMnemonic(mnemonic: string | null) {
@@ -256,59 +244,21 @@ function ProtocolBalance({ balance }: { balance: AccountData }) {
   );
 }
 
-function ProtocolNavbar({ balance }: { balance: AccountData }) {
-  const appDispatch = useAppDispatch();
-
-  const history = useHistory();
-
-  const credentials = useUserSelector(getCredentials);
-
-  const onClickExport = async () =>
-    exportFile(credentials.serialize(), "fractal_wallet.backup");
-
-  const onClickRefresh = () => appDispatch(appActions.refresh());
-
-  const onClickAbout = () => history.push(RoutesPaths.ABOUT);
-
-  const mnemonic = useLoadedState(
-    async () => await getProtocolOptIn().getMnemonic(),
-  );
-
-  const menuItems = [
-    {
-      label: "Export your credentials",
-      icon: IconNames.EXPORT,
-      onClick: onClickExport,
-      disabled: credentials.length === 0,
-    },
-    exportMnemonic(mnemonic.value || null),
-    {
-      label: "Refresh",
-      icon: IconNames.REFRESH,
-      onClick: onClickRefresh,
-    },
-    {
-      label: "About",
-      icon: IconNames.ABOUT,
-      onClick: onClickAbout,
-    },
-  ];
-
+function ProtocolHeader({ balance }: { balance: AccountData }) {
   return (
-    <NavbarContainer>
+    <HeaderContainer>
       <LogoContainer>
         <Logo size={LogoSizes.SMALL} />
       </LogoContainer>
 
       <ProtocolBalance balance={balance} />
-      <Menu items={menuItems} />
-    </NavbarContainer>
+    </HeaderContainer>
   );
 }
 
-function LogoNavbar() {
+function LogoHeader() {
   return (
-    <NavbarContainer>
+    <HeaderContainer>
       <LogoContainer>
         <Logo size={LogoSizes.SMALL} />
       </LogoContainer>
@@ -317,15 +267,13 @@ function LogoNavbar() {
         height={TextHeights.LARGE}
         weight={TextWeights.BOLD}
       >
-        Fractal Identity Wallet
+        Fractal Wallet
       </Text>
-    </NavbarContainer>
+    </HeaderContainer>
   );
 }
 
-export default function Navbar() {
-  const setup = useAppSelector(isSetup);
-
+function Header() {
   const [balance, setBalance] = useState<AccountData>();
 
   useEffect(() => {
@@ -341,14 +289,19 @@ export default function Navbar() {
   }, []);
 
   if (balance) {
-    return <ProtocolNavbar balance={balance} />;
+    return <ProtocolHeader balance={balance} />;
   }
 
-  if (setup) {
-    return <MenuNavbar />;
-  }
+  return <LogoHeader />;
+}
 
-  return <LogoNavbar />;
+export default function Navbar() {
+  return (
+    <NavbarContainer>
+      <Header />
+      <DropdownMenu />
+    </NavbarContainer>
+  );
 }
 
 export const withNavBar =
