@@ -10,6 +10,8 @@ import { StorageService } from "@services/StorageService";
 import { WindowsService } from "@services/WindowsService";
 import { RecoverMnemonicService } from "@services/RecoverMnemonicService";
 import { UserAlerts } from "@popup/Alerts";
+import { MultiContext, AggregateMultiContext } from '@utils/MultiContext';
+import { FractalAccountConnector } from '@services/FractalAccount';
 
 let storageService: StorageService;
 export function getStorageService() {
@@ -126,4 +128,22 @@ export function getUserAlerts() {
     userAlerts = new UserAlerts();
   }
   return userAlerts;
+}
+
+let fractalAccountConnector: FractalAccountConnector;
+export function getFractalAccountConnector() {
+  if (fractalAccountConnector == null) {
+    fractalAccountConnector = new FractalAccountConnector(getStorageService());
+  }
+  return fractalAccountConnector;
+}
+
+let multiContext: MultiContext;
+export function getMultiContext() {
+  if (multiContext == null) {
+    multiContext = new AggregateMultiContext([
+      getFractalAccountConnector(),
+    ]);
+  }
+  return multiContext;
 }

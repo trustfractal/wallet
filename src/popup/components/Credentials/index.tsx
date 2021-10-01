@@ -10,6 +10,7 @@ import Text, {
   TextSizes,
   TextWeights,
 } from "@popup/components/common/Text";
+import { ConnectToAccount } from "@popup/components/ConnectToAccount";
 
 import { ICredential, IVerificationCase } from "@pluginTypes/index";
 import { useUserSelector } from "@redux/stores/user/context";
@@ -20,6 +21,7 @@ import {
 import { getRequests } from "@redux/stores/user/reducers/requests/selectors";
 import CredentialModel from "@models/Credential";
 import VerificationCaseModel from "@models/VerificationCase";
+import { getFractalAccountConnector } from "@services/Factory";
 
 const RootContainer = styled.div`
   margin-bottom: var(--s-32);
@@ -35,6 +37,8 @@ function Credentials() {
   const requests = useUserSelector(getRequests);
   const credentials = useUserSelector(getCredentials);
   const upcomingCredentials = useUserSelector(getUpcomingCredentials);
+
+  if (!getFractalAccountConnector().hasConnectedAccount()) return <ConnectToAccount />;
 
   // check if has credentials or verification cases
   if (credentials.length === 0 && upcomingCredentials.length === 0)
