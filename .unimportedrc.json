@@ -1,0 +1,12 @@
+{
+  "entry": [
+    "src/scripts/background/index.ts",
+    "src/scripts/contentScript/index.ts",
+    "src/popup/index.tsx",
+    "src/index.ts",
+    "src/scripts/sdk/index.ts",
+    "src/setupTests.ts"
+  ],
+  "extensions": [".ts", ".js", ".tsx", ".jsx"],
+  "ignorePatterns": ["**/node_modules/**", "private/**", "**/*.test.ts"]
+}

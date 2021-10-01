@@ -1,4 +1,4 @@
-import InpageProvider from "src/scripts/sdk/InpageProvider";
+import InpageProvider from "@sdk/InpageProvider";
 
 (() => {
   window.Fractal = new InpageProvider();
