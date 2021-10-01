@@ -7,7 +7,10 @@ import { FractalAccountConnector } from "@services/FractalAccount";
 const HTTP_TIMEOUT = 5 * 60 * 1000; // 5 minutes timeout
 
 export class MegalodonService {
-  constructor(private readonly fractalAccount: FractalAccountConnector, private readonly catfish: CatfishService) {}
+  constructor(
+    private readonly fractalAccount: FractalAccountConnector,
+    private readonly catfish: CatfishService,
+  ) {}
 
   private ensureAuthorization(
     headers: Record<string, string>,
@@ -51,25 +54,23 @@ export class MegalodonService {
     if (!response.ok) {
       // check if megalodon token has expired
       if (response.status === 401) {
-        return this.catfish.refreshResourceServerToken().then(
-          async (token) => {
-            const response = await HttpService.call(
-              `${Environment.MEGALODON_URL}/${route}`,
-              method,
-              body,
-              {
-                ...headers,
-                authorization: `Bearer ${token}`,
-              },
-            );
+        return this.catfish.refreshResourceServerToken().then(async (token) => {
+          const response = await HttpService.call(
+            `${Environment.MEGALODON_URL}/${route}`,
+            method,
+            body,
+            {
+              ...headers,
+              authorization: `Bearer ${token}`,
+            },
+          );
 
-            if (!response.ok) {
-              throw new Error(response.statusText);
-            }
+          if (!response.ok) {
+            throw new Error(response.statusText);
+          }
 
-            return response.json();
-          },
-        );
+          return response.json();
+        });
       }
 
       throw new Error(response.statusText);

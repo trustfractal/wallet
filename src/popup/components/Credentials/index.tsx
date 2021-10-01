@@ -38,7 +38,8 @@ function Credentials() {
   const credentials = useUserSelector(getCredentials);
   const upcomingCredentials = useUserSelector(getUpcomingCredentials);
 
-  if (!getFractalAccountConnector().hasConnectedAccount()) return <ConnectToAccount />;
+  if (!getFractalAccountConnector().hasConnectedAccount())
+    return <ConnectToAccount />;
 
   // check if has credentials or verification cases
   if (credentials.length === 0 && upcomingCredentials.length === 0)

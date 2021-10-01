@@ -3,7 +3,7 @@ import { CatfishService } from "@services/CatfishService";
 import HttpService from "@services/HttpService";
 import { MissingLiveness } from "@services/ProtocolOptIn";
 import { Storage } from "@utils/StorageArray";
-import { FractalAccountConnector } from '@services/FractalAccount';
+import { FractalAccountConnector } from "@services/FractalAccount";
 
 const HTTP_TIMEOUT = 5 * 60 * 1000; // 5 minutes timeout
 

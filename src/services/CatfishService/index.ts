@@ -1,7 +1,7 @@
 import Environment from "@environment/index";
 import HttpService from "@services/HttpService";
 import { ERRORS_CATFISH_TOKEN_EXPIRED } from "./Errors";
-import { FractalAccountConnector } from '@services/FractalAccount';
+import { FractalAccountConnector } from "@services/FractalAccount";
 
 export class CatfishService {
   constructor(private readonly fractalAccount: FractalAccountConnector) {}

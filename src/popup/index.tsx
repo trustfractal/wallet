@@ -2,7 +2,7 @@ import ReactDOM from "react-dom";
 import App from "@popup/app";
 import { AppContextProvider } from "@redux/stores/application/context";
 import GlobalStyle from "./styles/GlobalStyle";
-import { getMultiContext } from '@services/Factory';
+import { getMultiContext } from "@services/Factory";
 
 function Popup() {
   return (

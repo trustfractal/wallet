@@ -9,7 +9,7 @@ import ConnectionTypes from "@models/Connection/types";
 
 import { injectScript } from "./injector";
 import ConnectionNames from "@models/Connection/names";
-import { getMultiContext } from '@services/Factory';
+import { getMultiContext } from "@services/Factory";
 
 import environment from "@environment/index";
 

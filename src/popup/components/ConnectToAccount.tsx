@@ -1,4 +1,8 @@
-import { Cta, VerticalSequence, Title } from "@popup/components/Protocol/common";
+import {
+  Cta,
+  VerticalSequence,
+  Title,
+} from "@popup/components/Protocol/common";
 import { getFractalAccountConnector } from "@services/Factory";
 
 export function ConnectToAccount() {

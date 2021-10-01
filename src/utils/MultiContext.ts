@@ -10,13 +10,13 @@ export class AggregateMultiContext extends MultiContext {
   }
 
   inInjectedScript(): void {
-    this.delegates.forEach(d => d.inInjectedScript());
+    this.delegates.forEach((d) => d.inInjectedScript());
   }
 
   inBackground(): void {
-    this.delegates.forEach(d => d.inBackground());
+    this.delegates.forEach((d) => d.inBackground());
   }
   inPopup(): void {
-    this.delegates.forEach(d => d.inPopup());
+    this.delegates.forEach((d) => d.inPopup());
   }
 }

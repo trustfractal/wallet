@@ -12,8 +12,8 @@ import { StorageService } from "@services/StorageService";
 import { WindowsService } from "@services/WindowsService";
 import { RecoverMnemonicService } from "@services/RecoverMnemonicService";
 import { UserAlerts } from "@popup/Alerts";
-import { MultiContext, AggregateMultiContext } from '@utils/MultiContext';
-import { FractalAccountConnector } from '@services/FractalAccount';
+import { MultiContext, AggregateMultiContext } from "@utils/MultiContext";
+import { FractalAccountConnector } from "@services/FractalAccount";
 
 let storageService: StorageService;
 export function getStorageService() {
@@ -81,7 +81,11 @@ export function getProtocolService(mnemonic?: string) {
 let maguro: MaguroService;
 export function getMaguroService() {
   if (maguro === undefined) {
-    maguro = new MaguroService(getStorageService(), getFractalAccountConnector(), getCatfishService());
+    maguro = new MaguroService(
+      getStorageService(),
+      getFractalAccountConnector(),
+      getCatfishService(),
+    );
   }
   return maguro;
 }
@@ -97,7 +101,10 @@ export function getCatfishService() {
 let megalodon: MegalodonService;
 export function getMegalodonService() {
   if (megalodon === undefined) {
-    megalodon = new MegalodonService(getFractalAccountConnector(), getCatfishService());
+    megalodon = new MegalodonService(
+      getFractalAccountConnector(),
+      getCatfishService(),
+    );
   }
   return megalodon;
 }
@@ -159,9 +166,7 @@ export function getFractalAccountConnector() {
 let multiContext: MultiContext;
 export function getMultiContext() {
   if (multiContext == null) {
-    multiContext = new AggregateMultiContext([
-      getFractalAccountConnector(),
-    ]);
+    multiContext = new AggregateMultiContext([getFractalAccountConnector()]);
   }
   return multiContext;
 }

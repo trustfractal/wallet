@@ -6,7 +6,7 @@ import metadataActions, {
 } from "@redux/stores/application/reducers/metadata";
 
 import ContentScriptConnection from "@background/connection";
-import { getMultiContext } from '@services/Factory';
+import { getMultiContext } from "@services/Factory";
 
 import environment from "@environment/index";
 
