@@ -19,7 +19,9 @@ export class FractalAccountConnector extends MultiContext {
   constructor(private readonly storage: Storage) {
     super();
 
-    this.getTokens().then((tokens) => (this.tokens = tokens));
+    this.getTokens().then((tokens) => {
+      this.tokens = tokens;
+    });
   }
 
   hasConnectedAccount(): boolean {
