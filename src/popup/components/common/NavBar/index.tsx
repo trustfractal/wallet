@@ -3,9 +3,7 @@ import { useHistory } from "react-router";
 import styled from "styled-components";
 import type { AccountData, Balance } from "@polkadot/types/interfaces";
 
-import {
-  useAppDispatch,
-} from "@redux/stores/application/context";
+import { useAppDispatch } from "@redux/stores/application/context";
 import appActions from "@redux/stores/application/reducers/app";
 import { useUserSelector } from "@redux/stores/user/context";
 
