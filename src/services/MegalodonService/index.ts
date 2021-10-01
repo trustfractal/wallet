@@ -1,20 +1,20 @@
-import AppStore from "@redux/stores/application";
-import { getBackendMegalodonSession } from "@redux/stores/application/reducers/auth/selectors";
-
 import Environment from "@environment/index";
 
-import CatfishService from "@services/CatfishService";
+import { CatfishService } from "@services/CatfishService";
 import HttpService from "@services/HttpService";
+import { FractalAccountConnector } from "@services/FractalAccount";
 
 const HTTP_TIMEOUT = 5 * 60 * 1000; // 5 minutes timeout
 
-export default class MegalodonService {
-  private static ensureAuthorization(
+export class MegalodonService {
+  constructor(private readonly fractalAccount: FractalAccountConnector, private readonly catfish: CatfishService) {}
+
+  private ensureAuthorization(
     headers: Record<string, string>,
   ): Record<string, string> {
     if (headers["authorization"]) return headers;
 
-    const token = getBackendMegalodonSession(AppStore.getStore().getState());
+    const token = this.fractalAccount.getMegalodonToken();
 
     headers["authorization"] = `Bearer ${token}`;
     headers["content-type"] = "application/json";
@@ -22,7 +22,7 @@ export default class MegalodonService {
     return headers;
   }
 
-  private static async callAuthorizedApi(
+  private async callAuthorizedApi(
     route: string,
     method: RequestInit["method"] = "GET",
     body?: RequestInit["body"],
@@ -34,7 +34,7 @@ export default class MegalodonService {
     return this.callApi(route, method, body, headersWithAuth);
   }
 
-  private static async callApi(
+  private async callApi(
     route: string,
     method: RequestInit["method"] = "GET",
     body?: RequestInit["body"],
@@ -51,7 +51,7 @@ export default class MegalodonService {
     if (!response.ok) {
       // check if megalodon token has expired
       if (response.status === 401) {
-        return CatfishService.refreshResourceServerToken().then(
+        return this.catfish.refreshResourceServerToken().then(
           async (token) => {
             const response = await HttpService.call(
               `${Environment.MEGALODON_URL}/${route}`,
@@ -78,7 +78,7 @@ export default class MegalodonService {
     return response.json();
   }
 
-  public static me() {
+  public me() {
     return this.callAuthorizedApi("users/me", "GET", null);
   }
 }

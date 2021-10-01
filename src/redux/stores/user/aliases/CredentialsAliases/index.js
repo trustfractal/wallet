@@ -17,8 +17,7 @@ import protocolActions, {
 } from "@redux/stores/user/reducers/protocol";
 import { getRegistrationState } from "@redux/stores/user/reducers/protocol/selectors";
 
-import { getMaguroService } from "@services/Factory";
-import MegalodonService from "@services/MegalodonService";
+import { getMaguroService, getMegalodonService } from "@services/Factory";
 
 export const fetchCredentialsAndVerificationCases = () => {
   return async (dispatch, getState) => {
@@ -51,7 +50,7 @@ export const fetchCredentialsAndVerificationCases = () => {
       verification_cases: verificationCases,
       phones: phoneNumbers,
       emails,
-    } = await MegalodonService.me();
+    } = await getMegalodonService().me();
 
     const formattedVerificationCases = verificationCases.reduce(
       (

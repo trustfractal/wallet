@@ -8,6 +8,8 @@ interface Tokens {
   scopes: string;
 }
 
+export class NotConnectedError extends Error {}
+
 const NEXT_TOKENS_KEY = 'fractal-account-connector/will-accept-next-tokens';
 const TOKENS_KEY = 'fractal-account-connector/tokens';
 
@@ -20,14 +22,12 @@ export class FractalAccountConnector extends MultiContext {
     this.getTokens().then(tokens => this.tokens = tokens);
   }
 
-  hasConnectedAccount(): boolean {
-    return this.tokens != null;
-  }
+  hasConnectedAccount(): boolean { return this.tokens != null; }
 
   async doConnect() {
     await this.storage.setItem(NEXT_TOKENS_KEY, 'true');
 
-    chrome.tabs.create({ url : environment.FRACTAL_WEBSITE_URL });
+    chrome.tabs.create({url : environment.FRACTAL_WEBSITE_URL});
   }
 
   async willAcceptNextTokens(): Promise<boolean> {
@@ -51,7 +51,8 @@ export class FractalAccountConnector extends MultiContext {
   }
 
   async inInjectedScript() {
-    if (!await this.willAcceptNextTokens()) return;
+    if (!await this.willAcceptNextTokens())
+      return;
 
     const catfishSessionKey = "catfish_token";
     const megalodonSessionKey = "megalodon_token";
@@ -68,4 +69,35 @@ export class FractalAccountConnector extends MultiContext {
     const tokens = {catfish, megalodon, scopes};
     await this.setTokens(tokens);
   }
+
+  getMegalodonToken() {
+    if (this.tokens == null)
+      throw new NotConnectedError();
+
+    return this.tokens.megalodon;
+  }
+
+  async setMegalodonToken(token: string) {
+    if (this.tokens == null)
+      throw new NotConnectedError();
+
+    await this.storage.setItem(
+        TOKENS_KEY, JSON.stringify({...this.tokens, megalodon : token}));
+  }
+
+  getCatfishToken() {
+    if (this.tokens == null)
+      throw new NotConnectedError();
+
+    return this.tokens.catfish;
+  }
+
+  getScopes() {
+    if (this.tokens == null)
+      throw new NotConnectedError();
+
+    return this.tokens.scopes;
+  }
+
+  async clearTokens() { await this.storage.removeItem(TOKENS_KEY); }
 }

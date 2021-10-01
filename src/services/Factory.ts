@@ -2,6 +2,8 @@ import environment from "@environment/index";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { DataHost } from "@services/DataHost";
 import { MaguroService } from "@services/MaguroService";
+import { MegalodonService } from "@services/MegalodonService";
+import { CatfishService } from "@services/CatfishService";
 import { MintingRegistrar } from "@services/MintingRegistrar";
 import { ProtocolOptIn } from "@services/ProtocolOptIn";
 import { ProtocolService } from "@services/ProtocolService";
@@ -79,9 +81,25 @@ export function getProtocolService(mnemonic?: string) {
 let maguro: MaguroService;
 export function getMaguroService() {
   if (maguro === undefined) {
-    maguro = new MaguroService(getStorageService());
+    maguro = new MaguroService(getStorageService(), getFractalAccountConnector(), getCatfishService());
   }
   return maguro;
+}
+
+let catfish: CatfishService;
+export function getCatfishService() {
+  if (catfish === undefined) {
+    catfish = new CatfishService(getFractalAccountConnector());
+  }
+  return catfish;
+}
+
+let megalodon: MegalodonService;
+export function getMegalodonService() {
+  if (megalodon === undefined) {
+    megalodon = new MegalodonService(getFractalAccountConnector(), getCatfishService());
+  }
+  return megalodon;
 }
 
 let windows: WindowsService;
