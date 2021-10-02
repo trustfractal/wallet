@@ -1,3 +1,4 @@
+import { ReplaySubject } from "rxjs";
 import environment from "@environment/index";
 import { MultiContext } from "@utils/MultiContext";
 import { Storage } from "@utils/StorageArray";
@@ -15,12 +16,14 @@ const TOKENS_KEY = "fractal-account-connector/tokens";
 
 export class FractalAccountConnector extends MultiContext {
   tokens: Tokens | null = null;
+  connectedAccount$ = new ReplaySubject<boolean>(1);
 
   constructor(private readonly storage: Storage) {
     super();
 
     this.getTokens().then((tokens) => {
       this.tokens = tokens;
+      this.connectedAccount$.next(tokens != null);
     });
   }
 
@@ -101,5 +104,6 @@ export class FractalAccountConnector extends MultiContext {
 
   async clearTokens() {
     await this.storage.removeItem(TOKENS_KEY);
+    this.connectedAccount$.next(false);
   }
 }

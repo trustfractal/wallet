@@ -22,6 +22,7 @@ import { useLoadedState } from "@utils/ReactHooks";
 
 import RoutesPaths from "@popup/routes/paths";
 import {
+  getFractalAccountConnector,
   getProtocolService,
   getRecoverMnemonicService,
   getProtocolOptIn,
@@ -159,6 +160,14 @@ function DropdownMenu() {
       label: "Import mnemonic",
       icon: IconNames.IMPORT,
       onClick: onClickImportMnemonic,
+    });
+  }
+
+  if (environment.IS_DEV) {
+    menuItems.push({
+      label: "Clear Tokens",
+      icon: IconNames.INVALID,
+      onClick: () => getFractalAccountConnector().clearTokens(),
     });
   }
 
