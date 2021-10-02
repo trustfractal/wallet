@@ -2,13 +2,6 @@ import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
 const types = mirrorCreator([
-  "SET_MNEMONIC",
-  "SET_REGISTERED_FOR_MINTING",
-  "SET_REGISTRATION_STATE",
-  "SET_REGISTRATION_ERROR",
-  "CREATE_WALLET",
-  "RESUME_WALLET_CREATION",
-  "IMPORT_WALLET",
 ]);
 
 const registrationTypes = {
