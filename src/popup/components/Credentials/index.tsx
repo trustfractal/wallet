@@ -46,7 +46,9 @@ function Credentials() {
   const credentials = useUserSelector(getCredentials);
   const upcomingCredentials = useUserSelector(getUpcomingCredentials);
   const setup = useAppSelector(isSetup);
-  const connectedAccount = useObservedState(() => getFractalAccountConnector().connectedAccount$);
+  const connectedAccount = useObservedState(
+    () => getFractalAccountConnector().connectedAccount$,
+  );
 
   if (connectedAccount.hasValue && !connectedAccount.value) {
     return (

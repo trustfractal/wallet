@@ -46,12 +46,14 @@ class Loaded<T> implements Loading<T> {
   }
 }
 
-export function useObservedState<T>(observable: () => Observable<T>): Observed<T> {
+export function useObservedState<T>(
+  observable: () => Observable<T>,
+): Observed<T> {
   const [hasValue, setHasValue] = useState(false);
   const [value, setValue] = useState<T>();
 
   useEffect(() => {
-    const sub = observable().subscribe(v => {
+    const sub = observable().subscribe((v) => {
       setValue(v);
       setHasValue(true);
     });
