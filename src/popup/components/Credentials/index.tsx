@@ -1,5 +1,6 @@
 import styled from "styled-components";
 
+import { useObservedState } from "@utils/ReactHooks";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 import Credential from "@popup/components/common/Credential";
 import VerificationCase from "@popup/components/common/VerificationCase";
@@ -45,8 +46,11 @@ function Credentials() {
   const credentials = useUserSelector(getCredentials);
   const upcomingCredentials = useUserSelector(getUpcomingCredentials);
   const setup = useAppSelector(isSetup);
+  const connectedAccount = useObservedState(
+    () => getFractalAccountConnector().connectedAccount$,
+  );
 
-  if (!getFractalAccountConnector().hasConnectedAccount()) {
+  if (connectedAccount.hasValue && !connectedAccount.value) {
     return (
       <TopComponent>
         <ConnectToAccount />
