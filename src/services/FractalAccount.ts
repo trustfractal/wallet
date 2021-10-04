@@ -57,6 +57,8 @@ export class FractalAccountConnector extends MultiContext {
   }
 
   async inInjectedScript() {
+    if (!window.location.toString().startsWith(environment.FRACTAL_WEBSITE_URL))
+      return;
     if (!(await this.willAcceptNextTokens())) return;
 
     const catfishSessionKey = "catfish_token";
