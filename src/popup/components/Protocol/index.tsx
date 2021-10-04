@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
+import { useLoadedState } from "@utils/ReactHooks";
 import { getProtocolOptIn } from "@services/Factory";
 import TopComponent from "@popup/components/common/TopComponent";
 
@@ -12,23 +13,10 @@ import { NoLiveness } from "./NoLiveness";
 function ProtocolState() {
   const [pageOverride, setPageOverride] = useState<JSX.Element | null>(null);
 
-  const [optedIn, setOptedIn] = useState(false);
-  const [serviceOptedIn, setServiceOptedIn] = useState<boolean | undefined>();
-  const [completedLiveness, setCompletedLiveness] = useState<
-    boolean | undefined
-  >();
-
-  useAsync(
-    async () => await getProtocolOptIn().isOptedIn(),
-    (optedIn) => {
-      if (optedIn) setOptedIn(true);
-      setServiceOptedIn(optedIn);
-    },
-  );
-
-  useAsync(
-    async () => await getProtocolOptIn().hasCompletedLiveness(),
-    setCompletedLiveness,
+  const [manualOptIn, setManualOptIn] = useState(false);
+  const serviceOptedIn = useLoadedState(() => getProtocolOptIn().isOptedIn());
+  const completedLiveness = useLoadedState(() =>
+    getProtocolOptIn().hasCompletedLiveness(),
   );
 
   const optInWithMnemonic = async (mnemonic: string) => {
@@ -37,7 +25,7 @@ function ProtocolState() {
         <SetupInProgress onRetry={() => optInWithMnemonic(mnemonic)} />,
       );
       await getProtocolOptIn().optIn(mnemonic);
-      setServiceOptedIn(true);
+      serviceOptedIn.setValue(true);
       setPageOverride(
         <SetupSuccess onContinue={() => setPageOverride(null)} />,
       );
@@ -64,33 +52,21 @@ function ProtocolState() {
     return pageOverride;
   }
 
-  if ([serviceOptedIn, completedLiveness].some((v) => v == null)) {
-    return <></>;
-  }
-
+  if (!serviceOptedIn.isLoaded) return null;
+  const optedIn = manualOptIn || serviceOptedIn.value;
   if (!optedIn) {
-    return <OptInForm onOptIn={() => setOptedIn(true)} />;
+    return <OptInForm onOptIn={() => setManualOptIn(true)} />;
   }
-  if (!serviceOptedIn) {
+  if (!serviceOptedIn.value) {
     return <MnemonicPicker onMnemonicPicked={optInWithMnemonic} />;
   }
-  if (!completedLiveness) {
+
+  if (!completedLiveness.isLoaded) return null;
+  if (!completedLiveness.value) {
     return <NoLiveness onClick={doLiveness} />;
   }
 
   return <DataScreen />;
-}
-
-function useAsync<T>(asyncFn: () => Promise<T>, onSuccess: (t: T) => void) {
-  useEffect(() => {
-    let isActive = true;
-    asyncFn().then((data) => {
-      if (isActive) onSuccess(data);
-    });
-    return () => {
-      isActive = false;
-    };
-  }, [asyncFn, onSuccess]);
 }
 
 export function Protocol() {

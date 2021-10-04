@@ -124,9 +124,7 @@ function DropdownMenu() {
   const onClickImportMnemonic = () =>
     getRecoverMnemonicService().showRecoverPage();
 
-  const mnemonic = useLoadedState(
-    async () => await getProtocolOptIn().getMnemonic(),
-  );
+  const mnemonic = useLoadedState(() => getProtocolOptIn().getMnemonic());
 
   let menuItems = [
     {
@@ -135,7 +133,15 @@ function DropdownMenu() {
       onClick: onClickExport,
       disabled: credentials.length === 0,
     },
-    exportMnemonic(mnemonic.value || null),
+    {
+      label: "Backup protocol wallet",
+      icon: IconNames.IMPORT,
+      onClick: async () => {
+        await navigator.clipboard.writeText(mnemonic.unwrapOrDefault("")!);
+        getUserAlerts().send("Mnemonic copied to clipboard!");
+      },
+      disabled: !mnemonic.isLoaded || mnemonic.value == null,
+    },
     {
       label: "Refresh",
       icon: IconNames.REFRESH,
@@ -172,18 +178,6 @@ function DropdownMenu() {
   }
 
   return <Menu items={menuItems} />;
-}
-
-function exportMnemonic(mnemonic: string | null) {
-  return {
-    label: "Backup protocol wallet",
-    icon: IconNames.IMPORT,
-    onClick: async () => {
-      await navigator.clipboard.writeText(mnemonic!);
-      getUserAlerts().send("Mnemonic copied to clipboard!");
-    },
-    disabled: mnemonic == null,
-  };
 }
 
 const toHuman = (balance: Balance) => Number(balance.toBigInt()) / 10 ** 12;

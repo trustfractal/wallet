@@ -1,45 +1,54 @@
 import { useState, useEffect } from "react";
 import { Observable } from "rxjs";
 
-export function useLoadedState<T>(loader: () => Promise<T>): Loading<T> {
+export function useLoadedState<T>(loader: () => Promise<T>): Load<T> {
   const [loaded, setLoaded] = useState(false);
   const [value, setValue] = useState<T>();
 
   useEffect(() => {
     (async () => {
+      if (loaded) return;
+
       const v = await loader();
-      setLoaded(true);
+      // Value may have been set by `setValue` on result before loader finishes.
+      if (loaded) return;
+
       setValue(v);
+      setLoaded(true);
     })();
-  }, [loader]);
+  }, [loader, loaded]);
+
+  const setLoadAndValue = (value: T) => {
+    setValue(value);
+    setLoaded(true);
+  };
 
   if (loaded) {
-    return new Loaded<T>(value!);
+    return new Loaded<T>(value!, setLoadAndValue);
   } else {
-    return new IsLoading<T>();
+    return new Loading<T>(setLoadAndValue);
   }
 }
 
-interface Loading<T> {
-  isLoading: boolean;
-  value: T | null;
+type Load<T> = Loading<T> | Loaded<T>;
 
-  unwrapOrDefault<U>(def: U): T | U;
-}
+class Loading<T> {
+  isLoaded: false = false;
 
-class IsLoading<T> implements Loading<T> {
-  isLoading = true;
-  value = null;
+  constructor(public readonly setValue: (t: T) => void) {}
 
   unwrapOrDefault<U>(def: U): U {
     return def;
   }
 }
 
-class Loaded<T> implements Loading<T> {
-  isLoading = false;
+class Loaded<T> {
+  isLoaded: true = true;
 
-  constructor(public readonly value: T) {}
+  constructor(
+    public readonly value: T,
+    public readonly setValue: (t: T) => void,
+  ) {}
 
   unwrapOrDefault<U>(_def: U): T {
     return this.value;
