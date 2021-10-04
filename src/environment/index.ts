@@ -14,7 +14,7 @@ const MAGURO_URL =
   "https://maguro.staging.sandbox.fractal.id";
 const LIVENESS_JOURNEY_URL =
   process.env.REACT_APP_LIVENESS_JOURNEY_URL ||
-  "https://staging.sandbox.fractal.id/kyc/liveness";
+  "https://staging.sandbox.fractal.id/authorize?client_id=8spOoo1zjZQVMqO3qzPlf2B4OGhFyN0eIbYFcVgGN3M&redirect_uri=https%3A%2F%2Fstaging.sandbox.fractal.id&response_type=code&scope=contact%3Aread%20verification.plus%3Aread%20verification.plus.details%3Aread%20verification.liveness%3Aread%20verification.liveness.details%3Aread%20verification.wallet%3Aread%20verification.wallet.details%3Aread";
 const PROTOCOL_JOURNEY_URL =
   process.env.REACT_APP_PROTOCOL_JOURNEY_URL ||
   "https://staging.sandbox.fractal.id/authorize?client_id=7bSJYDc0ywg9ml377DIk45-tjUxdHgVt-MJC6So56Ho&redirect_uri=https%3A%2F%2Fstaging.sandbox.fractal.id%2Fprotocol&response_type=code&scope=verification.protocol%3Aread";
