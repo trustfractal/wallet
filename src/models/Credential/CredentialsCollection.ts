@@ -15,19 +15,26 @@ export default class CredentialsCollection extends Collection<ICredential> {
   }
 
   static fromRpcList(userCredentials: ICredential[]) {
-    const credentials = userCredentials.reduce((memo: CredentialsCollection, credential: any) => {
-      memo.push(
-        new Credential(
-          { ...credential.data },
-          `${credential.verification_case_id}:${credential.level}`,
-          credential.level,
-          credential.verification_case_id,
-          new Date(credential.created_at).getTime(),
-        ),
-      );
+    const credentials = userCredentials.reduce(
+      (memo: CredentialsCollection, credential: any) => {
+        memo.push(
+          new Credential(
+            { ...credential.data },
+            `${credential.verification_case_id}:${credential.level}`,
+            credential.level,
+            credential.verification_case_id,
+            new Date(credential.created_at).getTime(),
+          ),
+        );
 
-      return memo;
-    }, new CredentialsCollection());
+        return memo;
+      },
+      new CredentialsCollection(),
+    );
     return credentials;
+  }
+
+  static empty() {
+    return new CredentialsCollection();
   }
 }

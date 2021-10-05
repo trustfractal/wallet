@@ -20,11 +20,13 @@ const initialState = {
 
 export const reducer = handleActions(
   {
-    [types.SET_CREDENTIALS]: (state, { payload: credentials }) =>
-      Object.freeze({
+    [types.SET_CREDENTIALS]: (state, { payload: credentials }) => {
+      console.log("setCredentials");
+      return Object.freeze({
         ...state,
         credentials: credentials.serialize(),
-      }),
+      });
+    },
     [types.SET_VERIFICATION_CASES]: (state, { payload: verificationCases }) =>
       Object.freeze({
         ...state,

@@ -22,7 +22,7 @@ export default class VerificationCasesCollection extends Collection<IVerificatio
     return cases.reduce(
       (
         memo,
-        { id, client_id, level, status, credential, journey_completed }
+        { id, client_id, level, status, credential, journey_completed },
       ) => {
         let vcStatus = VerificationCase.getStatus({
           id,

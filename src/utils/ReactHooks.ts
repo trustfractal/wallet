@@ -1,22 +1,37 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Observable } from "rxjs";
 
+// Note that this memoizes the loader promise since the common case is
+// explicitly not wanting it to change between calls. This makes the API simpler
+// while being slightly potentially surprising if the callback is expected to be
+// evaluated multiple times (which we don't expect to be common).
 export function useLoadedState<T>(loader: () => Promise<T>): Load<T> {
   const [loaded, setLoaded] = useState(false);
   const [value, setValue] = useState<T>();
 
+  // The common case is to only want to call the loader once, so we memoize it
+  // for the user to prevent all users from having to do that themselves.
+  // eslint-disable-next-line
+  const memoLoader = useCallback(() => loader(), []);
+
   useEffect(() => {
+    let active = true;
     (async () => {
       if (loaded) return;
+      if (!active) return;
 
-      const v = await loader();
+      const v = await memoLoader();
       // Value may have been set by `setValue` on result before loader finishes.
       if (loaded) return;
+      if (!active) return;
 
       setValue(v);
       setLoaded(true);
     })();
-  }, [loader, loaded]);
+    return () => {
+      active = false;
+    };
+  }, [memoLoader, loaded]);
 
   const setLoadAndValue = (value: T) => {
     setValue(value);
@@ -79,14 +94,23 @@ export function useObservedState<T>(
 export interface Observed<T> {
   hasValue: boolean;
   value?: T;
+  unwrapOrDefault<U>(def: U): T | U;
 }
 
 class NotEmitted<T> implements Observed<T> {
   hasValue = false;
+
+  unwrapOrDefault<U>(def: U) {
+    return def;
+  }
 }
 
 class Value<T> {
   hasValue = true;
 
   constructor(public readonly value: T) {}
+
+  unwrapOrDefault<U>(_: U) {
+    return this.value;
+  }
 }

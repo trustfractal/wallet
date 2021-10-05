@@ -26,7 +26,12 @@ import {
 import { getRequests } from "@redux/stores/user/reducers/requests/selectors";
 import CredentialModel from "@models/Credential";
 import VerificationCaseModel from "@models/VerificationCase";
-import { getFractalAccountConnector, getMaguroService, getMegalodonService } from "@services/Factory";
+import {
+  getFractalAccountConnector,
+  getMaguroService,
+  getMegalodonService,
+} from "@services/Factory";
+import { credentialsSubject } from "@services/Observables";
 
 const RootContainer = styled.div`
   margin-bottom: var(--s-32);
@@ -43,11 +48,19 @@ function Credentials() {
   const requests = useUserSelector(getRequests);
 
   const credentialsLoading = useLoadedState(async () => {
-    const { credentials: rpcCredentials } = await getMaguroService().getCredentials();
+    const { credentials: rpcCredentials } =
+      await getMaguroService().getCredentials();
     const credentials = CredentialsCollection.fromRpcList(rpcCredentials);
+    credentialsSubject.next(credentials);
     const { verification_cases: cases } = await getMegalodonService().me();
-    const verificationCases = VerificationCasesCollection.fromRpcList(cases, credentials);
-    return [credentials, verificationCases.filterPendingOrContactedOrIssuingSupportedVerificationCases()];
+    const verificationCases = VerificationCasesCollection.fromRpcList(
+      cases,
+      credentials,
+    );
+    return [
+      credentials,
+      verificationCases.filterPendingOrContactedOrIssuingSupportedVerificationCases(),
+    ];
   });
 
   const setup = useAppSelector(isSetup);
@@ -97,7 +110,10 @@ function Credentials() {
 
               return (
                 <RootContainer key={credential.id}>
-                  <CredentialComponent key={credential.level} credential={credential} />
+                  <CredentialComponent
+                    key={credential.level}
+                    credential={credential}
+                  />
                   {credentialsRequests.length > 0 && (
                     <History requests={getCredentialRequests(credential.id)} />
                   )}
