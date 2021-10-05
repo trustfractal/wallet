@@ -3,10 +3,12 @@ import { mnemonicGenerate } from "@polkadot/util-crypto";
 import { useEffect, useState } from "react";
 
 import {
+  BoldText,
+  ClickableText,
   Cta,
   Icon,
   IconNames,
-  BoldText,
+  Subtitle,
   VerticalSequence,
 } from "@popup/components/Protocol/common";
 
@@ -48,12 +50,16 @@ export default function MnemonicPicker({
       <Icon name={IconNames.PROTOCOL} />
 
       <BoldText center>
-        You should only register a new identity if it isn't already associated
-        with an account. If you already have registered please recover your
-        account.
+        Create a new address for interacting with the Protocol.
       </BoldText>
 
       <Cta onClick={onCtaClicked}>Create</Cta>
+
+      <Subtitle center>
+        <ClickableText onClick={() => setShowRecoverPage(true)}>
+          Recover Instead
+        </ClickableText>
+      </Subtitle>
     </VerticalSequence>
   );
 }
