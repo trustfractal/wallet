@@ -1,5 +1,6 @@
 import styled from "styled-components";
 
+import Loading from "@popup/components/Loading";
 import { useLoadedState, useObservedState } from "@utils/ReactHooks";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 import CredentialComponent from "@popup/components/common/Credential";
@@ -68,7 +69,7 @@ function Credentials() {
     () => getFractalAccountConnector().connectedAccount$,
   );
 
-  if (!connectedAccount.hasValue) return <></>;
+  if (!connectedAccount.hasValue) return <Loading />;
 
   if (setup !== connectedAccount.value) {
     dispatch(appActions.setSetup(connectedAccount.value));
@@ -81,7 +82,7 @@ function Credentials() {
     );
   }
 
-  if (!credentialsLoading.isLoaded) return <></>;
+  if (!credentialsLoading.isLoaded) return <Loading />;
   const [credentials, upcomingCredentials] = credentialsLoading.value;
 
   if (credentials.length === 0 && upcomingCredentials.length === 0)

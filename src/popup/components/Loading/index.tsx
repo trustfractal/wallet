@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-import TopComponent from "@popup/components/common/TopComponent";
 import Spinner from "../common/Spinner";
 import Text, { TextHeights, TextSizes } from "../common/Text";
 import Logo from "../common/Logo";
@@ -30,19 +29,17 @@ const SpinnerContainer = styled.div`
 
 function Loading() {
   return (
-    <TopComponent>
-      <RootContainer>
-        <Logo />
-        <LabelContainer>
-          <SpinnerContainer>
-            <Spinner alternative />
-          </SpinnerContainer>
-          <Text size={TextSizes.LARGE} height={TextHeights.LARGE}>
-            Loading...
-          </Text>
-        </LabelContainer>
-      </RootContainer>
-    </TopComponent>
+    <RootContainer>
+      <Logo />
+      <LabelContainer>
+        <SpinnerContainer>
+          <Spinner alternative />
+        </SpinnerContainer>
+        <Text size={TextSizes.LARGE} height={TextHeights.LARGE}>
+          Loading...
+        </Text>
+      </LabelContainer>
+    </RootContainer>
   );
 }
 
