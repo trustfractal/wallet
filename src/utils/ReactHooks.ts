@@ -118,8 +118,8 @@ export interface CacheArgs<T> {
   key: string;
   useFor?: number; // in seconds
   loader: () => Promise<T>;
-  serialize: (t: T) => string;
-  deserialize: (s: string) => T;
+  serialize?: (t: T) => string;
+  deserialize?: (s: string) => T;
 }
 
 export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
@@ -129,6 +129,9 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
     false,
     null,
   ]);
+
+  const serialize = args.serialize || JSON.stringify;
+  const deserialize = args.deserialize || JSON.parse;
 
   useEffect(
     () => {
@@ -144,7 +147,7 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
         if (fromCache != null) {
           const [setAt, serialized] = fromCache;
 
-          const value = args.deserialize(serialized);
+          const value = deserialize(serialized);
           setIfActive(value);
           if (args.useFor != null) {
             const waitFor = setAt + args.useFor * 1000 - new Date().getTime();
@@ -159,7 +162,7 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
         const loaded = await args.loader();
         setIfActive(loaded);
 
-        await args.cache.set(args.key, args.serialize(loaded));
+        await args.cache.set(args.key, serialize(loaded));
       })();
 
       return () => {
