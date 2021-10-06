@@ -111,15 +111,12 @@ const BalanceReservedLabel = styled.span`
 
 function DropdownMenu() {
   const history = useHistory();
-  const appDispatch = useAppDispatch();
   const credentials = useObservedState(
     () => credentialsSubject,
   ).unwrapOrDefault(CredentialsCollection.empty());
 
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
-
-  const onClickRefresh = () => appDispatch(appActions.refresh());
 
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
@@ -143,11 +140,6 @@ function DropdownMenu() {
         getUserAlerts().send("Mnemonic copied to clipboard!");
       },
       disabled: !mnemonic.isLoaded || mnemonic.value == null,
-    },
-    {
-      label: "Refresh",
-      icon: IconNames.REFRESH,
-      onClick: onClickRefresh,
     },
     {
       label: "About",

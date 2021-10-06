@@ -19,7 +19,6 @@ const types = mirrorCreator([
   "SET_NETWORK",
   "SET_LIVENESS_CHECK_ENABLED",
   "FETCH_CONFIG",
-  "REFRESH",
 ]);
 
 const creators = createActions(
@@ -35,7 +34,6 @@ const creators = createActions(
   types.SET_NETWORK,
   types.SET_LIVENESS_CHECK_ENABLED,
   types.FETCH_CONFIG,
-  types.REFRESH,
 );
 
 const initialState = {
