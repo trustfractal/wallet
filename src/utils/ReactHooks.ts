@@ -139,6 +139,7 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
     if (args.onValue != null) {
       args.onValue(v);
     }
+    args.cache.set(args.key, serialize(v));
   };
 
   const serialize = args.serialize || JSON.stringify;
@@ -172,8 +173,6 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
 
         const loaded = await args.loader();
         setIfActive(loaded);
-
-        await args.cache.set(args.key, serialize(loaded));
       })();
 
       return () => {
