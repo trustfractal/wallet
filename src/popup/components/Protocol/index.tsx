@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import { useCachedState } from "@utils/ReactHooks";
-import { getValueCache, getProtocolOptIn } from "@services/Factory";
+import { useLoadedState } from "@utils/ReactHooks";
+import { getProtocolOptIn } from "@services/Factory";
 import TopComponent from "@popup/components/common/TopComponent";
 
 import Loading from "@popup/components/Loading";
@@ -15,16 +15,10 @@ function ProtocolState() {
   const [pageOverride, setPageOverride] = useState<JSX.Element | null>(null);
 
   const [manualOptIn, setManualOptIn] = useState(false);
-  const serviceOptedIn = useCachedState({
-    cache: getValueCache(),
-    key: 'service-opted-in',
-    loader: () => getProtocolOptIn().isOptedIn(),
-  });
-  const completedLiveness = useCachedState({
-    cache: getValueCache(),
-    key: 'completed-liveness',
-    loader: () => getProtocolOptIn().hasCompletedLiveness(),
-  });
+  const serviceOptedIn = useLoadedState(() => getProtocolOptIn().isOptedIn());
+  const completedLiveness = useLoadedState(() =>
+    getProtocolOptIn().hasCompletedLiveness(),
+  );
 
   const optInWithMnemonic = async (mnemonic: string) => {
     try {

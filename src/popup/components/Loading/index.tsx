@@ -35,7 +35,11 @@ function Loading() {
     const start = window.performance.now();
     return () => {
       if (!environment.IS_DEV) return;
-      console.info('Showed loading for', window.performance.now() - start, 'ms');
+      console.info(
+        "Showed loading for",
+        window.performance.now() - start,
+        "ms",
+      );
     };
   }, []);
 
