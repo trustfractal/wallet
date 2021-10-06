@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from "react";
-import styled from "styled-components";
 
 import {
+  ClickableText,
   Input,
   Text,
   BoldText,
@@ -9,6 +9,8 @@ import {
   VerticalSequence,
   Icon,
   IconNames,
+  Subtitle,
+  Subsubtitle,
 } from "@popup/components/Protocol/common";
 
 import {
@@ -16,16 +18,6 @@ import {
   mnemonicToMiniSecret,
   schnorrkelKeypairFromSeed,
 } from "@polkadot/util-crypto";
-
-import { Subsubtitle } from "@popup/components/common/Subtitle";
-
-const ClickableText = styled.button`
-  outline: none;
-  background: none;
-  margin: 0;
-  padding: 0;
-  color: inherit;
-`;
 
 interface ImportProps {
   onMnemonic: (mnemonic: string) => void;
@@ -62,23 +54,28 @@ function Import({ onMnemonic, onCancel }: ImportProps) {
 
       <BoldText>Enter your mnemonic to recover your wallet.</BoldText>
 
+      <Subtitle center>
+        Only recover if the address is not being used on another installation of
+        the extension. Multiple installations with the same address will
+        conflict with each other.
+      </Subtitle>
+
       <Input
         onChange={onChange}
         placeholder="Enter your mnemonic"
         style={{ alignSelf: "stretch" }}
       />
 
+      {address && <Subsubtitle>Your address is</Subsubtitle>}
+      {address && <Text>{address}</Text>}
+
       <Cta disabled={mnemonic == null} onClick={onClick}>
         Recover
       </Cta>
 
-      {address && <Subsubtitle>Your address is</Subsubtitle>}
-
-      {address && <Text>{address}</Text>}
-
-      <Subsubtitle underline>
+      <Subtitle underline>
         <ClickableText onClick={onCancel}>Back to Create New</ClickableText>
-      </Subsubtitle>
+      </Subtitle>
     </VerticalSequence>
   );
 }

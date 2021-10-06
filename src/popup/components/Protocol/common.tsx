@@ -33,6 +33,14 @@ const Link = styled.a`
   text-decoration: underline;
 `;
 
+export const ClickableText = styled.button`
+  outline: none;
+  background: none;
+  margin: 0;
+  padding: 0;
+  color: inherit;
+`;
+
 export function VerticalSequence(props: React.HTMLProps<HTMLDivElement>) {
   return (
     <Container>
