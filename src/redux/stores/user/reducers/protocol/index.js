@@ -1,8 +1,7 @@
 import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
-const types = mirrorCreator([
-]);
+const types = mirrorCreator([]);
 
 const registrationTypes = {
   STARTED: "STARTED",
