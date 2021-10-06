@@ -123,6 +123,9 @@ export interface CacheArgs<T> {
   deserialize?: (s: string) => T;
 }
 
+// React Hook that will as quickly as possible return a value from cache and
+// continue to load the value from the source of truth once the useFor window
+// has passed.
 export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
   // We keep the state that's bound together in the same useState so React
   // doesn't trigger renders when setting one but not the other.
