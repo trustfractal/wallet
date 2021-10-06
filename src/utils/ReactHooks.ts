@@ -181,7 +181,13 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
   if (loaded) {
     return new Loaded(value as T, setValue);
   } else {
-    return new Loading(setValue);
+    const immediateCache = args.cache.getImmediate(args.key);
+    if (immediateCache == null) {
+      return new Loading(setValue);
+    } else {
+      const deserialized = deserialize(immediateCache[1]);
+      return new Loaded(deserialized, setValue);
+    }
   }
 }
 
@@ -204,16 +210,19 @@ export class ValueCache {
   }
 
   async get(key: string): Promise<[number, string] | null> {
-    const fromMemory = this.memory.get(key);
-    if (fromMemory != null) {
-      return JSON.parse(fromMemory);
-    }
+    const immediate = this.getImmediate(key);
+    if (immediate != null) return immediate;
 
     const s = await this.storage.getItem(`$value-cache/${key}`);
     if (s == null) return null;
 
     this.memory.set(key, s);
     return JSON.parse(s);
+  }
+
+  getImmediate(key: string): [number, string] | null {
+    const fromMemory = this.memory.get(key);
+    return fromMemory && JSON.parse(fromMemory);
   }
 
   async set(key: string, value: string): Promise<void> {
