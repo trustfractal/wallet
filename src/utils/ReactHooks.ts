@@ -118,6 +118,7 @@ export interface CacheArgs<T> {
   key: string;
   useFor?: number; // in seconds
   loader: () => Promise<T>;
+  onValue?: (t: T) => void;
   serialize?: (t: T) => string;
   deserialize?: (s: string) => T;
 }
@@ -130,6 +131,13 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
     null,
   ]);
 
+  const setValue = (v: T) => {
+    setLoadedValue([true, v]);
+    if (args.onValue != null) {
+      args.onValue(v);
+    }
+  };
+
   const serialize = args.serialize || JSON.stringify;
   const deserialize = args.deserialize || JSON.parse;
 
@@ -139,7 +147,7 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
 
       const setIfActive = (v: T) => {
         if (!active) return;
-        setLoadedValue([true, v]);
+        setValue(v);
       };
 
       (async () => {
@@ -177,7 +185,6 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
     [],
   );
 
-  const setValue = (t: T) => setLoadedValue([true, t]);
   if (loaded) {
     return new Loaded(value as T, setValue);
   } else {
@@ -186,6 +193,9 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
       return new Loading(setValue);
     } else {
       const deserialized = deserialize(immediateCache[1]);
+      // Use setTimeout since we are not allowed to set a state value during
+      // a render.
+      setTimeout(() => setValue(deserialized));
       return new Loaded(deserialized, setValue);
     }
   }

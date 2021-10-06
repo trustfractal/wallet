@@ -57,7 +57,6 @@ function Credentials() {
       const { credentials: rpcCredentials } =
         await getMaguroService().getCredentials();
       const credentials = CredentialsCollection.fromRpcList(rpcCredentials);
-      credentialsSubject.next(credentials);
       const { verification_cases: cases } = await getMegalodonService().me();
       const verificationCases = VerificationCasesCollection.fromRpcList(
         cases,
@@ -67,6 +66,9 @@ function Credentials() {
         credentials,
         verificationCases.filterPendingOrContactedOrIssuingSupportedVerificationCases(),
       ];
+    },
+    onValue: ([credentials,]) => {
+      credentialsSubject.next(credentials);
     },
     serialize: ([credentials, upcomingCredentials]) => {
       return JSON.stringify([
