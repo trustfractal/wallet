@@ -67,7 +67,7 @@ function Credentials() {
         verificationCases.filterPendingOrContactedOrIssuingSupportedVerificationCases(),
       ];
     },
-    onValue: ([credentials,]) => {
+    onValue: ([credentials]) => {
       credentialsSubject.next(credentials);
     },
     serialize: ([credentials, upcomingCredentials]) => {
