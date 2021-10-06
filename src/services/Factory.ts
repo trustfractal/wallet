@@ -14,6 +14,7 @@ import { RecoverMnemonicService } from "@services/RecoverMnemonicService";
 import { UserAlerts } from "@popup/Alerts";
 import { MultiContext, AggregateMultiContext } from "@utils/MultiContext";
 import { FractalAccountConnector } from "@services/FractalAccount";
+import { ValueCache } from "@utils/ReactHooks";
 
 let storageService: StorageService;
 export function getStorageService() {
@@ -169,4 +170,12 @@ export function getMultiContext() {
     multiContext = new AggregateMultiContext([getFractalAccountConnector()]);
   }
   return multiContext;
+}
+
+let valueCache: ValueCache;
+export function getValueCache() {
+  if (valueCache == null) {
+    valueCache = new ValueCache(getStorageService());
+  }
+  return valueCache;
 }

@@ -1,9 +1,12 @@
 import styled from "styled-components";
 
-import { useObservedState } from "@utils/ReactHooks";
+import Loading from "@popup/components/Loading";
+import { useCachedState, useObservedState } from "@utils/ReactHooks";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
-import Credential from "@popup/components/common/Credential";
+import CredentialComponent from "@popup/components/common/Credential";
+import CredentialsCollection from "@models/Credential/CredentialsCollection";
 import VerificationCase from "@popup/components/common/VerificationCase";
+import VerificationCasesCollection from "@models/VerificationCase/VerificationCasesCollection";
 import History from "@popup/components/common/History";
 import TopComponent from "@popup/components/common/TopComponent";
 import EmptyCredentials from "@popup/components/EmptyCredentials";
@@ -21,14 +24,16 @@ import {
   useAppDispatch,
   useAppSelector,
 } from "@redux/stores/application/context";
-import {
-  getCredentials,
-  getUpcomingCredentials,
-} from "@redux/stores/user/reducers/credentials/selectors";
 import { getRequests } from "@redux/stores/user/reducers/requests/selectors";
 import CredentialModel from "@models/Credential";
 import VerificationCaseModel from "@models/VerificationCase";
-import { getFractalAccountConnector } from "@services/Factory";
+import {
+  getFractalAccountConnector,
+  getMaguroService,
+  getMegalodonService,
+  getValueCache,
+} from "@services/Factory";
+import { credentialsSubject } from "@services/Observables";
 
 const RootContainer = styled.div`
   margin-bottom: var(--s-32);
@@ -43,25 +48,64 @@ const LabelContainer = styled.div`
 function Credentials() {
   const dispatch = useAppDispatch();
   const requests = useUserSelector(getRequests);
-  const credentials = useUserSelector(getCredentials);
-  const upcomingCredentials = useUserSelector(getUpcomingCredentials);
+
+  const credentialsLoading = useCachedState({
+    cache: getValueCache(),
+    key: "credentials",
+    useFor: 10 * 60,
+    loader: async () => {
+      const { credentials: rpcCredentials } =
+        await getMaguroService().getCredentials();
+      const credentials = CredentialsCollection.fromRpcList(rpcCredentials);
+      const { verification_cases: cases } = await getMegalodonService().me();
+      const verificationCases = VerificationCasesCollection.fromRpcList(
+        cases,
+        credentials,
+      );
+      return [
+        credentials,
+        verificationCases.filterPendingOrContactedOrIssuingSupportedVerificationCases(),
+      ];
+    },
+    onValue: ([credentials]) => {
+      credentialsSubject.next(credentials);
+    },
+    serialize: ([credentials, upcomingCredentials]) => {
+      return JSON.stringify([
+        credentials.serialize(),
+        upcomingCredentials.serialize(),
+      ]);
+    },
+    deserialize: (s) => {
+      const [credentials, upcomingCredentials] = JSON.parse(s);
+      return [
+        CredentialsCollection.parse(credentials),
+        VerificationCasesCollection.parse(upcomingCredentials),
+      ];
+    },
+  });
+
   const setup = useAppSelector(isSetup);
   const connectedAccount = useObservedState(
     () => getFractalAccountConnector().connectedAccount$,
   );
 
-  if (connectedAccount.hasValue && !connectedAccount.value) {
+  if (!connectedAccount.hasValue) return <Loading />;
+
+  if (setup !== connectedAccount.value) {
+    dispatch(appActions.setSetup(connectedAccount.value));
+  }
+  if (!connectedAccount.value) {
     return (
       <TopComponent>
         <ConnectToAccount />
       </TopComponent>
     );
   }
-  if (!setup) {
-    dispatch(appActions.setSetup(true));
-  }
 
-  // check if has credentials or verification cases
+  if (!credentialsLoading.isLoaded) return <Loading />;
+  const [credentials, upcomingCredentials] = credentialsLoading.value;
+
   if (credentials.length === 0 && upcomingCredentials.length === 0)
     return <EmptyCredentials />;
 
@@ -88,7 +132,10 @@ function Credentials() {
 
               return (
                 <RootContainer key={credential.id}>
-                  <Credential key={credential.level} credential={credential} />
+                  <CredentialComponent
+                    key={credential.level}
+                    credential={credential}
+                  />
                   {credentialsRequests.length > 0 && (
                     <History requests={getCredentialRequests(credential.id)} />
                   )}

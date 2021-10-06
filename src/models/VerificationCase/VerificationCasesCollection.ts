@@ -2,6 +2,7 @@ import { IVerificationCase } from "@pluginTypes/index";
 
 import { KYCTypes } from "@trustfractal/sdk";
 
+import { ICredential } from "@pluginTypes/index";
 import Collection from "@models/Base/BaseCollection";
 import VerificationCase from "@models/VerificationCase";
 import VerificationCaseStatus from "@models/VerificationCase/status";
@@ -15,6 +16,29 @@ export default class VerificationCasesCollection extends Collection<IVerificatio
     );
 
     return new VerificationCasesCollection(...elements);
+  }
+
+  static fromRpcList(cases: any[], credentials: ICredential[]) {
+    return cases.reduce(
+      (
+        memo,
+        { id, client_id, level, status, credential, journey_completed },
+      ) => {
+        let vcStatus = VerificationCase.getStatus({
+          id,
+          level,
+          status,
+          credential,
+          journey_completed,
+          credentials,
+        });
+
+        memo.push(new VerificationCase(id, client_id, level, vcStatus));
+
+        return memo;
+      },
+      new VerificationCasesCollection(),
+    );
   }
 
   public filterProtocolVerificationCases() {

@@ -5,9 +5,7 @@ import type { AccountData, Balance } from "@polkadot/types/interfaces";
 
 import { useAppDispatch } from "@redux/stores/application/context";
 import appActions from "@redux/stores/application/reducers/app";
-import { useUserSelector } from "@redux/stores/user/context";
 
-import { getCredentials } from "@redux/stores/user/reducers/credentials/selectors";
 import Logo, { LogoSizes } from "@popup/components/common/Logo";
 import Text, {
   TextHeights,
@@ -16,9 +14,10 @@ import Text, {
 } from "@popup/components/common/Text";
 import { IconNames } from "@popup/components/common/Icon";
 import Menu from "@popup/components/common/Menu";
+import CredentialsCollection from "@models/Credential/CredentialsCollection";
 
 import { exportFile } from "@utils/FileUtils";
-import { useLoadedState } from "@utils/ReactHooks";
+import { useLoadedState, useObservedState } from "@utils/ReactHooks";
 
 import RoutesPaths from "@popup/routes/paths";
 import {
@@ -28,6 +27,7 @@ import {
   getProtocolOptIn,
   getUserAlerts,
 } from "@services/Factory";
+import { credentialsSubject } from "@services/Observables";
 
 import environment from "@environment/index";
 
@@ -111,13 +111,12 @@ const BalanceReservedLabel = styled.span`
 
 function DropdownMenu() {
   const history = useHistory();
-  const appDispatch = useAppDispatch();
-  const credentials = useUserSelector(getCredentials);
+  const credentials = useObservedState(
+    () => credentialsSubject,
+  ).unwrapOrDefault(CredentialsCollection.empty());
 
   const onClickExport = async () =>
     exportFile(credentials.serialize(), "fractal_wallet.backup");
-
-  const onClickRefresh = () => appDispatch(appActions.refresh());
 
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
@@ -141,11 +140,6 @@ function DropdownMenu() {
         getUserAlerts().send("Mnemonic copied to clipboard!");
       },
       disabled: !mnemonic.isLoaded || mnemonic.value == null,
-    },
-    {
-      label: "Refresh",
-      icon: IconNames.REFRESH,
-      onClick: onClickRefresh,
     },
     {
       label: "About",

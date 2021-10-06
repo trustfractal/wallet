@@ -4,6 +4,7 @@ import { useLoadedState } from "@utils/ReactHooks";
 import { getProtocolOptIn } from "@services/Factory";
 import TopComponent from "@popup/components/common/TopComponent";
 
+import Loading from "@popup/components/Loading";
 import DataScreen from "./DataScreen";
 import { OptInForm } from "./OptInForm";
 import MnemonicPicker from "./MnemonicPicker";
@@ -52,7 +53,7 @@ function ProtocolState() {
     return pageOverride;
   }
 
-  if (!serviceOptedIn.isLoaded) return null;
+  if (!serviceOptedIn.isLoaded) return <Loading />;
   const optedIn = manualOptIn || serviceOptedIn.value;
   if (!optedIn) {
     return <OptInForm onOptIn={() => setManualOptIn(true)} />;
@@ -61,7 +62,7 @@ function ProtocolState() {
     return <MnemonicPicker onMnemonicPicked={optInWithMnemonic} />;
   }
 
-  if (!completedLiveness.isLoaded) return null;
+  if (!completedLiveness.isLoaded) return <Loading />;
   if (!completedLiveness.value) {
     return <NoLiveness onClick={doLiveness} />;
   }

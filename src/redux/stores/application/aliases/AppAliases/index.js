@@ -9,7 +9,6 @@ import metadataActions, {
 } from "@redux/stores/application/reducers/metadata";
 
 import UserStore from "@redux/stores/user";
-import credentialsActions from "@redux/stores/user/reducers/credentials";
 
 import CredentialsPolling from "@models/Polling/CredentialsPolling";
 import { getMaguroService, getWindowsService } from "@services/Factory";
@@ -98,20 +97,10 @@ const fetchConfig = () => {
   };
 };
 
-const refresh = () => {
-  return async () => {
-    AppStore.getStore().dispatch(appActions.fetchConfig());
-    UserStore.getStore().dispatch(
-      credentialsActions.fetchCredentialsAndVerificationCases(),
-    );
-  };
-};
-
 const Aliases = {
   [appTypes.STARTUP]: startup,
   [appTypes.SET_POPUP_SIZE]: setPopupSize,
   [appTypes.FETCH_CONFIG]: fetchConfig,
-  [appTypes.REFRESH]: refresh,
 };
 
 export default Aliases;

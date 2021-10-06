@@ -1,6 +1,8 @@
 import styled from "styled-components";
+import { useEffect } from "react";
 
-import TopComponent from "@popup/components/common/TopComponent";
+import environment from "@environment/index";
+
 import Spinner from "../common/Spinner";
 import Text, { TextHeights, TextSizes } from "../common/Text";
 import Logo from "../common/Logo";
@@ -29,20 +31,30 @@ const SpinnerContainer = styled.div`
 `;
 
 function Loading() {
+  useEffect(() => {
+    const start = window.performance.now();
+    return () => {
+      if (!environment.IS_DEV) return;
+      console.info(
+        "Showed loading for",
+        window.performance.now() - start,
+        "ms",
+      );
+    };
+  }, []);
+
   return (
-    <TopComponent>
-      <RootContainer>
-        <Logo />
-        <LabelContainer>
-          <SpinnerContainer>
-            <Spinner alternative />
-          </SpinnerContainer>
-          <Text size={TextSizes.LARGE} height={TextHeights.LARGE}>
-            Loading...
-          </Text>
-        </LabelContainer>
-      </RootContainer>
-    </TopComponent>
+    <RootContainer>
+      <Logo />
+      <LabelContainer>
+        <SpinnerContainer>
+          <Spinner alternative />
+        </SpinnerContainer>
+        <Text size={TextSizes.LARGE} height={TextHeights.LARGE}>
+          Loading...
+        </Text>
+      </LabelContainer>
+    </RootContainer>
   );
 }
 
