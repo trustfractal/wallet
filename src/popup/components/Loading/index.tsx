@@ -1,4 +1,7 @@
 import styled from "styled-components";
+import { useEffect } from "react";
+
+import environment from "@environment/index";
 
 import Spinner from "../common/Spinner";
 import Text, { TextHeights, TextSizes } from "../common/Text";
@@ -28,6 +31,14 @@ const SpinnerContainer = styled.div`
 `;
 
 function Loading() {
+  useEffect(() => {
+    const start = window.performance.now();
+    return () => {
+      if (!environment.IS_DEV) return;
+      console.info('Showed loading for', window.performance.now() - start, 'ms');
+    };
+  }, []);
+
   return (
     <RootContainer>
       <Logo />
