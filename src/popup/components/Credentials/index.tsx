@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 import Loading from "@popup/components/Loading";
-import { useLoadedState, useObservedState } from "@utils/ReactHooks";
+import { useCachedState, useObservedState } from "@utils/ReactHooks";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
 import CredentialComponent from "@popup/components/common/Credential";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
@@ -31,6 +31,7 @@ import {
   getFractalAccountConnector,
   getMaguroService,
   getMegalodonService,
+  getValueCache,
 } from "@services/Factory";
 import { credentialsSubject } from "@services/Observables";
 
@@ -48,20 +49,38 @@ function Credentials() {
   const dispatch = useAppDispatch();
   const requests = useUserSelector(getRequests);
 
-  const credentialsLoading = useLoadedState(async () => {
-    const { credentials: rpcCredentials } =
-      await getMaguroService().getCredentials();
-    const credentials = CredentialsCollection.fromRpcList(rpcCredentials);
-    credentialsSubject.next(credentials);
-    const { verification_cases: cases } = await getMegalodonService().me();
-    const verificationCases = VerificationCasesCollection.fromRpcList(
-      cases,
-      credentials,
-    );
-    return [
-      credentials,
-      verificationCases.filterPendingOrContactedOrIssuingSupportedVerificationCases(),
-    ];
+  const credentialsLoading = useCachedState({
+    cache: getValueCache(),
+    key: "credentials",
+    useFor: 10 * 60,
+    loader: async () => {
+      const { credentials: rpcCredentials } =
+        await getMaguroService().getCredentials();
+      const credentials = CredentialsCollection.fromRpcList(rpcCredentials);
+      credentialsSubject.next(credentials);
+      const { verification_cases: cases } = await getMegalodonService().me();
+      const verificationCases = VerificationCasesCollection.fromRpcList(
+        cases,
+        credentials,
+      );
+      return [
+        credentials,
+        verificationCases.filterPendingOrContactedOrIssuingSupportedVerificationCases(),
+      ];
+    },
+    serialize: ([credentials, upcomingCredentials]) => {
+      return JSON.stringify([
+        credentials.serialize(),
+        upcomingCredentials.serialize(),
+      ]);
+    },
+    deserialize: (s) => {
+      const [credentials, upcomingCredentials] = JSON.parse(s);
+      return [
+        CredentialsCollection.parse(credentials),
+        VerificationCasesCollection.parse(upcomingCredentials),
+      ];
+    },
   });
 
   const setup = useAppSelector(isSetup);
