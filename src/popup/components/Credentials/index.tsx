@@ -1,5 +1,7 @@
 import styled from "styled-components";
 
+import credentialsActions from "@redux/stores/user/reducers/credentials";
+
 import Loading from "@popup/components/Loading";
 import { useCachedState, useObservedState } from "@utils/ReactHooks";
 import { isSetup } from "@redux/stores/application/reducers/app/selectors";
@@ -69,6 +71,7 @@ function Credentials() {
     },
     onValue: ([credentials]) => {
       credentialsSubject.next(credentials);
+      dispatch(credentialsActions.setCredentials(credentials));
     },
     serialize: ([credentials, upcomingCredentials]) => {
       return JSON.stringify([
