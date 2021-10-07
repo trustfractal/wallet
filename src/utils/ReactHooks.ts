@@ -9,10 +9,9 @@ import { Observable } from "rxjs";
 export function useLoadedState<T>(loader: () => Promise<T>): Load<T> {
   // We keep the state that's bound together in the same useState so React
   // doesn't trigger renders when setting one but not the other.
-  const [[loaded, value], setLoadedValue] = useState<[boolean, T | null]>([
-    false,
-    null,
-  ]);
+  const [[loaded, value], setLoadedValue] = useState<[true, T] | [false, null]>(
+    [false, null],
+  );
 
   // The common case is to only want to call the loader once, so we memoize it
   // for the user to prevent all users from having to do that themselves.
@@ -35,20 +34,20 @@ export function useLoadedState<T>(loader: () => Promise<T>): Load<T> {
     };
   }, [memoLoader, loaded]);
 
-  const setLoadAndValue = (value: T) => setLoadedValue([true, value]);
+  const reload = () => setLoadedValue([false, null]);
   if (loaded) {
-    return new Loaded<T>(value!, setLoadAndValue);
+    return new Loaded<T>(value!, reload);
   } else {
-    return new Loading<T>(setLoadAndValue);
+    return new Loading(reload);
   }
 }
 
-type Load<T> = Loading<T> | Loaded<T>;
+type Load<T> = Loading | Loaded<T>;
 
-class Loading<T> {
+class Loading {
   isLoaded: false = false;
 
-  constructor(public readonly setValue: (t: T) => void) {}
+  constructor(public readonly reload: () => void) {}
 
   unwrapOrDefault<U>(def: U): U {
     return def;
@@ -58,10 +57,7 @@ class Loading<T> {
 class Loaded<T> {
   isLoaded: true = true;
 
-  constructor(
-    public readonly value: T,
-    public readonly setValue: (t: T) => void,
-  ) {}
+  constructor(public readonly value: T, public readonly reload: () => void) {}
 
   unwrapOrDefault<U>(_def: U): T {
     return this.value;
@@ -129,10 +125,9 @@ export interface CacheArgs<T> {
 export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
   // We keep the state that's bound together in the same useState so React
   // doesn't trigger renders when setting one but not the other.
-  const [[loaded, value], setLoadedValue] = useState<[boolean, T | null]>([
-    false,
-    null,
-  ]);
+  const [[loaded, value], setLoadedValue] = useState<[true, T] | [false, null]>(
+    [false, null],
+  );
 
   const setValue = (v: T) => {
     setLoadedValue([true, v]);
@@ -147,6 +142,8 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
 
   useEffect(
     () => {
+      if (loaded) return;
+
       let active = true;
 
       const setIfActive = (v: T) => {
@@ -184,21 +181,22 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
     // arguments effectively memoizes the input object so the user doesn't
     // have to.
     // eslint-disable-next-line
-    [],
+    [loaded],
   );
 
+  const reload = () => setLoadedValue([false, null]);
   if (loaded) {
-    return new Loaded(value as T, setValue);
+    return new Loaded(value as T, reload);
   } else {
     const immediateCache = args.cache.getImmediate(args.key);
     if (immediateCache == null) {
-      return new Loading(setValue);
+      return new Loading(reload);
     } else {
       const deserialized = deserialize(immediateCache[1]);
       // Use setTimeout since we are not allowed to set a state value during
       // a render.
       setTimeout(() => setValue(deserialized));
-      return new Loaded(deserialized, setValue);
+      return new Loaded(deserialized, reload);
     }
   }
 }
