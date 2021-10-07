@@ -34,22 +34,20 @@ export function useLoadedState<T>(loader: () => Promise<T>): Load<T> {
     };
   }, [memoLoader, loaded]);
 
-  const setLoadAndValue = (value: T) => setLoadedValue([true, value]);
   const reload = () => setLoadedValue([false, null]);
   if (loaded) {
-    return new Loaded<T>(value!, setLoadAndValue, reload);
+    return new Loaded<T>(value!, reload);
   } else {
-    return new Loading<T>(setLoadAndValue, reload);
+    return new Loading(reload);
   }
 }
 
-type Load<T> = Loading<T> | Loaded<T>;
+type Load<T> = Loading | Loaded<T>;
 
-class Loading<T> {
+class Loading {
   isLoaded: false = false;
 
   constructor(
-    public readonly setValue: (t: T) => void,
     public readonly reload: () => void,
   ) {}
 
@@ -63,7 +61,6 @@ class Loaded<T> {
 
   constructor(
     public readonly value: T,
-    public readonly setValue: (t: T) => void,
     public readonly reload: () => void,
   ) {}
 
@@ -194,17 +191,17 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
 
   const reload = () => setLoadedValue([false, null]);
   if (loaded) {
-    return new Loaded(value as T, setValue, reload);
+    return new Loaded(value as T, reload);
   } else {
     const immediateCache = args.cache.getImmediate(args.key);
     if (immediateCache == null) {
-      return new Loading(setValue, reload);
+      return new Loading(reload);
     } else {
       const deserialized = deserialize(immediateCache[1]);
       // Use setTimeout since we are not allowed to set a state value during
       // a render.
       setTimeout(() => setValue(deserialized));
-      return new Loaded(deserialized, setValue, reload);
+      return new Loaded(deserialized, reload);
     }
   }
 }
