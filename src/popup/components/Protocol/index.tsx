@@ -25,8 +25,11 @@ function ProtocolState() {
       setPageOverride(
         <SetupInProgress onRetry={() => optInWithMnemonic(mnemonic)} />,
       );
+
       await getProtocolOptIn().optIn(mnemonic);
-      serviceOptedIn.setValue(true);
+      serviceOptedIn.reload();
+      completedLiveness.reload();
+
       setPageOverride(
         <SetupSuccess onContinue={() => setPageOverride(null)} />,
       );
@@ -41,7 +44,10 @@ function ProtocolState() {
   const doLiveness = async () => {
     try {
       setPageOverride(<SetupInProgress onRetry={doLiveness} />);
+
       await getProtocolOptIn().postOptInLiveness();
+      completedLiveness.reload();
+
       setPageOverride(null);
     } catch (e) {
       console.error(e);
