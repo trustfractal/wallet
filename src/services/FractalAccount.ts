@@ -31,10 +31,10 @@ export class FractalAccountConnector extends MultiContext {
     return this.tokens != null;
   }
 
-  async doConnect() {
+  async doConnect(urlOverride?: string) {
     await this.storage.setItem(NEXT_TOKENS_KEY, "true");
 
-    chrome.tabs.create({ url: environment.FRACTAL_WEBSITE_URL });
+    chrome.tabs.create({ url: urlOverride || environment.FRACTAL_WEBSITE_URL });
   }
 
   async willAcceptNextTokens(): Promise<boolean> {

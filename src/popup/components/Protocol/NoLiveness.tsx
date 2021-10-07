@@ -26,7 +26,13 @@ export function NoLiveness({ onClick }: { onClick: () => void }) {
       <BoldText>
         You haven't connected your Fractal Account to the extension.
       </BoldText>
-      <Cta onClick={() => getFractalAccountConnector().doConnect()}>
+      <Cta
+        onClick={() =>
+          getFractalAccountConnector().doConnect(
+            environment.PROTOCOL_JOURNEY_URL,
+          )
+        }
+      >
         Connect Account
       </Cta>
     </>
