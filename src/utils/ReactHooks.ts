@@ -47,9 +47,7 @@ type Load<T> = Loading | Loaded<T>;
 class Loading {
   isLoaded: false = false;
 
-  constructor(
-    public readonly reload: () => void,
-  ) {}
+  constructor(public readonly reload: () => void) {}
 
   unwrapOrDefault<U>(def: U): U {
     return def;
@@ -59,10 +57,7 @@ class Loading {
 class Loaded<T> {
   isLoaded: true = true;
 
-  constructor(
-    public readonly value: T,
-    public readonly reload: () => void,
-  ) {}
+  constructor(public readonly value: T, public readonly reload: () => void) {}
 
   unwrapOrDefault<U>(_def: U): T {
     return this.value;
