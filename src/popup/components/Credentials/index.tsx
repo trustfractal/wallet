@@ -34,8 +34,10 @@ import {
   getMaguroService,
   getMegalodonService,
   getValueCache,
+  getWindowsService,
 } from "@services/Factory";
 import { credentialsSubject } from "@services/Observables";
+import environment from "@environment/index";
 
 const RootContainer = styled.div`
   margin-bottom: var(--s-32);
@@ -52,24 +54,25 @@ function Credentials() {
   const userDispatch = useUserDispatch();
   const requests = useUserSelector(getRequests);
 
+  const loadCredentials = async () => {
+    const { credentials: rpcCredentials } =
+      await getMaguroService().getCredentials();
+    const credentials = CredentialsCollection.fromRpcList(rpcCredentials);
+    const { verification_cases: cases } = await getMegalodonService().me();
+    const verificationCases = VerificationCasesCollection.fromRpcList(
+      cases,
+      credentials,
+    );
+    return [
+      credentials,
+      verificationCases.filterPendingOrContactedOrIssuingSupportedVerificationCases(),
+    ];
+  };
   const credentialsLoading = useCachedState({
     cache: getValueCache(),
     key: "credentials",
     useFor: 10 * 60,
-    loader: async () => {
-      const { credentials: rpcCredentials } =
-        await getMaguroService().getCredentials();
-      const credentials = CredentialsCollection.fromRpcList(rpcCredentials);
-      const { verification_cases: cases } = await getMegalodonService().me();
-      const verificationCases = VerificationCasesCollection.fromRpcList(
-        cases,
-        credentials,
-      );
-      return [
-        credentials,
-        verificationCases.filterPendingOrContactedOrIssuingSupportedVerificationCases(),
-      ];
-    },
+    loader: loadCredentials,
     onValue: ([credentials]) => {
       credentialsSubject.next(credentials);
       dispatch(credentialsActions.setCredentials(credentials));
@@ -112,7 +115,18 @@ function Credentials() {
   const [credentials, upcomingCredentials] = credentialsLoading.value;
 
   if (credentials.length === 0 && upcomingCredentials.length === 0)
-    return <EmptyCredentials />;
+    return (
+      <EmptyCredentials
+        onClick={async () => {
+          const [credentials, upcoming] = await loadCredentials();
+          if (credentials.length === 0 && upcoming.length === 0) {
+            getWindowsService().openTab(environment.LIVENESS_JOURNEY_URL);
+          } else {
+            credentialsLoading.reload();
+          }
+        }}
+      />
+    );
 
   const getCredentialRequests = (id: string) =>
     requests.filter((request) => request.request.credential!.id === id);

@@ -6,9 +6,6 @@ import Title from "@popup/components/common/Title";
 import TopComponent from "@popup/components/common/TopComponent";
 import Icon, { IconNames } from "@popup/components/common/Icon";
 
-import { getWindowsService } from "@services/Factory";
-import environment from "@environment/index";
-
 const IconContainer = styled.div`
   display: flex;
   align-items: center;
@@ -26,10 +23,7 @@ const ActionContainer = styled.div`
   padding: var(--s-24) 0;
 `;
 
-function EmptyCredentials() {
-  const onNext = () =>
-    getWindowsService().openTab(environment.LIVENESS_JOURNEY_URL);
-
+function EmptyCredentials({ onClick }: { onClick: () => void }) {
   return (
     <TopComponent>
       <IconContainer>
@@ -46,7 +40,7 @@ function EmptyCredentials() {
         </Text>
       </ContentContainer>
       <ActionContainer>
-        <Button onClick={onNext}>Go to Fractal</Button>
+        <Button onClick={onClick}>Go to Fractal</Button>
       </ActionContainer>
     </TopComponent>
   );
