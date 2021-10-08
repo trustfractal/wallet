@@ -106,6 +106,7 @@ export class FractalAccountConnector extends MultiContext {
 
   async clearTokens() {
     await this.storage.removeItem(TOKENS_KEY);
+    this.tokens = null;
     this.connectedAccount$.next(false);
   }
 }

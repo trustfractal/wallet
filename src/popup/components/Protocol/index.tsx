@@ -2,6 +2,10 @@ import { useState } from "react";
 
 import { useLoadedState } from "@utils/ReactHooks";
 import { getProtocolOptIn } from "@services/Factory";
+import {
+  CatfishServiceError,
+  ErrorCode,
+} from "@services/CatfishService/Errors";
 import TopComponent from "@popup/components/common/TopComponent";
 
 import Loading from "@popup/components/Loading";
@@ -20,6 +24,20 @@ function ProtocolState() {
     getProtocolOptIn().hasCompletedLiveness(),
   );
 
+  const handleError = (err: Error, retry: () => void) => {
+    console.error(err);
+    if (
+      err instanceof CatfishServiceError &&
+      err.errorCode === ErrorCode.ERRORS_CATFISH_TOKEN_EXPIRED
+    ) {
+      // Catfish token expiring means user needs to reconnect the extension.
+      // NoLiveness page handles showing the user that prompt when necessary.
+      setPageOverride(null);
+    } else {
+      setPageOverride(<SetupError onRetry={retry} />);
+    }
+  };
+
   const optInWithMnemonic = async (mnemonic: string) => {
     try {
       setPageOverride(
@@ -34,10 +52,7 @@ function ProtocolState() {
         <SetupSuccess onContinue={() => setPageOverride(null)} />,
       );
     } catch (e) {
-      console.error(e);
-      setPageOverride(
-        <SetupError onRetry={() => optInWithMnemonic(mnemonic)} />,
-      );
+      handleError(e, () => optInWithMnemonic(mnemonic));
     }
   };
 
@@ -50,8 +65,7 @@ function ProtocolState() {
 
       setPageOverride(null);
     } catch (e) {
-      console.error(e);
-      setPageOverride(<SetupError onRetry={doLiveness} />);
+      handleError(e, doLiveness);
     }
   };
 
