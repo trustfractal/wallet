@@ -19,7 +19,7 @@ export class CatfishService {
       headers,
     );
 
-    if (!response.ok && response.status === 401) {
+    if (response.status === 401) {
       // ask user to connect with fractal wallet again
       await this.fractalAccount.clearTokens();
       throw ERRORS_CATFISH_TOKEN_EXPIRED();
