@@ -29,9 +29,13 @@ export const reducer = handleActions(
           credentials: credentials.serialize(),
         });
       } else {
+        // The redux chrome library `JSON.stringify`s objects when passing them
+        // between contexts. We need to serialize the JSON array like the
+        // CredentialsCollection would.
+        const hackySerialize = JSON.stringify(credentials.map(JSON.stringify));
         return Object.freeze({
           ...state,
-          credentials: JSON.stringify(credentials.map(JSON.stringify)),
+          credentials: hackySerialize,
         });
       }
     },
