@@ -14,22 +14,23 @@ export default class CredentialsCollection extends Collection<ICredential> {
   }
 
   static fromRpcList(userCredentials: ICredential[]) {
-    return CredentialsCollection.fromArray(userCredentials);
-  }
+    const credentials = userCredentials.reduce(
+      (memo: CredentialsCollection, credential: any) => {
+        memo.push(
+          new Credential(
+            { ...credential.data },
+            `${credential.verification_case_id}:${credential.level}`,
+            credential.level,
+            credential.verification_case_id,
+            new Date(credential.created_at).getTime(),
+          ),
+        );
 
-  static fromArray(array: Array<ICredential>) {
-    const collection = new CredentialsCollection();
-    for (const cred of array as Array<any>) {
-      const credential = new Credential(
-        { ...cred.data },
-        `${cred.verification_case_id}:${cred.level}`,
-        cred.level,
-        cred.verification_case_id,
-        new Date(cred.created_at).getTime(),
-      );
-      collection.push(credential);
-    }
-    return collection;
+        return memo;
+      },
+      new CredentialsCollection(),
+    );
+    return credentials;
   }
 
   static empty() {

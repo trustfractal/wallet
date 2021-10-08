@@ -23,13 +23,17 @@ const initialState = {
 export const reducer = handleActions(
   {
     [types.SET_CREDENTIALS]: (state, { payload: credentials }) => {
-      if (!(credentials instanceof CredentialsCollection)) {
-        credentials = CredentialsCollection.fromArray(credentials);
+      if (credentials instanceof CredentialsCollection) {
+        return Object.freeze({
+          ...state,
+          credentials: credentials.serialize(),
+        });
+      } else {
+        return Object.freeze({
+          ...state,
+          credentials: JSON.stringify(credentials.map(JSON.stringify)),
+        });
       }
-      return Object.freeze({
-        ...state,
-        credentials: credentials.serialize(),
-      });
     },
     [types.SET_VERIFICATION_CASES]: (state, { payload: verificationCases }) =>
       Object.freeze({
