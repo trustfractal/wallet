@@ -184,7 +184,11 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
     [loaded],
   );
 
-  const reload = () => setLoadedValue([false, null]);
+  const reload = async () => {
+    await args.cache.remove(args.key);
+    setLoadedValue([false, null]);
+  };
+
   if (loaded) {
     return new Loaded(value as T, reload);
   } else {
@@ -241,5 +245,10 @@ export class ValueCache {
 
     this.memory.set(key, toStore);
     await this.storage.setItem(`$value-cache/${key}`, toStore);
+  }
+
+  async remove(key: string): Promise<void> {
+    await this.storage.removeItem(`$value-cache/${key}`);
+    this.memory.delete(key);
   }
 }
