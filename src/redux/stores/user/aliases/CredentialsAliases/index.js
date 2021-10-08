@@ -73,7 +73,6 @@ const fetchCredentialsAndVerificationCases = () => {
       new VerificationCasesCollection(),
     );
 
-    dispatch(credentialsActions.setCredentials(credentials));
     dispatch(
       credentialsActions.setVerificationCases(formattedVerificationCases),
     );

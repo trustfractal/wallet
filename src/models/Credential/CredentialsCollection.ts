@@ -1,7 +1,6 @@
-import { ICredential } from "@pluginTypes/index";
-
 import Collection from "@models/Base/BaseCollection";
 import Credential from "@models/Credential";
+import { ICredential } from "@pluginTypes/index";
 
 export default class CredentialsCollection extends Collection<ICredential> {
   static parse(str: string) {

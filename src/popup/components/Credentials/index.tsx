@@ -20,7 +20,7 @@ import Text, {
 import { ConnectToAccount } from "@popup/components/ConnectToAccount";
 
 import { ICredential, IVerificationCase } from "@pluginTypes/index";
-import { useUserSelector } from "@redux/stores/user/context";
+import { useUserDispatch, useUserSelector } from "@redux/stores/user/context";
 import appActions from "@redux/stores/application/reducers/app";
 import {
   useAppDispatch,
@@ -49,6 +49,7 @@ const LabelContainer = styled.div`
 
 function Credentials() {
   const dispatch = useAppDispatch();
+  const userDispatch = useUserDispatch();
   const requests = useUserSelector(getRequests);
 
   const credentialsLoading = useCachedState({
@@ -72,6 +73,7 @@ function Credentials() {
     onValue: ([credentials]) => {
       credentialsSubject.next(credentials);
       dispatch(credentialsActions.setCredentials(credentials));
+      userDispatch(credentialsActions.setCredentials(credentials));
     },
     serialize: ([credentials, upcomingCredentials]) => {
       return JSON.stringify([

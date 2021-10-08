@@ -1,6 +1,8 @@
 import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
+import CredentialsCollection from "@models/Credential/CredentialsCollection";
+
 const types = mirrorCreator([
   "SET_CREDENTIALS",
   "SET_VERIFICATION_CASES",
@@ -20,11 +22,23 @@ const initialState = {
 
 export const reducer = handleActions(
   {
-    [types.SET_CREDENTIALS]: (state, { payload: credentials }) =>
-      Object.freeze({
-        ...state,
-        credentials: credentials.serialize(),
-      }),
+    [types.SET_CREDENTIALS]: (state, { payload: credentials }) => {
+      if (credentials instanceof CredentialsCollection) {
+        return Object.freeze({
+          ...state,
+          credentials: credentials.serialize(),
+        });
+      } else {
+        // The redux chrome library `JSON.stringify`s objects when passing them
+        // between contexts. We need to serialize the JSON array like the
+        // CredentialsCollection would.
+        const hackySerialize = JSON.stringify(credentials.map(JSON.stringify));
+        return Object.freeze({
+          ...state,
+          credentials: hackySerialize,
+        });
+      }
+    },
     [types.SET_VERIFICATION_CASES]: (state, { payload: verificationCases }) =>
       Object.freeze({
         ...state,
