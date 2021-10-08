@@ -1,6 +1,8 @@
 import mirrorCreator from "mirror-creator";
 import { createActions, handleActions } from "redux-actions";
 
+import CredentialsCollection from "@models/Credential/CredentialsCollection";
+
 const types = mirrorCreator([
   "SET_CREDENTIALS",
   "SET_VERIFICATION_CASES",
@@ -20,11 +22,15 @@ const initialState = {
 
 export const reducer = handleActions(
   {
-    [types.SET_CREDENTIALS]: (state, { payload: credentials }) =>
-      Object.freeze({
+    [types.SET_CREDENTIALS]: (state, { payload: credentials }) => {
+      if (!(credentials instanceof CredentialsCollection)) {
+        credentials = CredentialsCollection.fromArray(credentials);
+      }
+      return Object.freeze({
         ...state,
         credentials: credentials.serialize(),
-      }),
+      });
+    },
     [types.SET_VERIFICATION_CASES]: (state, { payload: verificationCases }) =>
       Object.freeze({
         ...state,

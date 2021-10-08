@@ -1,7 +1,6 @@
-import { ICredential } from "@pluginTypes/index";
-
 import Collection from "@models/Base/BaseCollection";
 import Credential from "@models/Credential";
+import { ICredential } from "@pluginTypes/index";
 
 export default class CredentialsCollection extends Collection<ICredential> {
   static parse(str: string) {
@@ -15,23 +14,22 @@ export default class CredentialsCollection extends Collection<ICredential> {
   }
 
   static fromRpcList(userCredentials: ICredential[]) {
-    const credentials = userCredentials.reduce(
-      (memo: CredentialsCollection, credential: any) => {
-        memo.push(
-          new Credential(
-            { ...credential.data },
-            `${credential.verification_case_id}:${credential.level}`,
-            credential.level,
-            credential.verification_case_id,
-            new Date(credential.created_at).getTime(),
-          ),
-        );
+    return CredentialsCollection.fromArray(userCredentials);
+  }
 
-        return memo;
-      },
-      new CredentialsCollection(),
-    );
-    return credentials;
+  static fromArray(array: Array<ICredential>) {
+    const collection = new CredentialsCollection();
+    for (const cred of array as Array<any>) {
+      const credential = new Credential(
+        { ...cred.data },
+        `${cred.verification_case_id}:${cred.level}`,
+        cred.level,
+        cred.verification_case_id,
+        new Date(cred.created_at).getTime(),
+      );
+      collection.push(credential);
+    }
+    return collection;
   }
 
   static empty() {
