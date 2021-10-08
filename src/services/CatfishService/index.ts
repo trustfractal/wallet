@@ -19,13 +19,10 @@ export class CatfishService {
       headers,
     );
 
-    if (!response.ok) {
-      // check if catfish token has expired
-      if (response.status === 401) {
-        // ask user to connect with fractal wallet again
-        this.fractalAccount.clearTokens();
-        throw ERRORS_CATFISH_TOKEN_EXPIRED();
-      }
+    if (response.status === 401) {
+      // ask user to connect with fractal wallet again
+      await this.fractalAccount.clearTokens();
+      throw ERRORS_CATFISH_TOKEN_EXPIRED();
     }
 
     return response.json();
