@@ -81,5 +81,5 @@ jobs:
       - name: Upload production artifact zip file
         uses: actions/upload-artifact@v2
         with:
-          name: build-production.zip
+          name: fclwallet_prod_${{ github.run_number }}_${{ github.sha }}.zip
           path: build
