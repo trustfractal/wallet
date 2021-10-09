@@ -2,6 +2,9 @@ import { useState } from "react";
 import styled from "styled-components";
 import { SwitchTransition, CSSTransition } from "react-transition-group";
 
+import { getWindowsService } from "@services/Factory";
+import environment from "@environment/index";
+
 import Button from "@popup/components/common/Button";
 import PasswordInput from "@popup/components/common/PasswordInput";
 import Text, {
@@ -66,53 +69,34 @@ const ActionContainer = styled.div`
 type RegisterProps = {
   loading: boolean;
   onNext: (password: string) => void;
-  onClickTerms: () => void;
-  onClickPrivacyPolicy: () => void;
   error: string;
 };
 
-function Register(props: RegisterProps) {
-  const { loading, onNext, onClickTerms, onClickPrivacyPolicy } = props;
+const MIN_LENGTH = 8;
 
-  const minLength = 8;
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [hint, setHint] = useState(`Minimum length: ${minLength}`);
+export function passwordError(password: string): string | undefined {
+  if (password.length < MIN_LENGTH)
+    return `Must be at least ${MIN_LENGTH} characters`;
+  return;
+}
+
+function confirmError(password: string, confirm: string): string | undefined {
+  if (confirm !== password) return "Password does not match";
+  return;
+}
+
+function Register({ loading, onNext }: RegisterProps) {
+  const [newPassword, setNew] = useState("");
+  const [confirm, setConfirm] = useState("");
+
+  const newErr = passwordError(newPassword);
+  const confirmErr = confirmError(newPassword, confirm);
+
+  const valid = newErr == null && confirmErr == null;
 
   const onClick = () => {
-    if (arePasswordsValidAndEquals && !loading) {
-      onNext(newPassword);
-    }
-  };
-
-  const isNewPasswordEmpty = newPassword.length === 0;
-  const isConfirmPasswordEmpty = confirmPassword.length === 0;
-  const isNewPasswordValid = newPassword.length >= minLength;
-  const isConfirmPasswordValid = confirmPassword.length >= minLength;
-  const arePasswordsValid =
-    !isNewPasswordEmpty &&
-    isNewPasswordValid &&
-    !isConfirmPasswordEmpty &&
-    isConfirmPasswordValid;
-  const arePasswordsEquals = newPassword === confirmPassword;
-  const arePasswordsValidAndEquals = arePasswordsValid && arePasswordsEquals;
-
-  const onChangeNewPassword = ({
-    target: { value },
-  }: React.ChangeEvent<HTMLInputElement>) => {
-    setNewPassword(value);
-
-    if (value.length > 0) {
-      setHint("");
-      return;
-    }
-
-    setHint(`Minimum length: ${minLength}`);
-  };
-  const onChangeConfirmPassword = ({
-    target: { value },
-  }: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmPassword(value);
+    if (!valid || loading) return;
+    onNext(newPassword);
   };
 
   return (
@@ -123,22 +107,23 @@ function Register(props: RegisterProps) {
         </LogoContainer>
         <HeaderContainer>
           <Title>Welcome to the Fractal Wallet</Title>
-          <Text>Please start by choosing a password</Text>
+          <Text center>Start by choosing a password</Text>
         </HeaderContainer>
         <InputsContainer>
           <InputContainer>
             <PasswordInput
               id="new_password"
               name="value"
-              label="Choose a password"
-              hint={hint}
-              minLength={minLength}
+              label="Password"
+              error={newErr}
+              minLength={MIN_LENGTH}
               value={newPassword}
-              onChange={onChangeNewPassword}
+              onChange={(event) => setNew(event.target.value)}
               onEnter={onClick}
               defaultVisible
+              autoFocus
             />
-            {isNewPasswordValid && (
+            {newErr == null && (
               <CheckContainer>
                 <Icon name={IconNames.CHECK} />
               </CheckContainer>
@@ -149,13 +134,14 @@ function Register(props: RegisterProps) {
               id="confirm_password"
               name="value"
               label="Confirm Password"
-              minLength={minLength}
-              value={confirmPassword}
-              onChange={onChangeConfirmPassword}
+              error={confirmErr}
+              minLength={MIN_LENGTH}
+              value={confirm}
+              onChange={(event) => setConfirm(event.target.value)}
               onEnter={onClick}
               defaultVisible
             />
-            {arePasswordsValidAndEquals && (
+            {confirmErr == null && (
               <CheckContainer>
                 <Icon name={IconNames.CHECK} />
               </CheckContainer>
@@ -164,85 +150,105 @@ function Register(props: RegisterProps) {
         </InputsContainer>
         <SwitchTransition>
           <CSSTransition
-            key={arePasswordsValid ? "submit-button" : "password-note"}
+            key={valid ? "submit-button" : "password-note"}
             addEndListener={(node, done) =>
               node.addEventListener("transitionend", done, false)
             }
             classNames="fade"
           >
             <div>
-              {arePasswordsValid && (
+              {valid ? (
                 <ActionContainer>
-                  <Button
-                    onClick={onClick}
-                    loading={loading}
-                    disabled={!arePasswordsValidAndEquals}
-                  >
+                  <Button onClick={onClick} loading={loading} disabled={!valid}>
                     Save my password
                   </Button>
                 </ActionContainer>
-              )}
-              {!arePasswordsValid && (
-                <>
-                  <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-                    Note
-                  </Text>
-                  <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-                    Your password is used to unlock{" "}
-                    <Text
-                      size={TextSizes.SMALL}
-                      height={TextHeights.SMALL}
-                      weight={TextWeights.BOLD}
-                      span
-                    >
-                      your Fractal Wallet
-                    </Text>
-                    . Please keep it safe: Fractal doesn't have access to it.
-                  </Text>
-                  <Text size={TextSizes.SMALL}>
-                    <br />
-                  </Text>
-                  <Text
-                    size={TextSizes.SMALL}
-                    height={TextHeights.SMALL}
-                    weight={TextWeights.BOLD}
-                  >
-                    If you forget your password, you’ll lose the ability to use
-                    the wallet.
-                  </Text>
-                  <Text size={TextSizes.SMALL}>
-                    <br />
-                  </Text>
-                  <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-                    By creating a wallet, you agree to our{" "}
-                    <Link
-                      size={TextSizes.SMALL}
-                      height={TextHeights.SMALL}
-                      weight={TextWeights.NORMAL}
-                      onClick={onClickTerms}
-                      span
-                    >
-                      Terms
-                    </Link>{" "}
-                    and{" "}
-                    <Link
-                      size={TextSizes.SMALL}
-                      height={TextHeights.SMALL}
-                      weight={TextWeights.NORMAL}
-                      span
-                      onClick={onClickPrivacyPolicy}
-                    >
-                      Privacy Policy
-                    </Link>
-                    .
-                  </Text>
-                </>
+              ) : (
+                <PasswordNote />
               )}
             </div>
           </CSSTransition>
         </SwitchTransition>
       </RootContainer>
     </TopComponent>
+  );
+}
+
+const NoteContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  *:not(:last-child) {
+    margin-bottom: 8px;
+  }
+`;
+
+function PasswordNote() {
+  return (
+    <NoteContainer>
+      <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+        Your password is used to unlock{" "}
+        <Text
+          size={TextSizes.SMALL}
+          height={TextHeights.SMALL}
+          weight={TextWeights.BOLD}
+          span
+        >
+          your Fractal Wallet
+        </Text>
+        . Please keep it safe: Fractal does not have access to it.
+      </Text>
+      <Text
+        size={TextSizes.SMALL}
+        height={TextHeights.SMALL}
+        weight={TextWeights.BOLD}
+      >
+        If you forget your password, you’ll lose the ability to use the wallet.
+      </Text>
+      <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
+        By creating a wallet, you agree to our{" "}
+        <InlineLink
+          onClick={() =>
+            getWindowsService().createTab({
+              url: `${environment.FRACTAL_WEBSITE_URL}/documents/end-user-agreement`,
+            })
+          }
+        >
+          Terms
+        </InlineLink>{" "}
+        and{" "}
+        <InlineLink
+          onClick={() =>
+            getWindowsService().createTab({
+              url: `${environment.FRACTAL_WEBSITE_URL}/documents/privacy-policy`,
+            })
+          }
+        >
+          Privacy Policy
+        </InlineLink>
+        .
+      </Text>
+    </NoteContainer>
+  );
+}
+
+function InlineLink({
+  children,
+  onClick,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <Link
+      size={TextSizes.SMALL}
+      height={TextHeights.SMALL}
+      weight={TextWeights.NORMAL}
+      onClick={onClick}
+      span
+    >
+      {children}
+    </Link>
   );
 }
 

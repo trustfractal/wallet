@@ -31,26 +31,13 @@ function PasswordInput(
 ) {
   const { children, defaultVisible, ...otherProps } = props;
 
-  const [type, setType] = useState(defaultVisible ? "text" : "password");
-  const [icon, setIcon] = useState(
-    defaultVisible ? IconNames.EYE : IconNames.EYE_SLASH,
-  );
-
-  const toggleVisibility = () => {
-    if (type === "password") {
-      setType("text");
-      setIcon(IconNames.EYE);
-    } else {
-      setType("password");
-      setIcon(IconNames.EYE_SLASH);
-    }
-  };
+  const [visible, setVisible] = useState(defaultVisible);
 
   return (
     <Root>
-      <Input type={type} {...otherProps} />
-      <IconContainer onClick={toggleVisibility}>
-        <Icon name={icon} />
+      <Input type={visible ? "text" : "password"} {...otherProps} />
+      <IconContainer onClick={() => setVisible(!visible)}>
+        <Icon name={visible ? IconNames.EYE : IconNames.EYE_SLASH} />
       </IconContainer>
     </Root>
   );

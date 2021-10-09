@@ -9,6 +9,8 @@ import Logo from "@popup/components/common/Logo";
 import Anchor from "@popup/components/common/Anchor";
 import Text, { TextSizes, TextHeights } from "@popup/components/common/Text";
 
+import { passwordError } from "@popup/components/Register";
+
 import { withNavBar } from "@popup/components/common/NavBar";
 
 const RootContainer = styled.div`
@@ -44,34 +46,23 @@ const InputContainer = styled.div`
 type LoginProps = {
   loading: boolean;
   onNext: (password: string) => void;
-  error: string;
+  error?: string;
 };
 
 function Login(props: LoginProps) {
-  const { loading, onNext, error: propError } = props;
+  const { loading, onNext, error } = props;
 
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(propError);
+  const [clearError, setClearError] = useState(true);
+
+  const valid = clearError || error == null;
 
   const onClick = () => {
-    if (loading || isPasswordEmpty || hasError) {
-      return;
-    }
-
+    if (loading || !valid) return;
     onNext(password);
   };
 
-  const hasError = error.length > 0;
-  const isPasswordEmpty = password.length === 0;
-
-  const onChangePassword = ({
-    target: { value },
-  }: React.ChangeEvent<HTMLInputElement>) => {
-    setError("");
-    setPassword(value);
-  };
-
-  useEffect(() => setError(propError), [propError]);
+  useEffect(() => setClearError(error == null), [error]);
 
   return (
     <TopComponent>
@@ -88,17 +79,18 @@ function Login(props: LoginProps) {
             name="value"
             label="Enter your password"
             value={password}
-            error={error}
-            onChange={onChangePassword}
+            hint={passwordError(password)}
+            error={clearError ? undefined : error}
+            onChange={(event) => {
+              setClearError(true);
+              setPassword(event.target.value);
+            }}
             onEnter={onClick}
+            autoFocus
           />
         </InputContainer>
         <ActionsContainer>
-          <Button
-            onClick={onClick}
-            loading={loading}
-            disabled={isPasswordEmpty || hasError}
-          >
+          <Button onClick={onClick} loading={loading} disabled={!valid}>
             Unlock my wallet
           </Button>
         </ActionsContainer>
