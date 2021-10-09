@@ -86,5 +86,5 @@ jobs:
       - name: Upload staging artifact zip file
         uses: actions/upload-artifact@v2
         with:
-          name: fclwallet_staging_${{ github.run_number }}_${{ github.sha }}.zip
+          name: fclwallet_staging_${{ github.run_number }}_${{ github.sha }}
           path: build
