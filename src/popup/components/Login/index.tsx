@@ -9,6 +9,8 @@ import Logo from "@popup/components/common/Logo";
 import Anchor from "@popup/components/common/Anchor";
 import Text, { TextSizes, TextHeights } from "@popup/components/common/Text";
 
+import { passwordError } from "@popup/components/Register";
+
 import { withNavBar } from "@popup/components/common/NavBar";
 
 const RootContainer = styled.div`
@@ -53,7 +55,7 @@ function Login(props: LoginProps) {
   const [password, setPassword] = useState("");
   const [clearError, setClearError] = useState(true);
 
-  const valid = password.length > 0 && (clearError || error == null);
+  const valid = passwordError(password) == null && (clearError || error == null);
 
   const onClick = () => {
     if (loading || !valid) return;
@@ -77,7 +79,7 @@ function Login(props: LoginProps) {
             name="value"
             label="Enter your password"
             value={password}
-            error={clearError ? undefined : error}
+            error={passwordError(password) || (clearError ? undefined : error)}
             onChange={(event) => {
               setClearError(true);
               setPassword(event.target.value);

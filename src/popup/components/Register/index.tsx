@@ -74,14 +74,14 @@ type RegisterProps = {
 
 const MIN_LENGTH = 8;
 
-function passwordError(password: string): string | undefined {
+export function passwordError(password: string): string | undefined {
   if (password.length < MIN_LENGTH)
     return `Must be at least ${MIN_LENGTH} characters`;
   return;
 }
 
 function confirmError(password: string, confirm: string): string | undefined {
-  if (confirm !== password) return "Confirmation does not match";
+  if (confirm !== password) return "Password does not match";
   return;
 }
 
