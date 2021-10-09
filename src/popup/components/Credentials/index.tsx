@@ -73,7 +73,7 @@ function Credentials() {
     key: "credentials",
     useFor: 10 * 60,
     loader: loadCredentials,
-    cacheWhen: ([cred, upcoming]) => cred.length > 0 || upcoming.length > 0,
+    cacheWhen: ([creds, upcoming]) => creds.length > 0 || upcoming.length > 0,
     onValue: ([credentials]) => {
       credentialsSubject.next(credentials);
       dispatch(credentialsActions.setCredentials(credentials));
@@ -118,13 +118,8 @@ function Credentials() {
   if (credentials.length === 0 && upcomingCredentials.length === 0)
     return (
       <EmptyCredentials
-        onClick={async () => {
-          const [credentials, upcoming] = await loadCredentials();
-          if (credentials.length === 0 && upcoming.length === 0) {
-            getWindowsService().openTab(environment.LIVENESS_JOURNEY_URL);
-          } else {
-            credentialsLoading.reload();
-          }
+        onClick={() => {
+          getWindowsService().openTab(environment.LIVENESS_JOURNEY_URL);
         }}
       />
     );
