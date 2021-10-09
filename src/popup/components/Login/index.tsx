@@ -91,6 +91,7 @@ function Login(props: LoginProps) {
             error={error}
             onChange={onChangePassword}
             onEnter={onClick}
+            autoFocus
           />
         </InputContainer>
         <ActionsContainer>
