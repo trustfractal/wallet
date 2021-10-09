@@ -55,7 +55,7 @@ function Login(props: LoginProps) {
   const [password, setPassword] = useState("");
   const [clearError, setClearError] = useState(true);
 
-  const valid = passwordError(password) == null && (clearError || error == null);
+  const valid = clearError || error == null;
 
   const onClick = () => {
     if (loading || !valid) return;
@@ -79,7 +79,8 @@ function Login(props: LoginProps) {
             name="value"
             label="Enter your password"
             value={password}
-            error={passwordError(password) || (clearError ? undefined : error)}
+            hint={passwordError(password)}
+            error={clearError ? undefined : error}
             onChange={(event) => {
               setClearError(true);
               setPassword(event.target.value);

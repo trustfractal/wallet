@@ -138,19 +138,20 @@ function Input(
         {children}
       </InputContainer>
       {underlined && <LineContainer active={active} error={hasError} />}
-      {hasError && (
+      {hasError ? (
         <ErrorContainer>
           <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
             {error}
           </Text>
         </ErrorContainer>
-      )}
-      {hasHint && (
+      ) : hasHint ? (
         <HintContainer>
           <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
             {hint}
           </Text>
         </HintContainer>
+      ) : (
+        <></>
       )}
     </Root>
   );
