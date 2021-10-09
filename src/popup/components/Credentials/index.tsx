@@ -73,6 +73,7 @@ function Credentials() {
     key: "credentials",
     useFor: 10 * 60,
     loader: loadCredentials,
+    cacheWhen: ([cred, upcoming]) => cred.length > 0 || upcoming.length > 0,
     onValue: ([credentials]) => {
       credentialsSubject.next(credentials);
       dispatch(credentialsActions.setCredentials(credentials));
