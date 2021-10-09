@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import { useLoadedState } from "@utils/ReactHooks";
 
 import { withNavBar } from "@popup/components/common/NavBar";
 import Tabs from "@popup/components/common/Tabs";
 import { Protocol } from "@popup/components/Protocol";
 import Credentials from "@popup/components/Credentials";
-import { getMaguroService } from "@services/Factory";
+import { getStorageService, getMaguroService } from "@services/Factory";
 
 import {
   useAppDispatch,
@@ -31,6 +32,14 @@ function HomeScreen() {
     })();
   });
 
+  const latestTab = useLoadedState(
+    async () => await getStorageService().getItem("$latest-tab"),
+  );
+  const saveLatestTab = async (tab: string) => {
+    await getStorageService().setItem("$latest-tab", tab);
+    latestTab.setValue(tab);
+  };
+
   const tabs = [
     {
       id: "credentials-tab",
@@ -47,7 +56,13 @@ function HomeScreen() {
     },
   ];
 
-  return <Tabs tabs={tabs} />;
+  return (
+    <Tabs
+      tabs={tabs}
+      activeTab={latestTab.unwrapOrDefault(undefined)}
+      onTabChange={saveLatestTab}
+    />
+  );
 }
 
 export default withNavBar(HomeScreen);

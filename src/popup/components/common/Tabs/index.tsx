@@ -12,49 +12,54 @@ const TabsButtonsContainer = styled.div`
 `;
 const TabContainer = styled.div``;
 
-type TabType = {
+interface Tab {
   id: string;
   label: string;
   props: any;
   component: (props: any) => JSX.Element;
   disabled?: boolean;
-};
+}
 
-type TabsProps = {
-  tabs: TabType[];
-};
+interface TabsProps {
+  tabs: Tab[];
+  activeTab?: string;
+  onTabChange?: (id: string) => void;
+}
 
 function Tabs(props: TabsProps & React.HTMLAttributes<HTMLDivElement>) {
-  const { tabs, ...otherProps } = props;
+  const { tabs, activeTab: activeTabProp, onTabChange, ...otherProps } = props;
+
+  const [userSelected, setUserSelected] = useState<string | undefined>();
+
   const query = new URLSearchParams(useLocation().search);
-  const activeTab = query.get("activeTab") || tabs[0].id;
+  const selected =
+    userSelected || activeTabProp || query.get("activeTab") || tabs[0].id;
 
-  const [selected, setSelected] = useState(activeTab);
-
-  const getSelectedTab = () => {
-    const { component: Component, props } = tabs.filter(
-      ({ id }) => id === selected,
-    )[0];
-
-    return <Component {...props} />;
+  const changeTab = (id: string) => {
+    setUserSelected(id);
+    if (onTabChange) onTabChange(id);
   };
+
+  const selectedTab = tabs.find((tab) => tab.id === selected) || tabs[0];
 
   return (
     <RootContainer {...otherProps}>
       <TabsButtonsContainer>
-        {tabs.map(({ id, label, disabled }, index) => (
+        {tabs.map((tab, index) => (
           <TabButton
-            key={id}
+            key={tab.id}
             index={index}
             total={tabs.length}
-            onClick={() => setSelected(id)}
-            selected={id === selected}
-            label={label}
-            disabled={disabled}
+            onClick={() => changeTab(tab.id)}
+            selected={tab.id === selected}
+            label={tab.label}
+            disabled={tab.disabled}
           />
         ))}
       </TabsButtonsContainer>
-      <TabContainer>{getSelectedTab()}</TabContainer>
+      <TabContainer>
+        <selectedTab.component {...selectedTab.props} />
+      </TabContainer>
     </RootContainer>
   );
 }
