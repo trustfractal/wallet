@@ -82,7 +82,6 @@ function passwordError(password: string): string | undefined {
 
 function confirmError(password: string, confirm: string): string | undefined {
   if (confirm !== password) return "Confirmation does not match";
-  if (password === "") return "";
   return;
 }
 
@@ -116,7 +115,7 @@ function Register({ loading, onNext }: RegisterProps) {
               id="new_password"
               name="value"
               label="Password"
-              hint={newErr}
+              error={newErr}
               minLength={MIN_LENGTH}
               value={newPassword}
               onChange={(event) => setNew(event.target.value)}
@@ -135,7 +134,7 @@ function Register({ loading, onNext }: RegisterProps) {
               id="confirm_password"
               name="value"
               label="Confirm Password"
-              hint={confirmErr}
+              error={confirmErr}
               minLength={MIN_LENGTH}
               value={confirm}
               onChange={(event) => setConfirm(event.target.value)}
