@@ -122,6 +122,7 @@ export interface CacheArgs<T> {
   key: string;
   useFor?: number; // in seconds
   loader: () => Promise<T>;
+  cacheWhen?: (t: T) => boolean;
   onValue?: (t: T) => void;
   serialize?: (t: T) => string;
   deserialize?: (s: string) => T;
@@ -139,10 +140,11 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
 
   const setValue = (v: T) => {
     setLoadedValue([true, v]);
-    if (args.onValue != null) {
-      args.onValue(v);
-    }
-    args.cache.set(args.key, serialize(v));
+
+    if (args.onValue != null) args.onValue(v);
+
+    const shouldCache = args.cacheWhen ? args.cacheWhen(v) : true;
+    if (shouldCache) args.cache.set(args.key, serialize(v));
   };
 
   const serialize = args.serialize || JSON.stringify;
