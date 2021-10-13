@@ -68,10 +68,7 @@ export class FractalAccountConnector extends MultiContext {
     const megalodon = localStorage.getItem(megalodonSessionKey);
     const scopes = localStorage.getItem(`${megalodonSessionKey}-scopes`);
 
-    if (!catfish || !megalodon || !scopes) {
-      await this.storage.setItem(NEXT_TOKENS_KEY, "false");
-      return;
-    }
+    if (!catfish || !megalodon || !scopes) return;
 
     const tokens = { catfish, megalodon, scopes };
     await this.setTokens(tokens);
