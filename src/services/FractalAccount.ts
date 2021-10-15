@@ -9,7 +9,12 @@ interface Tokens {
   scopes: string;
 }
 
-export class NotConnectedError extends Error {}
+export class NotConnectedError extends Error {
+  constructor(message?: string) {
+    super(message);
+    this.name = "NotConnectedError";
+  }
+}
 
 const NEXT_TOKENS_KEY = "fractal-account-connector/will-accept-next-tokens";
 const TOKENS_KEY = "fractal-account-connector/tokens";
@@ -74,31 +79,29 @@ export class FractalAccountConnector extends MultiContext {
     await this.setTokens(tokens);
   }
 
-  getMegalodonToken() {
-    if (this.tokens == null) throw new NotConnectedError();
+  async getMegalodonToken() {
+    return (await this.requireTokens()).megalodon;
+  }
 
-    return this.tokens.megalodon;
+  private async requireTokens() {
+    const t = await this.getTokens();
+    if (t == null) throw new NotConnectedError();
+    return t;
   }
 
   async setMegalodonToken(token: string) {
-    if (this.tokens == null) throw new NotConnectedError();
-
     await this.storage.setItem(
       TOKENS_KEY,
-      JSON.stringify({ ...this.tokens, megalodon: token }),
+      JSON.stringify({ ...(await this.requireTokens()), megalodon: token }),
     );
   }
 
-  getCatfishToken() {
-    if (this.tokens == null) throw new NotConnectedError();
-
-    return this.tokens.catfish;
+  async getCatfishToken() {
+    return (await this.requireTokens()).catfish;
   }
 
-  getScopes() {
-    if (this.tokens == null) throw new NotConnectedError();
-
-    return this.tokens.scopes;
+  async getScopes() {
+    return (await this.requireTokens()).scopes;
   }
 
   async clearTokens() {

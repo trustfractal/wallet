@@ -29,7 +29,7 @@ export class CatfishService {
   }
 
   public async refreshResourceServerToken() {
-    const token = this.fractalAccount.getCatfishToken();
+    const token = await this.fractalAccount.getCatfishToken();
 
     const { user_id } = await this.callApi("account/me", "GET", null, {
       authorization: `Bearer ${token}`,
@@ -43,11 +43,11 @@ export class CatfishService {
     return access_token;
   }
 
-  public resourceServerAccessToken({ username }: { username: string }) {
-    const token = this.fractalAccount.getCatfishToken();
-    const scopes = this.fractalAccount.getScopes();
+  public async resourceServerAccessToken({ username }: { username: string }) {
+    const token = await this.fractalAccount.getCatfishToken();
+    const scopes = await this.fractalAccount.getScopes();
 
-    return this.callApi(
+    return await this.callApi(
       "oauth/token",
       "POST",
       JSON.stringify({
