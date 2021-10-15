@@ -11,15 +11,6 @@ import { injectScript } from "./injector";
 import ConnectionNames from "@models/Connection/names";
 import { getMultiContext } from "@services/Factory";
 
-import environment from "@environment/index";
-
-// remove logs on prod
-if (!environment.IS_DEV) {
-  console.log = () => {};
-  console.warn = () => {};
-  console.error = () => {};
-}
-
 const sdk = chrome.runtime.getURL("sdk.bundle.js");
 injectScript(sdk);
 

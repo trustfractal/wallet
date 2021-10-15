@@ -8,15 +8,6 @@ import metadataActions, {
 import ContentScriptConnection from "@background/connection";
 import { getMultiContext } from "@services/Factory";
 
-import environment from "@environment/index";
-
-// remove logs on prod
-if (!environment.IS_DEV) {
-  console.log = () => {};
-  console.warn = () => {};
-  console.error = () => {};
-}
-
 (async () => {
   ContentScriptConnection.init();
   (await AppStore.init()).dispatch(appActions.startup());
