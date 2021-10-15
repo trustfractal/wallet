@@ -1,35 +1,23 @@
-import { useEffect, useState } from "react";
-import { useLoadedState } from "@utils/ReactHooks";
+import { useLoadedState, useCachedState } from "@utils/ReactHooks";
 
 import { withNavBar } from "@popup/components/common/NavBar";
 import Tabs from "@popup/components/common/Tabs";
 import { Protocol } from "@popup/components/Protocol";
 import Credentials from "@popup/components/Credentials";
-import { getStorageService, getMaguroService } from "@services/Factory";
-
 import {
-  useAppDispatch,
-  useAppSelector,
-} from "@redux/stores/application/context";
-import { getProtocolEnabled } from "@redux/stores/application/reducers/app/selectors";
-import appActions from "@redux/stores/application/reducers/app";
+  getStorageService,
+  getMaguroService,
+  getValueCache,
+} from "@services/Factory";
 
 function HomeScreen() {
-  const protocolEnabledConfig = useAppSelector(getProtocolEnabled);
-  const appDispatch = useAppDispatch();
-
-  const [protocolEnabled, setProtocolEnabled] = useState<boolean>(
-    protocolEnabledConfig,
-  );
-
-  useEffect(() => {
-    (async () => {
-      if (protocolEnabled) return;
-
+  const protocolEnabled = useCachedState({
+    cache: getValueCache(),
+    key: "protocol-enabled",
+    loader: async () => {
       const config = await getMaguroService().getConfig();
-      setProtocolEnabled(config.protocol_enabled);
-      appDispatch(appActions.setProtocolEnabled(config.protocol_enabled));
-    })();
+      return config.network === "mainnet";
+    },
   });
 
   const latestTab = useLoadedState(
@@ -52,7 +40,7 @@ function HomeScreen() {
       label: "Protocol",
       props: {},
       component: Protocol,
-      disabled: !protocolEnabled,
+      disabled: !protocolEnabled.unwrapOrDefault(false),
     },
   ];
 

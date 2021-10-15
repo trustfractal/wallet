@@ -124,7 +124,9 @@ export interface CacheArgs<T> {
   loader: () => Promise<T>;
   cacheWhen?: (t: T) => boolean;
   onValue?: (t: T) => void;
+  // Default value: JSON.stringify.
   serialize?: (t: T) => string;
+  // Default value: JSON.parse.
   deserialize?: (s: string) => T;
 }
 
@@ -178,8 +180,8 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
 
         if (!active) return;
 
-        const loaded = await args.loader();
-        setIfActive(loaded);
+        const loadedValue = await args.loader();
+        setIfActive(loadedValue);
       })();
 
       return () => {
@@ -191,7 +193,7 @@ export function useCachedState<T>(args: CacheArgs<T>): Load<T> {
     // arguments effectively memoizes the input object so the user doesn't
     // have to.
     // eslint-disable-next-line
-    [loaded],
+    [],
   );
 
   const reload = async () => {
