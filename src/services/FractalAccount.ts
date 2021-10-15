@@ -12,7 +12,7 @@ interface Tokens {
 export class NotConnectedError extends Error {
   constructor(message?: string) {
     super(message);
-    this.name = 'NotConnectedError';
+    this.name = "NotConnectedError";
   }
 }
 
