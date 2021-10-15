@@ -8,6 +8,20 @@ import { MaguroService } from "@services/MaguroService";
 import { DataHost } from "@services/DataHost";
 import { Storage } from "@utils/StorageArray";
 
+export class IdentityRegistrationFailed extends Error {
+  constructor(message?: string) {
+    super(message);
+    this.name = "IdentityRegistrationFailed";
+  }
+}
+
+export class MintingRegistrationFailed extends Error {
+  constructor(message?: string) {
+    super(message);
+    this.name = "MintingRegistrationFailed";
+  }
+}
+
 export class ProtocolService {
   constructor(
     private readonly api: Promise<ApiPromise>,
@@ -23,7 +37,11 @@ export class ProtocolService {
     const extensionProof = await this.dataHost.extensionProof(latestProof);
     if (extensionProof == null) return;
 
-    return await this.submitMintingExtrinsic(extensionProof);
+    const hash = await this.submitMintingExtrinsic(extensionProof);
+    if (!(await this.isRegisteredForMinting())) {
+      throw new MintingRegistrationFailed();
+    }
+    return hash;
   }
 
   private async latestExtensionProof(): Promise<string | null> {
@@ -109,7 +127,11 @@ export class ProtocolService {
 
     console.log("Identity is not registered, trying to register");
     await this.maguro.registerIdentity(this.address());
-    console.log("Identity successfully registered");
+    if (await this.isIdentityRegistered()) {
+      console.log("Identity successfully registered");
+    } else {
+      throw new IdentityRegistrationFailed();
+    }
   }
 
   public async isIdentityRegistered(): Promise<boolean> {
