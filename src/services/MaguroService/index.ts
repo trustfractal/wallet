@@ -19,7 +19,7 @@ export class MaguroService {
   ): Promise<Record<string, string>> {
     if (headers["authorization"]) return headers;
 
-    const token = this.fractalAccount.getMegalodonToken();
+    const token = await this.fractalAccount.getMegalodonToken();
 
     headers["authorization"] = `Bearer ${token}`;
     headers["content-type"] = "application/json";

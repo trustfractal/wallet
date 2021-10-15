@@ -12,12 +12,12 @@ export class MegalodonService {
     private readonly catfish: CatfishService,
   ) {}
 
-  private ensureAuthorization(
+  private async ensureAuthorization(
     headers: Record<string, string>,
-  ): Record<string, string> {
+  ): Promise<Record<string, string>> {
     if (headers["authorization"]) return headers;
 
-    const token = this.fractalAccount.getMegalodonToken();
+    const token = await this.fractalAccount.getMegalodonToken();
 
     headers["authorization"] = `Bearer ${token}`;
     headers["content-type"] = "application/json";
@@ -31,7 +31,7 @@ export class MegalodonService {
     body?: RequestInit["body"],
     headers?: RequestInit["headers"],
   ): Promise<any> {
-    const headersWithAuth = this.ensureAuthorization(
+    const headersWithAuth = await this.ensureAuthorization(
       (headers as Record<string, string>) || {},
     );
     return this.callApi(route, method, body, headersWithAuth);
