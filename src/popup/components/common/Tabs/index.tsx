@@ -31,16 +31,24 @@ function Tabs(props: TabsProps & React.HTMLAttributes<HTMLDivElement>) {
 
   const [userSelected, setUserSelected] = useState<string | undefined>();
 
+  const getTab = (id: string) => tabs.find((tab) => tab.id === id);
+
   const query = new URLSearchParams(useLocation().search);
-  const selected =
-    userSelected || activeTabProp || query.get("activeTab") || tabs[0].id;
+  const selected = [
+    userSelected,
+    activeTabProp,
+    query.get("activeTab"),
+    tabs[0].id,
+  ].find(
+    (tab) => tab != null && getTab(tab) != null && !getTab(tab)!.disabled,
+  )!;
 
   const changeTab = (id: string) => {
     setUserSelected(id);
     if (onTabChange) onTabChange(id);
   };
 
-  const selectedTab = tabs.find((tab) => tab.id === selected) || tabs[0];
+  const selectedTab = getTab(selected) || tabs[0];
 
   return (
     <RootContainer {...otherProps}>
