@@ -5,10 +5,7 @@ import { useLoadedState } from "@utils/ReactHooks";
 
 import { getDataHost } from "@services/Factory";
 
-import Text, {
-  TextHeights,
-  TextSizes,
-} from "@popup/components/common/Text";
+import Text, { TextHeights, TextSizes } from "@popup/components/common/Text";
 import { Activated, Hero, HeroLink } from "./Hero";
 
 interface PageView {
