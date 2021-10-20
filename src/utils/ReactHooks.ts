@@ -6,7 +6,10 @@ import { Observable } from "rxjs";
 // explicitly not wanting it to change between calls. This makes the API simpler
 // while being slightly potentially surprising if the callback is expected to be
 // evaluated multiple times (which we don't expect to be common).
-export function useLoadedState<T>(loader: () => Promise<T>): Load<T> {
+export function useLoadedState<T>(
+  loader: () => Promise<T>,
+  watchedVars: unknown[] = [],
+): Load<T> {
   // We keep the state that's bound together in the same useState so React
   // doesn't trigger renders when setting one but not the other.
   const [[loaded, value], setLoadedValue] = useState<[true, T] | [false, null]>(
@@ -15,8 +18,8 @@ export function useLoadedState<T>(loader: () => Promise<T>): Load<T> {
 
   // The common case is to only want to call the loader once, so we memoize it
   // for the user to prevent all users from having to do that themselves.
-  // eslint-disable-next-line
-  const memoLoader = useCallback(() => loader(), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const memoLoader = useCallback(() => loader(), [...watchedVars]);
 
   useEffect(() => {
     let active = true;
@@ -36,6 +39,10 @@ export function useLoadedState<T>(loader: () => Promise<T>): Load<T> {
 
   const setValue = (t: T) => setLoadedValue([true, t]);
   const reload = () => setLoadedValue([false, null]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(reload, [...watchedVars]);
+
   if (loaded) {
     return new Loaded<T>(value!, setValue, reload);
   } else {
