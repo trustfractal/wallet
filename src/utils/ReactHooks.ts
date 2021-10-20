@@ -50,32 +50,40 @@ export function useLoadedState<T>(
   }
 }
 
-type Load<T> = Loading<T> | Loaded<T>;
+export type Load<T, Orig = T> = Loading<T, Orig> | Loaded<T, Orig>;
 
-class Loading<T> {
+export class Loading<T, Orig = T> {
   isLoaded: false = false;
 
   constructor(
-    public readonly setValue: (t: T) => void,
+    public readonly setValue: (t: Orig) => void,
     public readonly reload: () => void,
   ) {}
 
   unwrapOrDefault<U>(def: U): U {
     return def;
   }
+
+  map<U>(fn: (t: T) => U): Loading<U, Orig> {
+    return new Loading(this.setValue, this.reload);
+  }
 }
 
-class Loaded<T> {
+export class Loaded<T, Orig = T> {
   isLoaded: true = true;
 
   constructor(
     public readonly value: T,
-    public readonly setValue: (t: T) => void,
+    public readonly setValue: (t: Orig) => void,
     public readonly reload: () => void,
   ) {}
 
   unwrapOrDefault<U>(_def: U): T {
     return this.value;
+  }
+
+  map<U>(fn: (t: T) => U): Loaded<U, Orig> {
+    return new Loaded(fn(this.value), this.setValue, this.reload);
   }
 }
 

@@ -14,6 +14,7 @@ import Button from "@popup/components/common/Button";
 
 // @ts-ignore
 import Copy from "@assets/copy.svg";
+import { Minting } from "./Minting";
 import WebpageViews from "./WebpageViews";
 
 interface AddressProps {
@@ -101,6 +102,7 @@ function DataScreen() {
   return (
     <VerticalSequence>
       <AddLiveness />
+      <Minting />
       <WebpageViews />
       <Address wallet={wallet} />
     </VerticalSequence>
