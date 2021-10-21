@@ -29,26 +29,16 @@ describe("ProtocolOptIn", () => {
     const storage = deps.storage || new MockStorage();
 
     const protocol =
-      deps.protocol ||
-      createSpyObj(["addressForMnemonic", "isIdentityRegistered", "ensureIdentityRegistered"]);
+      deps.protocol || createSpyObj(["ensureIdentityRegistered"]);
 
-    protocol.addressForMnemonic.mockImplementation(
-      (mne) => `${mne}/some address`,
-    );
-
-    const maguro =
-      deps.maguro || createSpyObj(["registerIdentity", "currentNetwork"]);
+    const maguro = deps.maguro || createSpyObj(["currentNetwork"]);
     maguro.currentNetwork.mockImplementation(() => "testnet");
     maguro.missingLiveness = () => {
-      maguro.registerIdentity.mockImplementation(() => {
-        throw new MissingLiveness();
-      });
       protocol.ensureIdentityRegistered.mockImplementation(() => {
         throw new MissingLiveness();
       });
     };
     maguro.hasLiveness = () => {
-      maguro.registerIdentity.mockImplementation(() => {});
       protocol.ensureIdentityRegistered.mockImplementation(() => {});
     };
 
