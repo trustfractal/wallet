@@ -108,16 +108,16 @@ export class ProtocolService {
     }
   }
 
-  public async isRegisteredForMinting(hash?: BlockHash): Promise<boolean> {
+  public async isRegisteredForMinting(id?: number): Promise<boolean> {
     const fractalId = await this.registeredFractalId();
     if (fractalId == null) return false;
 
     const api = await this.api;
     const rewards = api.query.fractalMinting.nextMintingRewards;
     const storage =
-      hash == null
+      id == null
         ? (await rewards(fractalId))!
-        : (await rewards.at(hash, fractalId))!;
+        : (await rewards.at(await this.hash(id), fractalId))!;
     return !storage.isEmpty;
   }
 
@@ -200,58 +200,64 @@ export class ProtocolService {
     return signer;
   }
 
-  // `MintingHistoryEvents` in order from most recent to oldest. Capped at
+  // `MintingHistoryEvent`s in order from most recent to oldest. Capped at
   // `numEvents` and last 7 periods worth of blocks.
   async mintingHistory(numEvents: number): Promise<Array<MintingHistoryEvent>> {
     const latestHeader = await this.withApi((api) => api.rpc.chain.getHeader());
     const latestNumber = latestHeader.number.toNumber();
 
     const promises = Array.from({ length: 7 }, (_, i) => i).map((i) =>
-      this.mintingEventsForPeriod(latestNumber - i * MINTING_PERIOD_LENGTH),
+      this.mintingEventForPeriod(latestNumber - i * MINTING_PERIOD_LENGTH),
     );
-    let result: Array<MintingHistoryEvent> = [];
+    const result: Array<MintingHistoryEvent> = [];
     while (result.length < numEvents) {
       const firstPromise = promises.shift();
       if (firstPromise == null) break;
-      result = result.concat(await firstPromise);
+
+      const event = await firstPromise;
+      if (event != null) result.push(event);
     }
     return result.slice(0, numEvents);
   }
 
-  private async mintingEventsForPeriod(
+  // Returns the most relevant minting event for the user that occured in the
+  // period containing the provided block.
+  private async mintingEventForPeriod(
     blockNum: number,
-  ): Promise<Array<MintingHistoryEvent>> {
+  ): Promise<MintingHistoryEvent | null> {
     const periodNumber = Math.floor(blockNum / MINTING_PERIOD_LENGTH);
     const beginningOfPeriod = periodNumber * MINTING_PERIOD_LENGTH + 1;
     const endOfPeriod = (periodNumber + 1) * MINTING_PERIOD_LENGTH;
 
+    const received = await this.mintingReceived(beginningOfPeriod, endOfPeriod);
+    if (received != null) return received;
+
     try {
-      return await this.mintingEventsFullPeriod(beginningOfPeriod, endOfPeriod);
+      return await this.mintingRegistration(beginningOfPeriod, endOfPeriod);
     } catch (e) {
-      if (e instanceof BlockNumberOutsideRange) {
-        return await this.mintingRegistrationEvents(
-          beginningOfPeriod,
-          blockNum,
-        );
-      }
+      if (e instanceof BlockNumberOutsideRange)
+        return await this.mintingRegistration(beginningOfPeriod, blockNum);
       throw e;
     }
   }
 
-  // Gets the minting events that occurred assuming the range covers a full
-  // period. If not, will throw BlockNumberOutsideRange.
-  private async mintingEventsFullPeriod(
+  private async mintingReceived(
     start: number,
     end: number,
-  ): Promise<Array<MintingHistoryEvent>> {
+  ): Promise<MintingReceived | null> {
     // Since minting occurs in the on_finalize hook, users don't show up as
     // registered on the exact block minting occurs.
-    const registration = await this.mintingRegistrationEvents(start, end - 1);
-    if (registration.length === 0) return [];
+    try {
+      const wasRegistered = await this.isRegisteredForMinting(end - 1);
+      if (!wasRegistered) return null;
+    } catch (e) {
+      if (e instanceof BlockNumberOutsideRange) return null;
+      throw e;
+    }
 
-    const hash = await this.hash(end);
+    const endHash = await this.hash(end);
     const events = (
-      await this.withApi((api) => api.query.system.events.at(hash))
+      await this.withApi((api) => api.query.system.events.at(endHash))
     ).map((e) => e.event);
     const minting = events.find(
       (e) => e.method === "Minted" && e.section === "fractalMinting",
@@ -266,35 +272,30 @@ export class ProtocolService {
           (minting.data[1] as any).toNumber()
         : (minting.data[1] as any).toNumber();
 
-    const event = {
+    return {
       kind: "received",
       at: await this.timestampForBlock(end),
-      amount: amount,
-    } as MintingHistoryEvent;
-    return [event, ...registration];
+      amount,
+    };
   }
 
-  private async mintingRegistrationEvents(
+  private async mintingRegistration(
     start: number,
     end: number,
-  ): Promise<Array<MintingHistoryEvent>> {
+  ): Promise<MintingRegistered | null> {
     const registeredAt = await binarySearch(start, end, async (n) => {
-      const hash = await this.hash(n);
-      return await this.isRegisteredForMinting(hash);
+      return await this.isRegisteredForMinting(n);
     });
 
-    if (registeredAt == null) return [];
-    return [
-      {
-        kind: "registered",
-        at: await this.timestampForBlock(registeredAt),
-      },
-    ];
+    if (registeredAt == null) return null;
+    return {
+      kind: "registered",
+      at: await this.timestampForBlock(registeredAt),
+    };
   }
 
   private async withApi<T>(f: (api: ApiPromise) => T): Promise<T> {
-    const api = await this.api;
-    return await f(api);
+    return await f(await this.api);
   }
 
   private async hash(n: number): Promise<BlockHash> {
@@ -319,6 +320,8 @@ class BlockNumberOutsideRange extends Error {
   }
 }
 
+// Returns the smallest integer where the provided function returns true or null
+// if the `minTrue` argument is false or if the `maxFalse` argument is true.
 async function binarySearch(
   maxFalse: number,
   minTrue: number,

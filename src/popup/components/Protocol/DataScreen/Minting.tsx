@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { formatNumber } from "humanize-plus";
 import { BarLoader as Loader } from "react-spinners";
 
+import { formatFloat } from "@utils/FormatUtils";
 import { useLoadedState } from "@utils/ReactHooks";
 
 import { getProtocolService } from "@services/Factory";
@@ -70,7 +70,7 @@ function HistoryItem({ event }: { event: MintingHistoryEvent }) {
     received: (event: MintingReceived) => {
       return (
         <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-          Received <strong>{formatNumber(event.amount / 10 ** 12)} FCL</strong>
+          Received <strong>{formatFloat(event.amount / 10 ** 12, 3)} FCL</strong>
         </Text>
       );
     },

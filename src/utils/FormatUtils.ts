@@ -16,3 +16,10 @@ function capitalize(value: string): string {
 export function fromSnackCase(value: string): string {
   return capitalize(value.replaceAll("_", " "));
 }
+
+export function formatFloat(value: number, maxDigits: number) {
+  return value.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: maxDigits,
+  });
+}
