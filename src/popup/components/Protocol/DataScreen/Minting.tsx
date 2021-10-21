@@ -70,7 +70,8 @@ function HistoryItem({ event }: { event: MintingHistoryEvent }) {
     received: (event: MintingReceived) => {
       return (
         <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-          Received <strong>{formatFloat(event.amount / 10 ** 12, 3)} FCL</strong>
+          Received{" "}
+          <strong>{formatFloat(event.amount / 10 ** 12, 3)} FCL</strong>
         </Text>
       );
     },
