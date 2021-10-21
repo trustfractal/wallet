@@ -38,7 +38,7 @@ export function Minting() {
     })
     .unwrapOrDefault(
       <div className="loader">
-        <Loader width={"100%"} color={"var(--c-orange)"}/>
+        <Loader width={"100%"} color={"var(--c-orange)"} />
       </div>,
     );
 
