@@ -28,6 +28,14 @@ describe("ProtocolOptIn", () => {
 
     const storage = deps.storage || new MockStorage();
 
+    const protocol =
+      deps.protocol ||
+      createSpyObj(["addressForMnemonic", "isIdentityRegistered", "ensureIdentityRegistered"]);
+
+    protocol.addressForMnemonic.mockImplementation(
+      (mne) => `${mne}/some address`,
+    );
+
     const maguro =
       deps.maguro || createSpyObj(["registerIdentity", "currentNetwork"]);
     maguro.currentNetwork.mockImplementation(() => "testnet");
@@ -35,22 +43,18 @@ describe("ProtocolOptIn", () => {
       maguro.registerIdentity.mockImplementation(() => {
         throw new MissingLiveness();
       });
+      protocol.ensureIdentityRegistered.mockImplementation(() => {
+        throw new MissingLiveness();
+      });
     };
     maguro.hasLiveness = () => {
       maguro.registerIdentity.mockImplementation(() => {});
+      protocol.ensureIdentityRegistered.mockImplementation(() => {});
     };
-
-    const protocol =
-      deps.protocol ||
-      createSpyObj(["addressForMnemonic", "isIdentityRegistered"]);
 
     const windows = deps.windows || createSpyObj(["openTab"]);
 
     const livenessUrl = deps.livenessUrl || "http://fractal-liveness.com";
-
-    protocol.addressForMnemonic.mockImplementation(
-      (mne) => `${mne}/some address`,
-    );
 
     const optIn = new ProtocolOptIn(
       storage,
@@ -59,7 +63,7 @@ describe("ProtocolOptIn", () => {
       windows,
       livenessUrl,
     );
-    return { storage, optIn, maguro, windows, livenessUrl };
+    return { storage, optIn, maguro, windows, livenessUrl, protocol };
   }
 
   it("starts as not isOptedIn", async () => {
@@ -70,13 +74,11 @@ describe("ProtocolOptIn", () => {
 
   describe("optIn", () => {
     it("registers identity in Maguro", async () => {
-      const { maguro, optIn } = graph();
+      const { protocol, optIn } = graph();
 
       await optIn.optIn("some mnemonic");
 
-      expect(maguro.registerIdentity).toHaveBeenCalledWith(
-        "some mnemonic/some address",
-      );
+      expect(protocol.ensureIdentityRegistered).toHaveBeenCalledWith();
     });
 
     it("isOptedIn is true", async () => {
@@ -109,20 +111,18 @@ describe("ProtocolOptIn", () => {
   });
 
   describe("postOptInLiveness", () => {
-    it("tries to registerIdentity", async () => {
-      const { maguro, optIn } = graph();
+    it("tries to ensureIdentityRegistered", async () => {
+      const { maguro, protocol, optIn } = graph();
       maguro.missingLiveness();
       await optIn.optIn("some mnemonic");
 
       await optIn.postOptInLiveness();
 
-      expect(maguro.registerIdentity).toHaveBeenCalledWith(
-        "some mnemonic/some address",
-      );
+      expect(protocol.ensureIdentityRegistered).toHaveBeenCalledWith();
     });
 
     it("sets liveness on instances", async () => {
-      const { storage, maguro, optIn } = graph();
+      const { storage, maguro, protocol, optIn } = graph();
       maguro.missingLiveness();
       await optIn.optIn("some mnemonic");
 
@@ -130,9 +130,7 @@ describe("ProtocolOptIn", () => {
       await optIn.postOptInLiveness();
 
       const { optIn: newOptIn } = graph({ storage });
-      expect(maguro.registerIdentity).toHaveBeenCalledWith(
-        "some mnemonic/some address",
-      );
+      expect(protocol.ensureIdentityRegistered).toHaveBeenCalledWith();
     });
 
     it("opens liveness journey if no liveness", async () => {
