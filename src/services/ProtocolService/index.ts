@@ -23,6 +23,13 @@ export class MintingRegistrationFailed extends Error {
   }
 }
 
+export class CannotExtend extends Error {
+  constructor(public readonly proof: string | null) {
+    super(`Cannot extend existing proof`);
+    this.name = "CannotExtend";
+  }
+}
+
 const MINTING_PERIOD_LENGTH = 14400;
 
 export class ProtocolService {
@@ -40,7 +47,7 @@ export class ProtocolService {
     console.log(`Latest proof from chain ${latestProof}`);
 
     const extensionProof = await this.dataHost.extensionProof(latestProof);
-    if (extensionProof == null) return;
+    if (extensionProof == null) throw new CannotExtend(latestProof);
 
     const hash = await this.submitMintingExtrinsic(extensionProof);
     if (!(await this.isRegisteredForMinting())) {

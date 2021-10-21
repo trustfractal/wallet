@@ -2,6 +2,7 @@ import { getProtocolService } from "@services/Factory";
 import {
   IdentityRegistrationFailed,
   MintingRegistrationFailed,
+  CannotExtend,
 } from "@services/ProtocolService";
 import { Storage, withLock } from "@utils/StorageArray";
 
@@ -32,8 +33,16 @@ export class MintingRegistrar {
           );
         } else {
           console.log("Not registered for minting, trying to register");
-          const hash = await protocol.registerForMinting();
-          console.log(`Successfully registered for minting ${hash}`);
+          try {
+            const hash = await protocol.registerForMinting();
+            console.log(`Successfully registered for minting ${hash}`);
+          } catch (e) {
+            if (e instanceof CannotExtend) {
+              console.error(e);
+            } else {
+              throw e;
+            }
+          }
         }
 
         await this.storage.setItem(
