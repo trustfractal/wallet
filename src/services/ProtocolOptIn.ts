@@ -68,10 +68,8 @@ export class ProtocolOptIn {
   }
 
   private async tryRegisterIdentity(onMissingLiveness?: () => Promise<void>) {
-    const mnemonic = await this.storage.getItem(await this.mnemonicKey());
     try {
-      const address = this.protocol.addressForMnemonic(mnemonic!);
-      await this.maguro.registerIdentity(address);
+      await this.protocol.ensureIdentityRegistered();
       this.completedLivenessOverride = true;
     } catch (e) {
       if (e instanceof MissingLiveness) {
