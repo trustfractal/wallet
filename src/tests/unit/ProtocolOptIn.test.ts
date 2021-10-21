@@ -108,7 +108,7 @@ describe("ProtocolOptIn", () => {
 
       await optIn.postOptInLiveness();
 
-      expect(protocol.ensureIdentityRegistered).toHaveBeenCalledWith();
+      expect(protocol.ensureIdentityRegistered).toHaveBeenCalled();
     });
 
     it("sets liveness on instances", async () => {
@@ -120,7 +120,7 @@ describe("ProtocolOptIn", () => {
       await optIn.postOptInLiveness();
 
       const { optIn: newOptIn } = graph({ storage });
-      expect(protocol.ensureIdentityRegistered).toHaveBeenCalledWith();
+      expect(protocol.ensureIdentityRegistered).toHaveBeenCalled();
     });
 
     it("opens liveness journey if no liveness", async () => {
