@@ -2,6 +2,7 @@ import { ApiPromise } from "@polkadot/api";
 import { Keyring } from "@polkadot/keyring";
 import { u64 } from "@polkadot/types";
 import { BlockHash } from "@polkadot/types/interfaces";
+import { TxnWatcher } from "@trustfractal/polkadot-utils";
 
 import type { KeyringPair } from "@polkadot/keyring/types";
 import type { AccountData } from "@polkadot/types/interfaces";
@@ -205,6 +206,11 @@ export class ProtocolService {
     const signer = keyring.addFromJson(parsedSigner);
     signer.unlock();
     return signer;
+  }
+
+  async sendToAddress(address: string, amount: number): Promise<string> {
+    const api = await this.api;
+    return await TxnWatcher.signAndSend(api.tx.balances.transfer(address, amount), this.requireSigner()).inBlock();
   }
 
   // `MintingHistoryEvent`s in order from most recent to oldest. Capped at

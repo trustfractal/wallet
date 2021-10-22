@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { getProtocolOptIn } from "@services/Factory";
 import {
   Subsubtitle,
@@ -11,6 +11,8 @@ import {
 
 import Wallet from "@models/Wallet";
 import Button from "@popup/components/common/Button";
+import { SendTokens } from "@popup/components/Protocol/SendTokens";
+import { ActivityStackContext } from "@popup/containers/ActivityStack";
 
 // @ts-ignore
 import Copy from "@assets/copy.svg";
@@ -73,7 +75,7 @@ function AddLiveness() {
     })();
   });
 
-  if (hasLiveness) return <></>;
+  if (hasLiveness) return null;
 
   const postOptInLiveness = async () => {
     await getProtocolOptIn().postOptInLiveness();
@@ -89,6 +91,7 @@ function AddLiveness() {
 
 function DataScreen() {
   const [wallet, setWallet] = useState<Wallet>();
+  const activityStack = useContext(ActivityStackContext);
 
   useEffect(() => {
     (async () => {
@@ -105,6 +108,15 @@ function DataScreen() {
       <Minting />
       <WebpageViews />
       <Address wallet={wallet} />
+      <Button
+        onClick={() =>
+          activityStack.push(
+            <SendTokens onFinish={() => activityStack.pop()} />,
+          )
+        }
+      >
+        Send FCL
+      </Button>
     </VerticalSequence>
   );
 }

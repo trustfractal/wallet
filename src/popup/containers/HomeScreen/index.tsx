@@ -1,5 +1,6 @@
 import { useLoadedState, useCachedState } from "@utils/ReactHooks";
 
+import { ActivityStack } from "@popup/containers/ActivityStack";
 import { withNavBar } from "@popup/components/common/NavBar";
 import Tabs from "@popup/components/common/Tabs";
 import { Protocol } from "@popup/components/Protocol";
@@ -45,11 +46,13 @@ function HomeScreen() {
   ];
 
   return (
-    <Tabs
-      tabs={tabs}
-      activeTab={latestTab.unwrapOrDefault(undefined)}
-      onTabChange={saveLatestTab}
-    />
+    <ActivityStack>
+      <Tabs
+        tabs={tabs}
+        activeTab={latestTab.unwrapOrDefault(undefined)}
+        onTabChange={saveLatestTab}
+      />
+    </ActivityStack>
   );
 }
 
