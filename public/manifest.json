@@ -1,7 +1,7 @@
 {
   "author": "https://www.trustfractal.com",
   "manifest_version": 2,
-  "version": "0.4.5",
+  "version": "0.4.6",
   "short_name": "Fractal Wallet",
   "name": "Fractal Wallet",
   "description": "The Fractal Wallet is a browser extension that allows users to store their validated decentralized identity (DID) credentials.",
