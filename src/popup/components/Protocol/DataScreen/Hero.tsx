@@ -88,14 +88,14 @@ const ListContentContainer = styled.div`
   align-items: stretch;
 `;
 
-export function Activated() {
+export function Activated({ text, icon }: { text?: string; icon?: string }) {
   return (
     <ActivatedContainer>
       <Text size={TextSizes.SMALL} height={TextHeights.SMALL}>
-        Activated
+        {text || "Activated"}
       </Text>
       <ActivationIcon>
-        <Icon name={IconNames.VALID} />
+        <Icon name={icon || IconNames.VALID} />
       </ActivationIcon>
     </ActivatedContainer>
   );

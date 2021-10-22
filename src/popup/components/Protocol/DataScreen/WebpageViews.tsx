@@ -47,18 +47,18 @@ const ItemContainer = styled.div`
     white-space: nowrap;
   }
 
-  p:not(:first-child) {
+  :not(:first-child) {
     margin-top: var(--s-6);
   }
 
-  p.long {
+  .long {
     max-width: 320px;
 
     text-overflow: ellipsis;
     overflow: hidden;
   }
 
-  p.date {
+  .date {
     opacity: 0.6;
   }
 
