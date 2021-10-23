@@ -225,6 +225,8 @@ export class ProtocolService {
   private async mintingEventForPeriod(
     blockNum: number,
   ): Promise<MintingHistoryEvent | null> {
+    if (blockNum <= 0) return null;
+
     const periodNumber = Math.floor(blockNum / MINTING_PERIOD_LENGTH);
     const beginningOfPeriod = periodNumber * MINTING_PERIOD_LENGTH + 1;
     const endOfPeriod = (periodNumber + 1) * MINTING_PERIOD_LENGTH;
