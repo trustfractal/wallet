@@ -17,7 +17,9 @@ import { getProtocolService } from "@services/Factory";
 const FCL_UNIT = 10 ** 12;
 
 export function SendTokens(props: { onFinish: () => void }) {
-  const [page, setPage] = useState<"specify" | "confirm" | JSX.Element>("specify");
+  const [page, setPage] = useState<"specify" | "confirm" | JSX.Element>(
+    "specify",
+  );
 
   const [amount, setAmount] = useState(0);
   const [destination, setDestination] = useState("");
