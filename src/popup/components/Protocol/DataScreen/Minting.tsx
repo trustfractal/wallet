@@ -1,15 +1,17 @@
 import styled from "styled-components";
 import { BarLoader as Loader } from "react-spinners";
+import ReactTooltip from "react-tooltip";
 
 import { formatFloat } from "@utils/FormatUtils";
 import { useLoadedState } from "@utils/ReactHooks";
 
-import { getProtocolService } from "@services/Factory";
+import { getProtocolService, getMintingRegistrar } from "@services/Factory";
 import {
   MintingHistoryEvent,
   MintingReceived,
   MintingRegistered,
 } from "@services/ProtocolService";
+import { MintingError as RegistrarMintingError } from "@services/MintingRegistrar";
 
 import Text, { TextHeights, TextSizes } from "@popup/components/common/Text";
 import { IconNames } from "@popup/components/common/Icon";
@@ -21,11 +23,13 @@ export function Minting() {
   });
   const callout = isRegistered
     .map((val) =>
-      val
-        ? ["Registered", IconNames.VALID]
-        : ["Not Registered", IconNames.INVALID],
+      val ? (
+        <Activated text="Registered" icon={IconNames.VALID} />
+      ) : (
+        <NotRegistered />
+      ),
     )
-    .unwrapOrDefault(["Loading", IconNames.PENDING]);
+    .unwrapOrDefault(<Activated text="Loading" icon={IconNames.PENDING} />);
 
   const history = useLoadedState(async () => {
     return await getProtocolService().mintingHistory(4);
@@ -43,13 +47,68 @@ export function Minting() {
     );
 
   return (
-    <Hero
-      title="Minting"
-      callout={<Activated text={callout[0]} icon={callout[1]} />}
-    >
+    <Hero title="Minting" callout={callout}>
       <HistoryContainer>{historyItems}</HistoryContainer>
     </Hero>
   );
+}
+
+const NotRegisteredContainer = styled.div`
+  p {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+  }
+`;
+
+function NotRegistered() {
+  const error = useLoadedState(async () => {
+    return await getMintingRegistrar().latestError();
+  });
+
+  const errorMessage = error
+    .map((e) => <MintingError error={e} />)
+    .unwrapOrDefault(<p>Loading</p>);
+
+  return (
+    <>
+      <NotRegisteredContainer data-tip data-for="notRegistered">
+        <Activated text="Not Registered" icon={IconNames.INVALID} />
+      </NotRegisteredContainer>
+
+      <ReactTooltip id="notRegistered" place="bottom" effect="solid">
+        {errorMessage}
+      </ReactTooltip>
+    </>
+  );
+}
+
+function MintingError({ error }: { error: RegistrarMintingError | null }) {
+  if (error == null) {
+    return <p>Registration has not been attempted.</p>;
+  }
+  if (error.type === "unknown") {
+    return (
+      <>
+        <p>Unhandled error:</p>
+        <p>{error.message}</p>
+      </>
+    );
+  }
+  if (error.type === "identity_registration") {
+    return <p>Identity registration failed.</p>;
+  }
+  if (error.type === "minting_registration") {
+    return <p>Minting registration failed for unknown reasons.</p>;
+  }
+  if (error.type === "cant_extend_dataset") {
+    return <p>Could not extend existing dataset.</p>;
+  }
+
+  checkExhaustive(error);
+}
+
+function checkExhaustive(v: never): never {
+  throw new Error(`Unhandled value ${v}`);
 }
 
 const HistoryContainer = styled.div`

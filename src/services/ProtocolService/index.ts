@@ -16,6 +16,13 @@ export class IdentityRegistrationFailed extends Error {
   }
 }
 
+export class CannotExtendDataset extends Error {
+  constructor(message?: string) {
+    super(message);
+    this.name = "CannotExtendDataset";
+  }
+}
+
 export class MintingRegistrationFailed extends Error {
   constructor(message?: string) {
     super(message);
@@ -47,7 +54,7 @@ export class ProtocolService {
     console.log(`Latest proof from chain ${latestProof}`);
 
     const extensionProof = await this.dataHost.extensionProof(latestProof);
-    if (extensionProof == null) throw new CannotExtend(latestProof);
+    if (extensionProof == null) throw new CannotExtendDataset();
 
     const hash = await this.submitMintingExtrinsic(extensionProof);
     if (!(await this.isRegisteredForMinting())) {
