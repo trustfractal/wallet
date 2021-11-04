@@ -210,7 +210,10 @@ export class ProtocolService {
 
   async sendToAddress(address: string, amount: number): Promise<string> {
     const api = await this.api;
-    return await TxnWatcher.signAndSend(api.tx.balances.transfer(address, amount), this.requireSigner()).inBlock();
+    const txn = api.tx.balances.transfer(address, amount);
+    const watcher = TxnWatcher.signAndSend(txn as any, this.requireSigner());
+    const {hash} = await watcher.inBlock();
+    return hash;
   }
 
   // `MintingHistoryEvent`s in order from most recent to oldest. Capped at
