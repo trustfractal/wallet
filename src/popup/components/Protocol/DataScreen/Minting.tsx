@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { BarLoader as Loader } from "react-spinners";
 import ReactTooltip from "react-tooltip";
@@ -13,6 +14,7 @@ import {
 } from "@services/ProtocolService";
 import { MintingError as RegistrarMintingError } from "@services/MintingRegistrar";
 
+import { Button } from "@popup/components/common/Button";
 import Text, { TextHeights, TextSizes } from "@popup/components/common/Text";
 import { IconNames } from "@popup/components/common/Icon";
 import { Activated, Hero } from "./Hero";
@@ -21,6 +23,7 @@ export function Minting() {
   const isRegistered = useLoadedState(async () => {
     return await getProtocolService().isRegisteredForMinting();
   });
+  const showRegisterButton = isRegistered.map((r) => !r).unwrapOrDefault(false);
   const callout = isRegistered
     .map((val) =>
       val ? (
@@ -46,9 +49,27 @@ export function Minting() {
       </div>,
     );
 
+  const [registering, setRegistering] = useState(false);
+  const tryRegister = async () => {
+    try {
+      setRegistering(true);
+      await getMintingRegistrar().tryRegister();
+    } finally {
+      isRegistered.reload();
+      setRegistering(false);
+    }
+  };
+
   return (
     <Hero title="Minting" callout={callout}>
-      <HistoryContainer>{historyItems}</HistoryContainer>
+      <HistoryContainer>
+        {showRegisterButton ? (
+          <Button onClick={tryRegister} loading={registering}>
+            Register
+          </Button>
+        ) : null}
+        {historyItems}
+      </HistoryContainer>
     </Hero>
   );
 }
@@ -117,10 +138,18 @@ const HistoryContainer = styled.div`
   display: flex;
   flex-direction: column;
 
+  > *:not(:last-child) {
+    margin-bottom: var(--s-12);
+  }
+
   .loader {
     align-self: stretch;
 
     display: flex;
+  }
+
+  button {
+    padding: var(--s-6) var(--s-12);
   }
 `;
 
@@ -163,7 +192,6 @@ const HistoryItemContainer = styled.div`
   justify-content: space-between;
 
   &:not(:last-child) {
-    margin-bottom: var(--s-12);
     padding-bottom: var(--s-12);
     border-bottom: 1px solid var(--c-gray);
   }

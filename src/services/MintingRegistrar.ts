@@ -20,6 +20,12 @@ export class MintingRegistrar {
       now > parseInt(lastCheck) + this.statusCheckSleepSeconds;
     if (!shouldCheck) return;
 
+    return await this.tryRegister(now);
+  }
+
+  async tryRegister(maybeNow?: number) {
+    const now = maybeNow ?? new Date().getTime() / 1000;
+
     try {
       await withLock(this.storage, this.key("lock"), async () => {
         try {
@@ -68,6 +74,8 @@ export class MintingRegistrar {
   }
 
   private async setLatestFromError(e: Error) {
+    console.error(e);
+
     let error: MintingError;
     if (e instanceof IdentityRegistrationFailed) {
       error = { type: "identity_registration" };
