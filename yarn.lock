@@ -2512,10 +2512,10 @@
   resolved "https://registry.npmjs.org/@tootallnate/once/-/once-1.1.2.tgz"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@trustfractal/polkadot-utils@^0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@trustfractal/polkadot-utils/-/polkadot-utils-0.1.4.tgz#9d64a9aa6835b230c7ea6767b01bcc9a312c8452"
-  integrity sha512-iichQvujeI0fI2FF7SExiWvE64opNtT46iZvPdw8xMypkP+XK1dQ+Coh7wCwh51L/mFhBzRxGyhrsQ09l4hoNw==
+"@trustfractal/polkadot-utils@^0.1.7":
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/@trustfractal/polkadot-utils/-/polkadot-utils-0.1.7.tgz#49e7eac6e68942443c62f5a5555209853c6fda25"
+  integrity sha512-+IzfMuU7uQJUf97KBJDIHNcndVnx64t2QCYc5F3BZtwlI+4QuPBgp26CyCqU79D4Ffad0FF5QqAId2w32Ojnfg==
   dependencies:
     "@polkadot/api" "^6.2.1"
 

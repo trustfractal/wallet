@@ -163,12 +163,13 @@ export class ProtocolService {
     return this.requireSigner().address;
   }
 
-  public async getBalance(): Promise<AccountData> {
-    const { data } = await (
-      await this.api
-    ).query.system.account(this.address());
-
-    return data;
+  public async watchBalance(cb: (accountData: AccountData) => void) {
+    const unsub = await this.withApi((api) => {
+      return api.query.system.account(this.address(), ({data}) => {
+        cb(data);
+      });
+    });
+    return unsub;
   }
 
   public addressForMnemonic(mnemonic: string): string {

@@ -17,12 +17,10 @@ import { getProtocolService } from "@services/Factory";
 const FCL_UNIT = 10 ** 12;
 
 export function SendTokens(props: { onFinish: () => void }) {
-  const [page, setPage] = useState<string | JSX.Element>("confirm");
+  const [page, setPage] = useState<string | JSX.Element>("specify");
 
-  const [amount, setAmount] = useState(1000000000000);
-  const [destination, setDestination] = useState(
-    "5CD5GxJQAuyhCU1j6FgQCjxRwDEkQSkG47mWr3Bn1JqL8NHF",
-  );
+  const [amount, setAmount] = useState(0);
+  const [destination, setDestination] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -109,7 +107,7 @@ function SpecifySend(props: {
               <strong>{(props.amount / FCL_UNIT).toString()} FCL</strong> to
               address
             </p>
-            <BreakAddress>{props.address}</BreakAddress>
+            <BreakStrong>{props.address}</BreakStrong>
           </>
         ) : null}
 
@@ -137,7 +135,6 @@ function ConfirmSend(props: {
   onCancel: () => void;
   loading: boolean,
 }) {
-  console.log('props.loading', props.loading);
   return (
     <ScreenContainer>
       <VerticalSequence>
@@ -147,7 +144,7 @@ function ConfirmSend(props: {
         <p>
           Send <strong>{(props.amount / FCL_UNIT).toString()} FCL</strong> to
         </p>
-        <BreakAddress>{props.address}</BreakAddress>
+        <BreakStrong>{props.address}</BreakStrong>
 
         <HorizontalContainer>
           <Button alternative loading={props.loading} onClick={props.onCancel}>
@@ -173,7 +170,7 @@ const HorizontalContainer = styled.div`
   column-gap: var(--s-12);
 `;
 
-const BreakAddress = styled.strong`
+const BreakStrong = styled.strong`
   word-break: break-all;
   text-align: center;
 `;
@@ -185,10 +182,8 @@ function SendComplete(props: {hash: string, onFinish: () => void}) {
         <Icon name={IconNames.PROTOCOL} />
         <Title>Send Complete</Title>
 
-        <p>
-          Transaction ID:{" "}
-          <strong>{props.hash}</strong>
-        </p>
+        <p>Transaction ID</p>
+        <p><BreakStrong>{props.hash}</BreakStrong></p>
 
         <Cta onClick={props.onFinish}>Return</Cta>
       </VerticalSequence>
