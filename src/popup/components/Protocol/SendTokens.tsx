@@ -17,7 +17,7 @@ import { getProtocolService } from "@services/Factory";
 const FCL_UNIT = 10 ** 12;
 
 export function SendTokens(props: { onFinish: () => void }) {
-  const [page, setPage] = useState<string | JSX.Element>("specify");
+  const [page, setPage] = useState<"specify" | "confirm" | JSX.Element>("specify");
 
   const [amount, setAmount] = useState(0);
   const [destination, setDestination] = useState("");
@@ -40,7 +40,10 @@ export function SendTokens(props: { onFinish: () => void }) {
       amount={amount}
       onConfirm={async () => {
         setLoading(true);
-        const hash = await getProtocolService().sendToAddress(destination, amount);
+        const hash = await getProtocolService().sendToAddress(
+          destination,
+          amount,
+        );
         setPage(<SendComplete onFinish={props.onFinish} hash={hash} />);
         setLoading(false);
       }}
@@ -49,11 +52,10 @@ export function SendTokens(props: { onFinish: () => void }) {
     />
   );
 
-  if (typeof page === 'string') {
-    return {
-      "confirm": confirmSend,
-      "specify": specifySend,
-    }[page]!;
+  if (page === "specify") {
+    return specifySend;
+  } else if (page === "confirm") {
+    return confirmSend;
   } else {
     return page;
   }
@@ -95,7 +97,9 @@ function SpecifySend(props: {
               props.amount === 0 ? "" : (props.amount / FCL_UNIT).toString()
             }
             onChange={(e) => {
-              props.onChangeAmount(Math.floor(Number(e.target.value) * FCL_UNIT));
+              props.onChangeAmount(
+                Math.floor(Number(e.target.value) * FCL_UNIT),
+              );
             }}
           />
         </HorizontalContainer>
@@ -133,7 +137,7 @@ function ConfirmSend(props: {
   amount: number;
   onConfirm: () => void;
   onCancel: () => void;
-  loading: boolean,
+  loading: boolean;
 }) {
   return (
     <ScreenContainer>
@@ -150,7 +154,9 @@ function ConfirmSend(props: {
           <Button alternative loading={props.loading} onClick={props.onCancel}>
             Cancel
           </Button>
-          <Cta loading={props.loading} onClick={props.onConfirm}>Send</Cta>
+          <Cta loading={props.loading} onClick={props.onConfirm}>
+            Send
+          </Cta>
         </HorizontalContainer>
       </VerticalSequence>
     </ScreenContainer>
@@ -175,7 +181,7 @@ const BreakStrong = styled.strong`
   text-align: center;
 `;
 
-function SendComplete(props: {hash: string, onFinish: () => void}) {
+function SendComplete(props: { hash: string; onFinish: () => void }) {
   return (
     <ScreenContainer>
       <VerticalSequence>
@@ -183,10 +189,12 @@ function SendComplete(props: {hash: string, onFinish: () => void}) {
         <Title>Send Complete</Title>
 
         <p>Transaction ID</p>
-        <p><BreakStrong>{props.hash}</BreakStrong></p>
+        <p>
+          <BreakStrong>{props.hash}</BreakStrong>
+        </p>
 
         <Cta onClick={props.onFinish}>Return</Cta>
       </VerticalSequence>
     </ScreenContainer>
-  )
+  );
 }

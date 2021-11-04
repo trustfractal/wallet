@@ -165,7 +165,7 @@ export class ProtocolService {
 
   public async watchBalance(cb: (accountData: AccountData) => void) {
     const unsub = await this.withApi((api) => {
-      return api.query.system.account(this.address(), ({data}) => {
+      return api.query.system.account(this.address(), ({ data }) => {
         cb(data);
       });
     });
@@ -213,7 +213,7 @@ export class ProtocolService {
     const api = await this.api;
     const txn = api.tx.balances.transfer(address, amount);
     const watcher = TxnWatcher.signAndSend(txn as any, this.requireSigner());
-    const {hash} = await watcher.inBlock();
+    const { hash } = await watcher.inBlock();
     return hash;
   }
 

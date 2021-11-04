@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import Button, {ButtonProps} from "@popup/components/common/Button";
+import Button, { ButtonProps } from "@popup/components/common/Button";
 import Text, { TextWeights } from "@popup/components/common/Text";
 import { Subsubtitle } from "@popup/components/common/Subtitle";
 
@@ -60,13 +60,11 @@ Cta.defaultProps = {
   alternative: false,
 };
 
-export function Cta(props: React.ButtonHTMLAttributes<HTMLButtonElement> & ButtonProps) {
+export function Cta(
+  props: React.ButtonHTMLAttributes<HTMLButtonElement> & ButtonProps,
+) {
   const { children, ...other } = props;
-  return (
-    <Button {...other}>
-      {children}
-    </Button>
-  );
+  return <Button {...other}>{children}</Button>;
 }
 
 export function BoldText({
