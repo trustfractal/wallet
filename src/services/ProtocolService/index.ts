@@ -2,6 +2,7 @@ import { ApiPromise } from "@polkadot/api";
 import { Keyring } from "@polkadot/keyring";
 import { u64 } from "@polkadot/types";
 import { BlockHash } from "@polkadot/types/interfaces";
+import { TxnWatcher } from "@trustfractal/polkadot-utils";
 
 import type { KeyringPair } from "@polkadot/keyring/types";
 import type { AccountData } from "@polkadot/types/interfaces";
@@ -13,6 +14,13 @@ export class IdentityRegistrationFailed extends Error {
   constructor(message?: string) {
     super(message);
     this.name = "IdentityRegistrationFailed";
+  }
+}
+
+export class CannotExtendDataset extends Error {
+  constructor(message?: string) {
+    super(message);
+    this.name = "CannotExtendDataset";
   }
 }
 
@@ -47,7 +55,10 @@ export class ProtocolService {
     console.log(`Latest proof from chain ${latestProof}`);
 
     const extensionProof = await this.dataHost.extensionProof(latestProof);
-    if (extensionProof == null) throw new CannotExtend(latestProof);
+    if (extensionProof == null)
+      throw new CannotExtendDataset(
+        `Current tree: ${await this.dataHost.currentTree()}`,
+      );
 
     const hash = await this.submitMintingExtrinsic(extensionProof);
     if (!(await this.isRegisteredForMinting())) {
@@ -83,28 +94,11 @@ export class ProtocolService {
       proof,
     );
 
-    return new Promise(async (resolve, reject) => {
-      const unsub = await txn.signAndSend(
-        this.requireSigner(),
-        ({ events = [], status }) => {
-          console.log(`Extrinsic status: ${status}`);
-          if (!status.isFinalized) return;
-
-          events.forEach(({ event: { data, method, section } }) => {
-            if (section !== "system") return;
-
-            if (method === "ExtrinsicSuccess") {
-              resolve(status.asFinalized.toHuman() as string);
-            }
-            if (method === "ExtrinsicFailed") {
-              reject(data);
-            }
-          });
-
-          unsub();
-        },
-      );
-    });
+    const { hash } = await TxnWatcher.signAndSend(
+      txn as any,
+      this.requireSigner(),
+    ).inBlock();
+    return hash;
   }
 
   private requireSigner(): KeyringPair {

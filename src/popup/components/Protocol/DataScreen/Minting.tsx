@@ -1,16 +1,20 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { BarLoader as Loader } from "react-spinners";
+import ReactTooltip from "react-tooltip";
 
 import { formatFloat } from "@utils/FormatUtils";
 import { useLoadedState } from "@utils/ReactHooks";
 
-import { getProtocolService } from "@services/Factory";
+import { getProtocolService, getMintingRegistrar } from "@services/Factory";
 import {
   MintingHistoryEvent,
   MintingReceived,
   MintingRegistered,
 } from "@services/ProtocolService";
+import { MintingError as RegistrarMintingError } from "@services/MintingRegistrar";
 
+import { Button } from "@popup/components/common/Button";
 import Text, { TextHeights, TextSizes } from "@popup/components/common/Text";
 import { IconNames } from "@popup/components/common/Icon";
 import { Activated, Hero } from "./Hero";
@@ -19,13 +23,16 @@ export function Minting() {
   const isRegistered = useLoadedState(async () => {
     return await getProtocolService().isRegisteredForMinting();
   });
+  const showRegisterButton = isRegistered.map((r) => !r).unwrapOrDefault(false);
   const callout = isRegistered
     .map((val) =>
-      val
-        ? ["Registered", IconNames.VALID]
-        : ["Not Registered", IconNames.INVALID],
+      val ? (
+        <Activated text="Registered" icon={IconNames.VALID} />
+      ) : (
+        <NotRegistered />
+      ),
     )
-    .unwrapOrDefault(["Loading", IconNames.PENDING]);
+    .unwrapOrDefault(<Activated text="Loading" icon={IconNames.PENDING} />);
 
   const history = useLoadedState(async () => {
     return await getProtocolService().mintingHistory(4);
@@ -42,14 +49,91 @@ export function Minting() {
       </div>,
     );
 
+  const [registering, setRegistering] = useState(false);
+  const tryRegister = async () => {
+    try {
+      setRegistering(true);
+      await getMintingRegistrar().tryRegister();
+    } finally {
+      isRegistered.reload();
+      setRegistering(false);
+    }
+  };
+
   return (
-    <Hero
-      title="Minting"
-      callout={<Activated text={callout[0]} icon={callout[1]} />}
-    >
-      <HistoryContainer>{historyItems}</HistoryContainer>
+    <Hero title="Minting" callout={callout}>
+      <HistoryContainer>
+        {showRegisterButton ? (
+          <Button onClick={tryRegister} loading={registering}>
+            Register
+          </Button>
+        ) : null}
+        {historyItems}
+      </HistoryContainer>
     </Hero>
   );
+}
+
+const NotRegisteredContainer = styled.div`
+  .text p {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+  }
+
+  #notRegistered {
+    opacity: 1;
+  }
+`;
+
+function NotRegistered() {
+  const error = useLoadedState(async () => {
+    return await getMintingRegistrar().latestError();
+  });
+
+  const errorMessage = error
+    .map((e) => <MintingError error={e} />)
+    .unwrapOrDefault(<p>Loading</p>);
+
+  return (
+    <NotRegisteredContainer>
+      <div className="text" data-tip data-for="notRegistered">
+        <Activated text="Not Registered" icon={IconNames.INVALID} />
+      </div>
+
+      <ReactTooltip id="notRegistered" place="top" effect="solid">
+        {errorMessage}
+      </ReactTooltip>
+    </NotRegisteredContainer>
+  );
+}
+
+function MintingError({ error }: { error: RegistrarMintingError | null }) {
+  if (error == null) {
+    return <p>Registration has not been attempted.</p>;
+  }
+  if (error.type === "unknown") {
+    return (
+      <>
+        <p>Unhandled error:</p>
+        <p>{error.message}</p>
+      </>
+    );
+  }
+  if (error.type === "identity_registration") {
+    return <p>Identity registration failed.</p>;
+  }
+  if (error.type === "minting_registration") {
+    return <p>Minting registration failed for unknown reasons.</p>;
+  }
+  if (error.type === "cant_extend_dataset") {
+    return <p>Could not extend existing dataset.</p>;
+  }
+
+  checkExhaustive(error);
+}
+
+function checkExhaustive(v: never): never {
+  throw new Error(`Unhandled value ${v}`);
 }
 
 const HistoryContainer = styled.div`
@@ -57,6 +141,10 @@ const HistoryContainer = styled.div`
 
   display: flex;
   flex-direction: column;
+
+  > *:not(:last-child) {
+    margin-bottom: var(--s-12);
+  }
 
   .loader {
     align-self: stretch;
@@ -104,7 +192,6 @@ const HistoryItemContainer = styled.div`
   justify-content: space-between;
 
   &:not(:last-child) {
-    margin-bottom: var(--s-12);
     padding-bottom: var(--s-12);
     border-bottom: 1px solid var(--c-gray);
   }
