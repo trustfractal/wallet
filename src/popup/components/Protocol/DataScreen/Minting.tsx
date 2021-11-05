@@ -75,9 +75,13 @@ export function Minting() {
 }
 
 const NotRegisteredContainer = styled.div`
-  p {
+  .text p {
     text-decoration: underline;
     text-decoration-style: dotted;
+  }
+
+  #notRegistered {
+    opacity: 1;
   }
 `;
 
@@ -91,15 +95,15 @@ function NotRegistered() {
     .unwrapOrDefault(<p>Loading</p>);
 
   return (
-    <>
-      <NotRegisteredContainer data-tip data-for="notRegistered">
+    <NotRegisteredContainer>
+      <div className="text" data-tip data-for="notRegistered">
         <Activated text="Not Registered" icon={IconNames.INVALID} />
-      </NotRegisteredContainer>
+      </div>
 
-      <ReactTooltip id="notRegistered" place="bottom" effect="solid">
+      <ReactTooltip id="notRegistered" place="top" effect="solid">
         {errorMessage}
       </ReactTooltip>
-    </>
+    </NotRegisteredContainer>
   );
 }
 
@@ -146,10 +150,6 @@ const HistoryContainer = styled.div`
     align-self: stretch;
 
     display: flex;
-  }
-
-  button {
-    padding: var(--s-6) var(--s-12);
   }
 `;
 
