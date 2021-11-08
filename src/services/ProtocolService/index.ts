@@ -156,6 +156,12 @@ export class ProtocolService {
     return this.requireSigner().address;
   }
 
+  public async getBalance(address: string): Promise<AccountData> {
+    return await this.withApi(async (api) => {
+      return (await api.query.system.account(address)).data;
+    });
+  }
+
   public async watchBalance(cb: (accountData: AccountData) => void) {
     const unsub = await this.withApi((api) => {
       return api.query.system.account(this.address(), ({ data }) => {
@@ -208,6 +214,26 @@ export class ProtocolService {
     const watcher = TxnWatcher.signAndSend(txn as any, this.requireSigner());
     const { hash } = await watcher.inBlock();
     return hash;
+  }
+
+  createSigner(mnemonic: string) {
+    const keyring = new Keyring({ type: "sr25519" });
+    const signer = keyring.addFromUri(mnemonic);
+    return signer;
+  }
+
+  async sweepFromMnemonic(mnemonic: string): Promise<string> {
+    return await this.withApi(async (api) => {
+      const signer = this.createSigner(mnemonic);
+      const balance = (await this.getBalance(signer.address)).free.toNumber();
+
+      const txn = api.tx.balances.transfer(this.address(), balance);
+      const { hash } = await TxnWatcher.signAndSend(
+        txn as any,
+        signer,
+      ).inBlock();
+      return hash;
+    });
   }
 
   // `MintingHistoryEvent`s in order from most recent to oldest. Capped at

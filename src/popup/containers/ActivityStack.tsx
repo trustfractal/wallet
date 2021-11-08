@@ -1,16 +1,32 @@
-import { createContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 export const ActivityStackContext = createContext<Updater>({
   push: () => {},
   pop: () => {},
+  stack: [],
 });
 
 export interface Updater {
   push: (item: React.ReactNode) => void;
   pop: () => void;
+  stack: React.ReactNode[];
 }
 
 export function ActivityStack({ children }: { children: React.ReactNode }) {
+  const updater = useContext(ActivityStackContext);
+
+  const lastItem = updater.stack[updater.stack.length - 1];
+  const content =
+    lastItem == null ? children : <CloseActivity>{lastItem}</CloseActivity>;
+
+  return <>{content}</>;
+}
+
+export function ActivityStackProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [stack, setStack] = useState<React.ReactNode[]>([]);
 
   const updater = {
@@ -20,15 +36,12 @@ export function ActivityStack({ children }: { children: React.ReactNode }) {
     pop: () => {
       setStack(stack.slice(0, stack.length - 1));
     },
+    stack,
   };
-
-  const lastItem = stack[stack.length - 1];
-  const content =
-    lastItem == null ? children : <CloseActivity>{lastItem}</CloseActivity>;
 
   return (
     <ActivityStackContext.Provider value={updater}>
-      {content}
+      {children}
     </ActivityStackContext.Provider>
   );
 }

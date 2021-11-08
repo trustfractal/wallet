@@ -4,6 +4,7 @@ import RegisterScreen from "@popup/containers/RegisterScreen";
 
 import Routes from "@popup/routes";
 import { AlertsDisplay } from "@popup/Alerts";
+import { ActivityStackProvider } from "@popup/containers/ActivityStack";
 
 import { useAppSelector } from "@redux/stores/application/context";
 import { UserContextProvider } from "@redux/stores/user/context";
@@ -33,8 +34,10 @@ function App() {
 
   return (
     <UserContextProvider>
-      <AlertsDisplay />
-      <Routes />
+      <ActivityStackProvider>
+        <AlertsDisplay />
+        <Routes />
+      </ActivityStackProvider>
     </UserContextProvider>
   );
 }
