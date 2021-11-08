@@ -66,7 +66,7 @@ const RightIconContainer = styled.div`
   display: flex;
 `;
 
-type ButtonProps = {
+export type ButtonProps = {
   loading: boolean;
   alternative: boolean;
   leftIcon?: JSX.Element;

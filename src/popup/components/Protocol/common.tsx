@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import Button from "@popup/components/common/Button";
+import Button, { ButtonProps } from "@popup/components/common/Button";
 import Text, { TextWeights } from "@popup/components/common/Text";
 import { Subsubtitle } from "@popup/components/common/Subtitle";
 
@@ -55,12 +55,16 @@ export function VerticalSequence(props: React.HTMLProps<HTMLDivElement>) {
   );
 }
 
-export function Cta(props: React.HTMLProps<HTMLButtonElement>) {
-  return (
-    <Button disabled={props.disabled} onClick={props.onClick}>
-      {props.children}
-    </Button>
-  );
+Cta.defaultProps = {
+  loading: false,
+  alternative: false,
+};
+
+export function Cta(
+  props: React.ButtonHTMLAttributes<HTMLButtonElement> & ButtonProps,
+) {
+  const { children, ...other } = props;
+  return <Button {...other}>{children}</Button>;
 }
 
 export function BoldText({

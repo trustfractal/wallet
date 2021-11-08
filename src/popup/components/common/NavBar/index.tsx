@@ -241,7 +241,7 @@ function ProtocolBalance({ balance }: { balance: AccountData }) {
   );
 }
 
-function ProtocolHeader({ balance }: { balance: AccountData }) {
+function BalanceHeader({ balance }: { balance: AccountData }) {
   return (
     <HeaderContainer>
       <LogoContainer>
@@ -274,19 +274,17 @@ function Header() {
   const [balance, setBalance] = useState<AccountData>();
 
   useEffect(() => {
-    const checkBalance = async () => {
-      try {
-        const balance = await getProtocolService().getBalance();
-        setBalance(balance);
-      } catch {}
+    let unsub: () => void;
+    (async () => {
+      unsub = await getProtocolService().watchBalance(setBalance);
+    })();
+    return () => {
+      if (unsub) unsub();
     };
-    checkBalance();
-    const interval = setInterval(checkBalance, 30 * 1000);
-    return () => clearInterval(interval);
   }, []);
 
   if (balance) {
-    return <ProtocolHeader balance={balance} />;
+    return <BalanceHeader balance={balance} />;
   }
 
   return <LogoHeader />;
