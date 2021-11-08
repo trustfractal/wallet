@@ -50,13 +50,8 @@ export class DataHost {
   async extensionProof(
     latestProof: string | null,
   ): Promise<string | undefined> {
-    const allItems = [];
-    for await (let item of this.array().iter()) {
-      allItems.push(item);
-    }
-    if (allItems.length === 0) return;
-
-    const currentTree = buildTree(allItems.map((i) => JSON.stringify(i)));
+    const currentTree = await this.currentTree();
+    if (currentTree == null) return;
 
     if (latestProof == null) {
       return hexPrefix(prune_balanced(currentTree)!);
@@ -67,6 +62,16 @@ export class DataHost {
       const proof = strict_extension_proof(currentTree, previousTree);
       return proof && hexPrefix(proof);
     }
+  }
+
+  async currentTree(): Promise<string | undefined> {
+    const allItems = [];
+    for await (let item of this.array().iter()) {
+      allItems.push(item);
+    }
+    if (allItems.length === 0) return;
+
+    return buildTree(allItems.map((i) => JSON.stringify(i)));
   }
 }
 

@@ -78,7 +78,7 @@ Button.defaultProps = {
   alternative: false,
 };
 
-function Button(
+export function Button(
   props: ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>,
 ) {
   const { loading, disabled, children, leftIcon, rightIcon, ...otherProps } =

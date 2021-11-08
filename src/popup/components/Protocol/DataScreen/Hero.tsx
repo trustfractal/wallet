@@ -95,7 +95,7 @@ export function Activated({ text, icon }: { text?: string; icon?: string }) {
         {text || "Activated"}
       </Text>
       <ActivationIcon>
-        <Icon name={icon || IconNames.VALID} />
+        <Icon name={icon || IconNames.VALID} width="24" height="24" />
       </ActivationIcon>
     </ActivatedContainer>
   );

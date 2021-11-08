@@ -17,6 +17,13 @@ export class IdentityRegistrationFailed extends Error {
   }
 }
 
+export class CannotExtendDataset extends Error {
+  constructor(message?: string) {
+    super(message);
+    this.name = "CannotExtendDataset";
+  }
+}
+
 export class MintingRegistrationFailed extends Error {
   constructor(message?: string) {
     super(message);
@@ -48,7 +55,10 @@ export class ProtocolService {
     console.log(`Latest proof from chain ${latestProof}`);
 
     const extensionProof = await this.dataHost.extensionProof(latestProof);
-    if (extensionProof == null) throw new CannotExtend(latestProof);
+    if (extensionProof == null)
+      throw new CannotExtendDataset(
+        `Current tree: ${await this.dataHost.currentTree()}`,
+      );
 
     const hash = await this.submitMintingExtrinsic(extensionProof);
     if (!(await this.isRegisteredForMinting())) {
@@ -84,28 +94,11 @@ export class ProtocolService {
       proof,
     );
 
-    return new Promise(async (resolve, reject) => {
-      const unsub = await txn.signAndSend(
-        this.requireSigner(),
-        ({ events = [], status }) => {
-          console.log(`Extrinsic status: ${status}`);
-          if (!status.isFinalized) return;
-
-          events.forEach(({ event: { data, method, section } }) => {
-            if (section !== "system") return;
-
-            if (method === "ExtrinsicSuccess") {
-              resolve(status.asFinalized.toHuman() as string);
-            }
-            if (method === "ExtrinsicFailed") {
-              reject(data);
-            }
-          });
-
-          unsub();
-        },
-      );
-    });
+    const { hash } = await TxnWatcher.signAndSend(
+      txn as any,
+      this.requireSigner(),
+    ).inBlock();
+    return hash;
   }
 
   private requireSigner(): KeyringPair {
