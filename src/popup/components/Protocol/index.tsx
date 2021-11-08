@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { mnemonicGenerate } from "@polkadot/util-crypto";
 
 import { useLoadedState } from "@utils/ReactHooks";
 import { getProtocolOptIn } from "@services/Factory";
@@ -11,14 +12,12 @@ import TopComponent from "@popup/components/common/TopComponent";
 import Loading from "@popup/components/Loading";
 import DataScreen from "./DataScreen";
 import { OptInForm } from "./OptInForm";
-import MnemonicPicker from "./MnemonicPicker";
 import { SetupSuccess, SetupInProgress, SetupError } from "./SetupScreen";
 import { NoLiveness } from "./NoLiveness";
 
 function ProtocolState() {
   const [pageOverride, setPageOverride] = useState<JSX.Element | null>(null);
 
-  const [manualOptIn, setManualOptIn] = useState(false);
   const serviceOptedIn = useLoadedState(() => getProtocolOptIn().isOptedIn());
   const completedLiveness = useLoadedState(() =>
     getProtocolOptIn().hasCompletedLiveness(),
@@ -38,7 +37,8 @@ function ProtocolState() {
     }
   };
 
-  const optInWithMnemonic = async (mnemonic: string) => {
+  const optInWithMnemonic = async (mnemonic?: string) => {
+    mnemonic = mnemonic || mnemonicGenerate();
     try {
       setPageOverride(
         <SetupInProgress onRetry={() => optInWithMnemonic(mnemonic)} />,
@@ -74,12 +74,8 @@ function ProtocolState() {
   }
 
   if (!serviceOptedIn.isLoaded) return <Loading />;
-  const optedIn = manualOptIn || serviceOptedIn.value;
-  if (!optedIn) {
-    return <OptInForm onOptIn={() => setManualOptIn(true)} />;
-  }
   if (!serviceOptedIn.value) {
-    return <MnemonicPicker onMnemonicPicked={optInWithMnemonic} />;
+    return <OptInForm onOptIn={() => optInWithMnemonic()} />;
   }
 
   if (!completedLiveness.isLoaded) return <Loading />;
