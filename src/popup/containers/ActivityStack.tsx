@@ -51,6 +51,8 @@ export function ActivityStackProvider({
   children: React.ReactNode;
 }) {
   const [stack, setStack] = useState<React.ReactNode[]>([]);
+  // We need to keep the same instance of the Updater so callbacks in Nodes
+  // pushed to the stack can pop from the correct instance.
   const { current: updater } = useRef(new Updater(stack, setStack));
 
   return (
