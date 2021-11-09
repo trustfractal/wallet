@@ -91,7 +91,7 @@ function AddLiveness() {
 
 function DataScreen() {
   const [wallet, setWallet] = useState<Wallet>();
-  const activityStack = useContext(ActivityStackContext);
+  const { updater: activityStack } = useContext(ActivityStackContext);
 
   useEffect(() => {
     (async () => {

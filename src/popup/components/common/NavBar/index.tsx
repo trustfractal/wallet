@@ -123,7 +123,7 @@ function DropdownMenu() {
 
   const mnemonic = useLoadedState(() => getProtocolOptIn().getMnemonic());
 
-  const activityStack = useContext(ActivityStackContext);
+  const { updater: activityStack } = useContext(ActivityStackContext);
 
   let menuItems = [
     {
