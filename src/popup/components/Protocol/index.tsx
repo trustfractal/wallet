@@ -49,7 +49,7 @@ function ProtocolState() {
       completedLiveness.reload();
 
       setPageOverride(
-        <SetupSuccess onContinue={() => setPageOverride(null)} />,
+        <SetupSuccess mnemonic={mnemonic} onContinue={() => setPageOverride(null)} />,
       );
     } catch (e) {
       handleError(e, () => optInWithMnemonic(mnemonic));
