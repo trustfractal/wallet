@@ -9,7 +9,13 @@ import {
   VerticalSequence,
 } from "@popup/components/Protocol/common";
 
-export function SetupSuccess({ onContinue, mnemonic }: { mnemonic: string, onContinue: () => void }) {
+export function SetupSuccess({
+  onContinue,
+  mnemonic,
+}: {
+  mnemonic: string;
+  onContinue: () => void;
+}) {
   return (
     <VerticalSequence>
       <Icon name={IconNames.PROTOCOL_SETUP_SUCCESS} />
@@ -17,9 +23,15 @@ export function SetupSuccess({ onContinue, mnemonic }: { mnemonic: string, onCon
       <Title>You joined the Fractal Protocol!</Title>
 
       <Subtitle>This is your private key:</Subtitle>
-      <Subtitle><strong>{mnemonic}</strong></Subtitle>
-      <Subtitle>Store it somewhere safe. You will need it to recover your funds.</Subtitle>
-      <Subtitle>You will <strong>never</strong> need to share it with anyone.</Subtitle>
+      <Subtitle>
+        <strong>{mnemonic}</strong>
+      </Subtitle>
+      <Subtitle>
+        Store it somewhere safe. You will need it to recover your funds.
+      </Subtitle>
+      <Subtitle>
+        You will <strong>never</strong> need to share it with anyone.
+      </Subtitle>
 
       <Cta onClick={onContinue}>Continue</Cta>
     </VerticalSequence>
