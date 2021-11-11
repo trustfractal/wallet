@@ -39,6 +39,7 @@ const ItemContainer = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: stretch;
+  text-align: start;
 
   padding: var(--s-12) 0;
 

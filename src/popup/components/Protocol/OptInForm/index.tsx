@@ -22,6 +22,7 @@ const List = styled.ul`
     align-items: start;
     font-size: var(--s-16);
     line-height: var(--s-24);
+    text-align: start;
 
     &:not(:last-child) {
       margin-bottom: var(--s-24);
