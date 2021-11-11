@@ -25,7 +25,6 @@ import RoutesPaths from "@popup/routes/paths";
 import {
   getFractalAccountConnector,
   getProtocolService,
-  getRecoverMnemonicService,
   getProtocolOptIn,
   getUserAlerts,
 } from "@services/Factory";
@@ -122,9 +121,6 @@ function DropdownMenu() {
 
   const onClickAbout = () => history.push(RoutesPaths.ABOUT);
 
-  const onClickImportMnemonic = () =>
-    getRecoverMnemonicService().showRecoverPage();
-
   const mnemonic = useLoadedState(() => getProtocolOptIn().getMnemonic());
 
   const activityStack = useContext(ActivityStackContext);
@@ -161,21 +157,6 @@ function DropdownMenu() {
       onClick: onClickAbout,
     },
   ];
-
-  const [showRecover, setShowRecover] = useState(false);
-  useEffect(() => {
-    getRecoverMnemonicService().onShowInMenu = (show) => {
-      setShowRecover(show);
-    };
-  });
-
-  if (showRecover) {
-    menuItems.splice(1, 0, {
-      label: "Import mnemonic",
-      icon: IconNames.IMPORT,
-      onClick: onClickImportMnemonic,
-    });
-  }
 
   if (environment.IS_DEV) {
     menuItems.push({
