@@ -34,7 +34,7 @@ function PasswordInput(
   const [visible, setVisible] = useState(defaultVisible);
 
   return (
-    <Root>
+    <Root className={props.className}>
       <Input type={visible ? "text" : "password"} {...otherProps} />
       <IconContainer onClick={() => setVisible(!visible)}>
         <Icon name={visible ? IconNames.EYE : IconNames.EYE_SLASH} />

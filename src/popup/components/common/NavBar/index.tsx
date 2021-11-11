@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 import type { AccountData, Balance } from "@polkadot/types/interfaces";
@@ -15,6 +15,8 @@ import Text, {
 import { IconNames } from "@popup/components/common/Icon";
 import Menu from "@popup/components/common/Menu";
 import CredentialsCollection from "@models/Credential/CredentialsCollection";
+import { ActivityStackContext } from "@popup/containers/ActivityStack";
+import { SweepTokens } from "@popup/components/Protocol/SweepTokens";
 
 import { exportFile } from "@utils/FileUtils";
 import { useLoadedState, useObservedState } from "@utils/ReactHooks";
@@ -125,6 +127,8 @@ function DropdownMenu() {
 
   const mnemonic = useLoadedState(() => getProtocolOptIn().getMnemonic());
 
+  const activityStack = useContext(ActivityStackContext);
+
   let menuItems = [
     {
       label: "Export your credentials",
@@ -138,6 +142,16 @@ function DropdownMenu() {
       onClick: async () => {
         await navigator.clipboard.writeText(mnemonic.unwrapOrDefault("")!);
         getUserAlerts().send("Mnemonic copied to clipboard!");
+      },
+      disabled: !mnemonic.isLoaded || mnemonic.value == null,
+    },
+    {
+      label: "Sweep funds",
+      icon: IconNames.FRACTAL_TOKEN,
+      onClick: () => {
+        activityStack.push(
+          <SweepTokens onFinish={() => activityStack.pop()} />,
+        );
       },
       disabled: !mnemonic.isLoaded || mnemonic.value == null,
     },
