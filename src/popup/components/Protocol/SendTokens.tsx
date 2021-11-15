@@ -14,14 +14,14 @@ import {
 
 import { getProtocolService } from "@services/Factory";
 
-const FCL_UNIT = 10 ** 12;
+const FCL_UNIT = BigInt(10 ** 12);
 
 export function SendTokens(props: { onFinish: () => void }) {
   const [page, setPage] = useState<"specify" | "confirm" | JSX.Element>(
     "specify",
   );
 
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(BigInt(0));
   const [destination, setDestination] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -66,12 +66,12 @@ export function SendTokens(props: { onFinish: () => void }) {
 function SpecifySend(props: {
   address: string;
   onChangeAddress: (a: string) => void;
-  amount: number;
-  onChangeAmount: (a: number) => void;
+  amount: bigint;
+  onChangeAmount: (a: bigint) => void;
   onContinue: () => void;
 }) {
   const validAddress = isValidAddress(props.address);
-  const validAmount = props.amount > 0;
+  const validAmount = props.amount > BigInt(0);
   const isValid = validAddress && validAmount;
 
   return (
@@ -96,12 +96,12 @@ function SpecifySend(props: {
             label="Amount"
             type="number"
             value={
-              props.amount === 0 ? "" : (props.amount / FCL_UNIT).toString()
+              props.amount === BigInt(0)
+                ? ""
+                : (props.amount / FCL_UNIT).toString()
             }
             onChange={(e) => {
-              props.onChangeAmount(
-                Math.floor(Number(e.target.value) * FCL_UNIT),
-              );
+              props.onChangeAmount(BigInt(e.target.value) * FCL_UNIT);
             }}
           />
         </HorizontalContainer>
@@ -136,7 +136,7 @@ function isValidAddress(address: string) {
 
 function ConfirmSend(props: {
   address: string;
-  amount: number;
+  amount: bigint;
   onConfirm: () => void;
   onCancel: () => void;
   loading: boolean;
