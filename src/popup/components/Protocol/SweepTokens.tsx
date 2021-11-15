@@ -14,7 +14,7 @@ import {
 
 import { getProtocolService } from "@services/Factory";
 
-const FCL_UNIT = 10 ** 12;
+const FCL_UNIT = BigInt(10 ** 12);
 
 export function SweepTokens(props: { onFinish: () => void }) {
   const [page, setPage] = useState<JSX.Element | null>(null);
@@ -55,7 +55,7 @@ function SpecifyFrom(props: {
   const amount = balance
     .map((b) => {
       if (b == null) return "?";
-      return (b.free.toNumber() / FCL_UNIT).toString();
+      return (b.free.toBigInt() / FCL_UNIT).toString();
     })
     .unwrapOrDefault("?");
 
