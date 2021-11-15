@@ -70,9 +70,9 @@ function SpecifySend(props: {
   onChangeAmount: (a: bigint) => void;
   onContinue: () => void;
 }) {
-  const validAddress = isValidAddress(props.address);
+  const addressError = getAddressError(props.address);
   const validAmount = props.amount > BigInt(0);
-  const isValid = validAddress && validAmount;
+  const isValid = addressError == null && validAmount;
 
   return (
     <ScreenContainer>
@@ -84,11 +84,7 @@ function SpecifySend(props: {
           <Input
             label="Destination"
             value={props.address}
-            error={
-              validAddress || props.address.length === 0
-                ? undefined
-                : "Invalid address"
-            }
+            error={props.address.length === 0 ? undefined : addressError}
             spellCheck="false"
             onChange={(e) => props.onChangeAddress(e.target.value)}
           />
@@ -123,6 +119,15 @@ function SpecifySend(props: {
       </VerticalSequence>
     </ScreenContainer>
   );
+}
+
+function getAddressError(address: string): string | undefined {
+  const isEthAddress = address.startsWith("0x");
+  if (isEthAddress) return "Can only send to Substrate addresses (5FcL...)";
+
+  if (!isValidAddress(address)) return "Invalid address";
+
+  return;
 }
 
 function isValidAddress(address: string) {
