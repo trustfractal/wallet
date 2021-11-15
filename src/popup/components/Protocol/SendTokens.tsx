@@ -96,12 +96,12 @@ function SpecifySend(props: {
             label="Amount"
             type="number"
             value={
-              props.amount === BigInt(0) ? "" : (props.amount / FCL_UNIT).toString()
+              props.amount === BigInt(0)
+                ? ""
+                : (props.amount / FCL_UNIT).toString()
             }
             onChange={(e) => {
-              props.onChangeAmount(
-                BigInt(e.target.value) * FCL_UNIT,
-              );
+              props.onChangeAmount(BigInt(e.target.value) * FCL_UNIT);
             }}
           />
         </HorizontalContainer>

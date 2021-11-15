@@ -208,7 +208,10 @@ export class ProtocolService {
     return signer;
   }
 
-  async sendToAddress(address: string, amount: number|bigint): Promise<string> {
+  async sendToAddress(
+    address: string,
+    amount: number | bigint,
+  ): Promise<string> {
     const api = await this.api;
     const txn = api.tx.balances.transfer(address, amount);
     const watcher = TxnWatcher.signAndSend(txn as any, this.requireSigner());
@@ -227,15 +230,19 @@ export class ProtocolService {
       const signer = this.createSigner(mnemonic);
       const balance = (await this.getBalance(signer.address)).free.toBigInt();
 
-      const prospectiveTxn = api.tx.balances.transfer(this.address(), balance);
-      const fee = (await prospectiveTxn.paymentInfo(signer)).partialFee;
+      const fee = (
+        await api.tx.balances
+          .transfer(this.address(), balance)
+          .paymentInfo(signer)
+      ).partialFee;
 
-      const txn = api.tx.balances.transfer(this.address(), balance - fee.toBigInt());
-      const { hash } = await TxnWatcher.signAndSend(
-        txn as any,
-        signer,
-        { fee } as any
-      ).inBlock();
+      const txn = api.tx.balances.transfer(
+        this.address(),
+        balance - fee.toBigInt(),
+      );
+      const { hash } = await TxnWatcher.signAndSend(txn as any, signer, {
+        fee,
+      } as any).inBlock();
       return hash;
     });
   }
