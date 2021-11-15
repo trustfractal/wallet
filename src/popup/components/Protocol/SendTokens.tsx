@@ -84,9 +84,7 @@ function SpecifySend(props: {
           <Input
             label="Destination"
             value={props.address}
-            error={
-              props.address.length === 0 ? undefined : addressError
-            }
+            error={props.address.length === 0 ? undefined : addressError}
             spellCheck="false"
             onChange={(e) => props.onChangeAddress(e.target.value)}
           />
@@ -123,9 +121,9 @@ function SpecifySend(props: {
   );
 }
 
-function getAddressError(address: string): string|undefined {
+function getAddressError(address: string): string | undefined {
   const isEthAddress = address.startsWith("0x");
-  if (isEthAddress) return "Can only send to Substrate addresses (5FcL...)"
+  if (isEthAddress) return "Can only send to Substrate addresses (5FcL...)";
 
   if (!isValidAddress(address)) return "Invalid address";
 
