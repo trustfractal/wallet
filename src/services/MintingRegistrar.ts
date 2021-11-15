@@ -13,21 +13,30 @@ export class MintingRegistrar {
   ) {}
 
   async maybeTryRegister() {
-    const lastCheck = await this.storage.getItem(this.key("last_check"));
     const now = new Date().getTime() / 1000;
-    const shouldCheck =
-      lastCheck == null ||
-      now > parseInt(lastCheck) + this.statusCheckSleepSeconds;
-    if (!shouldCheck) return;
 
-    return await this.tryRegister(now);
+    return await this.tryRegister(now, async () => {
+      const lastCheck = await this.storage.getItem(this.key("last_check"));
+      const shouldCheck =
+        lastCheck == null ||
+        now > parseInt(lastCheck) + this.statusCheckSleepSeconds;
+      return shouldCheck;
+    });
   }
 
-  async tryRegister(maybeNow?: number) {
+  async tryRegister(
+    maybeNow?: number,
+    shouldContinue?: () => Promise<boolean>,
+  ) {
+    if (shouldContinue && !(await shouldContinue())) return;
     const now = maybeNow ?? new Date().getTime() / 1000;
 
     try {
       await withLock(this.storage, this.key("lock"), async () => {
+        // Another "thread" may have registered between our first check and when
+        // this acquired the lock.
+        if (shouldContinue && !(await shouldContinue())) return;
+
         try {
           const protocol = await getProtocolService();
           await protocol.ensureIdentityRegistered();
