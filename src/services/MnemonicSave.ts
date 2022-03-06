@@ -21,16 +21,13 @@ export class MnemonicSave {
   }
 
   checkPhrase(phrase: string): boolean {
-    console.log("checkPhrase with - ", phrase);
     let result = false;
     if (this.mnemonicArr[this.counter] === phrase) {
-      console.log("correct phrase");
       this.counter++;
       result = true;
     }
 
     if (this.checked()) {
-      console.log("mnemonic checked");
       this.checkMnemonic();
       return true;
     }
