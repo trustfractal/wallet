@@ -1,18 +1,15 @@
-import { Storage } from '@utils/StorageArray';
+import { Storage } from "@utils/StorageArray";
 
 export class MnemonicSave {
-  public mnemonicArr: string[]
-  private counter: number
-  constructor(
-    private readonly storage: Storage,
-    mnemonic?: string,
-  ) {
-      if (mnemonic) {
-        this.mnemonicArr = mnemonic.split(' ');
-      } else {
-        this.mnemonicArr = [];
-      }
-      this.counter = 0;
+  public mnemonicArr: string[];
+  private counter: number;
+  constructor(private readonly storage: Storage, mnemonic?: string) {
+    if (mnemonic) {
+      this.mnemonicArr = mnemonic.split(" ");
+    } else {
+      this.mnemonicArr = [];
+    }
+    this.counter = 0;
   }
 
   async isMnemonicSaved() {
@@ -24,19 +21,19 @@ export class MnemonicSave {
   }
 
   checkPhrase(phrase: string): boolean {
-      console.log('checkPhrase with - ', phrase);
-      let result = false;
-      if (this.mnemonicArr[this.counter] === phrase) {
-        console.log('correct phrase');
-        this.counter++;
-        result = true;
-      }
+    console.log("checkPhrase with - ", phrase);
+    let result = false;
+    if (this.mnemonicArr[this.counter] === phrase) {
+      console.log("correct phrase");
+      this.counter++;
+      result = true;
+    }
 
-      if (this.checked()) {
-          console.log('mnemonic checked');
-          this.checkMnemonic();
-          return true;
-      }
+    if (this.checked()) {
+      console.log("mnemonic checked");
+      this.checkMnemonic();
+      return true;
+    }
 
     return result;
   }
@@ -50,6 +47,6 @@ export class MnemonicSave {
   }
 
   async checkMnemonic() {
-        await this.storage.setItem(this.setupKey(), JSON.stringify(true));
+    await this.storage.setItem(this.setupKey(), JSON.stringify(true));
   }
 }

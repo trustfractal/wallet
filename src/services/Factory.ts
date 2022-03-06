@@ -72,7 +72,7 @@ export function getProtocolService(mnemonic?: string) {
         if (mnemonic) {
           getProtocolService().signer =
             ProtocolService.signerFromMnemonic(mnemonic);
-          getMnemonicSave().mnemonicArr = mnemonic.split(' ');
+          getMnemonicSave().mnemonicArr = mnemonic.split(" ");
         }
       });
   }
@@ -144,10 +144,7 @@ export function getProtocolOptIn() {
 let extensionSetup: MnemonicSave;
 export function getMnemonicSave(mnemonic?: string) {
   if (extensionSetup === undefined) {
-    extensionSetup = new MnemonicSave(
-      getStorageService(),
-      mnemonic
-    );
+    extensionSetup = new MnemonicSave(getStorageService(), mnemonic);
   }
   return extensionSetup;
 }

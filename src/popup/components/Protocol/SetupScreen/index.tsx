@@ -12,7 +12,6 @@ import {
 
 const RedDiv = styled.div`
   color: var(--c-red);
-
 `;
 
 export function SetupSuccess({
@@ -30,7 +29,9 @@ export function SetupSuccess({
 
       <Subtitle>This is your private key:</Subtitle>
       <Subtitle>
-        <strong><RedDiv>{mnemonic}</RedDiv></strong>
+        <strong>
+          <RedDiv>{mnemonic}</RedDiv>
+        </strong>
       </Subtitle>
       <Subtitle>
         Store it somewhere safe. You will need it to recover your funds.
