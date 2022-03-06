@@ -2,11 +2,10 @@ import {
   VerticalSequence,
   Cta,
   Title,
-  Subsubtitle,
+  Subtitle
 } from "@popup/components/Protocol/common";
 import React from "react";
 import styled from "styled-components";
-import Subtitle from "../common/Subtitle";
 
 const ButtonContainer = styled.div`
   width: 100%;
