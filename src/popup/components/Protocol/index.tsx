@@ -3,12 +3,14 @@ import { mnemonicGenerate } from "@polkadot/util-crypto";
 
 import { useLoadedState } from "@utils/ReactHooks";
 import { getProtocolOptIn } from "@services/Factory";
+import { getMnemonicSave } from '@services/Factory';
 import {
   CatfishServiceError,
   ErrorCode,
 } from "@services/CatfishService/Errors";
 import TopComponent from "@popup/components/common/TopComponent";
 
+import { MnemonicSavedCheck } from './MnemonicSavedCheck';
 import Loading from "@popup/components/Loading";
 import DataScreen from "./DataScreen";
 import { OptInForm } from "./OptInForm";
@@ -22,6 +24,8 @@ function ProtocolState() {
   const completedLiveness = useLoadedState(() =>
     getProtocolOptIn().hasCompletedLiveness(),
   );
+
+  const mnemonicSaved = useLoadedState(() => getMnemonicSave().isMnemonicSaved());
 
   const handleError = (err: Error, retry: () => void) => {
     console.error(err);
@@ -47,7 +51,7 @@ function ProtocolState() {
       await getProtocolOptIn().optIn(mnemonic);
       serviceOptedIn.reload();
       completedLiveness.reload();
-
+      getMnemonicSave().mnemonicArr = mnemonic.split(' ');
       setPageOverride(
         <SetupSuccess
           mnemonic={mnemonic}
@@ -58,6 +62,17 @@ function ProtocolState() {
       handleError(e, () => optInWithMnemonic(mnemonic));
     }
   };
+
+  const mnemonicCheck = (phase: string): boolean => {
+    const result = getMnemonicSave().checkPhrase(phase);
+    if (getMnemonicSave().checked()) {
+      mnemonicSaved.reload();
+    }
+    return result;
+  };
+  const skip = () => {
+    getMnemonicSave().checkMnemonic().then(() => { mnemonicSaved.reload(); });
+  }
 
   const doLiveness = async () => {
     try {
@@ -79,6 +94,18 @@ function ProtocolState() {
   if (!serviceOptedIn.isLoaded) return <Loading />;
   if (!serviceOptedIn.value) {
     return <OptInForm onOptIn={() => optInWithMnemonic()} />;
+  }
+
+  if (!mnemonicSaved.isLoaded) return <Loading />;
+  if (!mnemonicSaved.value) {
+    const mnemonicArr = getMnemonicSave().getMnemonicArr().slice();
+    const shuffled = mnemonicArr.sort(() => Math.random() - 0.5)
+    return (
+      <MnemonicSavedCheck
+        skip={skip}
+        checkPhase={mnemonicCheck}
+        mnemonic={shuffled} />
+    );
   }
 
   if (!completedLiveness.isLoaded) return <Loading />;

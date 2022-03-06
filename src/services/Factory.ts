@@ -5,6 +5,7 @@ import { MaguroService } from "@services/MaguroService";
 import { MegalodonService } from "@services/MegalodonService";
 import { CatfishService } from "@services/CatfishService";
 import { MintingRegistrar } from "@services/MintingRegistrar";
+import { MnemonicSave } from "@services/MnemonicSave";
 import { ProtocolOptIn } from "@services/ProtocolOptIn";
 import { ProtocolService } from "@services/ProtocolService";
 import types from "@services/ProtocolService/types";
@@ -71,6 +72,7 @@ export function getProtocolService(mnemonic?: string) {
         if (mnemonic) {
           getProtocolService().signer =
             ProtocolService.signerFromMnemonic(mnemonic);
+          getMnemonicSave().mnemonicArr = mnemonic.split(' ');
         }
       });
   }
@@ -137,6 +139,17 @@ export function getProtocolOptIn() {
     });
   }
   return protocolOptIn;
+}
+
+let extensionSetup: MnemonicSave;
+export function getMnemonicSave(mnemonic?: string) {
+  if (extensionSetup === undefined) {
+    extensionSetup = new MnemonicSave(
+      getStorageService(),
+      mnemonic
+    );
+  }
+  return extensionSetup;
 }
 
 let userAlerts: UserAlerts;
