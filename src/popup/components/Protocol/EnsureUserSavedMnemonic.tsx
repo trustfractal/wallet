@@ -2,11 +2,11 @@ import {
   VerticalSequence,
   Cta,
   Title,
-  Subtitle
+  Subtitle,
 } from "@popup/components/Protocol/common";
 import React from "react";
 import styled from "styled-components";
-
+import { getMnemonicSave } from "@services/Factory";
 const ButtonContainer = styled.div`
   width: 100%;
   display: grid;
@@ -36,23 +36,22 @@ const Button = styled.button`
 `;
 
 interface CheckButton {
+  word: string;
   disable: boolean;
   setDisable: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function MnemonicSavedCheck(props: {
-  skip: () => void;
-  checkPhase: (phase: string) => boolean;
-  mnemonic: string[];
-}) {
-  const buttonMap: { [key: string]: CheckButton } = {};
-  for (const phase of props.mnemonic) {
+export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
+  const buttons: CheckButton[] = [];
+  const mnemonic = getMnemonicSave().getShuffledMnemonic();
+  for (const word of mnemonic) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [disable, setDisable] = React.useState(false);
-    buttonMap[phase] = {
+    buttons.push({
+      word,
       disable,
       setDisable,
-    };
+    });
   }
 
   return (
@@ -60,24 +59,35 @@ export function MnemonicSavedCheck(props: {
       <Title>Please click your mnemonic in the correct order</Title>
 
       <ButtonContainer>
-        {props.mnemonic.map((phrase) => {
+        {buttons.map((button) => {
           return (
             <Button
-              key={phrase}
-              disabled={buttonMap[phrase].disable}
+              key={button.word}
+              disabled={button.disable}
               onClick={() => {
-                const check = props.checkPhase(phrase);
-                buttonMap[phrase].setDisable(check);
+                const check = getMnemonicSave().checkWord(button.word);
+                button.setDisable(check);
+                if (getMnemonicSave().checked()) {
+                  getMnemonicSave().saveMnemonic();
+                  props.onComplete();
+                }
               }}
             >
-              {phrase}
+              {button.word}
             </Button>
           );
         })}
       </ButtonContainer>
 
       <Subtitle>I understand the importance of saving my mnemonic</Subtitle>
-      <Cta onClick={props.skip}>Skip</Cta>
+      <Cta
+        onClick={() => {
+          getMnemonicSave().saveMnemonic();
+          props.onComplete();
+        }}
+      >
+        Skip
+      </Cta>
     </VerticalSequence>
   );
 }

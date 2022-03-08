@@ -10,7 +10,7 @@ import {
 } from "@services/CatfishService/Errors";
 import TopComponent from "@popup/components/common/TopComponent";
 
-import { MnemonicSavedCheck } from "./MnemonicSavedCheck";
+import { EnsureUserSavedMnemonic } from "./EnsureUserSavedMnemonic";
 import Loading from "@popup/components/Loading";
 import DataScreen from "./DataScreen";
 import { OptInForm } from "./OptInForm";
@@ -65,21 +65,6 @@ function ProtocolState() {
     }
   };
 
-  const mnemonicCheck = (phase: string): boolean => {
-    const result = getMnemonicSave().checkPhrase(phase);
-    if (getMnemonicSave().checked()) {
-      mnemonicSaved.reload();
-    }
-    return result;
-  };
-  const skip = () => {
-    getMnemonicSave()
-      .checkMnemonic()
-      .then(() => {
-        mnemonicSaved.reload();
-      });
-  };
-
   const doLiveness = async () => {
     try {
       setPageOverride(<SetupInProgress onRetry={doLiveness} />);
@@ -102,17 +87,10 @@ function ProtocolState() {
     return <OptInForm onOptIn={() => optInWithMnemonic()} />;
   }
 
+  const onComplete = () => mnemonicSaved.reload();
   if (!mnemonicSaved.isLoaded) return <Loading />;
   if (!mnemonicSaved.value) {
-    const mnemonicArr = getMnemonicSave().getMnemonicArr().slice();
-    const shuffled = mnemonicArr.sort(() => Math.random() - 0.5);
-    return (
-      <MnemonicSavedCheck
-        skip={skip}
-        checkPhase={mnemonicCheck}
-        mnemonic={shuffled}
-      />
-    );
+    return <EnsureUserSavedMnemonic onComplete={onComplete} />;
   }
 
   if (!completedLiveness.isLoaded) return <Loading />;

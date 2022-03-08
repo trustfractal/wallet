@@ -141,12 +141,12 @@ export function getProtocolOptIn() {
   return protocolOptIn;
 }
 
-let extensionSetup: MnemonicSave;
-export function getMnemonicSave(mnemonic?: string) {
-  if (extensionSetup === undefined) {
-    extensionSetup = new MnemonicSave(getStorageService(), mnemonic);
+let mnemonicSave: MnemonicSave;
+export function getMnemonicSave() {
+  if (mnemonicSave === undefined) {
+    mnemonicSave = new MnemonicSave(getStorageService());
   }
-  return extensionSetup;
+  return mnemonicSave;
 }
 
 let userAlerts: UserAlerts;
