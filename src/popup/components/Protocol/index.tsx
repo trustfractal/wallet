@@ -25,9 +25,7 @@ function ProtocolState() {
     getProtocolOptIn().hasCompletedLiveness(),
   );
 
-  const mnemonicSaved = useLoadedState(() =>
-    getMnemonicSave().isMnemonicSaved(),
-  );
+  const mnemonicSaved = useLoadedState(() => getMnemonicSave().checkNeeded());
 
   const handleError = (err: Error, retry: () => void) => {
     console.error(err);
@@ -45,6 +43,7 @@ function ProtocolState() {
 
   const optInWithMnemonic = async (mnemonic?: string) => {
     mnemonic = mnemonic || mnemonicGenerate();
+    await getMnemonicSave().addCheckNeeded();
     try {
       setPageOverride(
         <SetupInProgress onRetry={() => optInWithMnemonic(mnemonic)} />,
@@ -87,9 +86,12 @@ function ProtocolState() {
     return <OptInForm onOptIn={() => optInWithMnemonic()} />;
   }
 
-  const onComplete = () => mnemonicSaved.reload();
+  const onComplete = () => {
+    getMnemonicSave().removeCheckNeeded();
+    mnemonicSaved.reload();
+  };
   if (!mnemonicSaved.isLoaded) return <Loading />;
-  if (!mnemonicSaved.value) {
+  if (mnemonicSaved.value) {
     return <EnsureUserSavedMnemonic onComplete={onComplete} />;
   }
 

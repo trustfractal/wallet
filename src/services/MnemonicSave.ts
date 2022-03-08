@@ -10,8 +10,14 @@ export class MnemonicSave {
     this.counter = 0;
   }
 
-  async isMnemonicSaved() {
+  async checkNeeded() {
     return await this.storage.hasItem(this.setupKey());
+  }
+  async addCheckNeeded() {
+    await this.storage.setItem(this.setupKey(), JSON.stringify(true));
+  }
+  async removeCheckNeeded() {
+    await this.storage.removeItem(this.setupKey());
   }
 
   private setupKey() {
@@ -38,9 +44,5 @@ export class MnemonicSave {
       this.shuffledMnemonic = mnemonicArr.sort();
     }
     return this.shuffledMnemonic;
-  }
-
-  async saveMnemonic() {
-    await this.storage.setItem(this.setupKey(), JSON.stringify(true));
   }
 }

@@ -68,7 +68,6 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
                 const check = getMnemonicSave().checkWord(button.word);
                 button.setDisable(check);
                 if (getMnemonicSave().checked()) {
-                  getMnemonicSave().saveMnemonic();
                   props.onComplete();
                 }
               }}
@@ -82,7 +81,6 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
       <Subtitle>I understand the importance of saving my mnemonic</Subtitle>
       <Cta
         onClick={() => {
-          getMnemonicSave().saveMnemonic();
           props.onComplete();
         }}
       >
