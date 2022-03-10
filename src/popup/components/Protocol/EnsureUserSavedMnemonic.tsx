@@ -61,10 +61,10 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
       <Title>Please enter your mnemonic</Title>
 
       <ButtonContainer>
-        {buttons.map((button) => {
+        {buttons.map((button, index) => {
           return (
             <Button
-              key={button.word}
+              key={button.word + index}
               disabled={button.isDisabled}
               onClick={() => {
                 const check = getMnemonicSave().checkWord(button.word);
