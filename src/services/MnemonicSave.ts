@@ -1,32 +1,48 @@
 import { Storage } from "@utils/StorageArray";
 
+const CHECK_NEEDED_KEY = "mnemonic-check-needed";
+
+interface WordChecked {
+  word: string;
+  isDisabled: boolean;
+}
 export class MnemonicSave {
   public mnemonicArr: string[];
-  public shuffledMnemonic: string[];
+  public sortedMnemonic: WordChecked[];
   private counter: number;
   constructor(private readonly storage: Storage) {
     this.mnemonicArr = [];
-    this.shuffledMnemonic = [];
+    this.sortedMnemonic = [];
     this.counter = 0;
   }
 
   async checkNeeded() {
-    return await this.storage.hasItem(this.setupKey());
+    return await this.storage.hasItem(CHECK_NEEDED_KEY);
   }
-  async addCheckNeeded() {
-    await this.storage.setItem(this.setupKey(), JSON.stringify(true));
+  async setCheckNeeded() {
+    await this.storage.setItem(CHECK_NEEDED_KEY, JSON.stringify(true));
   }
-  async removeCheckNeeded() {
-    await this.storage.removeItem(this.setupKey());
+  async setCheckNotNeeded() {
+    await this.storage.removeItem(CHECK_NEEDED_KEY);
   }
 
-  private setupKey() {
-    return `mnemonic-saved`;
+  init() {
+    this.counter = 0;
+  }
+
+  setMnemonic(mnemonic: string) {
+    this.mnemonicArr = mnemonic.split(" ");
   }
 
   checkWord(word: string): boolean {
     let result = false;
     if (this.mnemonicArr[this.counter] === word) {
+      let wordChecked = this.sortedMnemonic.find((wordChecked) => {
+        return wordChecked.word === word;
+      });
+      if (wordChecked) {
+        wordChecked.isDisabled = true;
+      }
       this.counter++;
       result = true;
     }
@@ -38,11 +54,13 @@ export class MnemonicSave {
     return this.counter >= this.mnemonicArr.length;
   }
 
-  getShuffledMnemonic(): string[] {
-    if (this.shuffledMnemonic.length === 0) {
+  getSortedMnemonic(): WordChecked[] {
+    if (this.sortedMnemonic.length === 0) {
       const mnemonicArr = this.mnemonicArr.slice();
-      this.shuffledMnemonic = mnemonicArr.sort();
+      this.sortedMnemonic = mnemonicArr.sort().map((word) => {
+        return { word, isDisabled: false };
+      });
     }
-    return this.shuffledMnemonic;
+    return this.sortedMnemonic;
   }
 }

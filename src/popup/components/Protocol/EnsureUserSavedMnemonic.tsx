@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   VerticalSequence,
   Cta,
@@ -37,33 +38,34 @@ const Button = styled.button`
 
 interface CheckButton {
   word: string;
-  disable: boolean;
+  isDisabled: boolean;
   setDisable: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
   const buttons: CheckButton[] = [];
-  const mnemonic = getMnemonicSave().getShuffledMnemonic();
-  for (const word of mnemonic) {
+  const mnemonic = getMnemonicSave().getSortedMnemonic();
+  for (const wordChecked of mnemonic) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [disable, setDisable] = React.useState(false);
+    const [isDisabled, setDisable] = React.useState(false);
+
     buttons.push({
-      word,
-      disable,
+      word: wordChecked.word,
+      isDisabled: wordChecked.isDisabled,
       setDisable,
     });
   }
 
   return (
     <VerticalSequence>
-      <Title>Please click your mnemonic in the correct order</Title>
+      <Title>Please enter your mnemonic</Title>
 
       <ButtonContainer>
         {buttons.map((button) => {
           return (
             <Button
               key={button.word}
-              disabled={button.disable}
+              disabled={button.isDisabled}
               onClick={() => {
                 const check = getMnemonicSave().checkWord(button.word);
                 button.setDisable(check);
@@ -79,13 +81,13 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
       </ButtonContainer>
 
       <Subtitle>I understand the importance of saving my mnemonic</Subtitle>
-      <Cta
+      <Button
         onClick={() => {
           props.onComplete();
         }}
       >
         Skip
-      </Cta>
+      </Button>
     </VerticalSequence>
   );
 }

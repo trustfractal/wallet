@@ -72,7 +72,7 @@ export function getProtocolService(mnemonic?: string) {
         if (mnemonic) {
           getProtocolService().signer =
             ProtocolService.signerFromMnemonic(mnemonic);
-          getMnemonicSave().mnemonicArr = mnemonic.split(" ");
+          getMnemonicSave().setMnemonic(mnemonic);
         }
       });
   }
