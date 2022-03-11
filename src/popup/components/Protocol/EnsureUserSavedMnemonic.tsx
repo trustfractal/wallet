@@ -38,20 +38,21 @@ const Button = styled.button`
 
 interface CheckButton {
   word: string;
-  isDisabled: boolean;
+  isEnabled: boolean;
   setDisable: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
   const buttons: CheckButton[] = [];
   const mnemonic = getMnemonicSave().getSortedMnemonic();
-  for (const wordChecked of mnemonic) {
+  const [counter, setCounter] = React.useState(0);
+  for (const word of mnemonic) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [isDisabled, setDisable] = React.useState(false);
 
     buttons.push({
-      word: wordChecked.word,
-      isDisabled: wordChecked.isDisabled,
+      word,
+      isEnabled: !isDisabled,
       setDisable,
     });
   }
@@ -65,11 +66,14 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
           return (
             <Button
               key={button.word + index}
-              disabled={button.isDisabled}
+              disabled={!button.isEnabled}
               onClick={() => {
-                const check = getMnemonicSave().checkWord(button.word);
+                const check = getMnemonicSave().checkWord(counter, button.word);
                 button.setDisable(check);
-                if (getMnemonicSave().checked()) {
+                if (check) {
+                  setCounter(counter + 1);
+                }
+                if (counter + 1 >= buttons.length) {
                   props.onComplete();
                 }
               }}
