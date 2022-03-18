@@ -39,21 +39,25 @@ const Button = styled.button`
 interface CheckButton {
   word: string;
   isEnabled: boolean;
-  setDisable: React.Dispatch<React.SetStateAction<boolean>>;
+  setEnabled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
   const buttons: CheckButton[] = [];
-  const mnemonic = getMnemonicSave().getSortedMnemonic();
+  const mnemonic = getMnemonicSave().getMnemonic();
+  const [mnemonicArr, _setMnemonicArr] = React.useState(mnemonic.split(" "));
+  const [sortedMnemonic, _setSortedMnemonic] = React.useState(
+    mnemonic.split(" ").sort(),
+  );
   const [counter, setCounter] = React.useState(0);
-  for (const word of mnemonic) {
+  for (const word of sortedMnemonic) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [isDisabled, setDisable] = React.useState(false);
+    const [isEnabled, setEnabled] = React.useState(true);
 
     buttons.push({
       word,
-      isEnabled: !isDisabled,
-      setDisable,
+      isEnabled,
+      setEnabled,
     });
   }
 
@@ -68,8 +72,8 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
               key={button.word + index}
               disabled={!button.isEnabled}
               onClick={() => {
-                const check = getMnemonicSave().checkWord(counter, button.word);
-                button.setDisable(check);
+                const check = mnemonicArr[counter] === button.word;
+                button.setEnabled(!check);
                 if (check) {
                   setCounter(counter + 1);
                 }

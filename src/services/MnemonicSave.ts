@@ -3,11 +3,9 @@ import { Storage } from "@utils/StorageArray";
 const CHECK_NEEDED_KEY = "mnemonic-check-needed";
 
 export class MnemonicSave {
-  public mnemonicArr: string[];
-  public sortedMnemonic: string[];
+  public mnemonic: string;
   constructor(private readonly storage: Storage) {
-    this.mnemonicArr = [];
-    this.sortedMnemonic = [];
+    this.mnemonic = "";
   }
 
   async checkNeeded() {
@@ -21,18 +19,10 @@ export class MnemonicSave {
   }
 
   setMnemonic(mnemonic: string) {
-    this.mnemonicArr = mnemonic.split(" ");
+    this.mnemonic = mnemonic;
   }
 
-  checkWord(counter: number, word: string): boolean {
-    return this.mnemonicArr[counter] === word;
-  }
-
-  getSortedMnemonic(): string[] {
-    if (this.sortedMnemonic.length === 0) {
-      const mnemonicArr = this.mnemonicArr.slice();
-      this.sortedMnemonic = mnemonicArr.sort();
-    }
-    return this.sortedMnemonic;
+  getMnemonic() {
+    return this.mnemonic;
   }
 }
