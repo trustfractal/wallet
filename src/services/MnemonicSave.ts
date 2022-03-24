@@ -8,21 +8,13 @@ export class MnemonicSave {
     this.mnemonic = "";
   }
 
-  async checkNeeded() {
+  async challengeNeeded() {
     return await this.storage.hasItem(CHECK_NEEDED_KEY);
   }
-  async setCheckNeeded() {
+  async setChallengeNeeded() {
     await this.storage.setItem(CHECK_NEEDED_KEY, JSON.stringify(true));
   }
-  async setCheckNotNeeded() {
+  async setChallengeNotNeeded() {
     await this.storage.removeItem(CHECK_NEEDED_KEY);
-  }
-
-  setMnemonic(mnemonic: string) {
-    this.mnemonic = mnemonic;
-  }
-
-  getMnemonic() {
-    return this.mnemonic;
   }
 }

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   VerticalSequence,
-  Cta,
   Title,
   Subtitle,
+  ClickableText,
 } from "@popup/components/Protocol/common";
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
-import { getMnemonicSave } from "@services/Factory";
+import { getProtocolOptIn } from "@services/Factory";
 const ButtonContainer = styled.div`
   width: 100%;
   display: grid;
@@ -39,63 +39,79 @@ const Button = styled.button`
 interface CheckButton {
   word: string;
   isEnabled: boolean;
-  setEnabled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
-  const buttons: CheckButton[] = [];
-  const mnemonic = getMnemonicSave().getMnemonic();
-  const [mnemonicArr, _setMnemonicArr] = React.useState(mnemonic.split(" "));
-  const [sortedMnemonic, _setSortedMnemonic] = React.useState(
-    mnemonic.split(" ").sort(),
+const WordButton = (props: {
+  word: string;
+  isEnabled: boolean;
+  onClick: () => void;
+}) => {
+  return (
+    <Button disabled={!props.isEnabled} onClick={props.onClick}>
+      {props.word}
+    </Button>
   );
-  const [counter, setCounter] = React.useState(0);
-  for (const word of sortedMnemonic) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [isEnabled, setEnabled] = React.useState(true);
+};
 
-    buttons.push({
-      word,
-      isEnabled,
-      setEnabled,
-    });
-  }
+export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
+  let [buttons, setButtons] = React.useState<CheckButton[]>([]);
+  const [mnemonicArr, setMnemonicArr] = React.useState<string[]>([]);
+
+  const [counter, setCounter] = React.useState(0);
+
+  useEffect(() => {
+    async function getMnemonic() {
+      const mnemonic = await getProtocolOptIn().getMnemonic();
+      setMnemonicArr((mnemonic as string).split(" "));
+      const sortedMnemonic = (mnemonic as string).split(" ").sort();
+      const tempButtons = [];
+      for (const word of sortedMnemonic) {
+        tempButtons.push({
+          word,
+          isEnabled: true,
+        });
+      }
+
+      setButtons(tempButtons);
+    }
+
+    getMnemonic();
+  }, []);
 
   return (
     <VerticalSequence>
       <Title>Please enter your mnemonic</Title>
 
       <ButtonContainer>
-        {buttons.map((button, index) => {
-          return (
-            <Button
-              key={button.word + index}
-              disabled={!button.isEnabled}
-              onClick={() => {
-                const check = mnemonicArr[counter] === button.word;
-                button.setEnabled(!check);
-                if (check) {
-                  setCounter(counter + 1);
-                }
-                if (counter + 1 >= buttons.length) {
-                  props.onComplete();
-                }
-              }}
-            >
-              {button.word}
-            </Button>
-          );
-        })}
+        {buttons.map((button: { word: string; isEnabled: boolean }, index) => (
+          <WordButton
+            onClick={() => {
+              const check = mnemonicArr[counter] === button.word;
+              setButtons([
+                ...buttons.slice(0, index),
+                { ...button, isEnabled: !check },
+                ...buttons.slice(index + 1),
+              ]);
+              if (check) {
+                setCounter(counter + 1);
+              }
+              if (counter + 1 >= buttons.length) {
+                props.onComplete();
+              }
+            }}
+            {...button}
+          />
+        ))}
       </ButtonContainer>
 
       <Subtitle>I understand the importance of saving my mnemonic</Subtitle>
-      <Button
+      <ClickableText
         onClick={() => {
           props.onComplete();
         }}
       >
         Skip
-      </Button>
+      </ClickableText>
     </VerticalSequence>
   );
 }
