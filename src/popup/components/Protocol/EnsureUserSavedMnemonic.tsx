@@ -54,7 +54,7 @@ const WordButton = (props: {
 };
 
 export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
-  let [buttons, setButtons] = React.useState<CheckButton[]>([]);
+  const [buttons, setButtons] = React.useState<CheckButton[]>([]);
   const [mnemonicArr, setMnemonicArr] = React.useState<string[]>([]);
 
   const [counter, setCounter] = React.useState(0);
@@ -64,15 +64,11 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
       const mnemonic = await getProtocolOptIn().getMnemonic();
       setMnemonicArr((mnemonic as string).split(" "));
       const sortedMnemonic = (mnemonic as string).split(" ").sort();
-      const tempButtons = [];
-      for (const word of sortedMnemonic) {
-        tempButtons.push({
-          word,
-          isEnabled: true,
-        });
-      }
-
-      setButtons(tempButtons);
+      setButtons(
+        sortedMnemonic.map((w) => {
+          return { word: w, isEnabled: true };
+        }),
+      );
     }
 
     getMnemonic();

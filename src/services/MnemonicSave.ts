@@ -8,7 +8,7 @@ export class MnemonicSave {
     this.mnemonic = "";
   }
 
-  async challengeNeeded() {
+  async isChallengeNeeded() {
     return await this.storage.hasItem(CHECK_NEEDED_KEY);
   }
   async setChallengeNeeded() {
