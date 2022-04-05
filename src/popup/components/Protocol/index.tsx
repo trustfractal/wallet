@@ -3,12 +3,14 @@ import { mnemonicGenerate } from "@polkadot/util-crypto";
 
 import { useLoadedState } from "@utils/ReactHooks";
 import { getProtocolOptIn } from "@services/Factory";
+import { getMnemonicSave } from "@services/Factory";
 import {
   CatfishServiceError,
   ErrorCode,
 } from "@services/CatfishService/Errors";
 import TopComponent from "@popup/components/common/TopComponent";
 
+import { EnsureUserSavedMnemonic } from "./EnsureUserSavedMnemonic";
 import Loading from "@popup/components/Loading";
 import DataScreen from "./DataScreen";
 import { OptInForm } from "./OptInForm";
@@ -21,6 +23,10 @@ function ProtocolState() {
   const serviceOptedIn = useLoadedState(() => getProtocolOptIn().isOptedIn());
   const completedLiveness = useLoadedState(() =>
     getProtocolOptIn().hasCompletedLiveness(),
+  );
+
+  const isChallengeNeeded = useLoadedState(() =>
+    getMnemonicSave().isChallengeNeeded(),
   );
 
   const handleError = (err: Error, retry: () => void) => {
@@ -39,6 +45,8 @@ function ProtocolState() {
 
   const optInWithMnemonic = async (mnemonic?: string) => {
     mnemonic = mnemonic || mnemonicGenerate();
+    await getMnemonicSave().setChallengeNeeded();
+    isChallengeNeeded.reload();
     try {
       setPageOverride(
         <SetupInProgress onRetry={() => optInWithMnemonic(mnemonic)} />,
@@ -47,7 +55,6 @@ function ProtocolState() {
       await getProtocolOptIn().optIn(mnemonic);
       serviceOptedIn.reload();
       completedLiveness.reload();
-
       setPageOverride(
         <SetupSuccess
           mnemonic={mnemonic}
@@ -79,6 +86,15 @@ function ProtocolState() {
   if (!serviceOptedIn.isLoaded) return <Loading />;
   if (!serviceOptedIn.value) {
     return <OptInForm onOptIn={() => optInWithMnemonic()} />;
+  }
+
+  const onComplete = () => {
+    getMnemonicSave().setChallengeNotNeeded();
+    isChallengeNeeded.reload();
+  };
+  if (!isChallengeNeeded.isLoaded) return <Loading />;
+  if (isChallengeNeeded.value) {
+    return <EnsureUserSavedMnemonic onComplete={onComplete} />;
   }
 
   if (!completedLiveness.isLoaded) return <Loading />;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import styled from "styled-components";
 import {
   Subtitle,
   Title,
@@ -8,6 +9,10 @@ import {
   IconNames,
   VerticalSequence,
 } from "@popup/components/Protocol/common";
+
+const RedDiv = styled.div`
+  color: var(--c-red);
+`;
 
 export function SetupSuccess({
   onContinue,
@@ -24,7 +29,9 @@ export function SetupSuccess({
 
       <Subtitle>This is your private key:</Subtitle>
       <Subtitle>
-        <strong>{mnemonic}</strong>
+        <strong>
+          <RedDiv>{mnemonic}</RedDiv>
+        </strong>
       </Subtitle>
       <Subtitle>
         Store it somewhere safe. You will need it to recover your funds.
