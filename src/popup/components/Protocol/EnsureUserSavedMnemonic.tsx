@@ -64,11 +64,7 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
       const mnemonic = await getProtocolOptIn().getMnemonic();
       setMnemonicArr((mnemonic as string).split(" "));
       const sortedMnemonic = (mnemonic as string).split(" ").sort();
-      setButtons(
-        sortedMnemonic.map((w) => {
-          return { word: w, isEnabled: true };
-        }),
-      );
+      setButtons(sortedMnemonic.map((w) => ({ word: w, isEnabled: true })));
     }
 
     getMnemonic();
