@@ -4,10 +4,13 @@ import {
   Title,
   Subtitle,
   ClickableText,
+  Cta,
 } from "@popup/components/Protocol/common";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import styled from "styled-components";
 import { getProtocolOptIn } from "@services/Factory";
+import { SetupSuccess } from "./SetupScreen";
+import { useState } from "react";
 const ButtonContainer = styled.div`
   width: 100%;
   display: grid;
@@ -19,6 +22,10 @@ const ButtonContainer = styled.div`
 `;
 
 const Button = styled.button`
+  &.ClickedWord {
+    opacity: 0.4;
+  }
+
   cursor: pointer;
   text-align: center;
   color: var(--c-white);
@@ -27,13 +34,14 @@ const Button = styled.button`
   padding: var(--s-10) var(--s-24);
   font-weight: bold;
   transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-  :disabled {
-    opacity: 0.4;
-    cursor: default;
-  }
   :hover {
     background: var(--c-dark-orange);
   }
+`;
+
+const TextArea = styled.textarea`
+  width: 100%;
+  height: var(--s-48);
 `;
 
 interface CheckButton {
@@ -47,28 +55,56 @@ const WordButton = (props: {
   onClick: () => void;
 }) => {
   return (
-    <Button disabled={!props.isEnabled} onClick={props.onClick}>
+    <Button
+      className={(() => {
+        return !props.isEnabled ? "ClickedWord" : "";
+      })()}
+      onClick={props.onClick}
+    >
       {props.word}
     </Button>
   );
 };
 
-export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
-  const [buttons, setButtons] = React.useState<CheckButton[]>([]);
-  const [mnemonicArr, setMnemonicArr] = React.useState<string[]>([]);
+const TextField = (props: { input: string }) => {
+  return <TextArea defaultValue={props.input} />;
+};
 
-  const [counter, setCounter] = React.useState(0);
+export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
+  const [pageOverride, setPageOverride] = useState<JSX.Element | null>(null);
+  const [buttons, setButtons] = useState<CheckButton[]>([]);
+  const [success, setSuccess] = useState(false);
+  const [mnemonic, setMnemonic] = useState("");
+  const [currentInput, setCurrentInput] = useState<string[]>([]);
 
   useEffect(() => {
     async function getMnemonic() {
-      const mnemonic = await getProtocolOptIn().getMnemonic();
-      setMnemonicArr((mnemonic as string).split(" "));
-      const sortedMnemonic = (mnemonic as string).split(" ").sort();
+      setMnemonic((await getProtocolOptIn().getMnemonic()) as string);
+      const sortedMnemonic = mnemonic.split(" ").sort();
       setButtons(sortedMnemonic.map((w) => ({ word: w, isEnabled: true })));
+      setPageOverride(
+        <SetupSuccess
+          mnemonic={mnemonic as string}
+          onContinue={() => setPageOverride(null)}
+        />,
+      );
     }
 
     getMnemonic();
-  }, []);
+  }, [mnemonic]);
+
+  useEffect(() => {
+    if (
+      currentInput.length !== 0 &&
+      currentInput.join(" ").localeCompare(mnemonic) === 0
+    ) {
+      setSuccess(true);
+    }
+  }, [currentInput, mnemonic]);
+
+  if (pageOverride != null) {
+    return pageOverride;
+  }
 
   return (
     <VerticalSequence>
@@ -77,24 +113,51 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
       <ButtonContainer>
         {buttons.map((button: { word: string; isEnabled: boolean }, index) => (
           <WordButton
+            key={index}
             onClick={() => {
-              const check = mnemonicArr[counter] === button.word;
+              if (button.isEnabled) {
+                setCurrentInput((oldArray) => [...oldArray, button.word]);
+              } else {
+                setCurrentInput(
+                  currentInput.filter((item) => item !== button.word),
+                );
+              }
+
+              let isEnabled = !button.isEnabled;
               setButtons([
                 ...buttons.slice(0, index),
-                { ...button, isEnabled: !check },
+                { ...button, isEnabled },
                 ...buttons.slice(index + 1),
               ]);
-              if (check) {
-                setCounter(counter + 1);
-              }
-              if (counter + 1 >= buttons.length) {
-                props.onComplete();
-              }
             }}
             {...button}
           />
         ))}
       </ButtonContainer>
+
+      <TextField input={currentInput.join(" ")}></TextField>
+
+      <Cta
+        disabled={!success}
+        onClick={() => {
+          props.onComplete();
+        }}
+      >
+        Continue
+      </Cta>
+
+      <Cta
+        onClick={() => {
+          setPageOverride(
+            <SetupSuccess
+              mnemonic={mnemonic as string}
+              onContinue={() => setPageOverride(null)}
+            />,
+          );
+        }}
+      >
+        Back to mnemonic
+      </Cta>
 
       <Subtitle>I understand the importance of saving my mnemonic</Subtitle>
       <ClickableText

@@ -55,12 +55,7 @@ function ProtocolState() {
       await getProtocolOptIn().optIn(mnemonic);
       serviceOptedIn.reload();
       completedLiveness.reload();
-      setPageOverride(
-        <SetupSuccess
-          mnemonic={mnemonic}
-          onContinue={() => setPageOverride(null)}
-        />,
-      );
+      setPageOverride(null);
     } catch (e) {
       handleError(e, () => optInWithMnemonic(mnemonic));
     }
