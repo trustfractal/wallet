@@ -26,7 +26,6 @@ async function isWhitelisted() {
       { currentWindow: true, active: true },
       function (tabArray) {
         let currentUrl = new URL(tabArray[0].url as string);
-        console.log(currentUrl);
         resolve(WHITELISTED.includes(currentUrl.host));
       },
     );
