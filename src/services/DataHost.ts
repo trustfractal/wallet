@@ -34,9 +34,13 @@ export class DataHost {
 
     this.array().push(fact);
   }
-
-  private array() {
+  //TODO(melatron): make private
+  public array() {
     return new StorageArray(this.sensitive, this.key("facts"));
+  }
+
+  public length() {
+    return this.array().length();
   }
 
   public iter() {

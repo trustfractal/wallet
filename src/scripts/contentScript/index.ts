@@ -27,6 +27,8 @@ proxyConnection
   .proxy(ConnectionTypes.GET_VERIFICATION_REQUEST_BACKGROUND)
   .proxy(ConnectionTypes.SETUP_PLUGIN_BACKGROUND)
   .proxy(ConnectionTypes.VERIFY_CONNECTION_BACKGROUND)
+  .proxy(ConnectionTypes.GET_TOTAL_FACTS_COUNT)
+  .proxy(ConnectionTypes.GET_FACT)
   .reversedProxy(ConnectionTypes.GET_BACKEND_SESSIONS_INPAGE);
 
 backgroundConnection.invoke(ConnectionTypes.WEBPAGE_VIEW, [
