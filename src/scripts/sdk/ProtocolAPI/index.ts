@@ -11,10 +11,12 @@ class FactIterator implements AsyncIterator<any> {
   private i: number = 0;
   private factCount: Promise<number>;
   private factsAPI: FactsAPI;
+
   constructor(factsAPI: FactsAPI) {
     this.factsAPI = factsAPI;
     this.factCount = factsAPI.totalFacts();
   }
+
   async next(): Promise<any> {
     if (this.i >= (await this.factCount)) {
       return { done: true };
@@ -28,6 +30,7 @@ class FactIterator implements AsyncIterator<any> {
 export class PageView implements IFact {
   timestampMs: number;
   url: string;
+
   constructor(url: string, timestampMs: number) {
     this.timestampMs = timestampMs;
     this.url = url;

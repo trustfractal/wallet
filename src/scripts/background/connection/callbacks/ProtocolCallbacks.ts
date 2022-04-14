@@ -6,7 +6,7 @@ import {
   getMintingRegistrar,
 } from "@services/Factory";
 
-const WHITELISTED: string[] = ["fractal-protocol-explorer.herokuapp.com"];
+const FACT_ACCESS_WHITELIST: string[] = ["explorer.fractalprotocol.com"];
 
 async function addWebpage([url]: [string]): Promise<void> {
   await getProtocolOptIn().checkOptIn();
@@ -20,13 +20,17 @@ async function addWebpage([url]: [string]): Promise<void> {
   await getMintingRegistrar().maybeTryRegister();
 }
 
-async function isWhitelisted() {
+async function isWhitelisted(): Promise<boolean> {
   return new Promise((resolve, reject) => {
     chrome.tabs.query(
       { currentWindow: true, active: true },
       function (tabArray) {
         let currentUrl = new URL(tabArray[0].url as string);
-        resolve(WHITELISTED.includes(currentUrl.host));
+        if (FACT_ACCESS_WHITELIST.includes(currentUrl.host)) {
+          resolve(true);
+        } else {
+          reject("Access denied.");
+        }
       },
     );
   });
