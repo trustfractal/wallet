@@ -20,14 +20,18 @@ async function addWebpage([url]: [string]): Promise<void> {
   await getMintingRegistrar().maybeTryRegister();
 }
 
-async function isWhitelisted(): Promise<boolean> {
+async function requireWhitelisted(): Promise<void> {
   return new Promise((resolve, reject) => {
     chrome.tabs.query(
       { currentWindow: true, active: true },
       function (tabArray) {
+        if (tabArray.length === 0) {
+          reject("No active tabs.");
+        }
+
         let currentUrl = new URL(tabArray[0].url as string);
         if (FACT_ACCESS_WHITELIST.includes(currentUrl.host)) {
-          resolve(true);
+          resolve();
         } else {
           reject("Access denied.");
         }
@@ -37,16 +41,12 @@ async function isWhitelisted(): Promise<boolean> {
 }
 
 async function getTotalFactsCount(): Promise<number> {
-  if (!(await isWhitelisted())) {
-    return 0;
-  }
+  await requireWhitelisted();
   return getDataHost().length();
 }
 
 async function getFact(index: number): Promise<IFact> {
-  if (!(await isWhitelisted())) {
-    return Promise.resolve({} as IFact);
-  }
+  await requireWhitelisted();
   return getDataHost().array().get(index);
 }
 const Callbacks = {

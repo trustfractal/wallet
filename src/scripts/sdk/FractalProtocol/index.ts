@@ -1,5 +1,5 @@
 import {
-  IFractalProtocolAPI,
+  IFractalProtocol,
   IFact,
   IAsyncIteratorCreator,
 } from "@pluginTypes/index";
@@ -10,9 +10,9 @@ import ConnectionTypes from "@models/Connection/types";
 class FactIterator implements AsyncIterator<any> {
   private i: number = 0;
   private factCount: Promise<number>;
-  private factsAPI: FactsAPI;
+  private factsAPI: FractalProtocol;
 
-  constructor(factsAPI: FactsAPI) {
+  constructor(factsAPI: FractalProtocol) {
     this.factsAPI = factsAPI;
     this.factCount = factsAPI.totalFacts();
   }
@@ -37,7 +37,7 @@ export class PageView implements IFact {
   }
 }
 
-export default class FactsAPI implements IFractalProtocolAPI {
+export default class FractalProtocol implements IFractalProtocol {
   public raw(): IAsyncIteratorCreator {
     let api = this;
     return {

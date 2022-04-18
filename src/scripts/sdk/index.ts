@@ -1,8 +1,8 @@
 import InpageProvider from "@sdk/InpageProvider";
-import ProtocolAPI from "@sdk/ProtocolAPI";
+import FractalProtocol from "@sdk/FractalProtocol";
 
 (() => {
   window.Fractal = new InpageProvider();
   window.Fractal.init();
-  window.ProtocolAPI = new ProtocolAPI();
+  window.FractalProtocol = new FractalProtocol();
 })();

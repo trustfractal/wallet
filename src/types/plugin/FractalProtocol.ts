@@ -2,7 +2,7 @@ export interface IAsyncIteratorCreator {
   [Symbol.asyncIterator]: () => AsyncIterator<any>;
 }
 
-export interface IFractalProtocolAPI {
+export interface IFractalProtocol {
   raw(): IAsyncIteratorCreator;
 }
 

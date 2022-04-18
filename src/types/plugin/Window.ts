@@ -1,9 +1,9 @@
-import { IFractalProtocolAPI } from "./ProtocolAPI";
+import { IFractalProtocol } from "./FractalProtocol";
 import { IFractalInpageProvider } from "./InpageProvider";
 
 declare global {
   interface Window {
     Fractal: IFractalInpageProvider;
-    ProtocolAPI: IFractalProtocolAPI;
+    FractalProtocol: IFractalProtocol;
   }
 }
