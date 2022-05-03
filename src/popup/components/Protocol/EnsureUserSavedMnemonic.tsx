@@ -9,7 +9,7 @@ import {
 import { useEffect } from "react";
 import styled from "styled-components";
 import { getProtocolOptIn } from "@services/Factory";
-import { SetupSuccess } from "./SetupScreen";
+import { SetupSuccess as ShowMnemonic } from "./SetupScreen";
 import { useState } from "react";
 const ButtonContainer = styled.div`
   width: 100%;
@@ -57,7 +57,7 @@ const WordButton = (props: {
   return (
     <Button
       className={(() => {
-        return !props.isEnabled ? "ClickedWord" : "";
+        return props.isEnabled ? "" : "ClickedWord";
       })()}
       onClick={props.onClick}
     >
@@ -66,41 +66,33 @@ const WordButton = (props: {
   );
 };
 
-const TextField = (props: { input: string }) => {
+function TextField(props: { input: string }) {
   return <TextArea defaultValue={props.input} />;
 };
 
 export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
   const [pageOverride, setPageOverride] = useState<JSX.Element | null>(null);
   const [buttons, setButtons] = useState<CheckButton[]>([]);
-  const [success, setSuccess] = useState(false);
   const [mnemonic, setMnemonic] = useState("");
   const [currentInput, setCurrentInput] = useState<string[]>([]);
+  const success = currentInput.join(" ") === mnemonic;
 
   useEffect(() => {
     async function getMnemonic() {
-      setMnemonic((await getProtocolOptIn().getMnemonic()) as string);
-      const sortedMnemonic = mnemonic.split(" ").sort();
+      const localMnemonic = (await getProtocolOptIn().getMnemonic()) as string;
+      const sortedMnemonic = localMnemonic.split(" ").sort();
+      setMnemonic(localMnemonic);
       setButtons(sortedMnemonic.map((w) => ({ word: w, isEnabled: true })));
       setPageOverride(
-        <SetupSuccess
-          mnemonic={mnemonic as string}
+        <ShowMnemonic
+          mnemonic={localMnemonic as string}
           onContinue={() => setPageOverride(null)}
         />,
       );
     }
 
     getMnemonic();
-  }, [mnemonic]);
-
-  useEffect(() => {
-    if (
-      currentInput.length !== 0 &&
-      currentInput.join(" ").localeCompare(mnemonic) === 0
-    ) {
-      setSuccess(true);
-    }
-  }, [currentInput, mnemonic]);
+  }, []);
 
   if (pageOverride != null) {
     return pageOverride;
@@ -123,10 +115,9 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
                 );
               }
 
-              let isEnabled = !button.isEnabled;
               setButtons([
                 ...buttons.slice(0, index),
-                { ...button, isEnabled },
+                { ...button, isEnabled: !button.isEnabled },
                 ...buttons.slice(index + 1),
               ]);
             }}
@@ -149,7 +140,7 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
       <Cta
         onClick={() => {
           setPageOverride(
-            <SetupSuccess
+            <ShowMnemonic
               mnemonic={mnemonic as string}
               onContinue={() => setPageOverride(null)}
             />,
