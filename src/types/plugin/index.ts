@@ -9,3 +9,4 @@ export * from "./Transaction";
 export * from "./VerificationCase";
 export * from "./Watcher";
 export * from "./Window";
+export * from "./FractalProtocol";
