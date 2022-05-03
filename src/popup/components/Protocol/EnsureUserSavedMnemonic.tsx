@@ -110,9 +110,14 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
               if (button.isEnabled) {
                 setCurrentInput((oldArray) => [...oldArray, button.word]);
               } else {
-                setCurrentInput(
-                  currentInput.filter((item) => item !== button.word),
-                );
+                let once = true;
+                setCurrentInput(currentInput.slice().reverse().filter(el => {
+                    if (once && el === button.word) {
+                        once = false;
+                        return false;
+                    }
+                    return true;
+                }).reverse());
               }
 
               setButtons([
