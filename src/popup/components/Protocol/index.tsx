@@ -14,7 +14,7 @@ import { EnsureUserSavedMnemonic } from "./EnsureUserSavedMnemonic";
 import Loading from "@popup/components/Loading";
 import DataScreen from "./DataScreen";
 import { OptInForm } from "./OptInForm";
-import { SetupSuccess, SetupInProgress, SetupError } from "./SetupScreen";
+import { SetupInProgress, SetupError } from "./SetupScreen";
 import { NoLiveness } from "./NoLiveness";
 
 function ProtocolState() {
@@ -55,12 +55,7 @@ function ProtocolState() {
       await getProtocolOptIn().optIn(mnemonic);
       serviceOptedIn.reload();
       completedLiveness.reload();
-      setPageOverride(
-        <SetupSuccess
-          mnemonic={mnemonic}
-          onContinue={() => setPageOverride(null)}
-        />,
-      );
+      setPageOverride(null);
     } catch (e) {
       handleError(e, () => optInWithMnemonic(mnemonic));
     }
@@ -94,7 +89,12 @@ function ProtocolState() {
   };
   if (!isChallengeNeeded.isLoaded) return <Loading />;
   if (isChallengeNeeded.value) {
-    return <EnsureUserSavedMnemonic onComplete={onComplete} />;
+    return (
+      <EnsureUserSavedMnemonic
+        onComplete={onComplete}
+        getOptIn={getProtocolOptIn}
+      />
+    );
   }
 
   if (!completedLiveness.isLoaded) return <Loading />;
