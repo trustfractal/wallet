@@ -8,7 +8,6 @@ import {
 } from "@popup/components/Protocol/common";
 import { useEffect } from "react";
 import styled from "styled-components";
-import { getProtocolOptIn } from "@services/Factory";
 import { SetupSuccess as ShowMnemonic } from "./SetupScreen";
 import { useState } from "react";
 const ButtonContainer = styled.div`
@@ -57,7 +56,9 @@ const WordButton = (props: {
   return (
     <Button
       className={(() => {
-        return props.isEnabled ? "" : "ClickedWord";
+        return props.isEnabled
+          ? "MnemonicWordButton"
+          : "MnemonicWordButton ClickedWord";
       })()}
       onClick={props.onClick}
     >
@@ -68,9 +69,12 @@ const WordButton = (props: {
 
 function TextField(props: { input: string }) {
   return <TextArea defaultValue={props.input} />;
-};
+}
 
-export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
+export function EnsureUserSavedMnemonic(props: {
+  onComplete: () => void;
+  getOptIn: () => any;
+}) {
   const [pageOverride, setPageOverride] = useState<JSX.Element | null>(null);
   const [buttons, setButtons] = useState<CheckButton[]>([]);
   const [mnemonic, setMnemonic] = useState("");
@@ -79,16 +83,10 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
 
   useEffect(() => {
     async function getMnemonic() {
-      const localMnemonic = (await getProtocolOptIn().getMnemonic()) as string;
+      const localMnemonic = (await props.getOptIn().getMnemonic()) as string;
       const sortedMnemonic = localMnemonic.split(" ").sort();
       setMnemonic(localMnemonic);
       setButtons(sortedMnemonic.map((w) => ({ word: w, isEnabled: true })));
-      setPageOverride(
-        <ShowMnemonic
-          mnemonic={localMnemonic as string}
-          onContinue={() => setPageOverride(null)}
-        />,
-      );
     }
 
     getMnemonic();
@@ -111,13 +109,19 @@ export function EnsureUserSavedMnemonic(props: { onComplete: () => void }) {
                 setCurrentInput((oldArray) => [...oldArray, button.word]);
               } else {
                 let once = true;
-                setCurrentInput(currentInput.slice().reverse().filter(el => {
-                    if (once && el === button.word) {
+                setCurrentInput(
+                  currentInput
+                    .slice()
+                    .reverse()
+                    .filter((el) => {
+                      if (once && el === button.word) {
                         once = false;
                         return false;
-                    }
-                    return true;
-                }).reverse());
+                      }
+                      return true;
+                    })
+                    .reverse(),
+                );
               }
 
               setButtons([
