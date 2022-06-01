@@ -6,7 +6,6 @@ import { Storage } from "@utils/StorageArray";
 interface Tokens {
   catfish: string;
   megalodon: string;
-  scopes: string;
 }
 
 export class NotConnectedError extends Error {
@@ -71,11 +70,10 @@ export class FractalAccountConnector extends MultiContext {
 
     const catfish = localStorage.getItem(catfishSessionKey);
     const megalodon = localStorage.getItem(megalodonSessionKey);
-    const scopes = localStorage.getItem(`${megalodonSessionKey}-scopes`);
 
-    if (!catfish || !megalodon || !scopes) return;
+    if (!catfish || !megalodon) return;
 
-    const tokens = { catfish, megalodon, scopes };
+    const tokens = { catfish, megalodon };
     await this.setTokens(tokens);
   }
 
@@ -98,10 +96,6 @@ export class FractalAccountConnector extends MultiContext {
 
   async getCatfishToken() {
     return (await this.requireTokens()).catfish;
-  }
-
-  async getScopes() {
-    return (await this.requireTokens()).scopes;
   }
 
   async clearTokens() {
