@@ -3,7 +3,10 @@ import HttpService from "@services/HttpService";
 import { ERRORS_CATFISH_TOKEN_EXPIRED } from "./Errors";
 import { FractalAccountConnector } from "@services/FractalAccount";
 
-const RESOURCE_SERVER_TOKEN_SCOPES = "user.verification:read";
+const RESOURCE_SERVER_TOKEN_SCOPES = [
+  "user.permanent_id:read",
+  "user.verification:read",
+].join(" ");
 
 export class CatfishService {
   constructor(private readonly fractalAccount: FractalAccountConnector) {}
