@@ -6,7 +6,6 @@ const types = mirrorCreator([
   "SET_BACKEND_SESSIONS",
   "SET_BACKEND_CATFISH_SESSION",
   "SET_BACKEND_MEGALODON_SESSION",
-  "SET_BACKEND_SCOPES",
   "SIGN_IN_REQUEST",
   "SIGN_IN_PENDING",
   "SIGN_IN_FAILED",
@@ -26,7 +25,6 @@ const creators = createActions(
   types.SET_BACKEND_SESSIONS,
   types.SET_BACKEND_CATFISH_SESSION,
   types.SET_BACKEND_MEGALODON_SESSION,
-  types.SET_BACKEND_SCOPES,
   types.SIGN_IN_REQUEST,
   types.SIGN_IN_PENDING,
   types.SIGN_IN_FAILED,
@@ -60,7 +58,6 @@ const initialState = {
   sessions: {
     catfish: "",
     megalodon: "",
-    scopes: "",
   },
   hashedPassword: "",
   loggedIn: false,
@@ -94,11 +91,6 @@ export const reducer = handleActions(
           ...state.sessions,
           megalodon,
         },
-      }),
-    [types.SET_BACKEND_SCOPES]: (state, { payload: scopes }) =>
-      Object.freeze({
-        ...state,
-        scopes,
       }),
     [types.SIGN_IN_REQUEST]: (state) =>
       Object.freeze({

@@ -3,6 +3,11 @@ import HttpService from "@services/HttpService";
 import { ERRORS_CATFISH_TOKEN_EXPIRED } from "./Errors";
 import { FractalAccountConnector } from "@services/FractalAccount";
 
+const RESOURCE_SERVER_TOKEN_SCOPES = [
+  "user.permanent_id:read",
+  "user.verification:read",
+].join(" ");
+
 export class CatfishService {
   constructor(private readonly fractalAccount: FractalAccountConnector) {}
 
@@ -45,7 +50,6 @@ export class CatfishService {
 
   public async resourceServerAccessToken({ username }: { username: string }) {
     const token = await this.fractalAccount.getCatfishToken();
-    const scopes = await this.fractalAccount.getScopes();
 
     return await this.callApi(
       "oauth/token",
@@ -53,7 +57,7 @@ export class CatfishService {
       JSON.stringify({
         grant_type: "password",
         password: token,
-        scope: scopes,
+        scope: RESOURCE_SERVER_TOKEN_SCOPES,
         username,
       }),
       { "Content-Type": "application/json" },
