@@ -365,7 +365,11 @@ export class ProtocolService {
       lockPeriod: number,
       amount: number|bigint,
       ): Promise<string> {
-    throw new Error('Unimplemented!');
+    const txn = await this.withApi(api =>
+        api.tx.fractalStaking.stake(lockPeriod, amount));
+
+    const {hash} = await TxnWatcher.signAndSend(txn as any, this.requireSigner()).inBlock();
+    return hash;
   }
 
   async lockPeriodOptions(): Promise<Map<number, number>> {

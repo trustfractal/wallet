@@ -48,7 +48,7 @@ export function StakeTokens(props: { onFinish: () => void }) {
           lockPeriod,
           amount,
         );
-        setPage(<SendComplete onFinish={props.onFinish} hash={hash} />);
+        setPage(<Complete onFinish={props.onFinish} hash={hash} />);
         setLoading(false);
       }}
       onCancel={() => setPage("specify")}
@@ -136,6 +136,7 @@ function Specify(props: {
           <Input
             label="Amount"
             type="number"
+            autoFocus
             value={
               props.amount === BigInt(0)
                 ? ""
@@ -175,19 +176,20 @@ function Confirm(props: {
     <ScreenContainer>
       <VerticalSequence>
         <Icon name={IconNames.PROTOCOL} />
-        <Title>Confirm Send</Title>
+        <Title>Confirm Stake</Title>
 
         <p>
-          Send <strong>{(props.amount / FCL_UNIT).toString()} FCL</strong> to
+          Stake{" "}
+          <strong>{(props.amount / FCL_UNIT).toString()} FCL</strong> for{" "}
+          <strong>{props.lockPeriod}</strong> blocks?
         </p>
-        <BreakStrong>{props.lockPeriod}</BreakStrong>
 
         <HorizontalContainer>
           <Button alternative loading={props.loading} onClick={props.onCancel}>
             Cancel
           </Button>
           <Cta loading={props.loading} onClick={props.onConfirm}>
-            Send
+            Stake
           </Cta>
         </HorizontalContainer>
       </VerticalSequence>
@@ -213,12 +215,12 @@ const BreakStrong = styled.strong`
   text-align: center;
 `;
 
-function SendComplete(props: { hash: string; onFinish: () => void }) {
+function Complete(props: { hash: string; onFinish: () => void }) {
   return (
     <ScreenContainer>
       <VerticalSequence>
         <Icon name={IconNames.PROTOCOL} />
-        <Title>Send Complete</Title>
+        <Title>Stake Complete</Title>
 
         <p>Transaction ID</p>
         <p>
