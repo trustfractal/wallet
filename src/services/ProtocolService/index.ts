@@ -362,24 +362,31 @@ export class ProtocolService {
   }
 
   async stakeTokens(
-      lockPeriod: number,
-      amount: number|bigint,
-      ): Promise<string> {
-    const txn = await this.withApi(api =>
-        api.tx.fractalStaking.stake(lockPeriod, amount));
+    lockPeriod: number,
+    amount: number | bigint,
+  ): Promise<string> {
+    const txn = await this.withApi((api) =>
+      api.tx.fractalStaking.stake(lockPeriod, amount),
+    );
 
-    const {hash} = await TxnWatcher.signAndSend(txn as any, this.requireSigner()).inBlock();
+    const { hash } = await TxnWatcher.signAndSend(
+      txn as any,
+      this.requireSigner(),
+    ).inBlock();
     return hash;
   }
 
   async lockPeriodOptions(): Promise<Map<number, number>> {
     const map = new Map();
 
-    const query = await this.withApi(
-        (api) => api.query.fractalStaking.lockPeriodShares.entries());
+    const query = await this.withApi((api) =>
+      api.query.fractalStaking.lockPeriodShares.entries(),
+    );
 
     for (const [lockPeriodKey, sharesValue] of query) {
-      const lockPeriod = Number((lockPeriodKey.toHuman() as any)[0].replace(',', ''));
+      const lockPeriod = Number(
+        (lockPeriodKey.toHuman() as any)[0].replace(",", ""),
+      );
       const shares = Number(sharesValue.toHuman());
       map.set(lockPeriod, shares);
     }

@@ -44,10 +44,7 @@ export function StakeTokens(props: { onFinish: () => void }) {
       amount={amount}
       onConfirm={async () => {
         setLoading(true);
-        const hash = await getProtocolService().stakeTokens(
-          lockPeriod,
-          amount,
-        );
+        const hash = await getProtocolService().stakeTokens(lockPeriod, amount);
         setPage(<Complete onFinish={props.onFinish} hash={hash} />);
         setLoading(false);
       }}
@@ -90,7 +87,9 @@ function Specify(props: {
   onChangeAmount: (a: bigint) => void;
   onContinue: () => void;
 }) {
-  const lockPeriodOptionsLoader = useLoadedState(() => getProtocolService().lockPeriodOptions());
+  const lockPeriodOptionsLoader = useLoadedState(() =>
+    getProtocolService().lockPeriodOptions(),
+  );
 
   if (!lockPeriodOptionsLoader.isLoaded) return null;
   const lockPeriodOptions = lockPeriodOptionsLoader.value;
@@ -98,25 +97,29 @@ function Specify(props: {
   if (!lockPeriodOptions.has(props.lockPeriod) && lockPeriodOptions.size > 0) {
     // Timout to handle React error of updating a component from another.
     setTimeout(() => {
-      const smallestLockPeriod = Math.min(...Array.from(lockPeriodOptions.keys()));
+      const smallestLockPeriod = Math.min(
+        ...Array.from(lockPeriodOptions.keys()),
+      );
       props.onChangeLockPeriod(smallestLockPeriod);
     });
     return null;
   }
 
   const lockPeriodSelectionElements = Array.from(lockPeriodOptions.entries())
-      .sort((eA, eB) => eA[0] - eB[0])
-      .map(([thisPeriod, shares]) => {
-        return (
-          <label className="lock-period-option" key={thisPeriod}>
-            <RadioInput
-                checked={thisPeriod === props.lockPeriod}
-                onChange={() => props.onChangeLockPeriod(thisPeriod)}
-                />
-            <p>{thisPeriod} for {shares} shares</p>
-          </label>
-        );
-      });
+    .sort((eA, eB) => eA[0] - eB[0])
+    .map(([thisPeriod, shares]) => {
+      return (
+        <label className="lock-period-option" key={thisPeriod}>
+          <RadioInput
+            checked={thisPeriod === props.lockPeriod}
+            onChange={() => props.onChangeLockPeriod(thisPeriod)}
+          />
+          <p>
+            {thisPeriod} for {shares} shares
+          </p>
+        </label>
+      );
+    });
 
   const validAmount = props.amount > BigInt(0);
   const validLock = lockPeriodOptions.has(props.lockPeriod);
@@ -179,8 +182,7 @@ function Confirm(props: {
         <Title>Confirm Stake</Title>
 
         <p>
-          Stake{" "}
-          <strong>{(props.amount / FCL_UNIT).toString()} FCL</strong> for{" "}
+          Stake <strong>{(props.amount / FCL_UNIT).toString()} FCL</strong> for{" "}
           <strong>{props.lockPeriod}</strong> blocks?
         </p>
 
