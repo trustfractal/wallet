@@ -12,6 +12,7 @@ import {
 import Wallet from "@models/Wallet";
 import Button from "@popup/components/common/Button";
 import { SendTokens } from "@popup/components/Protocol/SendTokens";
+import { StakeTokens } from "@popup/components/Protocol/StakeTokens";
 import { ActivityStackContext } from "@popup/containers/ActivityStack";
 
 // @ts-ignore
@@ -89,6 +90,15 @@ function AddLiveness() {
   );
 }
 
+const ActionsContainer = styled.div`
+  width: 100%;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+`;
+
 function DataScreen() {
   const [wallet, setWallet] = useState<Wallet>();
   const { updater: activityStack } = useContext(ActivityStackContext);
@@ -108,15 +118,26 @@ function DataScreen() {
       <Minting />
       <WebpageViews />
       <Address wallet={wallet} />
-      <Button
-        onClick={() =>
-          activityStack.push(
-            <SendTokens onFinish={() => activityStack.pop()} />,
-          )
-        }
-      >
-        Send FCL
-      </Button>
+      <ActionsContainer>
+        <Button
+          onClick={() =>
+            activityStack.push(
+              <SendTokens onFinish={() => activityStack.pop()} />,
+            )
+          }
+        >
+          Send FCL
+        </Button>
+        <Button
+          onClick={() =>
+            activityStack.push(
+              <StakeTokens onFinish={() => activityStack.pop()} />,
+            )
+          }
+        >
+          Stake FCL
+        </Button>
+      </ActionsContainer>
     </VerticalSequence>
   );
 }

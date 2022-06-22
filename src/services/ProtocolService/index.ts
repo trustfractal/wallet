@@ -360,6 +360,28 @@ export class ProtocolService {
     );
     return new Date(timestamp.toNumber());
   }
+
+  async stakeTokens(
+      lockPeriod: number,
+      amount: number|bigint,
+      ): Promise<string> {
+    throw new Error('Unimplemented!');
+  }
+
+  async lockPeriodOptions(): Promise<Map<number, number>> {
+    const map = new Map();
+
+    const query = await this.withApi(
+        (api) => api.query.fractalStaking.lockPeriodShares.entries());
+
+    for (const [lockPeriodKey, sharesValue] of query) {
+      const lockPeriod = Number((lockPeriodKey.toHuman() as any)[0].replace(',', ''));
+      const shares = Number(sharesValue.toHuman());
+      map.set(lockPeriod, shares);
+    }
+
+    return map;
+  }
 }
 
 class BlockNumberOutsideRange extends Error {
