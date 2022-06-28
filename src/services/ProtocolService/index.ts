@@ -385,7 +385,7 @@ export class ProtocolService {
 
     for (const [lockPeriodKey, sharesValue] of query) {
       const lockPeriod = Number(
-        (lockPeriodKey.toHuman() as any)[0].replace(",", ""),
+        (lockPeriodKey.toHuman() as any)[0].replaceAll(",", ""),
       );
       const shares = Number(sharesValue.toHuman());
       map.set(lockPeriod, shares);

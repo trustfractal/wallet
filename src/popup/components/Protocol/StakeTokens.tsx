@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { useState } from "react";
+import humanizeDuration from "humanize-duration";
+import ReactTooltip from "react-tooltip";
 
 import { useLoadedState } from "@utils/ReactHooks";
 
@@ -78,6 +80,12 @@ const LockPeriodSelectionContainer = styled.div`
       margin: 0;
     }
   }
+
+  [data-tip] {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    cursor: help;
+  }
 `;
 
 function Specify(props: {
@@ -115,7 +123,10 @@ function Specify(props: {
             onChange={() => props.onChangeLockPeriod(thisPeriod)}
           />
           <p>
-            {thisPeriod} for {shares} shares
+            {humanizeBlocks(thisPeriod)} for{" "}
+            <span data-tip data-for="distributionSharesTip">
+              {shares} distribution shares
+            </span>
           </p>
         </label>
       );
@@ -132,6 +143,10 @@ function Specify(props: {
         <Title>Stake Tokens</Title>
 
         <LockPeriodSelectionContainer>
+          <ReactTooltip id="distributionSharesTip" place="top" effect="solid">
+            TODO(nikoladmitroff): Provide text.
+          </ReactTooltip>
+
           {lockPeriodSelectionElements}
         </LockPeriodSelectionContainer>
 
@@ -155,8 +170,9 @@ function Specify(props: {
           <p>
             Will lock{" "}
             <strong>{(props.amount / FCL_UNIT).toString()} FCL</strong> for{" "}
-            <strong>{props.lockPeriod}</strong> blocks, receiving{" "}
-            <strong>{lockPeriodOptions.get(props.lockPeriod)}</strong> shares.
+            <strong>{humanizeBlocks(props.lockPeriod)}</strong>, receiving{" "}
+            <strong>{lockPeriodOptions.get(props.lockPeriod)}</strong>{" "}
+            distribution shares.
           </p>
         )}
 
@@ -166,6 +182,15 @@ function Specify(props: {
       </VerticalSequence>
     </ScreenContainer>
   );
+}
+
+function humanizeBlocks(blocks: number): string {
+  const secondsPerBlock = 6;
+  const durationMs = blocks * secondsPerBlock * 1000;
+  return humanizeDuration(durationMs, {
+    units: ["w", "d", "h", "m"],
+    round: true,
+  });
 }
 
 function Confirm(props: {
