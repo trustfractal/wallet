@@ -393,6 +393,10 @@ export class ProtocolService {
 
     return map;
   }
+
+  async canStake(): Promise<boolean> {
+    return await this.withApi((api) => api.tx.fractalStaking != null);
+  }
 }
 
 class BlockNumberOutsideRange extends Error {

@@ -1,7 +1,9 @@
 import styled from "styled-components";
-
 import { useState, useEffect, useContext } from "react";
-import { getProtocolOptIn } from "@services/Factory";
+
+import { getProtocolOptIn, getProtocolService } from "@services/Factory";
+import { useLoadedState } from "@utils/ReactHooks";
+
 import {
   Subsubtitle,
   Text,
@@ -103,6 +105,8 @@ function DataScreen() {
   const [wallet, setWallet] = useState<Wallet>();
   const { updater: activityStack } = useContext(ActivityStackContext);
 
+  const canStake = useLoadedState(() => getProtocolService().canStake());
+
   useEffect(() => {
     (async () => {
       const mnemonic = await getProtocolOptIn().getMnemonic();
@@ -128,15 +132,18 @@ function DataScreen() {
         >
           Send FCL
         </Button>
-        <Button
-          onClick={() =>
-            activityStack.push(
-              <StakeTokens onFinish={() => activityStack.pop()} />,
-            )
-          }
-        >
-          Stake FCL
-        </Button>
+
+        {!canStake.unwrapOrDefault(false) ? null : (
+          <Button
+            onClick={() =>
+              activityStack.push(
+                <StakeTokens onFinish={() => activityStack.pop()} />,
+              )
+            }
+          >
+            Stake FCL
+          </Button>
+        )}
       </ActionsContainer>
     </VerticalSequence>
   );
