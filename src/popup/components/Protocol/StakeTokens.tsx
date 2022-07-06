@@ -144,7 +144,7 @@ function Specify(props: {
 
         <LockPeriodSelectionContainer>
           <ReactTooltip id="distributionSharesTip" place="top" effect="solid">
-            TODO(nikoladmitroff): Provide text.
+            By staking for longer periods of time and bigger amounts, you gain more distribution shares. Your actual rewarded coins will be proportional to the amount of distribution shares.
           </ReactTooltip>
 
           {lockPeriodSelectionElements}
