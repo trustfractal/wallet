@@ -395,7 +395,10 @@ export class ProtocolService {
   }
 
   async canStake(): Promise<boolean> {
-    return await this.withApi((api) => api.tx.fractalStaking != null);
+    return (
+      (await this.withApi((api) => api.tx.fractalStaking != null)) &&
+      (await this.lockPeriodOptions()).size > 0
+    );
   }
 }
 
