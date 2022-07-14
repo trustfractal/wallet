@@ -8,7 +8,7 @@ const GOLDFISH_URL =
   "https://did.staging.sandbox.fractal.id";
 const FRACTAL_WEBSITE_URL =
   process.env.REACT_APP_FRACTAL_WEBSITE_URL ||
-  "https://staging.sandbox.fractal.id";
+  "https://app.staging.sandbox.fractal.id";
 const MAGURO_URL =
   process.env.REACT_APP_MAGURO_URL ||
   "https://maguro.staging.sandbox.fractal.id";
