@@ -70,7 +70,8 @@ const LivenessContainer = styled.div`
 `;
 
 function AddLiveness() {
-  const hasLiveness = useLoadedState(() => getProtocolOptIn().hasCompletedLiveness()
+  const hasLiveness = useLoadedState(() =>
+    getProtocolOptIn().hasCompletedLiveness(),
   );
 
   if (hasLiveness.unwrapOrDefault(true)) return null;
