@@ -70,15 +70,10 @@ const LivenessContainer = styled.div`
 `;
 
 function AddLiveness() {
-  const [hasLiveness, setHasLiveness] = useState(true);
+  const hasLiveness = useLoadedState(() => getProtocolOptIn().hasCompletedLiveness()
+  );
 
-  useEffect(() => {
-    (async () => {
-      setHasLiveness(await getProtocolOptIn().hasCompletedLiveness());
-    })();
-  });
-
-  if (hasLiveness) return null;
+  if (hasLiveness.unwrapOrDefault(true)) return null;
 
   const postOptInLiveness = async () => {
     await getProtocolOptIn().postOptInLiveness();

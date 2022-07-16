@@ -15,7 +15,6 @@ import Loading from "@popup/components/Loading";
 import DataScreen from "./DataScreen";
 import { OptInForm } from "./OptInForm";
 import { SetupSuccess, SetupInProgress, SetupError } from "./SetupScreen";
-import { NoLiveness } from "./NoLiveness";
 
 function ProtocolState() {
   const [pageOverride, setPageOverride] = useState<JSX.Element | null>(null);
@@ -66,19 +65,6 @@ function ProtocolState() {
     }
   };
 
-  const doLiveness = async () => {
-    try {
-      setPageOverride(<SetupInProgress onRetry={doLiveness} />);
-
-      await getProtocolOptIn().postOptInLiveness();
-      completedLiveness.reload();
-
-      setPageOverride(null);
-    } catch (e) {
-      handleError(e, doLiveness);
-    }
-  };
-
   if (pageOverride != null) {
     return pageOverride;
   }
@@ -95,11 +81,6 @@ function ProtocolState() {
   if (!isChallengeNeeded.isLoaded) return <Loading />;
   if (isChallengeNeeded.value) {
     return <EnsureUserSavedMnemonic onComplete={onComplete} />;
-  }
-
-  if (!completedLiveness.isLoaded) return <Loading />;
-  if (!completedLiveness.value) {
-    return <NoLiveness onClick={doLiveness} />;
   }
 
   return <DataScreen />;
