@@ -46,7 +46,6 @@ jobs:
 
   build-plugin:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/dev'
     needs: test-plugin
     container: node:14.16.0
 
