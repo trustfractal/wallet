@@ -62,7 +62,7 @@ export function OptInForm({ onOptIn }: { onOptIn: () => void }) {
           target="_blank"
           rel="noreferrer"
         >
-          Special Mainnet Launch User Agreement.
+          Browser Data Capture User Agreement.
         </a>
       </Subsubtitle>
 

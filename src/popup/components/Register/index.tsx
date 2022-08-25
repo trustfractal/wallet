@@ -107,7 +107,7 @@ function Register({ loading, onNext }: RegisterProps) {
         </LogoContainer>
         <HeaderContainer>
           <Title>Welcome to the Fractal Wallet</Title>
-          <Text center>Start by choosing a password</Text>
+          <Text center>Start by picking a password</Text>
         </HeaderContainer>
         <InputsContainer>
           <InputContainer>
