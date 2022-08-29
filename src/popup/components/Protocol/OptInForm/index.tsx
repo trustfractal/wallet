@@ -4,7 +4,6 @@ import {
   Icon,
   IconNames,
   Subtitle,
-  Subsubtitle,
   BoldText,
   VerticalSequence,
   Cta,
