@@ -55,17 +55,6 @@ export function OptInForm({ onOptIn }: { onOptIn: () => void }) {
         </li>
       </List>
 
-      <Subsubtitle uppercase center>
-        By clicking “Join the Protocol” you agree to our{" "}
-        <a
-          href={`${environment.FRACTAL_WEBSITE_URL}/documents/mainnet-launch-special-user-agreement`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          Special Mainnet Launch User Agreement.
-        </a>
-      </Subsubtitle>
-
       <Cta onClick={onOptIn}>Join the Protocol</Cta>
     </VerticalSequence>
   );
